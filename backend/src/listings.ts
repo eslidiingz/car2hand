@@ -1,0 +1,601 @@
+import { Elysia, t } from "elysia";
+import prisma from "./db";
+import { uploadListingImages, deleteListingImages, isValidImageType, isValidFileSize, ensureBucket } from "./storage";
+
+// Ensure bucket exists on startup
+ensureBucket().catch(console.error);
+
+export const listingRoutes = new Elysia({ prefix: "/listings" })
+    // สร้างประกาศขายใหม่
+    .post("/", async ({ body, set }) => {
+        const { userId, ...listingData } = body;
+
+        // ตรวจสอบว่า user มีอยู่จริง
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            set.status = 401;
+            return { message: "กรุณาเข้าสู่ระบบ" };
+        }
+
+        try {
+            const listing = await prisma.vehicleListing.create({
+                data: {
+                    userId,
+                    vehicleType: listingData.vehicleType,
+                    title: listingData.title,
+                    description: listingData.description,
+                    price: listingData.price,
+                    negotiable: listingData.negotiable ?? true,
+                    brand: listingData.brand,
+                    model: listingData.model,
+                    subModel: listingData.subModel,
+                    year: listingData.year,
+                    color: listingData.color,
+                    fuelType: listingData.fuelType,
+                    transmission: listingData.transmission,
+                    engineSize: listingData.engineSize,
+                    mileage: listingData.mileage,
+                    bodyType: listingData.bodyType,
+                    plateProvince: listingData.plateProvince,
+                    registrationType: listingData.registrationType ?? "PERSONAL",
+                    condition: listingData.condition,
+                    ownerCount: listingData.ownerCount ?? 1,
+                    hasAccident: listingData.hasAccident ?? false,
+                    hasModified: listingData.hasModified ?? false,
+                    hasWarranty: listingData.hasWarranty ?? false,
+                    province: listingData.province,
+                    district: listingData.district,
+                    status: "DRAFT", // เริ่มต้นเป็น draft
+                },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phoneNumber: true,
+                        }
+                    }
+                }
+            });
+
+            return {
+                message: "สร้างประกาศสำเร็จ",
+                listing
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการสร้างประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            vehicleType: t.Union([t.Literal("CAR"), t.Literal("MOTORCYCLE")]),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            price: t.Number(),
+            negotiable: t.Optional(t.Boolean()),
+            brand: t.String(),
+            model: t.String(),
+            subModel: t.Optional(t.String()),
+            year: t.Number(),
+            color: t.String(),
+            fuelType: t.Union([
+                t.Literal("PETROL"),
+                t.Literal("DIESEL"),
+                t.Literal("HYBRID"),
+                t.Literal("PLUGIN_HYBRID"),
+                t.Literal("ELECTRIC"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ]),
+            transmission: t.Optional(t.Union([
+                t.Literal("AUTOMATIC"),
+                t.Literal("MANUAL"),
+                t.Literal("CVT"),
+                t.Literal("DCT"),
+                t.Literal("SEMI_AUTO")
+            ])),
+            engineSize: t.Optional(t.Number()),
+            mileage: t.Number(),
+            bodyType: t.Union([
+                // รถยนต์
+                t.Literal("SEDAN"),
+                t.Literal("HATCHBACK"),
+                t.Literal("SUV"),
+                t.Literal("CROSSOVER"),
+                t.Literal("MPV"),
+                t.Literal("PICKUP"),
+                t.Literal("COUPE"),
+                t.Literal("CONVERTIBLE"),
+                t.Literal("WAGON"),
+                t.Literal("VAN"),
+                // มอเตอร์ไซค์
+                t.Literal("STANDARD"),
+                t.Literal("SCOOTER"),
+                t.Literal("SPORT"),
+                t.Literal("NAKED"),
+                t.Literal("CRUISER"),
+                t.Literal("TOURING"),
+                t.Literal("ADVENTURE"),
+                t.Literal("DIRT"),
+                t.Literal("CAFE_RACER"),
+                t.Literal("UNDERBONE"),
+                t.Literal("CUB")
+            ]),
+            plateProvince: t.Optional(t.String()),
+            registrationType: t.Optional(t.Union([
+                t.Literal("PERSONAL"),
+                t.Literal("COMPANY")
+            ])),
+            condition: t.Union([
+                t.Literal("EXCELLENT"),
+                t.Literal("GOOD"),
+                t.Literal("FAIR"),
+                t.Literal("POOR")
+            ]),
+            ownerCount: t.Optional(t.Number()),
+            hasAccident: t.Optional(t.Boolean()),
+            hasModified: t.Optional(t.Boolean()),
+            hasWarranty: t.Optional(t.Boolean()),
+            province: t.String(),
+            district: t.Optional(t.String())
+        })
+    })
+
+    // อัพโหลดรูปภาพสำหรับประกาศ
+    .post("/:id/images", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, images } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            // อัพโหลดรูปไปยัง MinIO
+            const uploadedImages = await uploadListingImages(
+                userId,
+                id,
+                images.map((img: { buffer: string; filename: string; mimetype: string }) => ({
+                    buffer: Buffer.from(img.buffer, 'base64'),
+                    originalname: img.filename,
+                    mimetype: img.mimetype
+                }))
+            );
+
+            // บันทึกข้อมูลรูปลง database
+            const dbImages = await prisma.vehicleImage.createMany({
+                data: uploadedImages.map((img, index) => ({
+                    listingId: id,
+                    url: img.url,
+                    isPrimary: index === 0,
+                    order: index
+                }))
+            });
+
+            // ดึงรูปทั้งหมดกลับมา
+            const allImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "อัพโหลดรูปภาพสำเร็จ",
+                images: allImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            images: t.Array(t.Object({
+                buffer: t.String(), // base64 encoded
+                filename: t.String(),
+                mimetype: t.String()
+            }))
+        })
+    })
+
+    // อัพเดทราคาและเผยแพร่ประกาศ
+    .patch("/:id/publish", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, price, negotiable } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // ตรวจสอบว่ามีรูปภาพหรือยัง
+        if (listing.images.length === 0) {
+            set.status = 400;
+            return { message: "กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป" };
+        }
+
+        try {
+            const updatedListing = await prisma.vehicleListing.update({
+                where: { id },
+                data: {
+                    price,
+                    negotiable: negotiable ?? true,
+                    status: "ACTIVE",
+                    expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 วัน
+                },
+                include: {
+                    images: true,
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phoneNumber: true,
+                        }
+                    }
+                }
+            });
+
+            return {
+                message: "เผยแพร่ประกาศสำเร็จ",
+                listing: updatedListing
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการเผยแพร่ประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            price: t.Number(),
+            negotiable: t.Optional(t.Boolean())
+        })
+    })
+
+    // อัพเดทข้อมูลประกาศ
+    .put("/:id", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, ...updateData } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            const updatedListing = await prisma.vehicleListing.update({
+                where: { id },
+                data: {
+                    vehicleType: updateData.vehicleType,
+                    title: updateData.title,
+                    description: updateData.description,
+                    price: updateData.price,
+                    negotiable: updateData.negotiable ?? true,
+                    brand: updateData.brand,
+                    model: updateData.model,
+                    subModel: updateData.subModel,
+                    year: updateData.year,
+                    color: updateData.color,
+                    fuelType: updateData.fuelType,
+                    transmission: updateData.transmission,
+                    engineSize: updateData.engineSize,
+                    mileage: updateData.mileage,
+                    bodyType: updateData.bodyType,
+                    plateProvince: updateData.plateProvince,
+                    registrationType: updateData.registrationType ?? "PERSONAL",
+                    condition: updateData.condition,
+                    ownerCount: updateData.ownerCount ?? 1,
+                    hasAccident: updateData.hasAccident ?? false,
+                    hasModified: updateData.hasModified ?? false,
+                    hasWarranty: updateData.hasWarranty ?? false,
+                    province: updateData.province,
+                    district: updateData.district,
+                },
+                include: {
+                    images: {
+                        orderBy: { order: 'asc' }
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phoneNumber: true,
+                        }
+                    }
+                }
+            });
+
+            return {
+                message: "อัพเดทประกาศสำเร็จ",
+                listing: updatedListing
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัพเดทประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            vehicleType: t.Union([t.Literal("CAR"), t.Literal("MOTORCYCLE")]),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            price: t.Number(),
+            negotiable: t.Optional(t.Boolean()),
+            brand: t.String(),
+            model: t.String(),
+            subModel: t.Optional(t.String()),
+            year: t.Number(),
+            color: t.String(),
+            fuelType: t.Union([
+                t.Literal("PETROL"),
+                t.Literal("DIESEL"),
+                t.Literal("HYBRID"),
+                t.Literal("PLUGIN_HYBRID"),
+                t.Literal("ELECTRIC"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ]),
+            transmission: t.Optional(t.Union([
+                t.Literal("AUTOMATIC"),
+                t.Literal("MANUAL"),
+                t.Literal("CVT"),
+                t.Literal("DCT"),
+                t.Literal("SEMI_AUTO")
+            ])),
+            engineSize: t.Optional(t.Number()),
+            mileage: t.Optional(t.Number()),
+            bodyType: t.Optional(t.Union([
+                t.Literal("SEDAN"),
+                t.Literal("HATCHBACK"),
+                t.Literal("SUV"),
+                t.Literal("CROSSOVER"),
+                t.Literal("MPV"),
+                t.Literal("PICKUP"),
+                t.Literal("COUPE"),
+                t.Literal("CONVERTIBLE"),
+                t.Literal("WAGON"),
+                t.Literal("VAN"),
+                t.Literal("STANDARD"),
+                t.Literal("SCOOTER"),
+                t.Literal("SPORT"),
+                t.Literal("NAKED"),
+                t.Literal("CRUISER"),
+                t.Literal("TOURING"),
+                t.Literal("ADVENTURE"),
+                t.Literal("DIRT"),
+                t.Literal("CAFE_RACER"),
+                t.Literal("UNDERBONE"),
+                t.Literal("CUB")
+            ])),
+            plateProvince: t.Optional(t.String()),
+            registrationType: t.Optional(t.Union([
+                t.Literal("PERSONAL"),
+                t.Literal("COMPANY")
+            ])),
+            condition: t.Optional(t.Union([
+                t.Literal("EXCELLENT"),
+                t.Literal("GOOD"),
+                t.Literal("FAIR"),
+                t.Literal("POOR")
+            ])),
+            ownerCount: t.Optional(t.Number()),
+            hasAccident: t.Optional(t.Boolean()),
+            hasModified: t.Optional(t.Boolean()),
+            hasWarranty: t.Optional(t.Boolean()),
+            province: t.String(),
+            district: t.Optional(t.String())
+        })
+    })
+
+    // ดึงประกาศตาม ID
+    .get("/:id", async ({ params, query, set }) => {
+        const { id } = params;
+        const { viewerId } = query; // Optional: userId ของคนที่กำลังดู
+
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: {
+                images: {
+                    orderBy: { order: 'asc' }
+                },
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        phoneNumber: true,
+                    }
+                }
+            }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        // เพิ่ม view count เฉพาะเมื่อคนดูไม่ใช่เจ้าของประกาศ
+        if (!viewerId || viewerId !== listing.userId) {
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { viewCount: { increment: 1 } }
+            });
+        }
+
+        return { listing };
+    })
+
+    // ดึงประกาศทั้งหมด (พร้อม filter)
+    .get("/", async ({ query }) => {
+        const {
+            vehicleType,
+            brand,
+            minPrice,
+            maxPrice,
+            province,
+            status = "ACTIVE",
+            page = "1",
+            limit = "20"
+        } = query;
+
+        const where: Record<string, unknown> = {
+            status: status
+        };
+
+        if (vehicleType) where.vehicleType = vehicleType;
+        if (brand) where.brand = brand;
+        if (province) where.province = province;
+        if (minPrice || maxPrice) {
+            where.price = {};
+            if (minPrice) (where.price as Record<string, unknown>).gte = parseFloat(minPrice);
+            if (maxPrice) (where.price as Record<string, unknown>).lte = parseFloat(maxPrice);
+        }
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        const [listings, total] = await Promise.all([
+            prisma.vehicleListing.findMany({
+                where,
+                include: {
+                    images: {
+                        where: { isPrimary: true },
+                        take: 1
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: parseInt(limit)
+            }),
+            prisma.vehicleListing.count({ where })
+        ]);
+
+        return {
+            listings,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        };
+    })
+
+    // ดึงประกาศของ user
+    .get("/user/:userId", async ({ params, query }) => {
+        const { userId } = params;
+        const { status, page = "1", limit = "20" } = query;
+
+        const where: Record<string, unknown> = { userId };
+        if (status) where.status = status;
+
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+
+        const [listings, total] = await Promise.all([
+            prisma.vehicleListing.findMany({
+                where,
+                include: {
+                    images: {
+                        where: { isPrimary: true },
+                        take: 1
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: parseInt(limit)
+            }),
+            prisma.vehicleListing.count({ where })
+        ]);
+
+        return {
+            listings,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                totalPages: Math.ceil(total / parseInt(limit))
+            }
+        };
+    })
+
+    // ลบประกาศ
+    .delete("/:id", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId } = body;
+
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์ลบประกาศนี้" };
+        }
+
+        try {
+            // ลบรูปจาก MinIO
+            await deleteListingImages(userId, id);
+
+            // ลบจาก database (cascade จะลบ images ด้วย)
+            await prisma.vehicleListing.delete({
+                where: { id }
+            });
+
+            return { message: "ลบประกาศสำเร็จ" };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการลบประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String()
+        })
+    });

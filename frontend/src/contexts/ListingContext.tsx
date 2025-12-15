@@ -1,0 +1,216 @@
+"use client";
+
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+// Types
+export interface ListingFormData {
+    // Step 1: Vehicle Info
+    vehicleType: 'CAR' | 'MOTORCYCLE';
+    year: number;
+    brand: string;
+    model: string;
+    subModel?: string;
+    transmission?: 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO';
+    mileage: number;
+    color: string;
+    fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'ELECTRIC' | 'LPG' | 'NGV';
+    bodyType: string;
+    engineSize?: number;
+
+    // Step 1.5: Condition
+    condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
+    ownerCount: number;
+    hasAccident: boolean;
+    hasModified: boolean;
+    hasWarranty: boolean;
+    plateProvince?: string;
+    registrationType: 'PERSONAL' | 'COMPANY';
+
+    // Step 2: Images
+    images: File[];
+    imagesPreviews: string[];
+
+    // Step 3: Price & Contact
+    title: string;
+    description?: string;
+    price: number;
+    negotiable: boolean;
+    province: string;
+    district?: string;
+}
+
+interface ListingContextType {
+    formData: ListingFormData;
+    updateFormData: (data: Partial<ListingFormData>) => void;
+    resetFormData: () => void;
+    currentStep: number;
+    setCurrentStep: (step: number) => void;
+    listingId: string | null;
+    setListingId: (id: string | null) => void;
+    isSubmitting: boolean;
+    setIsSubmitting: (value: boolean) => void;
+}
+
+const defaultFormData: ListingFormData = {
+    vehicleType: 'CAR',
+    year: new Date().getFullYear(),
+    brand: '',
+    model: '',
+    subModel: '',
+    transmission: 'AUTOMATIC',
+    mileage: 0,
+    color: '',
+    fuelType: 'PETROL',
+    bodyType: 'SEDAN',
+    engineSize: undefined,
+    condition: 'GOOD',
+    ownerCount: 1,
+    hasAccident: false,
+    hasModified: false,
+    hasWarranty: false,
+    plateProvince: '',
+    registrationType: 'PERSONAL',
+    images: [],
+    imagesPreviews: [],
+    title: '',
+    description: '',
+    price: 0,
+    negotiable: true,
+    province: '',
+    district: '',
+};
+
+const ListingContext = createContext<ListingContextType | undefined>(undefined);
+
+export function ListingProvider({ children }: { children: ReactNode }) {
+    const [formData, setFormData] = useState<ListingFormData>(defaultFormData);
+    const [currentStep, setCurrentStep] = useState(1);
+    const [listingId, setListingId] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const updateFormData = (data: Partial<ListingFormData>) => {
+        setFormData(prev => ({ ...prev, ...data }));
+    };
+
+    const resetFormData = () => {
+        setFormData(defaultFormData);
+        setCurrentStep(1);
+        setListingId(null);
+    };
+
+    return (
+        <ListingContext.Provider value={{
+            formData,
+            updateFormData,
+            resetFormData,
+            currentStep,
+            setCurrentStep,
+            listingId,
+            setListingId,
+            isSubmitting,
+            setIsSubmitting
+        }}>
+            {children}
+        </ListingContext.Provider>
+    );
+}
+
+export function useListingForm() {
+    const context = useContext(ListingContext);
+    if (!context) {
+        throw new Error('useListingForm must be used within a ListingProvider');
+    }
+    return context;
+}
+
+// API Functions
+const API_BASE = 'http://localhost:8000';
+
+export async function createListing(userId: string, data: ListingFormData): Promise<{ listing: { id: string } }> {
+    const response = await fetch(`${API_BASE}/listings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId,
+            vehicleType: data.vehicleType,
+            title: data.title || `${data.brand} ${data.model} ${data.year}`,
+            description: data.description,
+            price: data.price,
+            negotiable: data.negotiable,
+            brand: data.brand,
+            model: data.model,
+            subModel: data.subModel,
+            year: data.year,
+            color: data.color,
+            fuelType: data.fuelType,
+            transmission: data.transmission,
+            engineSize: data.engineSize,
+            mileage: data.mileage,
+            bodyType: data.bodyType,
+            plateProvince: data.plateProvince,
+            registrationType: data.registrationType,
+            condition: data.condition,
+            ownerCount: data.ownerCount,
+            hasAccident: data.hasAccident,
+            hasModified: data.hasModified,
+            hasWarranty: data.hasWarranty,
+            province: data.province,
+            district: data.district,
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create listing');
+    }
+
+    return response.json();
+}
+
+export async function uploadListingImages(
+    userId: string,
+    listingId: string,
+    files: File[]
+): Promise<void> {
+    // Convert files to base64
+    const images = await Promise.all(
+        files.map(async (file) => {
+            const buffer = await file.arrayBuffer();
+            const base64 = Buffer.from(buffer).toString('base64');
+            return {
+                buffer: base64,
+                filename: file.name,
+                mimetype: file.type
+            };
+        })
+    );
+
+    const response = await fetch(`${API_BASE}/listings/${listingId}/images`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, images })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to upload images');
+    }
+}
+
+export async function publishListing(
+    userId: string,
+    listingId: string,
+    price: number,
+    negotiable: boolean
+): Promise<void> {
+    const response = await fetch(`${API_BASE}/listings/${listingId}/publish`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, price, negotiable })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to publish listing');
+    }
+}

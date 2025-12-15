@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-ibm-plex-sans-thai);
+
+  --color-primary: #0F3460;
+  --color-accent: #FF6B35;
+  --color-surface: #F4F6F8;
+  --color-success: #00C851;
+}
+
+body {
+  font-family: var(--font-ibm-plex-sans-thai), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* === Form Input Standardized Styles === */
+/* Height: 48px (h-12) for all inputs */
+
+.form-input {
+  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base;
+}
+
+.form-input-icon {
+  @apply w-full h-12 pl-11 pr-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base;
+}
+
+.form-select {
+  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.5rem;
+}
+
+.form-select-icon {
+  @apply w-full h-12 pl-11 pr-10 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+}
+
+.form-button {
+  @apply h-12 px-4 border-2 rounded-xl flex items-center justify-center gap-2 font-bold transition hover:shadow-md;
+}
+
+.form-button-active {
+  @apply border-primary bg-blue-50 text-primary;
+}
+
+.form-button-inactive {
+  @apply border-gray-200 text-gray-500 hover:border-primary;
+}
+
+.form-checkbox-label {
+  @apply h-12 flex items-center gap-3 px-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition;
+}
+
+/* === Modal Form Variants === */
+/* Height: 40px (h-10) for modal/compact forms */
+
+.form-input-sm {
+  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm;
+}
+
+.form-input-icon-sm {
+  @apply w-full h-10 pl-10 pr-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm;
+}
+
+.form-select-sm {
+  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-sm appearance-none cursor-pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.5rem;
+}
+
+.form-button-sm {
+  @apply h-10 px-4 border-2 rounded-xl flex items-center justify-center gap-2 font-bold transition text-sm;
+}
+
+/* === Tooltip Styles === */
+.tooltip {
+  @apply relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 text-xs font-medium text-white bg-gray-800 rounded-lg whitespace-nowrap opacity-0 invisible transition-all duration-200 pointer-events-none z-50;
+}
+
+.tooltip::before {
+  content: '';
+  @apply absolute bottom-full left-1/2 -translate-x-1/2 mb-0.5 border-[5px] border-transparent border-t-gray-800 opacity-0 invisible transition-all duration-200 pointer-events-none z-50;
+}
+
+.tooltip:hover::after,
+.tooltip:hover::before {
+  @apply opacity-100 visible;
+}
