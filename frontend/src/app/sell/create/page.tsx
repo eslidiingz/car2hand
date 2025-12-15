@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -29,6 +29,7 @@ import {
     WarningCircle
 } from '@phosphor-icons/react';
 import PreviewCard from '@/components/PreviewCard';
+import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import { useListingForm, createListing, uploadListingImages, publishListing } from '@/contexts/ListingContext';
 
 // Thai provinces list
@@ -51,17 +52,60 @@ const PROVINCES = [
     'อุบลราชธานี', 'อำนาจเจริญ'
 ];
 
-// Car brands
-const CAR_BRANDS = ['Toyota', 'Honda', 'Mazda', 'Nissan', 'Mitsubishi', 'Isuzu', 'Ford', 'Chevrolet', 'BMW', 'Mercedes-Benz', 'Audi', 'Lexus', 'Subaru', 'Suzuki', 'Hyundai', 'Kia', 'MG', 'Volvo', 'Porsche', 'Ferrari'];
-const MOTORCYCLE_BRANDS = ['Honda', 'Yamaha', 'Kawasaki', 'Suzuki', 'Ducati', 'BMW', 'Harley-Davidson', 'KTM', 'Vespa', 'Royal Enfield', 'Triumph', 'Aprilia', 'GPX', 'Benelli'];
-
 const COLORS = ['ขาว', 'ดำ', 'เงิน', 'เทา', 'แดง', 'น้ำเงิน', 'เขียว', 'ส้ม', 'น้ำตาล', 'ทอง', 'ชมพู', 'ม่วง', 'เหลือง', 'ฟ้า'];
+
+// Types for master data
+interface Brand {
+    id: string;
+    name: string;
+    nameTh: string | null;
+    logo?: string | null;
+    isPopular: boolean;
+    modelCount: number;
+}
+
+interface VehicleModel {
+    id: string;
+    name: string;
+    nameTh: string | null;
+    bodyType: string | null;
+    isPopular: boolean;
+    subModelCount: number;
+}
+
+interface SubModel {
+    id: string;
+    name: string;
+    engineSize: number | null;
+    fuelType: string | null;
+    transmission: string | null;
+}
 
 export default function CreateListingPage() {
     const router = useRouter();
     const { formData, updateFormData, currentStep, setCurrentStep, listingId, setListingId, isSubmitting, setIsSubmitting } = useListingForm();
     const [error, setError] = useState<string | null>(null);
+    const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
     const [user, setUser] = useState<{ id: string; fullName?: string } | null>(null);
+
+    // Refs for scroll-to-error
+    const brandRef = useRef<HTMLDivElement>(null);
+    const modelRef = useRef<HTMLDivElement>(null);
+    const colorRef = useRef<HTMLDivElement>(null);
+    const mileageRef = useRef<HTMLDivElement>(null);
+    const imagesRef = useRef<HTMLDivElement>(null);
+    const priceRef = useRef<HTMLDivElement>(null);
+    const provinceRef = useRef<HTMLDivElement>(null);
+
+    // Master data states
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [models, setModels] = useState<VehicleModel[]>([]);
+    const [subModels, setSubModels] = useState<SubModel[]>([]);
+    const [loadingBrands, setLoadingBrands] = useState(false);
+    const [loadingModels, setLoadingModels] = useState(false);
+    const [loadingSubModels, setLoadingSubModels] = useState(false);
+    const [selectedBrandId, setSelectedBrandId] = useState<string>('');
+    const [selectedModelId, setSelectedModelId] = useState<string>('');
 
     // Check if user is logged in
     useEffect(() => {
@@ -73,12 +117,84 @@ export default function CreateListingPage() {
         setUser(JSON.parse(storedUser));
     }, [router]);
 
+    // Fetch brands when vehicle type changes
+    useEffect(() => {
+        const fetchBrands = async () => {
+            setLoadingBrands(true);
+            try {
+                const response = await fetch(`http://localhost:8000/master-data/brands?vehicleType=${formData.vehicleType}`);
+                const data = await response.json();
+                if (data.success) {
+                    setBrands(data.brands);
+                }
+            } catch (err) {
+                console.error('Error fetching brands:', err);
+            } finally {
+                setLoadingBrands(false);
+            }
+        };
+        fetchBrands();
+        // Reset selections when vehicle type changes
+        setSelectedBrandId('');
+        setSelectedModelId('');
+        setModels([]);
+        setSubModels([]);
+    }, [formData.vehicleType]);
+
+    // Fetch models when brand changes
+    useEffect(() => {
+        if (!selectedBrandId) {
+            setModels([]);
+            return;
+        }
+
+        const fetchModels = async () => {
+            setLoadingModels(true);
+            try {
+                const response = await fetch(`http://localhost:8000/master-data/brands/${selectedBrandId}/models`);
+                const data = await response.json();
+                if (data.success) {
+                    setModels(data.models);
+                }
+            } catch (err) {
+                console.error('Error fetching models:', err);
+            } finally {
+                setLoadingModels(false);
+            }
+        };
+        fetchModels();
+        // Reset model selection
+        setSelectedModelId('');
+        setSubModels([]);
+    }, [selectedBrandId]);
+
+    // Fetch sub-models when model changes
+    useEffect(() => {
+        if (!selectedModelId) {
+            setSubModels([]);
+            return;
+        }
+
+        const fetchSubModels = async () => {
+            setLoadingSubModels(true);
+            try {
+                const response = await fetch(`http://localhost:8000/master-data/models/${selectedModelId}/sub-models`);
+                const data = await response.json();
+                if (data.success) {
+                    setSubModels(data.subModels);
+                }
+            } catch (err) {
+                console.error('Error fetching sub-models:', err);
+            } finally {
+                setLoadingSubModels(false);
+            }
+        };
+        fetchSubModels();
+    }, [selectedModelId]);
+
     // Generate years (current year - 30 years)
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 31 }, (_, i) => currentYear - i);
-
-    // Get brands based on vehicle type
-    const brands = formData.vehicleType === 'CAR' ? CAR_BRANDS : MOTORCYCLE_BRANDS;
 
     // Handle image upload
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,18 +229,57 @@ export default function CreateListingPage() {
     // Handle step navigation
     const goToNextStep = async () => {
         setError(null);
+        setFieldErrors({});
 
         if (currentStep === 1) {
             // Validate step 1
-            if (!formData.brand || !formData.model || !formData.color || !formData.mileage) {
-                setError('กรุณากรอกข้อมูลให้ครบถ้วน');
+            const errors: Record<string, boolean> = {};
+            const missingFields: string[] = [];
+
+            if (!formData.brand) {
+                errors.brand = true;
+                missingFields.push('ยี่ห้อ');
+            }
+            if (!formData.model) {
+                errors.model = true;
+                missingFields.push('รุ่น');
+            }
+            if (!formData.color) {
+                errors.color = true;
+                missingFields.push('สี');
+            }
+            if (!formData.mileage) {
+                errors.mileage = true;
+                missingFields.push('เลขไมล์');
+            }
+
+            if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
+                setError(`กรุณากรอกข้อมูลให้ครบ: ${missingFields.join(', ')}`);
+
+                // Scroll to first error field
+                const firstErrorRef = errors.brand ? brandRef
+                    : errors.model ? modelRef
+                        : errors.color ? colorRef
+                            : errors.mileage ? mileageRef
+                                : null;
+
+                if (firstErrorRef?.current) {
+                    firstErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 return;
             }
             setCurrentStep(2);
         } else if (currentStep === 2) {
             // Validate step 2 - images
             if (formData.images.length === 0) {
+                setFieldErrors({ images: true });
                 setError('กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป');
+
+                // Scroll to images section
+                if (imagesRef?.current) {
+                    imagesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 return;
             }
             setCurrentStep(3);
@@ -139,18 +294,38 @@ export default function CreateListingPage() {
 
     // Handle form submission
     const handleSubmit = async () => {
+        setFieldErrors({});
+
         if (!user) {
             setError('กรุณาเข้าสู่ระบบ');
             return;
         }
 
+        const errors: Record<string, boolean> = {};
+        const missingFields: string[] = [];
+
         if (!formData.price || formData.price <= 0) {
-            setError('กรุณาระบุราคา');
-            return;
+            errors.price = true;
+            missingFields.push('ราคา');
         }
 
         if (!formData.province) {
-            setError('กรุณาเลือกจังหวัด');
+            errors.province = true;
+            missingFields.push('จังหวัด');
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setError(`กรุณากรอกข้อมูลให้ครบ: ${missingFields.join(', ')}`);
+
+            // Scroll to first error field
+            const firstErrorRef = errors.price ? priceRef
+                : errors.province ? provinceRef
+                    : null;
+
+            if (firstErrorRef?.current) {
+                firstErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return;
         }
 
@@ -299,54 +474,129 @@ export default function CreateListingPage() {
                                             </select>
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ยี่ห้อ *</label>
-                                            <select
-                                                className="form-select"
-                                                value={formData.brand}
-                                                onChange={(e) => updateFormData({ brand: e.target.value })}
-                                            >
-                                                <option value="">เลือกยี่ห้อ</option>
-                                                {brands.map(b => (
-                                                    <option key={b} value={b}>{b}</option>
-                                                ))}
-                                            </select>
+                                        <div ref={brandRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.brand ? 'text-red-600' : 'text-gray-700'}`}>ยี่ห้อ *</label>
+                                            <div className={fieldErrors.brand ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                <SearchableSelect
+                                                    options={brands.map(b => ({
+                                                        id: b.id,
+                                                        label: b.name,
+                                                        subLabel: b.nameTh || undefined,
+                                                        image: b.logo || undefined,
+                                                        isPopular: b.isPopular
+                                                    }))}
+                                                    value={selectedBrandId}
+                                                    onChange={(id, option) => {
+                                                        setSelectedBrandId(id);
+                                                        setFieldErrors(prev => ({ ...prev, brand: false }));
+                                                        updateFormData({ brand: option?.label || '', model: '', subModel: '' });
+                                                    }}
+                                                    placeholder="เลือกยี่ห้อ"
+                                                    searchPlaceholder="พิมพ์ชื่อยี่ห้อ..."
+                                                    loading={loadingBrands}
+                                                    emptyMessage="ไม่พบยี่ห้อที่ค้นหา"
+                                                />
+                                            </div>
+                                            {fieldErrors.brand && <p className="text-red-500 text-xs mt-1">กรุณาเลือกยี่ห้อ</p>}
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">รุ่น *</label>
-                                            <input
-                                                type="text"
-                                                placeholder="เช่น Civic, CBR150R"
-                                                className="form-input"
-                                                value={formData.model}
-                                                onChange={(e) => updateFormData({ model: e.target.value })}
-                                            />
+                                        <div ref={modelRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.model ? 'text-red-600' : 'text-gray-700'}`}>รุ่น *</label>
+                                            <div className={fieldErrors.model ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                {models.length > 0 || loadingModels ? (
+                                                    <SearchableSelect
+                                                        options={models.map(m => ({
+                                                            id: m.id,
+                                                            label: m.name,
+                                                            subLabel: m.bodyType || undefined,
+                                                            isPopular: m.isPopular
+                                                        }))}
+                                                        value={selectedModelId}
+                                                        onChange={(id, option) => {
+                                                            setSelectedModelId(id);
+                                                            setFieldErrors(prev => ({ ...prev, model: false }));
+                                                            const model = models.find(m => m.id === id);
+                                                            updateFormData({
+                                                                model: option?.label || '',
+                                                                subModel: '',
+                                                                bodyType: model?.bodyType || formData.bodyType
+                                                            });
+                                                        }}
+                                                        placeholder={!selectedBrandId ? "เลือกยี่ห้อก่อน" : "เลือกรุ่น"}
+                                                        searchPlaceholder="พิมพ์ชื่อรุ่น..."
+                                                        loading={loadingModels}
+                                                        disabled={!selectedBrandId}
+                                                        emptyMessage="ไม่พบรุ่นที่ค้นหา"
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        placeholder={!selectedBrandId ? 'เลือกยี่ห้อก่อน' : 'พิมพ์ชื่อรุ่น'}
+                                                        className={`form-input ${fieldErrors.model ? 'border-red-500' : ''}`}
+                                                        value={formData.model}
+                                                        onChange={(e) => {
+                                                            setFieldErrors(prev => ({ ...prev, model: false }));
+                                                            updateFormData({ model: e.target.value });
+                                                        }}
+                                                        disabled={!selectedBrandId && !formData.brand}
+                                                    />
+                                                )}
+                                            </div>
+                                            {fieldErrors.model && <p className="text-red-500 text-xs mt-1">กรุณาเลือกรุ่น</p>}
                                         </div>
 
                                         <div className="md:col-span-2">
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">รุ่นย่อย (ถ้ามี)</label>
-                                            <input
-                                                type="text"
-                                                placeholder="เช่น 1.5 Turbo RS, ABS Edition"
-                                                className="form-input"
-                                                value={formData.subModel}
-                                                onChange={(e) => updateFormData({ subModel: e.target.value })}
-                                            />
+                                            {subModels.length > 0 || loadingSubModels ? (
+                                                <SearchableSelect
+                                                    options={subModels.map(s => ({
+                                                        id: s.id,
+                                                        label: s.name,
+                                                        subLabel: s.engineSize ? `${s.engineSize}cc` : undefined
+                                                    }))}
+                                                    value={subModels.find(s => s.name === formData.subModel)?.id || ''}
+                                                    onChange={(id, option) => {
+                                                        const subModel = subModels.find(s => s.id === id);
+                                                        updateFormData({
+                                                            subModel: option?.label || '',
+                                                            ...(subModel?.engineSize && { engineSize: subModel.engineSize }),
+                                                            ...(subModel?.fuelType && { fuelType: subModel.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'ELECTRIC' | 'LPG' | 'NGV' }),
+                                                            ...(subModel?.transmission && { transmission: subModel.transmission as 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO' })
+                                                        });
+                                                    }}
+                                                    placeholder="เลือกรุ่นย่อย (ไม่บังคับ)"
+                                                    searchPlaceholder="พิมพ์ชื่อรุ่นย่อย..."
+                                                    loading={loadingSubModels}
+                                                    disabled={!selectedModelId}
+                                                    emptyMessage="ไม่พบรุ่นย่อย"
+                                                />
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    placeholder="เช่น 1.5 Turbo RS, ABS Edition"
+                                                    className="form-input"
+                                                    value={formData.subModel}
+                                                    onChange={(e) => updateFormData({ subModel: e.target.value })}
+                                                />
+                                            )}
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">สี *</label>
+                                        <div ref={colorRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.color ? 'text-red-600' : 'text-gray-700'}`}>สี *</label>
                                             <select
-                                                className="form-select"
+                                                className={`form-select ${fieldErrors.color ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                 value={formData.color}
-                                                onChange={(e) => updateFormData({ color: e.target.value })}
+                                                onChange={(e) => {
+                                                    setFieldErrors(prev => ({ ...prev, color: false }));
+                                                    updateFormData({ color: e.target.value });
+                                                }}
                                             >
                                                 <option value="">เลือกสี</option>
                                                 {COLORS.map(c => (
                                                     <option key={c} value={c}>{c}</option>
                                                 ))}
                                             </select>
+                                            {fieldErrors.color && <p className="text-red-500 text-xs mt-1">กรุณาเลือกสี</p>}
                                         </div>
 
                                         <div>
@@ -387,24 +637,26 @@ export default function CreateListingPage() {
                                         </div>
                                     </div>
 
-                                    <div className="mb-8">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">เลขไมล์ (กม.) *</label>
+                                    <div className="mb-8" ref={mileageRef}>
+                                        <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) *</label>
                                         <div className="relative">
                                             <input
                                                 type="text"
                                                 inputMode="numeric"
                                                 value={formData.mileage ? formData.mileage.toLocaleString('en-US') : ''}
                                                 onChange={(e) => {
+                                                    setFieldErrors(prev => ({ ...prev, mileage: false }));
                                                     const value = e.target.value.replace(/,/g, '');
                                                     updateFormData({ mileage: parseInt(value) || 0 });
                                                 }}
                                                 placeholder="เช่น 45,000"
-                                                className="form-input-icon font-medium"
+                                                className={`form-input-icon font-medium ${fieldErrors.mileage ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                             />
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                            <div className={`absolute left-3 top-1/2 -translate-y-1/2 ${fieldErrors.mileage ? 'text-red-500' : 'text-gray-400'}`}>
                                                 <Gauge size={20} />
                                             </div>
                                         </div>
+                                        {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์</p>}
                                     </div>
 
                                     {/* Condition Section */}
@@ -474,7 +726,7 @@ export default function CreateListingPage() {
                             {/* Step 2: Images */}
                             {currentStep === 2 && (
                                 <>
-                                    <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
+                                    <h2 ref={imagesRef} className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                                         <ImageIcon size={24} weight="fill" className="text-accent" /> อัพโหลดรูปภาพ
                                     </h2>
 
@@ -562,23 +814,25 @@ export default function CreateListingPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ราคา (บาท) *</label>
+                                        <div ref={priceRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.price ? 'text-red-600' : 'text-gray-700'}`}>ราคา (บาท) *</label>
                                             <div className="relative">
                                                 <input
                                                     type="text"
                                                     inputMode="numeric"
                                                     placeholder="เช่น 650,000"
-                                                    className="form-input-icon font-bold text-lg"
+                                                    className={`form-input-icon font-bold text-lg ${fieldErrors.price ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                     value={formData.price ? formData.price.toLocaleString('en-US') : ''}
                                                     onChange={(e) => {
+                                                        setFieldErrors(prev => ({ ...prev, price: false }));
                                                         const value = e.target.value.replace(/,/g, '');
                                                         const numValue = parseInt(value) || 0;
                                                         updateFormData({ price: numValue });
                                                     }}
                                                 />
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">฿</div>
+                                                <div className={`absolute left-3 top-1/2 -translate-y-1/2 font-bold ${fieldErrors.price ? 'text-red-500' : 'text-gray-400'}`}>฿</div>
                                             </div>
+                                            {fieldErrors.price && <p className="text-red-500 text-xs mt-1">กรุณาระบุราคา</p>}
                                         </div>
 
                                         <div className="flex items-end">
@@ -595,14 +849,17 @@ export default function CreateListingPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">จังหวัด *</label>
+                                        <div ref={provinceRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัด *</label>
                                             <div className="relative">
-                                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={20} />
+                                                <MapPin className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 ${fieldErrors.province ? 'text-red-500' : 'text-gray-400'}`} size={20} />
                                                 <select
-                                                    className="form-select-icon"
+                                                    className={`form-select-icon ${fieldErrors.province ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                     value={formData.province}
-                                                    onChange={(e) => updateFormData({ province: e.target.value })}
+                                                    onChange={(e) => {
+                                                        setFieldErrors(prev => ({ ...prev, province: false }));
+                                                        updateFormData({ province: e.target.value });
+                                                    }}
                                                 >
                                                     <option value="">เลือกจังหวัด</option>
                                                     {PROVINCES.map(p => (
@@ -610,6 +867,7 @@ export default function CreateListingPage() {
                                                     ))}
                                                 </select>
                                             </div>
+                                            {fieldErrors.province && <p className="text-red-500 text-xs mt-1">กรุณาเลือกจังหวัด</p>}
                                         </div>
 
                                         <div>

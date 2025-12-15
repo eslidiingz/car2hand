@@ -107,7 +107,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         { name: 'ภาพรวมบัญชี', href: '/profile/dashboard', icon: <SquaresFour weight={pathname === '/profile/dashboard' ? 'fill' : 'bold'} /> },
         { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <CarProfile weight={pathname === '/profile/listings' ? 'fill' : 'bold'} /> },
         { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Garage weight={pathname === '/profile/garage' ? 'fill' : 'bold'} /> },
-        { name: 'รายการที่บันทึกไว้', href: '/profile/favorites', icon: <Heart weight={pathname === '/profile/favorites' ? 'fill' : 'bold'} /> },
+        { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart weight={pathname === '/profile/wishlist' ? 'fill' : 'bold'} /> },
         { name: 'กล่องข้อความ', href: '/profile/messages', icon: <ChatCircleDots weight={pathname === '/profile/messages' ? 'fill' : 'bold'} />, badge: 3 },
         { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Gear weight={pathname === '/profile/settings' ? 'fill' : 'bold'} /> },
     ];

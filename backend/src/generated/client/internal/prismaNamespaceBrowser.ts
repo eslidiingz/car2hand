@@ -52,6 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Brand: 'Brand',
+  VehicleModel: 'VehicleModel',
+  VehicleSubModel: 'VehicleSubModel',
   VehicleListing: 'VehicleListing',
   VehicleImage: 'VehicleImage'
 } as const
@@ -84,6 +87,59 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const BrandScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  nameTh: 'nameTh',
+  logo: 'logo',
+  vehicleType: 'vehicleType',
+  country: 'country',
+  isPopular: 'isPopular',
+  isActive: 'isActive',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BrandScalarFieldEnum = (typeof BrandScalarFieldEnum)[keyof typeof BrandScalarFieldEnum]
+
+
+export const VehicleModelScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  nameTh: 'nameTh',
+  bodyType: 'bodyType',
+  yearStart: 'yearStart',
+  yearEnd: 'yearEnd',
+  isPopular: 'isPopular',
+  isActive: 'isActive',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  brandId: 'brandId'
+} as const
+
+export type VehicleModelScalarFieldEnum = (typeof VehicleModelScalarFieldEnum)[keyof typeof VehicleModelScalarFieldEnum]
+
+
+export const VehicleSubModelScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  engineSize: 'engineSize',
+  fuelType: 'fuelType',
+  transmission: 'transmission',
+  yearStart: 'yearStart',
+  yearEnd: 'yearEnd',
+  isActive: 'isActive',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  modelId: 'modelId'
+} as const
+
+export type VehicleSubModelScalarFieldEnum = (typeof VehicleSubModelScalarFieldEnum)[keyof typeof VehicleSubModelScalarFieldEnum]
 
 
 export const VehicleListingScalarFieldEnum = {

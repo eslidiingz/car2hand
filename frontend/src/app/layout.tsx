@@ -3,6 +3,7 @@ import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   weight: ['300', '400', '500', '600', '700'],
@@ -24,11 +25,13 @@ export default function RootLayout({
   return (
     <html lang="th" className={`${ibmPlexSansThai.variable}`}>
       <body className="font-sans antialiased bg-surface text-gray-800 flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow pt-16">
-          {children}
-        </main>
-        <Footer />
+        <WishlistProvider>
+          <Navbar />
+          <main className="flex-grow pt-16">
+            {children}
+          </main>
+          <Footer />
+        </WishlistProvider>
       </body>
     </html>
   );

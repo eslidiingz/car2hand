@@ -30,6 +30,81 @@ model User {
 }
 
 // =============================================
+// Master Data - ข้อมูลหลัก ยี่ห้อ รุ่น รุ่นย่อย
+// =============================================
+
+// ยี่ห้อ
+model Brand {
+  id          String      @id @default(cuid())
+  name        String // ชื่อยี่ห้อ เช่น Toyota, Honda, BMW
+  nameTh      String? // ชื่อภาษาไทย
+  logo        String? // URL โลโก้
+  vehicleType VehicleType // CAR หรือ MOTORCYCLE
+  country     String? // ประเทศผู้ผลิต
+  isPopular   Boolean     @default(false) // ยี่ห้อยอดนิยม
+  isActive    Boolean     @default(true)
+  order       Int         @default(0) // ลำดับการแสดง
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  models VehicleModel[]
+
+  @@unique([name, vehicleType])
+  @@index([vehicleType])
+  @@index([isPopular])
+  @@map("brands")
+}
+
+// รุ่น
+model VehicleModel {
+  id        String    @id @default(cuid())
+  name      String // ชื่อรุ่น เช่น Camry, Civic, CBR150R
+  nameTh    String? // ชื่อภาษาไทย
+  bodyType  BodyType? // ประเภทตัวถัง
+  yearStart Int? // ปีเริ่มผลิต
+  yearEnd   Int? // ปีสิ้นสุด (null = ยังผลิตอยู่)
+  isPopular Boolean   @default(false)
+  isActive  Boolean   @default(true)
+  order     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  brandId   String
+  brand     Brand             @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  subModels VehicleSubModel[]
+
+  @@unique([brandId, name])
+  @@index([brandId])
+  @@index([isPopular])
+  @@map("vehicle_models")
+}
+
+// รุ่นย่อย
+model VehicleSubModel {
+  id           String        @id @default(cuid())
+  name         String // ชื่อรุ่นย่อย เช่น 2.0 Turbo RS, G Edition
+  engineSize   Int? // ขนาดเครื่อง (cc)
+  fuelType     FuelType? // ประเภทเชื้อเพลิง
+  transmission Transmission? // ระบบเกียร์
+  yearStart    Int? // ปีเริ่มผลิต
+  yearEnd      Int? // ปีสิ้นสุด
+  isActive     Boolean       @default(true)
+  order        Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  modelId String
+  model   VehicleModel @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@unique([modelId, name])
+  @@index([modelId])
+  @@map("vehicle_sub_models")
+}
+
+// =============================================
 // Vehicle Listing - ข้อมูลประกาศขายยานพาหนะ (รถยนต์/มอเตอร์ไซค์)
 // =============================================
 model VehicleListing {

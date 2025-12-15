@@ -1117,14 +1117,6 @@ export type VehicleListingUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.VehicleListingScalarWhereInput | Prisma.VehicleListingScalarWhereInput[]
 }
 
-export type EnumVehicleTypeFieldUpdateOperationsInput = {
-  set?: $Enums.VehicleType
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type DecimalFieldUpdateOperationsInput = {
   set?: runtime.Decimal | runtime.DecimalJsLike | number | string
   increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1133,28 +1125,8 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type EnumFuelTypeFieldUpdateOperationsInput = {
   set?: $Enums.FuelType
-}
-
-export type NullableEnumTransmissionFieldUpdateOperationsInput = {
-  set?: $Enums.Transmission | null
-}
-
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type EnumBodyTypeFieldUpdateOperationsInput = {

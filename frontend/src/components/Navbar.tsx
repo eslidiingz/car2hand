@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
-import { User, CaretDown, SignOut, Garage, CarProfile, Heart, Gear } from '@phosphor-icons/react';
+import { User, CaretDown, SignOut, Garage, CarProfile, Heart, Gear, Scales } from '@phosphor-icons/react';
+import { useWishlist } from '@/contexts/WishlistContext';
 
 interface UserData {
     id: string;
@@ -102,6 +103,31 @@ export default function Navbar() {
             .slice(0, 2);
     };
 
+    // Wishlist Button Component
+    const WishlistButton = () => {
+        const { wishlist, maxCompareItems } = useWishlist();
+        const count = wishlist.length;
+
+        return (
+            <Link
+                href="/buy/compare"
+                className="relative p-2 rounded-full hover:bg-gray-100 transition group"
+                title={`รายการโปรด (${count} รายการ)`}
+            >
+                <Heart
+                    size={22}
+                    weight={count > 0 ? 'fill' : 'regular'}
+                    className={count > 0 ? 'text-red-500' : 'text-gray-500 group-hover:text-red-500'}
+                />
+                {count > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {count > 9 ? '9+' : count}
+                    </span>
+                )}
+            </Link>
+        );
+    };
+
     return (
         <>
             <LoginModal
@@ -152,7 +178,10 @@ export default function Navbar() {
                             <Link href="/knowledge" className={getLinkClass('/knowledge')}>ความรู้เรื่องรถ</Link>
                             <Link href="/community" className={getLinkClass('/community')}>ชุมชน</Link>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            {/* Wishlist Button */}
+                            <WishlistButton />
+
                             {user ? (
                                 /* Logged In State */
                                 <div className="relative">
@@ -203,7 +232,7 @@ export default function Navbar() {
                                                         <span className="font-medium">รถที่ลงขาย</span>
                                                     </Link>
                                                     <Link
-                                                        href="/profile/favorites"
+                                                        href="/profile/wishlist"
                                                         className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition"
                                                         onClick={() => setShowDropdown(false)}
                                                     >
@@ -235,21 +264,13 @@ export default function Navbar() {
                                     )}
                                 </div>
                             ) : (
-                                /* Not Logged In State */
-                                <>
-                                    <button
-                                        onClick={() => setIsLoginModalOpen(true)}
-                                        className="text-gray-600 hover:text-primary font-medium transition hidden sm:block"
-                                    >
-                                        เข้าสู่ระบบ
-                                    </button>
-                                    <button
-                                        onClick={() => setIsRegisterModalOpen(true)}
-                                        className="bg-primary text-white text-sm px-4 py-2 rounded-full hover:bg-opacity-90 transition shadow-md shadow-blue-100"
-                                    >
-                                        ลงขายฟรี
-                                    </button>
-                                </>
+                                /* Not Logged In State - Only show "ลงขายฟรี" button that opens login modal */
+                                <button
+                                    onClick={() => setIsLoginModalOpen(true)}
+                                    className="bg-primary text-white text-sm px-5 py-2.5 rounded-full hover:bg-opacity-90 transition shadow-md font-bold"
+                                >
+                                    ลงขายฟรี
+                                </button>
                             )}
                         </div>
                     </div>
@@ -257,37 +278,39 @@ export default function Navbar() {
             </nav>
 
             {/* Logout Confirmation Modal */}
-            {showLogoutConfirm && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center">
-                    <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setShowLogoutConfirm(false)}
-                    ></div>
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10 transform transition-all">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <SignOut weight="bold" className="text-3xl text-red-500" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">ออกจากระบบ</h3>
-                            <p className="text-gray-500 text-sm mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setShowLogoutConfirm(false)}
-                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
-                                >
-                                    ยกเลิก
-                                </button>
-                                <button
-                                    onClick={confirmLogout}
-                                    className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition"
-                                >
-                                    ออกจากระบบ
-                                </button>
+            {
+                showLogoutConfirm && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                            onClick={() => setShowLogoutConfirm(false)}
+                        ></div>
+                        <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10 transform transition-all">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <SignOut weight="bold" className="text-3xl text-red-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">ออกจากระบบ</h3>
+                                <p className="text-gray-500 text-sm mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setShowLogoutConfirm(false)}
+                                        className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
+                                    >
+                                        ยกเลิก
+                                    </button>
+                                    <button
+                                        onClick={confirmLogout}
+                                        className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition"
+                                    >
+                                        ออกจากระบบ
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </>
     );
 }

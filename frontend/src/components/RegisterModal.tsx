@@ -118,6 +118,14 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
                 throw new Error(data.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
             }
 
+            // Save token and user data to localStorage
+            if (data.accessToken) {
+                localStorage.setItem('accessToken', data.accessToken);
+            }
+            if (data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+            }
+
             setSuccess(true);
             setTimeout(() => {
                 onClose();

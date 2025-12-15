@@ -8,6 +8,7 @@ import { cors } from "@elysiajs/cors";
 
 import { authRoutes, usersRoutes } from "./auth";
 import { listingRoutes } from "./listings";
+import { masterDataRoutes } from "./master-data";
 import { securityHeaders, requestLogger, rateLimiter } from "./security";
 
 // Allowed origins (update for production)
@@ -23,13 +24,9 @@ const app = new Elysia()
   .use(securityHeaders)
   .use(rateLimiter(100)) // 100 requests per minute per IP
 
-  // CORS with strict configuration
+  // CORS configuration
   .use(cors({
-    origin: (origin: { toString(): string } | null | undefined) => {
-      // Allow requests with no origin (mobile apps, Postman)
-      if (!origin) return true;
-      return ALLOWED_ORIGINS.includes(origin.toString());
-    },
+    origin: true, // Allow all origins in development
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
@@ -53,6 +50,7 @@ const app = new Elysia()
   .use(authRoutes)
   .use(usersRoutes)
   .use(listingRoutes)
+  .use(masterDataRoutes)
 
   // Global error handler
   .onError(({ code, error, set }) => {
