@@ -1,0 +1,199 @@
+/**
+ * Input Validation Schemas using Zod
+ * OWASP: Input Validation
+ */
+
+import { z } from "zod";
+
+// Custom validators
+const phoneRegex = /^0[0-9]{9}$/;
+const thaiEnglishRegex = /^[\u0E00-\u0E7Fa-zA-Z0-9\s\-_.]+$/;
+
+/**
+ * User Registration Schema
+ */
+export const registerSchema = z.object({
+    fullName: z.string()
+        .min(2, 'ชื่อต้องมีอย่างน้อย 2 ตัวอักษร')
+        .max(100, 'ชื่อต้องไม่เกิน 100 ตัวอักษร')
+        .regex(thaiEnglishRegex, 'ชื่อต้องเป็นภาษาไทยหรืออังกฤษเท่านั้น'),
+
+    email: z.string()
+        .email('รูปแบบอีเมลไม่ถูกต้อง')
+        .max(255, 'อีเมลต้องไม่เกิน 255 ตัวอักษร')
+        .toLowerCase(),
+
+    phoneNumber: z.string()
+        .regex(phoneRegex, 'เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลักและขึ้นต้นด้วย 0'),
+
+    password: z.string()
+        .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร')
+        .max(72, 'รหัสผ่านต้องไม่เกิน 72 ตัวอักษร') // bcrypt limit
+        .regex(/[A-Z]/, 'รหัสผ่านต้องมีตัวพิมพ์ใหญ่อย่างน้อย 1 ตัว')
+        .regex(/[a-z]/, 'รหัสผ่านต้องมีตัวพิมพ์เล็กอย่างน้อย 1 ตัว')
+        .regex(/[0-9]/, 'รหัสผ่านต้องมีตัวเลขอย่างน้อย 1 ตัว')
+});
+
+/**
+ * User Login Schema
+ */
+export const loginSchema = z.object({
+    phoneNumber: z.string()
+        .regex(phoneRegex, 'เบอร์โทรศัพท์ไม่ถูกต้อง'),
+
+    password: z.string()
+        .min(1, 'กรุณากรอกรหัสผ่าน')
+        .max(72, 'รหัสผ่านไม่ถูกต้อง'),
+
+    rememberMe: z.boolean().optional().default(false)
+});
+
+/**
+ * Vehicle Listing Schema
+ */
+export const vehicleListingSchema = z.object({
+    vehicleType: z.enum(['CAR', 'MOTORCYCLE'], {
+        errorMap: () => ({ message: 'ประเภทยานพาหนะไม่ถูกต้อง' })
+    }),
+
+    title: z.string()
+        .min(10, 'หัวข้อต้องมีอย่างน้อย 10 ตัวอักษร')
+        .max(200, 'หัวข้อต้องไม่เกิน 200 ตัวอักษร'),
+
+    description: z.string()
+        .max(5000, 'คำอธิบายต้องไม่เกิน 5000 ตัวอักษร')
+        .optional()
+        .nullable(),
+
+    price: z.number()
+        .positive('ราคาต้องมากกว่า 0')
+        .max(100000000, 'ราคาต้องไม่เกิน 100,000,000 บาท'),
+
+    negotiable: z.boolean().default(false),
+
+    brand: z.string()
+        .min(1, 'กรุณาระบุยี่ห้อ')
+        .max(100, 'ยี่ห้อต้องไม่เกิน 100 ตัวอักษร'),
+
+    model: z.string()
+        .min(1, 'กรุณาระบุรุ่น')
+        .max(100, 'รุ่นต้องไม่เกิน 100 ตัวอักษร'),
+
+    subModel: z.string()
+        .max(100, 'รุ่นย่อยต้องไม่เกิน 100 ตัวอักษร')
+        .optional()
+        .nullable(),
+
+    year: z.number()
+        .int('ปีต้องเป็นจำนวนเต็ม')
+        .min(1900, 'ปีไม่ถูกต้อง')
+        .max(new Date().getFullYear() + 1, 'ปีไม่ถูกต้อง'),
+
+    color: z.string()
+        .min(1, 'กรุณาระบุสี')
+        .max(50, 'สีต้องไม่เกิน 50 ตัวอักษร'),
+
+    fuelType: z.enum(['PETROL', 'DIESEL', 'HYBRID', 'PLUGIN_HYBRID', 'ELECTRIC', 'LPG', 'NGV'], {
+        errorMap: () => ({ message: 'ประเภทเชื้อเพลิงไม่ถูกต้อง' })
+    }),
+
+    transmission: z.enum(['AUTOMATIC', 'MANUAL', 'CVT', 'DCT', 'SEMI_AUTO'], {
+        errorMap: () => ({ message: 'ประเภทเกียร์ไม่ถูกต้อง' })
+    }).optional().nullable(),
+
+    engineSize: z.number()
+        .positive('ขนาดเครื่องยนต์ต้องมากกว่า 0')
+        .max(10000, 'ขนาดเครื่องยนต์ไม่ถูกต้อง')
+        .optional()
+        .nullable(),
+
+    mileage: z.number()
+        .min(0, 'เลขไมล์ต้องไม่ติดลบ')
+        .max(10000000, 'เลขไมล์มากเกินไป')
+        .optional()
+        .nullable(),
+
+    bodyType: z.enum(['SEDAN', 'HATCHBACK', 'SUV', 'MPV', 'PICKUP', 'COUPE', 'CONVERTIBLE', 'VAN', 'WAGON', 'SPORT', 'NAKED', 'CRUISER', 'TOURING', 'SCOOTER', 'CUB', 'TRAIL'], {
+        errorMap: () => ({ message: 'ประเภทตัวถังไม่ถูกต้อง' })
+    }).optional().nullable(),
+
+    plateProvince: z.string()
+        .max(50)
+        .optional()
+        .nullable(),
+
+    registrationType: z.enum(['FIRST_HAND', 'USED'], {
+        errorMap: () => ({ message: 'ประเภทการจดทะเบียนไม่ถูกต้อง' })
+    }).optional().nullable(),
+
+    condition: z.enum(['EXCELLENT', 'GOOD', 'FAIR', 'POOR'], {
+        errorMap: () => ({ message: 'สภาพรถไม่ถูกต้อง' })
+    }).optional().nullable(),
+
+    ownerCount: z.number()
+        .int()
+        .min(1, 'จำนวนเจ้าของต้องอย่างน้อย 1')
+        .max(99, 'จำนวนเจ้าของมากเกินไป')
+        .default(1),
+
+    hasAccident: z.boolean().default(false),
+    hasModified: z.boolean().default(false),
+    hasWarranty: z.boolean().default(false),
+
+    province: z.string()
+        .min(1, 'กรุณาระบุจังหวัด')
+        .max(100),
+
+    district: z.string()
+        .max(100)
+        .optional()
+        .nullable()
+});
+
+/**
+ * Update Listing Schema (partial)
+ */
+export const updateListingSchema = vehicleListingSchema.partial();
+
+/**
+ * Pagination Schema
+ */
+export const paginationSchema = z.object({
+    page: z.coerce.number().int().positive().default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(12)
+});
+
+/**
+ * ID Parameter Schema
+ */
+export const idParamSchema = z.object({
+    id: z.string().uuid('ID ไม่ถูกต้อง')
+});
+
+/**
+ * Validate and return parsed data or throw error
+ */
+export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
+    const result = schema.safeParse(data);
+
+    if (!result.success) {
+        const errors = result.error.errors.map(e => ({
+            field: e.path.join('.'),
+            message: e.message
+        }));
+
+        throw {
+            status: 400,
+            error: 'Validation Error',
+            message: 'ข้อมูลไม่ถูกต้อง',
+            errors
+        };
+    }
+
+    return result.data;
+};
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type VehicleListingInput = z.infer<typeof vehicleListingSchema>;
+export type UpdateListingInput = z.infer<typeof updateListingSchema>;
