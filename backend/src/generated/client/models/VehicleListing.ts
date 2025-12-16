@@ -486,6 +486,7 @@ export type VehicleListingWhereInput = {
   userId?: Prisma.StringFilter<"VehicleListing"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   images?: Prisma.VehicleImageListRelationFilter
+  wishlists?: Prisma.WishlistListRelationFilter
 }
 
 export type VehicleListingOrderByWithRelationInput = {
@@ -526,6 +527,7 @@ export type VehicleListingOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   images?: Prisma.VehicleImageOrderByRelationAggregateInput
+  wishlists?: Prisma.WishlistOrderByRelationAggregateInput
 }
 
 export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
@@ -569,6 +571,7 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"VehicleListing"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   images?: Prisma.VehicleImageListRelationFilter
+  wishlists?: Prisma.WishlistListRelationFilter
 }, "id">
 
 export type VehicleListingOrderByWithAggregationInput = {
@@ -692,6 +695,7 @@ export type VehicleListingCreateInput = {
   expiredAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
 }
 
 export type VehicleListingUncheckedCreateInput = {
@@ -731,6 +735,7 @@ export type VehicleListingUncheckedCreateInput = {
   expiredAt?: Date | string | null
   userId: string
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type VehicleListingUpdateInput = {
@@ -770,6 +775,7 @@ export type VehicleListingUpdateInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
 }
 
 export type VehicleListingUncheckedUpdateInput = {
@@ -809,6 +815,7 @@ export type VehicleListingUncheckedUpdateInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type VehicleListingCreateManyInput = {
@@ -932,6 +939,11 @@ export type VehicleListingListRelationFilter = {
 
 export type VehicleListingOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type VehicleListingScalarRelationFilter = {
+  is?: Prisma.VehicleListingWhereInput
+  isNot?: Prisma.VehicleListingWhereInput
 }
 
 export type VehicleListingCountOrderByAggregateInput = {
@@ -1070,11 +1082,6 @@ export type VehicleListingSumOrderByAggregateInput = {
   favoriteCount?: Prisma.SortOrder
 }
 
-export type VehicleListingScalarRelationFilter = {
-  is?: Prisma.VehicleListingWhereInput
-  isNot?: Prisma.VehicleListingWhereInput
-}
-
 export type VehicleListingCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.VehicleListingCreateWithoutUserInput, Prisma.VehicleListingUncheckedCreateWithoutUserInput> | Prisma.VehicleListingCreateWithoutUserInput[] | Prisma.VehicleListingUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.VehicleListingCreateOrConnectWithoutUserInput | Prisma.VehicleListingCreateOrConnectWithoutUserInput[]
@@ -1115,6 +1122,20 @@ export type VehicleListingUncheckedUpdateManyWithoutUserNestedInput = {
   update?: Prisma.VehicleListingUpdateWithWhereUniqueWithoutUserInput | Prisma.VehicleListingUpdateWithWhereUniqueWithoutUserInput[]
   updateMany?: Prisma.VehicleListingUpdateManyWithWhereWithoutUserInput | Prisma.VehicleListingUpdateManyWithWhereWithoutUserInput[]
   deleteMany?: Prisma.VehicleListingScalarWhereInput | Prisma.VehicleListingScalarWhereInput[]
+}
+
+export type VehicleListingCreateNestedOneWithoutWishlistsInput = {
+  create?: Prisma.XOR<Prisma.VehicleListingCreateWithoutWishlistsInput, Prisma.VehicleListingUncheckedCreateWithoutWishlistsInput>
+  connectOrCreate?: Prisma.VehicleListingCreateOrConnectWithoutWishlistsInput
+  connect?: Prisma.VehicleListingWhereUniqueInput
+}
+
+export type VehicleListingUpdateOneRequiredWithoutWishlistsNestedInput = {
+  create?: Prisma.XOR<Prisma.VehicleListingCreateWithoutWishlistsInput, Prisma.VehicleListingUncheckedCreateWithoutWishlistsInput>
+  connectOrCreate?: Prisma.VehicleListingCreateOrConnectWithoutWishlistsInput
+  upsert?: Prisma.VehicleListingUpsertWithoutWishlistsInput
+  connect?: Prisma.VehicleListingWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VehicleListingUpdateToOneWithWhereWithoutWishlistsInput, Prisma.VehicleListingUpdateWithoutWishlistsInput>, Prisma.VehicleListingUncheckedUpdateWithoutWishlistsInput>
 }
 
 export type DecimalFieldUpdateOperationsInput = {
@@ -1199,6 +1220,7 @@ export type VehicleListingCreateWithoutUserInput = {
   updatedAt?: Date | string
   expiredAt?: Date | string | null
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
 }
 
 export type VehicleListingUncheckedCreateWithoutUserInput = {
@@ -1237,6 +1259,7 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   expiredAt?: Date | string | null
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type VehicleListingCreateOrConnectWithoutUserInput = {
@@ -1306,6 +1329,178 @@ export type VehicleListingScalarWhereInput = {
   userId?: Prisma.StringFilter<"VehicleListing"> | string
 }
 
+export type VehicleListingCreateWithoutWishlistsInput = {
+  id?: string
+  vehicleType: $Enums.VehicleType
+  title: string
+  description?: string | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  negotiable?: boolean
+  brand: string
+  model: string
+  subModel?: string | null
+  year: number
+  color: string
+  fuelType: $Enums.FuelType
+  transmission?: $Enums.Transmission | null
+  engineSize?: number | null
+  mileage: number
+  bodyType: $Enums.BodyType
+  plateProvince?: string | null
+  registrationType?: $Enums.RegistrationType
+  condition: $Enums.Condition
+  ownerCount?: number
+  hasAccident?: boolean
+  hasModified?: boolean
+  hasWarranty?: boolean
+  province: string
+  district?: string | null
+  status?: $Enums.ListingStatus
+  isFeatured?: boolean
+  isPremium?: boolean
+  viewCount?: number
+  contactCount?: number
+  favoriteCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expiredAt?: Date | string | null
+  user: Prisma.UserCreateNestedOneWithoutListingsInput
+  images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
+}
+
+export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
+  id?: string
+  vehicleType: $Enums.VehicleType
+  title: string
+  description?: string | null
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  negotiable?: boolean
+  brand: string
+  model: string
+  subModel?: string | null
+  year: number
+  color: string
+  fuelType: $Enums.FuelType
+  transmission?: $Enums.Transmission | null
+  engineSize?: number | null
+  mileage: number
+  bodyType: $Enums.BodyType
+  plateProvince?: string | null
+  registrationType?: $Enums.RegistrationType
+  condition: $Enums.Condition
+  ownerCount?: number
+  hasAccident?: boolean
+  hasModified?: boolean
+  hasWarranty?: boolean
+  province: string
+  district?: string | null
+  status?: $Enums.ListingStatus
+  isFeatured?: boolean
+  isPremium?: boolean
+  viewCount?: number
+  contactCount?: number
+  favoriteCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  expiredAt?: Date | string | null
+  userId: string
+  images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
+}
+
+export type VehicleListingCreateOrConnectWithoutWishlistsInput = {
+  where: Prisma.VehicleListingWhereUniqueInput
+  create: Prisma.XOR<Prisma.VehicleListingCreateWithoutWishlistsInput, Prisma.VehicleListingUncheckedCreateWithoutWishlistsInput>
+}
+
+export type VehicleListingUpsertWithoutWishlistsInput = {
+  update: Prisma.XOR<Prisma.VehicleListingUpdateWithoutWishlistsInput, Prisma.VehicleListingUncheckedUpdateWithoutWishlistsInput>
+  create: Prisma.XOR<Prisma.VehicleListingCreateWithoutWishlistsInput, Prisma.VehicleListingUncheckedCreateWithoutWishlistsInput>
+  where?: Prisma.VehicleListingWhereInput
+}
+
+export type VehicleListingUpdateToOneWithWhereWithoutWishlistsInput = {
+  where?: Prisma.VehicleListingWhereInput
+  data: Prisma.XOR<Prisma.VehicleListingUpdateWithoutWishlistsInput, Prisma.VehicleListingUncheckedUpdateWithoutWishlistsInput>
+}
+
+export type VehicleListingUpdateWithoutWishlistsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleType?: Prisma.EnumVehicleTypeFieldUpdateOperationsInput | $Enums.VehicleType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brand?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.StringFieldUpdateOperationsInput | string
+  subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  year?: Prisma.IntFieldUpdateOperationsInput | number
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
+  plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
+  condition?: Prisma.EnumConditionFieldUpdateOperationsInput | $Enums.Condition
+  ownerCount?: Prisma.IntFieldUpdateOperationsInput | number
+  hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  viewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  contactCount?: Prisma.IntFieldUpdateOperationsInput | number
+  favoriteCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
+  images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
+}
+
+export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleType?: Prisma.EnumVehicleTypeFieldUpdateOperationsInput | $Enums.VehicleType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  brand?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.StringFieldUpdateOperationsInput | string
+  subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  year?: Prisma.IntFieldUpdateOperationsInput | number
+  color?: Prisma.StringFieldUpdateOperationsInput | string
+  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
+  plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
+  condition?: Prisma.EnumConditionFieldUpdateOperationsInput | $Enums.Condition
+  ownerCount?: Prisma.IntFieldUpdateOperationsInput | number
+  hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  viewCount?: Prisma.IntFieldUpdateOperationsInput | number
+  contactCount?: Prisma.IntFieldUpdateOperationsInput | number
+  favoriteCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
+}
+
 export type VehicleListingCreateWithoutImagesInput = {
   id?: string
   vehicleType: $Enums.VehicleType
@@ -1342,6 +1537,7 @@ export type VehicleListingCreateWithoutImagesInput = {
   updatedAt?: Date | string
   expiredAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
 }
 
 export type VehicleListingUncheckedCreateWithoutImagesInput = {
@@ -1380,6 +1576,7 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   updatedAt?: Date | string
   expiredAt?: Date | string | null
   userId: string
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
 }
 
 export type VehicleListingCreateOrConnectWithoutImagesInput = {
@@ -1434,6 +1631,7 @@ export type VehicleListingUpdateWithoutImagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
 }
 
 export type VehicleListingUncheckedUpdateWithoutImagesInput = {
@@ -1472,6 +1670,7 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type VehicleListingCreateManyUserInput = {
@@ -1547,6 +1746,7 @@ export type VehicleListingUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
 }
 
 export type VehicleListingUncheckedUpdateWithoutUserInput = {
@@ -1585,6 +1785,7 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
 }
 
 export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
@@ -1631,10 +1832,12 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
 
 export type VehicleListingCountOutputType = {
   images: number
+  wishlists: number
 }
 
 export type VehicleListingCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   images?: boolean | VehicleListingCountOutputTypeCountImagesArgs
+  wishlists?: boolean | VehicleListingCountOutputTypeCountWishlistsArgs
 }
 
 /**
@@ -1652,6 +1855,13 @@ export type VehicleListingCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
  */
 export type VehicleListingCountOutputTypeCountImagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.VehicleImageWhereInput
+}
+
+/**
+ * VehicleListingCountOutputType without action
+ */
+export type VehicleListingCountOutputTypeCountWishlistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WishlistWhereInput
 }
 
 
@@ -1693,6 +1903,7 @@ export type VehicleListingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
+  wishlists?: boolean | Prisma.VehicleListing$wishlistsArgs<ExtArgs>
   _count?: boolean | Prisma.VehicleListingCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vehicleListing"]>
 
@@ -1816,6 +2027,7 @@ export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type VehicleListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
+  wishlists?: boolean | Prisma.VehicleListing$wishlistsArgs<ExtArgs>
   _count?: boolean | Prisma.VehicleListingCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type VehicleListingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1830,6 +2042,7 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     images: Prisma.$VehicleImagePayload<ExtArgs>[]
+    wishlists: Prisma.$WishlistPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2263,6 +2476,7 @@ export interface Prisma__VehicleListingClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   images<T extends Prisma.VehicleListing$imagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleListing$imagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  wishlists<T extends Prisma.VehicleListing$wishlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.VehicleListing$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2744,6 +2958,30 @@ export type VehicleListing$imagesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.VehicleImageScalarFieldEnum | Prisma.VehicleImageScalarFieldEnum[]
+}
+
+/**
+ * VehicleListing.wishlists
+ */
+export type VehicleListing$wishlistsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Wishlist
+   */
+  select?: Prisma.WishlistSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Wishlist
+   */
+  omit?: Prisma.WishlistOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WishlistInclude<ExtArgs> | null
+  where?: Prisma.WishlistWhereInput
+  orderBy?: Prisma.WishlistOrderByWithRelationInput | Prisma.WishlistOrderByWithRelationInput[]
+  cursor?: Prisma.WishlistWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WishlistScalarFieldEnum | Prisma.WishlistScalarFieldEnum[]
 }
 
 /**

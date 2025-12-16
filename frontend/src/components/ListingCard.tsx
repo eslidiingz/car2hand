@@ -10,7 +10,8 @@ import {
     MapPin,
     CalendarBlank,
     Image as ImageIcon,
-    Trash
+    Trash,
+    Scales
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 
@@ -64,44 +65,65 @@ const formatPrice = (price: number | string) => {
     return numPrice.toLocaleString('th-TH');
 };
 
-export default function ListingCard({ listing, showRemoveButton = false, onRemove }: ListingCardProps) {
-    const { isInWishlist, toggleWishlist, canAddMore } = useWishlist();
+interface ListingCardFullProps extends ListingCardProps {
+    onLoginRequired?: () => void;  // Callback when user needs to login for wishlist
+}
+
+export default function ListingCard({ listing, showRemoveButton = false, onRemove, onLoginRequired }: ListingCardFullProps) {
+    const { isInWishlist, toggleWishlist, isLoggedIn, isInCompare, toggleCompare, maxCompareItems, compareList } = useWishlist();
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
     const isFavorited = isInWishlist(listing.id);
+    const isCompared = isInCompare(listing.id);
 
-    const handleFavoriteClick = (e: React.MouseEvent) => {
+    const createWishlistItem = (): WishlistItem => ({
+        id: listing.id,
+        title: listing.title,
+        price: typeof listing.price === 'string' ? parseFloat(listing.price) : listing.price,
+        negotiable: listing.negotiable,
+        vehicleType: listing.vehicleType,
+        brand: listing.brand,
+        model: listing.model,
+        year: listing.year,
+        mileage: listing.mileage,
+        fuelType: listing.fuelType,
+        transmission: listing.transmission,
+        province: listing.province,
+        imageUrl: listing.images[0]?.url,
+        images: listing.images,
+        user: listing.user,
+        addedAt: new Date().toISOString()
+    });
+
+    const handleFavoriteClick = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
 
-        const wishlistItem: WishlistItem = {
-            id: listing.id,
-            title: listing.title,
-            price: typeof listing.price === 'string' ? parseFloat(listing.price) : listing.price,
-            negotiable: listing.negotiable,
-            vehicleType: listing.vehicleType,
-            brand: listing.brand,
-            model: listing.model,
-            year: listing.year,
-            mileage: listing.mileage,
-            fuelType: listing.fuelType,
-            transmission: listing.transmission,
-            province: listing.province,
-            imageUrl: listing.images[0]?.url,
-            images: listing.images,
-            user: listing.user,
-            addedAt: new Date().toISOString()
-        };
+        const result = await toggleWishlist(createWishlistItem());
 
-        const result = toggleWishlist(wishlistItem);
+        // Check if login is required
+        if (result.requiresLogin && onLoginRequired) {
+            onLoginRequired();
+            return;
+        }
 
         setToastMessage(result.message);
         setToastType(result.success ? 'success' : 'error');
         setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
+    };
 
-        // Hide toast after 2 seconds
+    const handleCompareClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const result = toggleCompare(createWishlistItem());
+
+        setToastMessage(result.message);
+        setToastType(result.success ? 'success' : 'error');
+        setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
     };
 
@@ -155,6 +177,20 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                             title={isFavorited ? 'ลบออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
                         >
                             <Heart size={18} weight={isFavorited ? 'fill' : 'regular'} />
+                        </button>
+                    )}
+
+                    {/* Compare Button */}
+                    {!showRemoveButton && (
+                        <button
+                            onClick={handleCompareClick}
+                            className={`absolute top-3 right-12 w-8 h-8 backdrop-blur rounded-full flex items-center justify-center transition duration-200 ${isCompared
+                                ? 'bg-primary text-white hover:bg-primary/80'
+                                : 'bg-white/80 text-gray-400 hover:text-primary hover:bg-white'
+                                }`}
+                            title={isCompared ? 'ลบออกจากรายการเปรียบเทียบ' : `เพิ่มในรายการเปรียบเทียบ (${compareList.length}/${maxCompareItems})`}
+                        >
+                            <Scales size={18} weight={isCompared ? 'fill' : 'regular'} />
                         </button>
                     )}
 
@@ -228,7 +264,6 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         : 'bg-red-500 text-white'
                         }`}
                 >
-                    <Heart size={16} weight="fill" />
                     <span className="text-sm font-medium">{toastMessage}</span>
                 </div>
             )}

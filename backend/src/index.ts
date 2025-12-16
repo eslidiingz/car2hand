@@ -9,6 +9,7 @@ import { cors } from "@elysiajs/cors";
 import { authRoutes, usersRoutes } from "./auth";
 import { listingRoutes } from "./listings";
 import { masterDataRoutes } from "./master-data";
+import { wishlistRoutes } from "./wishlist";
 import { securityHeaders, requestLogger, rateLimiter } from "./security";
 
 // Allowed origins (update for production)
@@ -51,6 +52,7 @@ const app = new Elysia()
   .use(usersRoutes)
   .use(listingRoutes)
   .use(masterDataRoutes)
+  .use(wishlistRoutes)
 
   // Global error handler
   .onError(({ code, error, set }) => {

@@ -20,37 +20,27 @@ import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 
 // Extended listing data for comparison
 interface CompareItem extends WishlistItem {
-    mileage?: number;
+    mileage?: number | null;
     fuelType?: string;
-    transmission?: string;
+    transmission?: string | null;
     province?: string;
     vehicleType?: 'CAR' | 'MOTORCYCLE';
     negotiable?: boolean;
 }
 
 export default function ComparePage() {
-    const { wishlist, removeFromWishlist, maxCompareItems, clearWishlist } = useWishlist();
+    const { compareList, removeFromCompare, maxCompareItems, clearCompare, isLoggedIn } = useWishlist();
     const [compareItems, setCompareItems] = useState<CompareItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    // Check login status
-    useEffect(() => {
-        const user = localStorage.getItem('user') || sessionStorage.getItem('user');
-        setIsLoggedIn(!!user);
-    }, []);
 
     // Get items for comparison based on login status
     useEffect(() => {
         const fetchCompareData = async () => {
             setLoading(true);
 
-            // Limit items based on maxCompareItems
-            const itemsToCompare = wishlist.slice(0, maxCompareItems);
-
             // Fetch full data for each item
             const enrichedItems: CompareItem[] = await Promise.all(
-                itemsToCompare.map(async (item) => {
+                compareList.map(async (item) => {
                     try {
                         const response = await fetch(`http://localhost:8000/listings/${item.id}`);
                         if (response.ok) {
@@ -78,7 +68,7 @@ export default function ComparePage() {
         };
 
         fetchCompareData();
-    }, [wishlist, maxCompareItems]);
+    }, [compareList]);
 
     // Format price
     const formatPrice = (price: number) => {
@@ -100,7 +90,7 @@ export default function ComparePage() {
     };
 
     // Get transmission label
-    const getTransmissionLabel = (transmission?: string) => {
+    const getTransmissionLabel = (transmission?: string | null) => {
         const labels: Record<string, string> = {
             'AUTOMATIC': 'ออโต้',
             'MANUAL': 'ธรรมดา',
@@ -112,7 +102,7 @@ export default function ComparePage() {
 
     // Remove item from comparison
     const handleRemove = (id: string) => {
-        removeFromWishlist(id);
+        removeFromCompare(id);
     };
 
     // Empty state
@@ -121,11 +111,11 @@ export default function ComparePage() {
             <div className="bg-surface text-gray-800 min-h-screen">
                 <div className="max-w-3xl mx-auto px-4 py-16 text-center">
                     <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Heart size={48} weight="thin" className="text-gray-300" />
+                        <Scales size={48} weight="thin" className="text-gray-300" />
                     </div>
                     <h1 className="text-2xl font-bold text-gray-700 mb-3">ยังไม่มีรายการเปรียบเทียบ</h1>
                     <p className="text-gray-500 mb-8">
-                        กดปุ่ม ❤️ บนรายการรถที่สนใจเพื่อเพิ่มในรายการเปรียบเทียบ
+                        กดปุ่ม ⚖️ บนรายการรถที่สนใจเพื่อเพิ่มในรายการเปรียบเทียบ
                     </p>
                     <Link
                         href="/buy"
@@ -150,7 +140,7 @@ export default function ComparePage() {
                         </h1>
                         <p className="text-sm text-gray-500">
                             เปรียบเทียบรถ {compareItems.length} คัน
-                            {!isLoggedIn && wishlist.length >= 3 && (
+                            {!isLoggedIn && compareList.length >= 3 && (
                                 <span className="text-amber-600 ml-2">
                                     (เข้าสู่ระบบเพื่อเปรียบเทียบได้สูงสุด 5 คัน)
                                 </span>
@@ -166,7 +156,7 @@ export default function ComparePage() {
 
                         {compareItems.length > 0 && (
                             <button
-                                onClick={clearWishlist}
+                                onClick={clearCompare}
                                 className="text-sm text-red-500 hover:text-red-600 flex items-center gap-1"
                             >
                                 <Trash size={16} />
@@ -178,12 +168,12 @@ export default function ComparePage() {
             </div>
 
             {/* Login Prompt for non-logged in users */}
-            {!isLoggedIn && wishlist.length > 3 && (
+            {!isLoggedIn && compareList.length >= 3 && (
                 <div className="bg-amber-50 border-b border-amber-200">
                     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
                         <Warning weight="fill" className="text-amber-500" size={20} />
                         <span className="text-sm text-amber-700">
-                            คุณมี {wishlist.length} รายการในรายการโปรด แต่เปรียบเทียบได้เพียง 3 รายการ
+                            กำลังเปรียบเทียบ {compareList.length} รายการ (สูงสุด {maxCompareItems})
                         </span>
                         <Link href="/buy" className="text-sm text-primary font-bold hover:underline ml-auto">
                             เข้าสู่ระบบเพื่อเปรียบเทียบเพิ่ม
@@ -204,15 +194,15 @@ export default function ComparePage() {
                 <div className="max-w-7xl mx-auto px-4 py-8 overflow-x-auto">
                     {/* Compare Grid */}
                     <div className={`grid gap-4 ${compareItems.length === 0 ? 'grid-cols-1 max-w-md mx-auto' :
-                            compareItems.length === 1 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
-                                compareItems.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
-                                    compareItems.length === 2 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-3' :
-                                        compareItems.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
-                                            compareItems.length === 3 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
-                                                compareItems.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
-                                                    compareItems.length === 4 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5' :
-                                                        compareItems.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
-                                                            'grid-cols-1 md:grid-cols-2 lg:grid-cols-5'
+                        compareItems.length === 1 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
+                            compareItems.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                                compareItems.length === 2 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-3' :
+                                    compareItems.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
+                                        compareItems.length === 3 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
+                                            compareItems.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
+                                                compareItems.length === 4 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5' :
+                                                    compareItems.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
+                                                        'grid-cols-1 md:grid-cols-2 lg:grid-cols-5'
                         }`}>
                         {compareItems.map((item, index) => (
                             <div key={item.id} className="flex flex-col gap-4">

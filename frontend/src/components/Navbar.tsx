@@ -103,21 +103,21 @@ export default function Navbar() {
             .slice(0, 2);
     };
 
-    // Wishlist Button Component
-    const WishlistButton = () => {
-        const { wishlist, maxCompareItems } = useWishlist();
-        const count = wishlist.length;
+    // Compare Button Component
+    const CompareButton = () => {
+        const { compareList, maxCompareItems } = useWishlist();
+        const count = compareList.length;
 
         return (
             <Link
                 href="/buy/compare"
                 className="relative p-2 rounded-full hover:bg-gray-100 transition group"
-                title={`รายการโปรด (${count} รายการ)`}
+                title={`เปรียบเทียบ (${count}/${maxCompareItems} รายการ)`}
             >
-                <Heart
+                <Scales
                     size={22}
                     weight={count > 0 ? 'fill' : 'regular'}
-                    className={count > 0 ? 'text-red-500' : 'text-gray-500 group-hover:text-red-500'}
+                    className={count > 0 ? 'text-primary' : 'text-gray-500 group-hover:text-primary'}
                 />
                 {count > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -180,7 +180,7 @@ export default function Navbar() {
                         </div>
                         <div className="flex items-center gap-2">
                             {/* Wishlist Button */}
-                            <WishlistButton />
+                            <CompareButton />
 
                             {user ? (
                                 /* Logged In State */

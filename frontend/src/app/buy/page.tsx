@@ -10,6 +10,8 @@ import {
     Motorcycle
 } from '@phosphor-icons/react';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
+import LoginModal from '@/components/LoginModal';
+import RegisterModal from '@/components/RegisterModal';
 
 interface PaginationInfo {
     page: number;
@@ -32,6 +34,20 @@ export default function BuyPage() {
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
     const [page, setPage] = useState(1);
+
+    // Login modal
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
+
+    const handleSwitchToRegister = () => {
+        setShowLoginModal(false);
+        setShowRegisterModal(true);
+    };
+
+    const handleSwitchToLogin = () => {
+        setShowRegisterModal(false);
+        setShowLoginModal(true);
+    };
 
     const fetchListings = async () => {
         setLoading(true);
@@ -224,7 +240,11 @@ export default function BuyPage() {
                             {/* Listings Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                                 {listings.map((listing) => (
-                                    <ListingCard key={listing.id} listing={listing} />
+                                    <ListingCard
+                                        key={listing.id}
+                                        listing={listing}
+                                        onLoginRequired={() => setShowLoginModal(true)}
+                                    />
                                 ))}
                             </div>
 
@@ -269,6 +289,20 @@ export default function BuyPage() {
                     )}
                 </main>
             </div>
+
+            {/* Login Modal */}
+            <LoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                onSwitchToRegister={handleSwitchToRegister}
+            />
+
+            {/* Register Modal */}
+            <RegisterModal
+                isOpen={showRegisterModal}
+                onClose={() => setShowRegisterModal(false)}
+                onSwitchToLogin={handleSwitchToLogin}
+            />
         </div>
     );
 }

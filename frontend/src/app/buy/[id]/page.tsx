@@ -28,8 +28,13 @@ import {
     CheckCircle,
     XCircle,
     Wrench,
-    Certificate
+    Certificate,
+    Scales,
+    Check
 } from '@phosphor-icons/react';
+import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
+import LoginModal from '@/components/LoginModal';
+import RegisterModal from '@/components/RegisterModal';
 
 // Types
 interface VehicleImage {
@@ -86,7 +91,14 @@ export default function CarDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isFavorite, setIsFavorite] = useState(false);
+
+    // Wishlist
+    const { isInWishlist, toggleWishlist, isLoggedIn, isInCompare, toggleCompare, maxCompareItems, compareList } = useWishlist();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
     // Get current user
     const getCurrentUserId = () => {
@@ -213,6 +225,76 @@ export default function CarDetailPage() {
             setCurrentImageIndex((prev) => (prev - 1 + listing.images.length) % listing.images.length);
         }
     };
+
+    // Create wishlist item from listing
+    const createWishlistItem = (): WishlistItem | null => {
+        if (!listing) return null;
+        return {
+            id: listing.id,
+            title: listing.title,
+            price: typeof listing.price === 'string' ? parseFloat(listing.price) : Number(listing.price),
+            negotiable: listing.negotiable,
+            vehicleType: listing.vehicleType,
+            brand: listing.brand,
+            model: listing.model,
+            year: listing.year,
+            mileage: listing.mileage,
+            fuelType: listing.fuelType,
+            transmission: listing.transmission,
+            province: listing.province,
+            imageUrl: listing.images[0]?.url,
+            images: listing.images.map(img => ({ url: img.url, isPrimary: img.isPrimary })),
+            user: listing.user,
+            addedAt: new Date().toISOString()
+        };
+    };
+
+    // Handle wishlist toggle
+    const handleWishlistClick = async () => {
+        const item = createWishlistItem();
+        if (!item) return;
+
+        const result = await toggleWishlist(item);
+
+        // Check if login is required
+        if (result.requiresLogin) {
+            setShowLoginModal(true);
+            return;
+        }
+
+        setToastMessage(result.message);
+        setToastType(result.success ? 'success' : 'error');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
+    };
+
+    // Handle compare toggle
+    const handleCompareClick = () => {
+        const item = createWishlistItem();
+        if (!item) return;
+
+        const result = toggleCompare(item);
+
+        setToastMessage(result.message);
+        setToastType(result.success ? 'success' : 'error');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
+    };
+
+    // Modal handlers
+    const handleSwitchToRegister = () => {
+        setShowLoginModal(false);
+        setShowRegisterModal(true);
+    };
+
+    const handleSwitchToLogin = () => {
+        setShowRegisterModal(false);
+        setShowLoginModal(true);
+    };
+
+    // Get favorite state from context
+    const isFavorite = listing ? isInWishlist(listing.id) : false;
+    const isCompared = listing ? isInCompare(listing.id) : false;
 
     // Loading State
     if (loading) {
@@ -473,7 +555,7 @@ export default function CarDetailPage() {
 
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => setIsFavorite(!isFavorite)}
+                                    onClick={handleWishlistClick}
                                     className={`flex-1 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition border-2 ${isFavorite
                                         ? 'border-red-200 bg-red-50 text-red-500'
                                         : 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-500'
@@ -482,9 +564,15 @@ export default function CarDetailPage() {
                                     <Heart weight={isFavorite ? 'fill' : 'regular'} size={18} />
                                     บันทึก
                                 </button>
-                                <button className="flex-1 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-500 hover:border-primary hover:text-primary transition">
-                                    <Share size={18} />
-                                    แชร์
+                                <button
+                                    onClick={handleCompareClick}
+                                    className={`flex-1 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition border-2 ${isCompared
+                                        ? 'border-primary bg-blue-50 text-primary'
+                                        : 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary'
+                                        }`}
+                                >
+                                    <Scales weight={isCompared ? 'fill' : 'regular'} size={18} />
+                                    เปรียบเทียบ
                                 </button>
                             </div>
 
@@ -523,11 +611,18 @@ export default function CarDetailPage() {
                 {/* Mobile Fixed Bottom Bar */}
                 <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 flex gap-3 z-40">
                     <button
-                        onClick={() => setIsFavorite(!isFavorite)}
+                        onClick={handleWishlistClick}
                         className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition ${isFavorite ? 'border-red-200 bg-red-50 text-red-500' : 'border-gray-200 text-gray-400'
                             }`}
                     >
                         <Heart weight={isFavorite ? 'fill' : 'regular'} size={22} />
+                    </button>
+                    <button
+                        onClick={handleCompareClick}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition ${isCompared ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-400'
+                            }`}
+                    >
+                        <Scales weight={isCompared ? 'fill' : 'regular'} size={22} />
                     </button>
                     <a
                         href={`tel:${listing.user.phoneNumber || ''}`}
@@ -540,6 +635,33 @@ export default function CarDetailPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div
+                    className={`fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 z-50 animate-fade-in ${toastType === 'success'
+                        ? 'bg-green-500 text-white'
+                        : 'bg-red-500 text-white'
+                        }`}
+                >
+                    <span className="text-sm font-medium">{toastMessage}</span>
+                </div>
+            )}
+
+            {/* Login Modal */}
+            <LoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                onSwitchToRegister={handleSwitchToRegister}
+                redirectTo={`/buy/${listingId}`}
+            />
+
+            {/* Register Modal */}
+            <RegisterModal
+                isOpen={showRegisterModal}
+                onClose={() => setShowRegisterModal(false)}
+                onSwitchToLogin={handleSwitchToLogin}
+            />
         </div>
     );
 }

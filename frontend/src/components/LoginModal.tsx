@@ -87,12 +87,21 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                 throw new Error(data.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
             }
 
+            // Include token in user data for API calls
+            const userWithToken = {
+                ...data.user,
+                token: data.accessToken
+            };
+
             // Store user data (you can use localStorage, context, or state management)
             if (rememberMe) {
-                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('user', JSON.stringify(userWithToken));
             } else {
-                sessionStorage.setItem('user', JSON.stringify(data.user));
+                sessionStorage.setItem('user', JSON.stringify(userWithToken));
             }
+
+            // Dispatch custom event to notify other components (like WishlistContext)
+            window.dispatchEvent(new CustomEvent('userLogin', { detail: userWithToken }));
 
             onClose();
             router.push(redirectTo || '/profile/dashboard');

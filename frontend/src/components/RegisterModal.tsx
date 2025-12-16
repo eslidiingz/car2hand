@@ -118,12 +118,16 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
                 throw new Error(data.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
             }
 
-            // Save token and user data to localStorage
-            if (data.accessToken) {
-                localStorage.setItem('accessToken', data.accessToken);
-            }
-            if (data.user) {
-                localStorage.setItem('user', JSON.stringify(data.user));
+            // Include token in user data for API calls
+            if (data.user && data.accessToken) {
+                const userWithToken = {
+                    ...data.user,
+                    token: data.accessToken
+                };
+                localStorage.setItem('user', JSON.stringify(userWithToken));
+
+                // Dispatch custom event to notify other components
+                window.dispatchEvent(new CustomEvent('userLogin', { detail: userWithToken }));
             }
 
             setSuccess(true);

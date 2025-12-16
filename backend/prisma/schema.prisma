@@ -24,9 +24,26 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  listings VehicleListing[]
+  listings  VehicleListing[]
+  wishlists Wishlist[]
 
   @@map("users")
+}
+
+// Wishlist - รายการโปรดของผู้ใช้
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing VehicleListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@map("wishlists")
 }
 
 // =============================================
@@ -166,9 +183,10 @@ model VehicleListing {
   expiredAt DateTime? // วันหมดอายุประกาศ
 
   // Relations
-  userId String
-  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  images VehicleImage[]
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images    VehicleImage[]
+  wishlists Wishlist[]
 
   @@index([vehicleType])
   @@index([brand, model])
