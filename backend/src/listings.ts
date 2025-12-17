@@ -428,6 +428,14 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     contactPhone: updateData.contactPhone,
                     lineId: updateData.lineId,
                     facebookUrl: updateData.facebookUrl,
+                    // Vehicle Extras
+                    taxPaid: updateData.taxPaid ?? false,
+                    registrationBookStatus: updateData.registrationBookStatus ?? "READY",
+                    insuranceDetails: updateData.insuranceDetails,
+                    warrantyDetails: updateData.warrantyDetails,
+                    bsiDetails: updateData.bsiDetails,
+                    gasType: updateData.gasType ?? "NONE",
+                    hasSpareKey: updateData.hasSpareKey ?? false,
                 },
                 include: {
                     images: {
@@ -526,7 +534,22 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             contactName: t.Optional(t.String()),
             contactPhone: t.Optional(t.String()),
             lineId: t.Optional(t.String()),
-            facebookUrl: t.Optional(t.String())
+            facebookUrl: t.Optional(t.String()),
+            // Vehicle Extras
+            taxPaid: t.Optional(t.Boolean()),
+            registrationBookStatus: t.Optional(t.Union([
+                t.Literal("READY"),
+                t.Literal("FINANCED")
+            ])),
+            insuranceDetails: t.Optional(t.String()),
+            warrantyDetails: t.Optional(t.String()),
+            bsiDetails: t.Optional(t.String()),
+            gasType: t.Optional(t.Union([
+                t.Literal("NONE"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ])),
+            hasSpareKey: t.Optional(t.Boolean())
         })
     })
 

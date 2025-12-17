@@ -26,7 +26,8 @@ import {
     Drop,
     Palette,
     FileText,
-    WarningCircle
+    WarningCircle,
+    AddressBook
 } from '@phosphor-icons/react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
@@ -450,7 +451,7 @@ export default function CreateListingPage() {
                             {currentStep === 1 && (
                                 <>
                                     <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <CarProfile size={24} weight="fill" className="text-accent" /> ระบุข้อมูลรถของคุณ
+                                        <Car size={24} weight="fill" className="text-accent" /> ระบุข้อมูลรถของคุณ
                                     </h2>
 
                                     {/* Vehicle Type Toggle */}
@@ -547,19 +548,6 @@ export default function CreateListingPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่จดทะเบียน *</label>
-                                            <select
-                                                className="form-select"
-                                                value={formData.year}
-                                                onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
-                                            >
-                                                {years.map(y => (
-                                                    <option key={y} value={y}>{y}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">รุ่นย่อย (ถ้ามี)</label>
                                             {subModels.length > 0 || loadingSubModels ? (
                                                 <SearchableSelect
@@ -595,6 +583,19 @@ export default function CreateListingPage() {
                                             )}
                                         </div>
 
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่จดทะเบียน *</label>
+                                            <select
+                                                className="form-select"
+                                                value={formData.year}
+                                                onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
+                                            >
+                                                {years.map(y => (
+                                                    <option key={y} value={y}>{y}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
                                         <div ref={colorRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.color ? 'text-red-600' : 'text-gray-700'}`}>สี *</label>
                                             <select
@@ -625,8 +626,6 @@ export default function CreateListingPage() {
                                                 <option value="HYBRID">Hybrid (ไฮบริด)</option>
                                                 <option value="PLUGIN_HYBRID">Plug-in Hybrid (ปลั๊กอินไฮบริด)</option>
                                                 <option value="EV">EV (ไฟฟ้า)</option>
-                                                <option value="LPG">LPG (แก๊ส)</option>
-                                                <option value="NGV">NGV (แก๊ส)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -674,7 +673,9 @@ export default function CreateListingPage() {
                                     </div>
 
                                     {/* Vehicle Extras */}
-                                    <h3 className="text-lg font-bold text-primary mb-4 mt-8">ข้อมูลเพิ่มเติม (ช่วยให้ขายได้เร็วขึ้น)</h3>
+                                    <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                                        <Lightbulb size={24} weight="fill" className="text-accent" /> ข้อมูลเพิ่มเติม
+                                    </h3>
                                     <p className="text-sm text-gray-500 mb-4">ข้อมูลเหล่านี้ช่วยให้ผู้ซื้อตัดสินใจได้ง่ายขึ้น</p>
 
                                     <div className="space-y-4">
@@ -913,7 +914,7 @@ export default function CreateListingPage() {
                             {currentStep === 3 && (
                                 <>
                                     <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <CurrencyCircleDollar size={24} weight="fill" className="text-accent" /> ราคาและข้อมูลติดต่อ
+                                        <CurrencyCircleDollar size={24} weight="fill" className="text-accent" /> หัวข้อและราคา
                                     </h2>
 
                                     <div className="mb-6">
@@ -939,7 +940,7 @@ export default function CreateListingPage() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                                    <div className="gap-5 mb-6">
                                         <div ref={priceRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.price ? 'text-red-600' : 'text-gray-700'}`}>ราคา (บาท) *</label>
                                             <div className="relative">
@@ -959,18 +960,6 @@ export default function CreateListingPage() {
                                                 <div className={`absolute left-3 top-1/2 -translate-y-1/2 font-bold ${fieldErrors.price ? 'text-red-500' : 'text-gray-400'}`}>฿</div>
                                             </div>
                                             {fieldErrors.price && <p className="text-red-500 text-xs mt-1">กรุณาระบุราคา</p>}
-                                        </div>
-
-                                        <div className="flex items-end">
-                                            <label className="form-checkbox-label w-full">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData.negotiable}
-                                                    onChange={(e) => updateFormData({ negotiable: e.target.checked })}
-                                                    className="w-5 h-5 rounded accent-primary"
-                                                />
-                                                <span className="font-medium text-gray-700">ต่อรองราคาได้</span>
-                                            </label>
                                         </div>
                                     </div>
 
@@ -1009,7 +998,9 @@ export default function CreateListingPage() {
                                     </div>
 
                                     {/* Contact Information */}
-                                    <h3 className="text-lg font-bold text-primary mb-4">ข้อมูลติดต่อ</h3>
+                                    <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                                        <AddressBook size={24} weight="fill" className="text-accent" /> ข้อมูลติดต่อ
+                                    </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">ชื่อผู้ติดต่อ *</label>
@@ -1053,21 +1044,6 @@ export default function CreateListingPage() {
                                                 value={formData.facebookUrl || ''}
                                                 onChange={(e) => updateFormData({ facebookUrl: e.target.value })}
                                             />
-                                        </div>
-                                    </div>
-
-                                    {/* Summary */}
-                                    <div className="bg-gray-50 p-4 rounded-xl mb-8">
-                                        <h4 className="font-bold text-gray-800 mb-3">สรุปข้อมูลรถ</h4>
-                                        <div className="grid grid-cols-2 gap-2 text-sm">
-                                            <div className="text-gray-500">ยี่ห้อ/รุ่น:</div>
-                                            <div className="font-medium">{formData.brand} {formData.model}</div>
-                                            <div className="text-gray-500">ปี:</div>
-                                            <div className="font-medium">{formData.year}</div>
-                                            <div className="text-gray-500">ไมล์:</div>
-                                            <div className="font-medium">{formData.mileage?.toLocaleString()} กม.</div>
-                                            <div className="text-gray-500">รูปภาพ:</div>
-                                            <div className="font-medium">{formData.images.length} รูป</div>
                                         </div>
                                     </div>
                                 </>
