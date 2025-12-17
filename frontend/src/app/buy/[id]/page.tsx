@@ -30,7 +30,8 @@ import {
     Wrench,
     Certificate,
     Scales,
-    Check
+    Check,
+    AddressBook
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
@@ -71,6 +72,10 @@ interface VehicleListing {
     hasWarranty: boolean;
     province: string;
     district: string | null;
+    contactName: string | null;
+    contactPhone: string | null;
+    lineId: string | null;
+    facebookUrl: string | null;
     status: string;
     viewCount: number;
     createdAt: string;
@@ -98,6 +103,10 @@ export default function CarDetailPage() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [showFullscreenGallery, setShowFullscreenGallery] = useState(false);
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
     // Get current user
@@ -128,13 +137,13 @@ export default function CarDetailPage() {
 
     const getFuelTypeLabel = (fuelType: string) => {
         const labels: Record<string, string> = {
-            'PETROL': 'เบนซิน',
-            'DIESEL': 'ดีเซล',
-            'HYBRID': 'ไฮบริด',
-            'PLUGIN_HYBRID': 'ปลั๊กอินไฮบริด',
-            'ELECTRIC': 'ไฟฟ้า',
-            'LPG': 'LPG',
-            'NGV': 'NGV'
+            'PETROL': 'Petrol (เบนซิน)',
+            'DIESEL': 'Diesel (ดีเซล)',
+            'HYBRID': 'Hybrid (ไฮบริด)',
+            'PLUGIN_HYBRID': 'Plug-in Hybrid (ปลั๊กอินไฮบริด)',
+            'EV': 'EV (ไฟฟ้า)',
+            'LPG': 'LPG (แก๊ส)',
+            'NGV': 'NGV (แก๊ส)'
         };
         return labels[fuelType] || fuelType;
     };
@@ -346,7 +355,24 @@ export default function CarDetailPage() {
                         {/* Image Gallery */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             {/* Main Image */}
-                            <div className="relative aspect-[16/10] bg-gray-100">
+                            <div
+                                className="relative aspect-[16/10] bg-gray-100 cursor-pointer"
+                                onClick={() => setShowFullscreenGallery(true)}
+                                onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
+                                onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
+                                onTouchEnd={() => {
+                                    if (!touchStart || !touchEnd) return;
+                                    const distance = touchStart - touchEnd;
+                                    const minSwipeDistance = 50;
+                                    if (distance > minSwipeDistance) {
+                                        nextImage();
+                                    } else if (distance < -minSwipeDistance) {
+                                        prevImage();
+                                    }
+                                    setTouchStart(null);
+                                    setTouchEnd(null);
+                                }}
+                            >
                                 {listing.images.length > 0 ? (
                                     <img
                                         src={listing.images[currentImageIndex]?.url}
@@ -367,13 +393,13 @@ export default function CarDetailPage() {
                                 {listing.images.length > 1 && (
                                     <>
                                         <button
-                                            onClick={prevImage}
+                                            onClick={(e) => { e.stopPropagation(); prevImage(); }}
                                             className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
                                         >
                                             <CaretLeft weight="bold" size={20} />
                                         </button>
                                         <button
-                                            onClick={nextImage}
+                                            onClick={(e) => { e.stopPropagation(); nextImage(); }}
                                             className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
                                         >
                                             <CaretRight weight="bold" size={20} />
@@ -426,7 +452,7 @@ export default function CarDetailPage() {
                         {/* Specifications */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                             <h2 className="text-lg font-bold text-primary mb-4">ข้อมูลจำเพาะ</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
                                     <CalendarBlank size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">ปี</p>
@@ -447,74 +473,10 @@ export default function CarDetailPage() {
                                     <p className="text-xs text-gray-500">เกียร์</p>
                                     <p className="font-bold text-gray-800">{getTransmissionLabel(listing.transmission)}</p>
                                 </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                                    <Palette size={20} className="text-gray-400" />
-                                    <div>
-                                        <p className="text-xs text-gray-500">สี</p>
-                                        <p className="font-medium text-gray-800">{listing.color}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                                    <Car size={20} className="text-gray-400" />
-                                    <div>
-                                        <p className="text-xs text-gray-500">ประเภทตัวถัง</p>
-                                        <p className="font-medium text-gray-800">{getBodyTypeLabel(listing.bodyType)}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                                    <User size={20} className="text-gray-400" />
-                                    <div>
-                                        <p className="text-xs text-gray-500">เจ้าของ</p>
-                                        <p className="font-medium text-gray-800">มือที่ {listing.ownerCount}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Vehicle Condition */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                            <h2 className="text-lg font-bold text-primary mb-4">สภาพรถ</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className={`flex items-center gap-3 p-3 rounded-xl ${listing.hasAccident ? 'bg-red-50' : 'bg-green-50'}`}>
-                                    {listing.hasAccident ? (
-                                        <XCircle size={24} className="text-red-500" weight="fill" />
-                                    ) : (
-                                        <CheckCircle size={24} className="text-green-500" weight="fill" />
-                                    )}
-                                    <div>
-                                        <p className="text-xs text-gray-500">เคยชน</p>
-                                        <p className={`font-medium ${listing.hasAccident ? 'text-red-600' : 'text-green-600'}`}>
-                                            {listing.hasAccident ? 'เคยชน' : 'ไม่เคยชน'}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className={`flex items-center gap-3 p-3 rounded-xl ${listing.hasModified ? 'bg-orange-50' : 'bg-green-50'}`}>
-                                    <Wrench size={24} className={listing.hasModified ? 'text-orange-500' : 'text-green-500'} />
-                                    <div>
-                                        <p className="text-xs text-gray-500">แต่งรถ</p>
-                                        <p className={`font-medium ${listing.hasModified ? 'text-orange-600' : 'text-green-600'}`}>
-                                            {listing.hasModified ? 'มีการแต่ง' : 'ไม่แต่ง'}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className={`flex items-center gap-3 p-3 rounded-xl ${listing.hasWarranty ? 'bg-blue-50' : 'bg-gray-50'}`}>
-                                    <Certificate size={24} className={listing.hasWarranty ? 'text-blue-500' : 'text-gray-400'} />
-                                    <div>
-                                        <p className="text-xs text-gray-500">ประกัน</p>
-                                        <p className={`font-medium ${listing.hasWarranty ? 'text-blue-600' : 'text-gray-500'}`}>
-                                            {listing.hasWarranty ? 'มีประกัน' : 'ไม่มี'}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                                    <ShieldCheck size={24} className="text-primary" />
-                                    <div>
-                                        <p className="text-xs text-gray-500">สภาพ</p>
-                                        <p className="font-medium text-gray-800">{getConditionLabel(listing.condition)}</p>
-                                    </div>
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <Palette size={24} className="text-primary mx-auto mb-2" />
+                                    <p className="text-xs text-gray-500">สี</p>
+                                    <p className="font-bold text-gray-800">{listing.color}</p>
                                 </div>
                             </div>
                         </div>
@@ -542,12 +504,12 @@ export default function CarDetailPage() {
 
                             {/* Actions */}
                             <div className="space-y-3 mb-6">
-                                <a
-                                    href={`tel:${listing.user.phoneNumber || ''}`}
+                                <button
+                                    onClick={() => setShowContactModal(true)}
                                     className="w-full bg-accent text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-orange-600 transition shadow-lg shadow-orange-100"
                                 >
-                                    <Phone weight="bold" size={20} /> โทรติดต่อ
-                                </a>
+                                    <AddressBook weight="bold" size={20} /> ข้อมูลการติดต่อ
+                                </button>
                                 <button className="w-full bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-opacity-90 transition">
                                     <ChatCircle weight="bold" size={20} /> ส่งข้อความ
                                 </button>
@@ -662,6 +624,179 @@ export default function CarDetailPage() {
                 onClose={() => setShowRegisterModal(false)}
                 onSwitchToLogin={handleSwitchToLogin}
             />
+
+            {/* Contact Info Modal */}
+            {showContactModal && listing && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowContactModal(false)}>
+                    <div
+                        className="bg-white rounded-2xl max-w-md w-full p-6 animate-scale-in"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-primary">ข้อมูลการติดต่อ</h3>
+                            <button
+                                onClick={() => setShowContactModal(false)}
+                                className="text-gray-400 hover:text-gray-600 transition"
+                            >
+                                <XCircle size={28} weight="fill" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            {/* Seller Name */}
+                            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                    <User size={24} className="text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500">ผู้ขาย</p>
+                                    <p className="font-bold text-gray-800">{listing.contactName || listing.user.fullName}</p>
+                                </div>
+                            </div>
+
+                            {/* Phone */}
+                            <a
+                                href={`tel:${listing.contactPhone || listing.user.phoneNumber || ''}`}
+                                className="flex items-center gap-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition group"
+                            >
+                                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                                    <Phone size={24} className="text-white" weight="fill" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-sm text-gray-500">เบอร์โทรศัพท์</p>
+                                    <p className="font-bold text-gray-800">{listing.contactPhone || listing.user.phoneNumber || '-'}</p>
+                                </div>
+                                <span className="text-green-500 font-medium group-hover:underline">โทร</span>
+                            </a>
+
+                            {/* LINE */}
+                            {listing.lineId && (
+                                <div className="flex items-center gap-4 p-4 bg-[#06C755]/10 rounded-xl">
+                                    <div className="w-12 h-12 bg-[#06C755] rounded-full flex items-center justify-center">
+                                        <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-500">LINE ID</p>
+                                        <p className="font-bold text-gray-800">{listing.lineId}</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Facebook */}
+                            {listing.facebookUrl && (
+                                <a
+                                    href={listing.facebookUrl.startsWith('http') ? listing.facebookUrl : `https://facebook.com/${listing.facebookUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-4 p-4 bg-[#1877F2]/10 rounded-xl hover:bg-[#1877F2]/20 transition group"
+                                >
+                                    <div className="w-12 h-12 bg-[#1877F2] rounded-full flex items-center justify-center">
+                                        <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm text-gray-500">Facebook</p>
+                                        <p className="font-bold text-gray-800 truncate">{listing.facebookUrl}</p>
+                                    </div>
+                                    <span className="text-[#1877F2] font-medium group-hover:underline">เปิด</span>
+                                </a>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => setShowContactModal(false)}
+                            className="w-full mt-6 py-3 bg-gray-100 text-gray-600 rounded-xl font-medium hover:bg-gray-200 transition"
+                        >
+                            ปิด
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Fullscreen Gallery Modal */}
+            {showFullscreenGallery && listing && listing.images.length > 0 && (
+                <div
+                    className="fixed inset-0 bg-black z-50 flex flex-col"
+                    onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
+                    onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
+                    onTouchEnd={() => {
+                        if (!touchStart || !touchEnd) return;
+                        const distance = touchStart - touchEnd;
+                        const minSwipeDistance = 50;
+                        if (distance > minSwipeDistance) {
+                            nextImage();
+                        } else if (distance < -minSwipeDistance) {
+                            prevImage();
+                        }
+                        setTouchStart(null);
+                        setTouchEnd(null);
+                    }}
+                >
+                    {/* Header */}
+                    <div className="flex items-center justify-between p-4 text-white">
+                        <div className="text-sm">
+                            {currentImageIndex + 1} / {listing.images.length}
+                        </div>
+                        <button
+                            onClick={() => setShowFullscreenGallery(false)}
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition"
+                        >
+                            <XCircle size={28} weight="fill" />
+                        </button>
+                    </div>
+
+                    {/* Main Image */}
+                    <div className="flex-1 flex items-center justify-center px-4 relative">
+                        <img
+                            src={listing.images[currentImageIndex]?.url}
+                            alt={listing.title}
+                            className="max-w-full max-h-full object-contain"
+                        />
+
+                        {/* Navigation Arrows - Hidden on mobile, visible on desktop */}
+                        {listing.images.length > 1 && (
+                            <>
+                                <button
+                                    onClick={prevImage}
+                                    className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full items-center justify-center text-white transition"
+                                >
+                                    <CaretLeft weight="bold" size={24} />
+                                </button>
+                                <button
+                                    onClick={nextImage}
+                                    className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full items-center justify-center text-white transition"
+                                >
+                                    <CaretRight weight="bold" size={24} />
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Thumbnail Strip */}
+                    {listing.images.length > 1 && (
+                        <div className="p-4 flex gap-2 justify-center overflow-x-auto">
+                            {listing.images.map((img, index) => (
+                                <button
+                                    key={img.id}
+                                    onClick={() => setCurrentImageIndex(index)}
+                                    className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition ${index === currentImageIndex ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'
+                                        }`}
+                                >
+                                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Swipe Hint for Mobile */}
+                    <div className="md:hidden text-center pb-4 text-white/50 text-sm">
+                        ← เลื่อนเพื่อดูรูปถัดไป →
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

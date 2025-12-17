@@ -74,6 +74,18 @@ export type VehicleListingMinAggregateOutputType = {
   hasWarranty: boolean | null
   province: string | null
   district: string | null
+  contactName: string | null
+  contactPhone: string | null
+  lineId: string | null
+  facebookUrl: string | null
+  taxPaid: boolean | null
+  registrationBookStatus: $Enums.RegistrationBookStatus | null
+  insuranceDetails: string | null
+  warrantyDetails: string | null
+  bsiDetails: string | null
+  gasType: $Enums.GasType | null
+  hasSpareKey: boolean | null
+  serviceHistoryImage: string | null
   status: $Enums.ListingStatus | null
   isFeatured: boolean | null
   isPremium: boolean | null
@@ -112,6 +124,18 @@ export type VehicleListingMaxAggregateOutputType = {
   hasWarranty: boolean | null
   province: string | null
   district: string | null
+  contactName: string | null
+  contactPhone: string | null
+  lineId: string | null
+  facebookUrl: string | null
+  taxPaid: boolean | null
+  registrationBookStatus: $Enums.RegistrationBookStatus | null
+  insuranceDetails: string | null
+  warrantyDetails: string | null
+  bsiDetails: string | null
+  gasType: $Enums.GasType | null
+  hasSpareKey: boolean | null
+  serviceHistoryImage: string | null
   status: $Enums.ListingStatus | null
   isFeatured: boolean | null
   isPremium: boolean | null
@@ -150,6 +174,18 @@ export type VehicleListingCountAggregateOutputType = {
   hasWarranty: number
   province: number
   district: number
+  contactName: number
+  contactPhone: number
+  lineId: number
+  facebookUrl: number
+  taxPaid: number
+  registrationBookStatus: number
+  insuranceDetails: number
+  warrantyDetails: number
+  bsiDetails: number
+  gasType: number
+  hasSpareKey: number
+  serviceHistoryImage: number
   status: number
   isFeatured: number
   isPremium: number
@@ -212,6 +248,18 @@ export type VehicleListingMinAggregateInputType = {
   hasWarranty?: true
   province?: true
   district?: true
+  contactName?: true
+  contactPhone?: true
+  lineId?: true
+  facebookUrl?: true
+  taxPaid?: true
+  registrationBookStatus?: true
+  insuranceDetails?: true
+  warrantyDetails?: true
+  bsiDetails?: true
+  gasType?: true
+  hasSpareKey?: true
+  serviceHistoryImage?: true
   status?: true
   isFeatured?: true
   isPremium?: true
@@ -250,6 +298,18 @@ export type VehicleListingMaxAggregateInputType = {
   hasWarranty?: true
   province?: true
   district?: true
+  contactName?: true
+  contactPhone?: true
+  lineId?: true
+  facebookUrl?: true
+  taxPaid?: true
+  registrationBookStatus?: true
+  insuranceDetails?: true
+  warrantyDetails?: true
+  bsiDetails?: true
+  gasType?: true
+  hasSpareKey?: true
+  serviceHistoryImage?: true
   status?: true
   isFeatured?: true
   isPremium?: true
@@ -288,6 +348,18 @@ export type VehicleListingCountAggregateInputType = {
   hasWarranty?: true
   province?: true
   district?: true
+  contactName?: true
+  contactPhone?: true
+  lineId?: true
+  facebookUrl?: true
+  taxPaid?: true
+  registrationBookStatus?: true
+  insuranceDetails?: true
+  warrantyDetails?: true
+  bsiDetails?: true
+  gasType?: true
+  hasSpareKey?: true
+  serviceHistoryImage?: true
   status?: true
   isFeatured?: true
   isPremium?: true
@@ -413,6 +485,18 @@ export type VehicleListingGroupByOutputType = {
   hasWarranty: boolean
   province: string
   district: string | null
+  contactName: string | null
+  contactPhone: string | null
+  lineId: string | null
+  facebookUrl: string | null
+  taxPaid: boolean
+  registrationBookStatus: $Enums.RegistrationBookStatus
+  insuranceDetails: string | null
+  warrantyDetails: string | null
+  bsiDetails: string | null
+  gasType: $Enums.GasType
+  hasSpareKey: boolean
+  serviceHistoryImage: string | null
   status: $Enums.ListingStatus
   isFeatured: boolean
   isPremium: boolean
@@ -474,6 +558,18 @@ export type VehicleListingWhereInput = {
   hasWarranty?: Prisma.BoolFilter<"VehicleListing"> | boolean
   province?: Prisma.StringFilter<"VehicleListing"> | string
   district?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  contactName?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  contactPhone?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  lineId?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  facebookUrl?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  taxPaid?: Prisma.BoolFilter<"VehicleListing"> | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFilter<"VehicleListing"> | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  warrantyDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  bsiDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  gasType?: Prisma.EnumGasTypeFilter<"VehicleListing"> | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFilter<"VehicleListing"> | boolean
+  serviceHistoryImage?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusFilter<"VehicleListing"> | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolFilter<"VehicleListing"> | boolean
@@ -515,6 +611,18 @@ export type VehicleListingOrderByWithRelationInput = {
   hasWarranty?: Prisma.SortOrder
   province?: Prisma.SortOrder
   district?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactName?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  lineId?: Prisma.SortOrderInput | Prisma.SortOrder
+  facebookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxPaid?: Prisma.SortOrder
+  registrationBookStatus?: Prisma.SortOrder
+  insuranceDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  warrantyDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  bsiDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  gasType?: Prisma.SortOrder
+  hasSpareKey?: Prisma.SortOrder
+  serviceHistoryImage?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
@@ -559,6 +667,18 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   hasWarranty?: Prisma.BoolFilter<"VehicleListing"> | boolean
   province?: Prisma.StringFilter<"VehicleListing"> | string
   district?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  contactName?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  contactPhone?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  lineId?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  facebookUrl?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  taxPaid?: Prisma.BoolFilter<"VehicleListing"> | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFilter<"VehicleListing"> | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  warrantyDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  bsiDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  gasType?: Prisma.EnumGasTypeFilter<"VehicleListing"> | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFilter<"VehicleListing"> | boolean
+  serviceHistoryImage?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusFilter<"VehicleListing"> | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolFilter<"VehicleListing"> | boolean
@@ -600,6 +720,18 @@ export type VehicleListingOrderByWithAggregationInput = {
   hasWarranty?: Prisma.SortOrder
   province?: Prisma.SortOrder
   district?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactName?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactPhone?: Prisma.SortOrderInput | Prisma.SortOrder
+  lineId?: Prisma.SortOrderInput | Prisma.SortOrder
+  facebookUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  taxPaid?: Prisma.SortOrder
+  registrationBookStatus?: Prisma.SortOrder
+  insuranceDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  warrantyDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  bsiDetails?: Prisma.SortOrderInput | Prisma.SortOrder
+  gasType?: Prisma.SortOrder
+  hasSpareKey?: Prisma.SortOrder
+  serviceHistoryImage?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
@@ -646,6 +778,18 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   hasWarranty?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   province?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
   district?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  contactName?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  contactPhone?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  lineId?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  facebookUrl?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  taxPaid?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusWithAggregatesFilter<"VehicleListing"> | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  warrantyDetails?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  bsiDetails?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
+  gasType?: Prisma.EnumGasTypeWithAggregatesFilter<"VehicleListing"> | $Enums.GasType
+  hasSpareKey?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
+  serviceHistoryImage?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusWithAggregatesFilter<"VehicleListing"> | $Enums.ListingStatus
   isFeatured?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
@@ -684,6 +828,18 @@ export type VehicleListingCreateInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -724,6 +880,18 @@ export type VehicleListingUncheckedCreateInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -764,6 +932,18 @@ export type VehicleListingUpdateInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -804,6 +984,18 @@ export type VehicleListingUncheckedUpdateInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -844,6 +1036,18 @@ export type VehicleListingCreateManyInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -882,6 +1086,18 @@ export type VehicleListingUpdateManyMutationInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -919,6 +1135,18 @@ export type VehicleListingUncheckedUpdateManyInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -972,6 +1200,18 @@ export type VehicleListingCountOrderByAggregateInput = {
   hasWarranty?: Prisma.SortOrder
   province?: Prisma.SortOrder
   district?: Prisma.SortOrder
+  contactName?: Prisma.SortOrder
+  contactPhone?: Prisma.SortOrder
+  lineId?: Prisma.SortOrder
+  facebookUrl?: Prisma.SortOrder
+  taxPaid?: Prisma.SortOrder
+  registrationBookStatus?: Prisma.SortOrder
+  insuranceDetails?: Prisma.SortOrder
+  warrantyDetails?: Prisma.SortOrder
+  bsiDetails?: Prisma.SortOrder
+  gasType?: Prisma.SortOrder
+  hasSpareKey?: Prisma.SortOrder
+  serviceHistoryImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
@@ -1021,6 +1261,18 @@ export type VehicleListingMaxOrderByAggregateInput = {
   hasWarranty?: Prisma.SortOrder
   province?: Prisma.SortOrder
   district?: Prisma.SortOrder
+  contactName?: Prisma.SortOrder
+  contactPhone?: Prisma.SortOrder
+  lineId?: Prisma.SortOrder
+  facebookUrl?: Prisma.SortOrder
+  taxPaid?: Prisma.SortOrder
+  registrationBookStatus?: Prisma.SortOrder
+  insuranceDetails?: Prisma.SortOrder
+  warrantyDetails?: Prisma.SortOrder
+  bsiDetails?: Prisma.SortOrder
+  gasType?: Prisma.SortOrder
+  hasSpareKey?: Prisma.SortOrder
+  serviceHistoryImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
@@ -1059,6 +1311,18 @@ export type VehicleListingMinOrderByAggregateInput = {
   hasWarranty?: Prisma.SortOrder
   province?: Prisma.SortOrder
   district?: Prisma.SortOrder
+  contactName?: Prisma.SortOrder
+  contactPhone?: Prisma.SortOrder
+  lineId?: Prisma.SortOrder
+  facebookUrl?: Prisma.SortOrder
+  taxPaid?: Prisma.SortOrder
+  registrationBookStatus?: Prisma.SortOrder
+  insuranceDetails?: Prisma.SortOrder
+  warrantyDetails?: Prisma.SortOrder
+  bsiDetails?: Prisma.SortOrder
+  gasType?: Prisma.SortOrder
+  hasSpareKey?: Prisma.SortOrder
+  serviceHistoryImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
@@ -1162,6 +1426,14 @@ export type EnumConditionFieldUpdateOperationsInput = {
   set?: $Enums.Condition
 }
 
+export type EnumRegistrationBookStatusFieldUpdateOperationsInput = {
+  set?: $Enums.RegistrationBookStatus
+}
+
+export type EnumGasTypeFieldUpdateOperationsInput = {
+  set?: $Enums.GasType
+}
+
 export type EnumListingStatusFieldUpdateOperationsInput = {
   set?: $Enums.ListingStatus
 }
@@ -1210,6 +1482,18 @@ export type VehicleListingCreateWithoutUserInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1249,6 +1533,18 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1317,6 +1613,18 @@ export type VehicleListingScalarWhereInput = {
   hasWarranty?: Prisma.BoolFilter<"VehicleListing"> | boolean
   province?: Prisma.StringFilter<"VehicleListing"> | string
   district?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  contactName?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  contactPhone?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  lineId?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  facebookUrl?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  taxPaid?: Prisma.BoolFilter<"VehicleListing"> | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFilter<"VehicleListing"> | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  warrantyDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  bsiDetails?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
+  gasType?: Prisma.EnumGasTypeFilter<"VehicleListing"> | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFilter<"VehicleListing"> | boolean
+  serviceHistoryImage?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusFilter<"VehicleListing"> | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolFilter<"VehicleListing"> | boolean
@@ -1355,6 +1663,18 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1394,6 +1714,18 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1449,6 +1781,18 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1488,6 +1832,18 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1527,6 +1883,18 @@ export type VehicleListingCreateWithoutImagesInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1566,6 +1934,18 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1621,6 +2001,18 @@ export type VehicleListingUpdateWithoutImagesInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1660,6 +2052,18 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1699,6 +2103,18 @@ export type VehicleListingCreateManyUserInput = {
   hasWarranty?: boolean
   province: string
   district?: string | null
+  contactName?: string | null
+  contactPhone?: string | null
+  lineId?: string | null
+  facebookUrl?: string | null
+  taxPaid?: boolean
+  registrationBookStatus?: $Enums.RegistrationBookStatus
+  insuranceDetails?: string | null
+  warrantyDetails?: string | null
+  bsiDetails?: string | null
+  gasType?: $Enums.GasType
+  hasSpareKey?: boolean
+  serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
   isFeatured?: boolean
   isPremium?: boolean
@@ -1736,6 +2152,18 @@ export type VehicleListingUpdateWithoutUserInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1775,6 +2203,18 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1814,6 +2254,18 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
   province?: Prisma.StringFieldUpdateOperationsInput | string
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lineId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxPaid?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  registrationBookStatus?: Prisma.EnumRegistrationBookStatusFieldUpdateOperationsInput | $Enums.RegistrationBookStatus
+  insuranceDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  warrantyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bsiDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gasType?: Prisma.EnumGasTypeFieldUpdateOperationsInput | $Enums.GasType
+  hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -1891,6 +2343,18 @@ export type VehicleListingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   hasWarranty?: boolean
   province?: boolean
   district?: boolean
+  contactName?: boolean
+  contactPhone?: boolean
+  lineId?: boolean
+  facebookUrl?: boolean
+  taxPaid?: boolean
+  registrationBookStatus?: boolean
+  insuranceDetails?: boolean
+  warrantyDetails?: boolean
+  bsiDetails?: boolean
+  gasType?: boolean
+  hasSpareKey?: boolean
+  serviceHistoryImage?: boolean
   status?: boolean
   isFeatured?: boolean
   isPremium?: boolean
@@ -1933,6 +2397,18 @@ export type VehicleListingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   hasWarranty?: boolean
   province?: boolean
   district?: boolean
+  contactName?: boolean
+  contactPhone?: boolean
+  lineId?: boolean
+  facebookUrl?: boolean
+  taxPaid?: boolean
+  registrationBookStatus?: boolean
+  insuranceDetails?: boolean
+  warrantyDetails?: boolean
+  bsiDetails?: boolean
+  gasType?: boolean
+  hasSpareKey?: boolean
+  serviceHistoryImage?: boolean
   status?: boolean
   isFeatured?: boolean
   isPremium?: boolean
@@ -1972,6 +2448,18 @@ export type VehicleListingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   hasWarranty?: boolean
   province?: boolean
   district?: boolean
+  contactName?: boolean
+  contactPhone?: boolean
+  lineId?: boolean
+  facebookUrl?: boolean
+  taxPaid?: boolean
+  registrationBookStatus?: boolean
+  insuranceDetails?: boolean
+  warrantyDetails?: boolean
+  bsiDetails?: boolean
+  gasType?: boolean
+  hasSpareKey?: boolean
+  serviceHistoryImage?: boolean
   status?: boolean
   isFeatured?: boolean
   isPremium?: boolean
@@ -2011,6 +2499,18 @@ export type VehicleListingSelectScalar = {
   hasWarranty?: boolean
   province?: boolean
   district?: boolean
+  contactName?: boolean
+  contactPhone?: boolean
+  lineId?: boolean
+  facebookUrl?: boolean
+  taxPaid?: boolean
+  registrationBookStatus?: boolean
+  insuranceDetails?: boolean
+  warrantyDetails?: boolean
+  bsiDetails?: boolean
+  gasType?: boolean
+  hasSpareKey?: boolean
+  serviceHistoryImage?: boolean
   status?: boolean
   isFeatured?: boolean
   isPremium?: boolean
@@ -2023,7 +2523,7 @@ export type VehicleListingSelectScalar = {
   userId?: boolean
 }
 
-export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "negotiable" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
+export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "negotiable" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
 export type VehicleListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
@@ -2070,6 +2570,18 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     hasWarranty: boolean
     province: string
     district: string | null
+    contactName: string | null
+    contactPhone: string | null
+    lineId: string | null
+    facebookUrl: string | null
+    taxPaid: boolean
+    registrationBookStatus: $Enums.RegistrationBookStatus
+    insuranceDetails: string | null
+    warrantyDetails: string | null
+    bsiDetails: string | null
+    gasType: $Enums.GasType
+    hasSpareKey: boolean
+    serviceHistoryImage: string | null
     status: $Enums.ListingStatus
     isFeatured: boolean
     isPremium: boolean
@@ -2531,6 +3043,18 @@ export interface VehicleListingFieldRefs {
   readonly hasWarranty: Prisma.FieldRef<"VehicleListing", 'Boolean'>
   readonly province: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly district: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly contactName: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly contactPhone: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly lineId: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly facebookUrl: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly taxPaid: Prisma.FieldRef<"VehicleListing", 'Boolean'>
+  readonly registrationBookStatus: Prisma.FieldRef<"VehicleListing", 'RegistrationBookStatus'>
+  readonly insuranceDetails: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly warrantyDetails: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly bsiDetails: Prisma.FieldRef<"VehicleListing", 'String'>
+  readonly gasType: Prisma.FieldRef<"VehicleListing", 'GasType'>
+  readonly hasSpareKey: Prisma.FieldRef<"VehicleListing", 'Boolean'>
+  readonly serviceHistoryImage: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly status: Prisma.FieldRef<"VehicleListing", 'ListingStatus'>
   readonly isFeatured: Prisma.FieldRef<"VehicleListing", 'Boolean'>
   readonly isPremium: Prisma.FieldRef<"VehicleListing", 'Boolean'>

@@ -30,7 +30,7 @@ import {
 } from '@phosphor-icons/react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
-import { useListingForm, createListing, uploadListingImages, publishListing } from '@/contexts/ListingContext';
+import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, publishListing } from '@/contexts/ListingContext';
 
 // Thai provinces list
 const PROVINCES = [
@@ -114,7 +114,16 @@ export default function CreateListingPage() {
             router.push('/');
             return;
         }
-        setUser(JSON.parse(storedUser));
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+
+        // Pre-fill contact info from user data
+        if (!formData.contactName && userData.fullName) {
+            updateFormData({ contactName: userData.fullName });
+        }
+        if (!formData.contactPhone && userData.phoneNumber) {
+            updateFormData({ contactPhone: userData.phoneNumber });
+        }
     }, [router]);
 
     // Fetch brands when vehicle type changes
@@ -344,6 +353,11 @@ export default function CreateListingPage() {
                 await uploadListingImages(user.id, newListingId, formData.images);
             }
 
+            // Step 2.5: Upload service history image (if any)
+            if (formData.serviceHistoryFile) {
+                await uploadServiceHistoryImage(user.id, newListingId, formData.serviceHistoryFile);
+            }
+
             // Step 3: Publish
             await publishListing(user.id, newListingId, formData.price, formData.negotiable);
 
@@ -461,19 +475,6 @@ export default function CreateListingPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                        <div className="md:col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต *</label>
-                                            <select
-                                                className="form-select"
-                                                value={formData.year}
-                                                onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
-                                            >
-                                                {years.map(y => (
-                                                    <option key={y} value={y}>{y}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-
                                         <div ref={brandRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.brand ? 'text-red-600' : 'text-gray-700'}`}>ยี่ห้อ *</label>
                                             <div className={fieldErrors.brand ? 'ring-2 ring-red-500 rounded-xl' : ''}>
@@ -545,7 +546,20 @@ export default function CreateListingPage() {
                                             {fieldErrors.model && <p className="text-red-500 text-xs mt-1">กรุณาเลือกรุ่น</p>}
                                         </div>
 
-                                        <div className="md:col-span-2">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่จดทะเบียน *</label>
+                                            <select
+                                                className="form-select"
+                                                value={formData.year}
+                                                onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
+                                            >
+                                                {years.map(y => (
+                                                    <option key={y} value={y}>{y}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">รุ่นย่อย (ถ้ามี)</label>
                                             {subModels.length > 0 || loadingSubModels ? (
                                                 <SearchableSelect
@@ -560,7 +574,7 @@ export default function CreateListingPage() {
                                                         updateFormData({
                                                             subModel: option?.label || '',
                                                             ...(subModel?.engineSize && { engineSize: subModel.engineSize }),
-                                                            ...(subModel?.fuelType && { fuelType: subModel.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'ELECTRIC' | 'LPG' | 'NGV' }),
+                                                            ...(subModel?.fuelType && { fuelType: subModel.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV' }),
                                                             ...(subModel?.transmission && { transmission: subModel.transmission as 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO' })
                                                         });
                                                     }}
@@ -606,13 +620,13 @@ export default function CreateListingPage() {
                                                 value={formData.fuelType}
                                                 onChange={(e) => updateFormData({ fuelType: e.target.value as typeof formData.fuelType })}
                                             >
-                                                <option value="PETROL">เบนซิน</option>
-                                                <option value="DIESEL">ดีเซล</option>
-                                                <option value="HYBRID">ไฮบริด</option>
-                                                <option value="PLUGIN_HYBRID">ปลั๊กอินไฮบริด</option>
-                                                <option value="ELECTRIC">ไฟฟ้า</option>
-                                                <option value="LPG">LPG</option>
-                                                <option value="NGV">NGV</option>
+                                                <option value="PETROL">Petrol (เบนซิน)</option>
+                                                <option value="DIESEL">Diesel (ดีเซล)</option>
+                                                <option value="HYBRID">Hybrid (ไฮบริด)</option>
+                                                <option value="PLUGIN_HYBRID">Plug-in Hybrid (ปลั๊กอินไฮบริด)</option>
+                                                <option value="EV">EV (ไฟฟ้า)</option>
+                                                <option value="LPG">LPG (แก๊ส)</option>
+                                                <option value="NGV">NGV (แก๊ส)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -659,65 +673,177 @@ export default function CreateListingPage() {
                                         {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์</p>}
                                     </div>
 
-                                    {/* Condition Section */}
-                                    <h3 className="text-lg font-bold text-primary mb-4">สภาพรถ</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                                        {[
-                                            { value: 'EXCELLENT', label: 'ดีเยี่ยม' },
-                                            { value: 'GOOD', label: 'ดี' },
-                                            { value: 'FAIR', label: 'พอใช้' },
-                                            { value: 'POOR', label: 'ต้องซ่อม' }
-                                        ].map(cond => (
-                                            <button
-                                                key={cond.value}
-                                                type="button"
-                                                onClick={() => updateFormData({ condition: cond.value as typeof formData.condition })}
-                                                className={`form-button ${formData.condition === cond.value ? 'form-button-active' : 'form-button-inactive'}`}
-                                            >
-                                                {cond.label}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    {/* Vehicle Extras */}
+                                    <h3 className="text-lg font-bold text-primary mb-4 mt-8">ข้อมูลเพิ่มเติม (ช่วยให้ขายได้เร็วขึ้น)</h3>
+                                    <p className="text-sm text-gray-500 mb-4">ข้อมูลเหล่านี้ช่วยให้ผู้ซื้อตัดสินใจได้ง่ายขึ้น</p>
 
-                                    <div className="grid grid-cols-2 gap-4 mb-8">
-                                        <label className="form-checkbox-label">
+                                    <div className="space-y-4">
+                                        {/* Tax & Registration */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <label className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.taxPaid}
+                                                    onChange={(e) => updateFormData({ taxPaid: e.target.checked })}
+                                                    className="w-5 h-5 rounded accent-primary"
+                                                />
+                                                <div>
+                                                    <p className="font-medium text-gray-800">พ.ร.บ. และภาษีครบ</p>
+                                                    <p className="text-xs text-gray-500">ต่อทะเบียนล่าสุดแล้ว</p>
+                                                </div>
+                                            </label>
+
+                                            <label className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.hasSpareKey}
+                                                    onChange={(e) => updateFormData({ hasSpareKey: e.target.checked })}
+                                                    className="w-5 h-5 rounded accent-primary"
+                                                />
+                                                <div>
+                                                    <p className="font-medium text-gray-800">มีกุญแจสำรอง</p>
+                                                    <p className="text-xs text-gray-500">กุญแจครบชุด</p>
+                                                </div>
+                                            </label>
+                                        </div>
+
+                                        {/* Registration Book Status */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-3">สถานะเล่มทะเบียน</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {[
+                                                    { value: 'READY', label: 'พร้อมโอน', emoji: '✅' },
+                                                    { value: 'FINANCED', label: 'ติดไฟแนนซ์', emoji: '🏦' }
+                                                ].map(opt => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => updateFormData({ registrationBookStatus: opt.value as typeof formData.registrationBookStatus })}
+                                                        className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.registrationBookStatus === opt.value
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
+                                                            }`}
+                                                    >
+                                                        {opt.emoji} {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Gas Type - ย้ายมาอยู่ต่อจากสถานะเล่มทะเบียน */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {[
+                                                    { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
+                                                    { value: 'LPG', label: 'LPG', emoji: '🟢' },
+                                                    { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
+                                                ].map(opt => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => updateFormData({ gasType: opt.value as typeof formData.gasType })}
+                                                        className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
+                                                            ? 'bg-primary text-white'
+                                                            : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
+                                                            }`}
+                                                    >
+                                                        {opt.emoji} {opt.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Insurance */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-2">ประกันรถ</p>
                                             <input
-                                                type="checkbox"
-                                                checked={formData.hasAccident}
-                                                onChange={(e) => updateFormData({ hasAccident: e.target.checked })}
-                                                className="w-5 h-5 rounded accent-primary"
+                                                type="text"
+                                                className="w-full px-4 py-3 text-sm bg-white border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none transition"
+                                                placeholder="เช่น ชั้น 1 หมดอายุ ธ.ค. 2568 (เว้นว่างถ้าไม่มี)"
+                                                value={formData.insuranceDetails || ''}
+                                                onChange={(e) => updateFormData({ insuranceDetails: e.target.value })}
                                             />
-                                            <span className="text-sm font-medium text-gray-700">เคยมีอุบัติเหตุ</span>
-                                        </label>
-                                        <label className="form-checkbox-label">
+                                        </div>
+
+                                        {/* Warranty */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-2">Warranty ศูนย์</p>
                                             <input
-                                                type="checkbox"
-                                                checked={formData.hasModified}
-                                                onChange={(e) => updateFormData({ hasModified: e.target.checked })}
-                                                className="w-5 h-5 rounded accent-primary"
+                                                type="text"
+                                                className="w-full px-4 py-3 text-sm bg-white border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none transition"
+                                                placeholder="เช่น หมด ธ.ค. 2568 หรือ 100,000 กม. (เว้นว่างถ้าไม่มี)"
+                                                value={formData.warrantyDetails || ''}
+                                                onChange={(e) => updateFormData({ warrantyDetails: e.target.value })}
                                             />
-                                            <span className="text-sm font-medium text-gray-700">มีการโมดิฟาย</span>
-                                        </label>
-                                        <label className="form-checkbox-label">
+                                        </div>
+
+                                        {/* BSI Package */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-2">BSI / แพ็กเกจบริการ</p>
+                                            <p className="text-xs text-gray-500 mb-2">เช่น BMW Service Inclusive, Toyota Care</p>
                                             <input
-                                                type="checkbox"
-                                                checked={formData.hasWarranty}
-                                                onChange={(e) => updateFormData({ hasWarranty: e.target.checked })}
-                                                className="w-5 h-5 rounded accent-primary"
+                                                type="text"
+                                                className="w-full px-4 py-3 text-sm bg-white border-2 border-gray-200 rounded-lg focus:border-primary focus:outline-none transition"
+                                                placeholder="เช่น เหลือ 2 ครั้ง หมด ธ.ค. 2568 (เว้นว่างถ้าไม่มี)"
+                                                value={formData.bsiDetails || ''}
+                                                onChange={(e) => updateFormData({ bsiDetails: e.target.value })}
                                             />
-                                            <span className="text-sm font-medium text-gray-700">มีประกันเหลือ</span>
-                                        </label>
-                                        <div>
-                                            <select
-                                                className="form-select text-sm"
-                                                value={formData.ownerCount}
-                                                onChange={(e) => updateFormData({ ownerCount: parseInt(e.target.value) })}
-                                            >
-                                                <option value={1}>มือ 1 (เจ้าของคนแรก)</option>
-                                                <option value={2}>มือ 2</option>
-                                                <option value={3}>มือ 3</option>
-                                                <option value={4}>มือ 4 ขึ้นไป</option>
-                                            </select>
+                                        </div>
+
+                                        {/* Service History Image Upload */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-2">ประวัติบริการ</p>
+                                            <p className="text-xs text-gray-500 mb-3">อัพโหลดรูปสมุดบริการ / ใบเสร็จซ่อมบำรุง (ถ้ามี)</p>
+
+                                            {formData.serviceHistoryPreview ? (
+                                                <div className="relative">
+                                                    <img
+                                                        src={formData.serviceHistoryPreview}
+                                                        alt="Service History"
+                                                        className="w-full max-w-xs h-32 object-cover rounded-lg border"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (formData.serviceHistoryPreview) {
+                                                                URL.revokeObjectURL(formData.serviceHistoryPreview);
+                                                            }
+                                                            updateFormData({
+                                                                serviceHistoryFile: undefined,
+                                                                serviceHistoryPreview: ''
+                                                            });
+                                                        }}
+                                                        className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition">
+                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                        <svg className="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                        <p className="text-xs text-gray-500">คลิกเพื่ออัพโหลด</p>
+                                                    </div>
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const preview = URL.createObjectURL(file);
+                                                                updateFormData({
+                                                                    serviceHistoryFile: file,
+                                                                    serviceHistoryPreview: preview
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                            )}
                                         </div>
                                     </div>
                                 </>
@@ -878,6 +1004,54 @@ export default function CreateListingPage() {
                                                 className="form-input"
                                                 value={formData.district}
                                                 onChange={(e) => updateFormData({ district: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Contact Information */}
+                                    <h3 className="text-lg font-bold text-primary mb-4">ข้อมูลติดต่อ</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ชื่อผู้ติดต่อ *</label>
+                                            <input
+                                                type="text"
+                                                placeholder="ชื่อที่ต้องการให้แสดง"
+                                                className="form-input"
+                                                value={formData.contactName}
+                                                onChange={(e) => updateFormData({ contactName: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เบอร์โทรติดต่อ *</label>
+                                            <input
+                                                type="tel"
+                                                placeholder="เช่น 0812345678"
+                                                className="form-input"
+                                                value={formData.contactPhone}
+                                                onChange={(e) => updateFormData({ contactPhone: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">LINE ID</label>
+                                            <input
+                                                type="text"
+                                                placeholder="LINE ID สำหรับติดต่อ"
+                                                className="form-input"
+                                                value={formData.lineId || ''}
+                                                onChange={(e) => updateFormData({ lineId: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Facebook</label>
+                                            <input
+                                                type="text"
+                                                placeholder="URL หรือ Username"
+                                                className="form-input"
+                                                value={formData.facebookUrl || ''}
+                                                onChange={(e) => updateFormData({ facebookUrl: e.target.value })}
                                             />
                                         </div>
                                     </div>

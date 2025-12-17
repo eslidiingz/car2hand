@@ -284,6 +284,20 @@ export type EnumConditionFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumConditionFilter<$PrismaModel> | $Enums.Condition
 }
 
+export type EnumRegistrationBookStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationBookStatus | Prisma.EnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationBookStatusFilter<$PrismaModel> | $Enums.RegistrationBookStatus
+}
+
+export type EnumGasTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.GasType | Prisma.EnumGasTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGasTypeFilter<$PrismaModel> | $Enums.GasType
+}
+
 export type EnumListingStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ListingStatus | Prisma.EnumListingStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ListingStatus[] | Prisma.ListEnumListingStatusFieldRefInput<$PrismaModel>
@@ -356,6 +370,26 @@ export type EnumConditionWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumConditionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumConditionFilter<$PrismaModel>
+}
+
+export type EnumRegistrationBookStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationBookStatus | Prisma.EnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationBookStatusWithAggregatesFilter<$PrismaModel> | $Enums.RegistrationBookStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRegistrationBookStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRegistrationBookStatusFilter<$PrismaModel>
+}
+
+export type EnumGasTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.GasType | Prisma.EnumGasTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGasTypeWithAggregatesFilter<$PrismaModel> | $Enums.GasType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumGasTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumGasTypeFilter<$PrismaModel>
 }
 
 export type EnumListingStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -665,6 +699,20 @@ export type NestedEnumConditionFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumConditionFilter<$PrismaModel> | $Enums.Condition
 }
 
+export type NestedEnumRegistrationBookStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationBookStatus | Prisma.EnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationBookStatusFilter<$PrismaModel> | $Enums.RegistrationBookStatus
+}
+
+export type NestedEnumGasTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.GasType | Prisma.EnumGasTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGasTypeFilter<$PrismaModel> | $Enums.GasType
+}
+
 export type NestedEnumListingStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.ListingStatus | Prisma.EnumListingStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ListingStatus[] | Prisma.ListEnumListingStatusFieldRefInput<$PrismaModel>
@@ -737,6 +785,26 @@ export type NestedEnumConditionWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumConditionFilter<$PrismaModel>
   _max?: Prisma.NestedEnumConditionFilter<$PrismaModel>
+}
+
+export type NestedEnumRegistrationBookStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RegistrationBookStatus | Prisma.EnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RegistrationBookStatus[] | Prisma.ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRegistrationBookStatusWithAggregatesFilter<$PrismaModel> | $Enums.RegistrationBookStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRegistrationBookStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRegistrationBookStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumGasTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.GasType | Prisma.EnumGasTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.GasType[] | Prisma.ListEnumGasTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumGasTypeWithAggregatesFilter<$PrismaModel> | $Enums.GasType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumGasTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumGasTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumListingStatusWithAggregatesFilter<$PrismaModel = never> = {

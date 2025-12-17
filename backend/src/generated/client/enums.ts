@@ -22,7 +22,7 @@ export const FuelType = {
   DIESEL: 'DIESEL',
   HYBRID: 'HYBRID',
   PLUGIN_HYBRID: 'PLUGIN_HYBRID',
-  ELECTRIC: 'ELECTRIC',
+  EV: 'EV',
   LPG: 'LPG',
   NGV: 'NGV'
 } as const
@@ -97,3 +97,20 @@ export const ListingStatus = {
 } as const
 
 export type ListingStatus = (typeof ListingStatus)[keyof typeof ListingStatus]
+
+
+export const RegistrationBookStatus = {
+  READY: 'READY',
+  FINANCED: 'FINANCED'
+} as const
+
+export type RegistrationBookStatus = (typeof RegistrationBookStatus)[keyof typeof RegistrationBookStatus]
+
+
+export const GasType = {
+  NONE: 'NONE',
+  LPG: 'LPG',
+  NGV: 'NGV'
+} as const
+
+export type GasType = (typeof GasType)[keyof typeof GasType]

@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
-import { uploadListingImages, deleteListingImages, isValidImageType, isValidFileSize, ensureBucket } from "./storage";
+import { uploadListingImages, deleteListingImages, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
@@ -48,6 +48,19 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     hasWarranty: listingData.hasWarranty ?? false,
                     province: listingData.province,
                     district: listingData.district,
+                    contactName: listingData.contactName,
+                    contactPhone: listingData.contactPhone,
+                    lineId: listingData.lineId,
+                    facebookUrl: listingData.facebookUrl,
+                    // Vehicle Extras
+                    taxPaid: listingData.taxPaid ?? false,
+                    registrationBookStatus: listingData.registrationBookStatus ?? "READY",
+                    insuranceDetails: listingData.insuranceDetails,
+                    warrantyDetails: listingData.warrantyDetails,
+                    bsiDetails: listingData.bsiDetails,
+                    gasType: listingData.gasType ?? "NONE",
+                    hasSpareKey: listingData.hasSpareKey ?? false,
+                    // serviceHistoryImage will be uploaded separately
                     status: "DRAFT", // เริ่มต้นเป็น draft
                 },
                 include: {
@@ -88,7 +101,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("DIESEL"),
                 t.Literal("HYBRID"),
                 t.Literal("PLUGIN_HYBRID"),
-                t.Literal("ELECTRIC"),
+                t.Literal("EV"),
                 t.Literal("LPG"),
                 t.Literal("NGV")
             ]),
@@ -142,7 +155,26 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             hasModified: t.Optional(t.Boolean()),
             hasWarranty: t.Optional(t.Boolean()),
             province: t.String(),
-            district: t.Optional(t.String())
+            district: t.Optional(t.String()),
+            contactName: t.Optional(t.String()),
+            contactPhone: t.Optional(t.String()),
+            lineId: t.Optional(t.String()),
+            facebookUrl: t.Optional(t.String()),
+            // Vehicle Extras
+            taxPaid: t.Optional(t.Boolean()),
+            registrationBookStatus: t.Optional(t.Union([
+                t.Literal("READY"),
+                t.Literal("FINANCED")
+            ])),
+            insuranceDetails: t.Optional(t.String()),
+            warrantyDetails: t.Optional(t.String()),
+            bsiDetails: t.Optional(t.String()),
+            gasType: t.Optional(t.Union([
+                t.Literal("NONE"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ])),
+            hasSpareKey: t.Optional(t.Boolean())
         })
     })
 
@@ -211,6 +243,71 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 filename: t.String(),
                 mimetype: t.String()
             }))
+        })
+    })
+
+    // อัพโหลดรูปประวัติบริการ
+    .post("/:id/service-history", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, image } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            // Convert base64 to buffer
+            const imageBuffer = Buffer.from(image.buffer, 'base64');
+
+            // Process image to WebP
+            const webpBuffer = await processImage(imageBuffer, {
+                maxWidth: 1920,
+                maxHeight: 1440,
+                quality: 85
+            });
+
+            // Generate filename and path
+            const baseFilename = generateFilename(image.filename);
+            const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
+            const objectPath = `${listing.userId}/listings/${id}/service-history-${webpFilename}`;
+
+            // Upload to MinIO
+            const imageUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
+
+            // Update listing with service history image URL
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { serviceHistoryImage: imageUrl }
+            });
+
+            return {
+                message: "อัพโหลดรูปประวัติบริการสำเร็จ",
+                imageUrl
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัพโหลดรูป" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            image: t.Object({
+                buffer: t.String(),
+                filename: t.String(),
+                mimetype: t.String()
+            })
         })
     })
 
@@ -327,6 +424,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     hasWarranty: updateData.hasWarranty ?? false,
                     province: updateData.province,
                     district: updateData.district,
+                    contactName: updateData.contactName,
+                    contactPhone: updateData.contactPhone,
+                    lineId: updateData.lineId,
+                    facebookUrl: updateData.facebookUrl,
                 },
                 include: {
                     images: {
@@ -369,7 +470,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("DIESEL"),
                 t.Literal("HYBRID"),
                 t.Literal("PLUGIN_HYBRID"),
-                t.Literal("ELECTRIC"),
+                t.Literal("EV"),
                 t.Literal("LPG"),
                 t.Literal("NGV")
             ]),
@@ -421,7 +522,11 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             hasModified: t.Optional(t.Boolean()),
             hasWarranty: t.Optional(t.Boolean()),
             province: t.String(),
-            district: t.Optional(t.String())
+            district: t.Optional(t.String()),
+            contactName: t.Optional(t.String()),
+            contactPhone: t.Optional(t.String()),
+            lineId: t.Optional(t.String()),
+            facebookUrl: t.Optional(t.String())
         })
     })
 

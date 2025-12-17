@@ -167,6 +167,22 @@ model VehicleListing {
   province String // จังหวัด
   district String? // อำเภอ/เขต
 
+  // ข้อมูลติดต่อผู้ขาย
+  contactName  String? // ชื่อผู้ติดต่อ
+  contactPhone String? // เบอร์โทรติดต่อ
+  lineId       String? // LINE ID
+  facebookUrl  String? // Facebook URL หรือ Username
+
+  // ข้อมูลเพิ่มเติมช่วยตัดสินใจ
+  taxPaid                Boolean                @default(false) // พรบ และ ภาษีครบ
+  registrationBookStatus RegistrationBookStatus @default(READY) // สถานะเล่มทะเบียน
+  insuranceDetails       String? // รายละเอียดประกัน (ถ้ามีค่า = มีประกัน)
+  warrantyDetails        String? // รายละเอียด warranty (ถ้ามีค่า = มี warranty)
+  bsiDetails             String? // รายละเอียด BSI (ถ้ามีค่า = มี BSI)
+  gasType                GasType                @default(NONE) // ติดแก๊สหรือไม่
+  hasSpareKey            Boolean                @default(false) // มีกุญแจสำรอง
+  serviceHistoryImage    String? // รูปภาพประวัติบริการ (ถ้ามี = มีประวัติ)
+
   // สถานะประกาศ
   status     ListingStatus @default(ACTIVE)
   isFeatured Boolean       @default(false) // ประกาศแนะนำ
@@ -232,7 +248,7 @@ enum FuelType {
   DIESEL // ดีเซล
   HYBRID // ไฮบริด
   PLUGIN_HYBRID // ปลั๊กอินไฮบริด
-  ELECTRIC // ไฟฟ้า
+  EV // ไฟฟ้า
   LPG // แก๊ส LPG
   NGV // แก๊ส NGV
 }
@@ -297,4 +313,17 @@ enum ListingStatus {
   SOLD // ขายแล้ว
   EXPIRED // หมดอายุ
   SUSPENDED // ถูกระงับ
+}
+
+// สถานะเล่มทะเบียน
+enum RegistrationBookStatus {
+  READY // พร้อมโอน
+  FINANCED // ติดไฟแนนซ์
+}
+
+// ประเภทแก๊ส
+enum GasType {
+  NONE // ไม่ติดแก๊ส
+  LPG // LPG
+  NGV // NGV/CNG
 }

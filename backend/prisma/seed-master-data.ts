@@ -396,7 +396,7 @@ async function seedMasterData() {
                         name: subModelData.name,
                         modelId: model.id,
                         engineSize: subModelData.engineSize,
-                        fuelType: subModelData.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'ELECTRIC' | 'LPG' | 'NGV' | undefined,
+                        fuelType: subModelData.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV' | undefined,
                         transmission: subModelData.transmission as 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO' | undefined,
                         order: j
                     }

@@ -173,7 +173,7 @@ export default function Navbar() {
                         </div>
                         <div className="hidden md:flex space-x-6 h-full">
                             <Link href="/buy" className={getLinkClass('/buy')}>ซื้อรถ</Link>
-                            <Link href="/sell" className={getLinkClass('/sell')}>ลงขาย</Link>
+                            <Link href="/sell" className={getLinkClass('/sell')}>ลงขายกับเรา</Link>
                             <Link href="/services" className={getLinkClass('/services')}>บริการ</Link>
                             <Link href="/knowledge" className={getLinkClass('/knowledge')}>ความรู้เรื่องรถ</Link>
                             <Link href="/community" className={getLinkClass('/community')}>ชุมชน</Link>

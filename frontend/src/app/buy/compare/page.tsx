@@ -78,13 +78,13 @@ export default function ComparePage() {
     // Get fuel type label
     const getFuelTypeLabel = (fuelType?: string) => {
         const labels: Record<string, string> = {
-            'PETROL': 'เบนซิน',
-            'DIESEL': 'ดีเซล',
-            'HYBRID': 'ไฮบริด',
-            'PLUGIN_HYBRID': 'ปลั๊กอิน',
-            'ELECTRIC': 'ไฟฟ้า',
-            'LPG': 'LPG',
-            'NGV': 'NGV'
+            'PETROL': 'Petrol (เบนซิน)',
+            'DIESEL': 'Diesel (ดีเซล)',
+            'HYBRID': 'Hybrid (ไฮบริด)',
+            'PLUGIN_HYBRID': 'Plug-in Hybrid (ปลั๊กอินไฮบริด)',
+            'EV': 'EV (ไฟฟ้า)',
+            'LPG': 'LPG (แก๊ส)',
+            'NGV': 'NGV (แก๊ส)'
         };
         return fuelType ? labels[fuelType] || fuelType : '-';
     };

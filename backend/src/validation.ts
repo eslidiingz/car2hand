@@ -93,7 +93,7 @@ export const vehicleListingSchema = z.object({
         .min(1, 'กรุณาระบุสี')
         .max(50, 'สีต้องไม่เกิน 50 ตัวอักษร'),
 
-    fuelType: z.enum(['PETROL', 'DIESEL', 'HYBRID', 'PLUGIN_HYBRID', 'ELECTRIC', 'LPG', 'NGV'], {
+    fuelType: z.enum(['PETROL', 'DIESEL', 'HYBRID', 'PLUGIN_HYBRID', 'EV', 'LPG', 'NGV'], {
         errorMap: () => ({ message: 'ประเภทเชื้อเพลิงไม่ถูกต้อง' })
     }),
 

@@ -13,7 +13,7 @@ export interface ListingFormData {
     transmission?: 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO';
     mileage: number;
     color: string;
-    fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'ELECTRIC' | 'LPG' | 'NGV';
+    fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV';
     bodyType: string;
     engineSize?: number;
 
@@ -37,6 +37,23 @@ export interface ListingFormData {
     negotiable: boolean;
     province: string;
     district?: string;
+
+    // Contact Info
+    contactName: string;
+    contactPhone: string;
+    lineId?: string;
+    facebookUrl?: string;
+
+    // Vehicle Extras (ข้อมูลเพิ่มเติมช่วยตัดสินใจ)
+    taxPaid: boolean; // พรบ และ ภาษีครบ
+    registrationBookStatus: 'READY' | 'FINANCED'; // สถานะเล่มทะเบียน
+    insuranceDetails?: string; // รายละเอียดประกัน
+    warrantyDetails?: string; // รายละเอียด warranty
+    bsiDetails?: string; // รายละเอียด BSI
+    gasType: 'NONE' | 'LPG' | 'NGV'; // ติดแก๊สหรือไม่
+    hasSpareKey: boolean; // มีกุญแจสำรอง
+    serviceHistoryFile?: File; // ไฟล์รูปประวัติบริการ
+    serviceHistoryPreview?: string; // Preview URL
 }
 
 interface ListingContextType {
@@ -78,6 +95,20 @@ const defaultFormData: ListingFormData = {
     negotiable: true,
     province: '',
     district: '',
+    contactName: '',
+    contactPhone: '',
+    lineId: '',
+    facebookUrl: '',
+    // Vehicle Extras
+    taxPaid: false,
+    registrationBookStatus: 'READY',
+    insuranceDetails: '',
+    warrantyDetails: '',
+    bsiDetails: '',
+    gasType: 'NONE',
+    hasSpareKey: false,
+    serviceHistoryFile: undefined,
+    serviceHistoryPreview: '',
 };
 
 const ListingContext = createContext<ListingContextType | undefined>(undefined);
@@ -156,6 +187,19 @@ export async function createListing(userId: string, data: ListingFormData): Prom
             hasWarranty: data.hasWarranty,
             province: data.province,
             district: data.district,
+            contactName: data.contactName,
+            contactPhone: data.contactPhone,
+            lineId: data.lineId,
+            facebookUrl: data.facebookUrl,
+            // Vehicle Extras
+            taxPaid: data.taxPaid,
+            registrationBookStatus: data.registrationBookStatus,
+            insuranceDetails: data.insuranceDetails,
+            warrantyDetails: data.warrantyDetails,
+            bsiDetails: data.bsiDetails,
+            gasType: data.gasType,
+            hasSpareKey: data.hasSpareKey,
+            // serviceHistoryImage will be uploaded separately
         })
     });
 
@@ -194,6 +238,33 @@ export async function uploadListingImages(
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Failed to upload images');
+    }
+}
+
+export async function uploadServiceHistoryImage(
+    userId: string,
+    listingId: string,
+    file: File
+): Promise<void> {
+    const buffer = await file.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+
+    const response = await fetch(`${API_BASE}/listings/${listingId}/service-history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId,
+            image: {
+                buffer: base64,
+                filename: file.name,
+                mimetype: file.type
+            }
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to upload service history image');
     }
 }
 

@@ -1070,6 +1070,18 @@ export const VehicleListingScalarFieldEnum = {
   hasWarranty: 'hasWarranty',
   province: 'province',
   district: 'district',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  lineId: 'lineId',
+  facebookUrl: 'facebookUrl',
+  taxPaid: 'taxPaid',
+  registrationBookStatus: 'registrationBookStatus',
+  insuranceDetails: 'insuranceDetails',
+  warrantyDetails: 'warrantyDetails',
+  bsiDetails: 'bsiDetails',
+  gasType: 'gasType',
+  hasSpareKey: 'hasSpareKey',
+  serviceHistoryImage: 'serviceHistoryImage',
   status: 'status',
   isFeatured: 'isFeatured',
   isPremium: 'isPremium',
@@ -1272,6 +1284,34 @@ export type EnumConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'Condition[]'
  */
 export type ListEnumConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Condition[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RegistrationBookStatus'
+ */
+export type EnumRegistrationBookStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RegistrationBookStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RegistrationBookStatus[]'
+ */
+export type ListEnumRegistrationBookStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RegistrationBookStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'GasType'
+ */
+export type EnumGasTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GasType'>
+    
+
+
+/**
+ * Reference to a field of type 'GasType[]'
+ */
+export type ListEnumGasTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'GasType[]'>
     
 
 

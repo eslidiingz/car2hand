@@ -79,7 +79,7 @@ interface FormData {
     subModel: string;
     year: number;
     color: string;
-    fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'ELECTRIC' | 'LPG' | 'NGV';
+    fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV';
     transmission: 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO';
     mileage: number;
     bodyType: string;
@@ -392,19 +392,6 @@ export default function EditListingPage() {
 
                             {/* Year, Brand, Model */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต *</label>
-                                    <select
-                                        className="form-select"
-                                        value={formData.year}
-                                        onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
-                                    >
-                                        {years.map(y => (
-                                            <option key={y} value={y}>{y}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1.5">ยี่ห้อ *</label>
                                     <select
@@ -430,7 +417,20 @@ export default function EditListingPage() {
                                     />
                                 </div>
 
-                                <div className="md:col-span-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่จดทะเบียน *</label>
+                                    <select
+                                        className="form-select"
+                                        value={formData.year}
+                                        onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
+                                    >
+                                        {years.map(y => (
+                                            <option key={y} value={y}>{y}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1.5">รุ่นย่อย (ถ้ามี)</label>
                                     <input
                                         type="text"
@@ -462,13 +462,13 @@ export default function EditListingPage() {
                                         value={formData.fuelType}
                                         onChange={(e) => updateFormData({ fuelType: e.target.value as FormData['fuelType'] })}
                                     >
-                                        <option value="PETROL">เบนซิน</option>
-                                        <option value="DIESEL">ดีเซล</option>
-                                        <option value="HYBRID">ไฮบริด</option>
-                                        <option value="PLUGIN_HYBRID">ปลั๊กอินไฮบริด</option>
-                                        <option value="ELECTRIC">ไฟฟ้า</option>
-                                        <option value="LPG">LPG</option>
-                                        <option value="NGV">NGV</option>
+                                        <option value="PETROL">Petrol (เบนซิน)</option>
+                                        <option value="DIESEL">Diesel (ดีเซล)</option>
+                                        <option value="HYBRID">Hybrid (ไฮบริด)</option>
+                                        <option value="PLUGIN_HYBRID">Plug-in Hybrid (ปลั๊กอินไฮบริด)</option>
+                                        <option value="EV">EV (ไฟฟ้า)</option>
+                                        <option value="LPG">LPG (แก๊ส)</option>
+                                        <option value="NGV">NGV (แก๊ส)</option>
                                     </select>
                                 </div>
                             </div>
