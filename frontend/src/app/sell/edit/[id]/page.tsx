@@ -22,7 +22,12 @@ import {
     Drop,
     Palette,
     Lightbulb,
-    AddressBook
+    AddressBook,
+    Star,
+    X,
+    ArrowUp,
+    ArrowDown,
+    Camera
 } from '@phosphor-icons/react';
 import PreviewCard from '@/components/PreviewCard';
 
@@ -32,6 +37,14 @@ interface VehicleImage {
     url: string;
     isPrimary: boolean;
     order: number;
+}
+
+interface DisplayImage {
+    id: string;
+    url: string;
+    isPrimary: boolean;
+    isNew: boolean;
+    file?: File;
 }
 
 interface VehicleListing {
@@ -168,6 +181,110 @@ export default function EditListingPage() {
 
     const brands = formData.vehicleType === 'CAR' ? CAR_BRANDS : MOTORCYCLE_BRANDS;
 
+    // Image management state
+    const [displayImages, setDisplayImages] = useState<DisplayImage[]>([]);
+    const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
+    const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
+    const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
+
+    // Image management functions
+    const handleDeleteImage = (imageId: string) => {
+        const imageToDelete = displayImages.find(img => img.id === imageId);
+        if (!imageToDelete) return;
+
+        // If it's an existing image (not new), mark for deletion
+        if (!imageToDelete.isNew) {
+            setDeletedImageIds(prev => [...prev, imageId]);
+        }
+
+        // Remove from display
+        setDisplayImages(prev => prev.filter(img => img.id !== imageId));
+    };
+
+    const handleDragStart = (e: React.DragEvent, imageId: string) => {
+        setDraggedImageId(imageId);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', imageId);
+        // Add dragging style
+        if (e.currentTarget instanceof HTMLElement) {
+            e.currentTarget.style.opacity = '0.5';
+        }
+    };
+
+    const handleDragEnd = (e: React.DragEvent) => {
+        setDraggedImageId(null);
+        setDragOverImageId(null);
+        // Remove dragging style
+        if (e.currentTarget instanceof HTMLElement) {
+            e.currentTarget.style.opacity = '1';
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent, imageId: string) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (imageId !== draggedImageId) {
+            setDragOverImageId(imageId);
+        }
+    };
+
+    const handleDragLeave = () => {
+        setDragOverImageId(null);
+    };
+
+    const handleDrop = (e: React.DragEvent, targetImageId: string) => {
+        e.preventDefault();
+        setDragOverImageId(null);
+
+        if (!draggedImageId || draggedImageId === targetImageId) return;
+
+        const draggedIndex = displayImages.findIndex(img => img.id === draggedImageId);
+        const targetIndex = displayImages.findIndex(img => img.id === targetImageId);
+
+        if (draggedIndex === -1 || targetIndex === -1) return;
+
+        // Reorder images locally
+        const newOrder = [...displayImages];
+        const [draggedItem] = newOrder.splice(draggedIndex, 1);
+        newOrder.splice(targetIndex, 0, draggedItem);
+        setDisplayImages(newOrder);
+
+        setDraggedImageId(null);
+    };
+
+    const handleNewImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+
+        const currentTotal = displayImages.length;
+        const remainingSlots = 24 - currentTotal;
+
+        if (remainingSlots <= 0) {
+            setError('คุณสามารถอัพโหลดรูปภาพได้สูงสุด 24 รูป');
+            return;
+        }
+
+        let fileArray = Array.from(files);
+        if (fileArray.length > remainingSlots) {
+            setError('คุณสามารถอัพโหลดรูปภาพได้สูงสุด 24 รูปเท่านั้น');
+            fileArray = fileArray.slice(0, remainingSlots);
+        } else {
+            setError(null);
+        }
+
+        // Convert to DisplayImage
+        const newDisplayImages: DisplayImage[] = fileArray.map(file => ({
+            id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            url: URL.createObjectURL(file), // Create local preview URL
+            isPrimary: false,
+            isNew: true,
+            file: file
+        }));
+
+        setDisplayImages(prev => [...prev, ...newDisplayImages]);
+        e.target.value = '';
+    };
+
     // Check user auth
     useEffect(() => {
         const userData = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -203,6 +320,17 @@ export default function EditListingPage() {
                 }
 
                 setListing(listingData);
+                setListing(listingData);
+                if (listingData.images) {
+                    setDisplayImages(listingData.images.map(img => ({
+                        id: img.id,
+                        url: img.url,
+                        isPrimary: img.isPrimary,
+                        isNew: false
+                    })));
+                } else {
+                    setDisplayImages([]);
+                }
 
                 // Populate form
                 setFormData({
@@ -270,6 +398,77 @@ export default function EditListingPage() {
         setError(null);
 
         try {
+            // 1. Process deletions
+            if (deletedImageIds.length > 0) {
+                await Promise.all(deletedImageIds.map(id =>
+                    fetch(`http://localhost:8000/listings/${listingId}/images/${id}?userId=${userId}`, { method: 'DELETE' })
+                ));
+            }
+
+            // 2. Process uploads and ID mapping
+            const imagesToUpload = displayImages.filter(img => img.isNew && img.file);
+            let finalImageOrder: string[] = [];
+
+            if (imagesToUpload.length > 0) {
+                const imagePromises = imagesToUpload.map(img =>
+                    new Promise<{ buffer: string; filename: string; mimetype: string }>((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const base64 = (reader.result as string).split(',')[1];
+                            resolve({ buffer: base64, filename: img.file!.name, mimetype: img.file!.type });
+                        };
+                        reader.readAsDataURL(img.file!);
+                    })
+                );
+
+                const imageData = await Promise.all(imagePromises);
+
+                const uploadRes = await fetch(`http://localhost:8000/listings/${listingId}/images`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, images: imageData })
+                });
+
+                if (!uploadRes.ok) throw new Error('Failed to upload images');
+
+                const uploadData = await uploadRes.json();
+                const serverImages = uploadData.images as VehicleImage[];
+
+                // Map local new images to server images (assuming append order)
+                const newServerImages = serverImages.slice(-imagesToUpload.length);
+                const newImageIdMap = new Map<string, string>();
+                imagesToUpload.forEach((img, index) => {
+                    if (newServerImages[index]) {
+                        newImageIdMap.set(img.id, newServerImages[index].id);
+                    }
+                });
+
+                finalImageOrder = displayImages.map(img => {
+                    if (img.isNew) {
+                        return newImageIdMap.get(img.id) || img.id;
+                    }
+                    return img.id;
+                }).filter(id => !id.startsWith('temp-'));
+
+            } else {
+                finalImageOrder = displayImages
+                    .filter(img => !img.isNew)
+                    .map(img => img.id);
+            }
+
+            // 3. Reorder
+            if (finalImageOrder.length > 0) {
+                await fetch(`http://localhost:8000/listings/${listingId}/images/reorder`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        imageIds: finalImageOrder
+                    })
+                });
+            }
+
+            // 4. Update listing data
             const response = await fetch(`http://localhost:8000/listings/${listingId}`, {
                 method: 'PUT',
                 headers: {
@@ -363,7 +562,7 @@ export default function EditListingPage() {
 
             {/* Success Message */}
             {success && (
-                <div className="max-w-4xl mx-auto px-4 mt-4">
+                <div className="max-w-7xl mx-auto px-4 mt-4">
                     <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700">
                         <CheckCircle size={24} weight="bold" />
                         <span className="font-medium">บันทึกการเปลี่ยนแปลงสำเร็จ! กำลังกลับไปหน้ารายการ...</span>
@@ -373,7 +572,7 @@ export default function EditListingPage() {
 
             {/* Error Message */}
             {error && listing && (
-                <div className="max-w-4xl mx-auto px-4 mt-4">
+                <div className="max-w-7xl mx-auto px-4 mt-4">
                     <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
                         <WarningCircle size={24} weight="bold" />
                         <span className="font-medium">{error}</span>
@@ -387,27 +586,110 @@ export default function EditListingPage() {
                     {/* Main Form */}
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-                            {/* Current Images */}
-                            {listing && listing.images.length > 0 && (
-                                <div className="mb-8">
-                                    <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                        <ImageIcon size={24} weight="fill" className="text-accent" /> รูปภาพปัจจุบัน
-                                    </h3>
-                                    <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                                        {listing.images.map((img, index) => (
-                                            <div key={img.id} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-gray-200">
-                                                <img src={img.url} alt={`Image ${index + 1}`} className="w-full h-full object-cover" />
-                                                {img.isPrimary && (
-                                                    <div className="absolute top-1 left-1 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
-                                                        หลัก
+                            {/* Image Management Section */}
+                            <div className="mb-8">
+                                <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+                                    <Camera size={24} weight="fill" className="text-accent" /> จัดการรูปภาพ
+                                </h3>
+
+                                {/* Existing Images */}
+                                {/* Images Grid */}
+                                {displayImages.length > 0 && (
+                                    <div className="mb-6">
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            รูปภาพทั้งหมด ({displayImages.length} รูป) - ลากเพื่อจัดลำดับ (รูปแรกจะเป็นรูปหลัก)
+                                        </p>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            {displayImages.map((img, index) => (
+                                                <div
+                                                    key={img.id}
+                                                    draggable
+                                                    onDragStart={(e) => handleDragStart(e, img.id)}
+                                                    onDragEnd={handleDragEnd}
+                                                    onDragOver={(e) => handleDragOver(e, img.id)}
+                                                    onDragLeave={handleDragLeave}
+                                                    onDrop={(e) => handleDrop(e, img.id)}
+                                                    className={`relative group rounded-xl overflow-hidden border-2 cursor-grab active:cursor-grabbing transition-all duration-200
+                                                        ${index === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-gray-200'}
+                                                        ${draggedImageId === img.id ? 'opacity-50 scale-95' : ''}
+                                                        ${dragOverImageId === img.id ? 'ring-4 ring-blue-400 border-blue-400 scale-105' : ''}
+                                                        ${deletedImageIds.includes(img.id) ? 'opacity-30 grayscale' : ''}
+                                                    `}
+                                                >
+                                                    <div className="aspect-[4/3]">
+                                                        <img
+                                                            src={img.url}
+                                                            alt={`Image ${index + 1}`}
+                                                            className="w-full h-full object-cover pointer-events-none"
+                                                        />
                                                     </div>
-                                                )}
-                                            </div>
-                                        ))}
+
+                                                    {/* Primary Badge - show on first image only */}
+                                                    {index === 0 && (
+                                                        <div className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded-full font-bold">
+                                                            รูปหลัก
+                                                        </div>
+                                                    )}
+
+                                                    {/* New Badge */}
+                                                    {img.isNew && index !== 0 && (
+                                                        <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                                                            ใหม่
+                                                        </div>
+                                                    )}
+
+                                                    {/* Delete Button - Top Right */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => { e.stopPropagation(); handleDeleteImage(img.id); }}
+                                                        className="absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-white text-red-500 hover:text-red-600 rounded-full flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
+                                                        title="ลบรูปภาพ"
+                                                    >
+                                                        <Trash size={16} weight="bold" />
+                                                    </button>
+
+                                                    {/* Order Number */}
+                                                    <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+                                                        {index + 1}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-gray-400 mt-2">* การจัดการรูปภาพจะพัฒนาในเวอร์ชันถัดไป</p>
-                                </div>
-                            )}
+                                )}
+
+                                {/* Add New Image Button */}
+                                {displayImages.length < 24 ? (
+                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition cursor-pointer">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={handleNewImageSelect}
+                                            className="hidden"
+                                            id="new-image-input"
+                                        />
+                                        <label htmlFor="new-image-input" className="cursor-pointer">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                                    <Plus size={24} className="text-gray-400" />
+                                                </div>
+                                                <p className="text-sm font-medium text-gray-600">คลิกเพื่อเพิ่มรูปภาพ</p>
+                                                <p className="text-xs text-gray-400">รองรับ JPG, PNG, WebP (สูงสุด 10MB ต่อรูป)</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                ) : (
+                                    <div className="border-2 border-dashed border-gray-200 bg-gray-50 rounded-xl p-6 text-center">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                                <CheckCircle size={24} className="text-gray-400" />
+                                            </div>
+                                            <p className="text-sm font-medium text-gray-500">คุณอัพโหลดรูปภาพครบ 24 รูปแล้ว</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Vehicle Info Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">

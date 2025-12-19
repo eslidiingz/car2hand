@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
-import { uploadListingImages, deleteListingImages, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
+import { uploadListingImages, deleteListingImages, deleteFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
@@ -198,6 +198,18 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
         }
 
+        // ดึงรูปที่มีอยู่เดิม
+        const existingImages = await prisma.vehicleImage.findMany({
+            where: { listingId: id },
+            orderBy: { order: 'asc' }
+        });
+
+        // ตรวจสอบจำนวนรูป
+        if (existingImages.length + images.length > 24) {
+            set.status = 400;
+            return { message: `สามารถอัพโหลดได้สูงสุด 24 รูป (ปัจจุบันมี ${existingImages.length} รูป)` };
+        }
+
         try {
             // อัพโหลดรูปไปยัง MinIO
             const uploadedImages = await uploadListingImages(
@@ -210,13 +222,21 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 }))
             );
 
+            // คำนวณ order เริ่มต้น (ต่อจากรูปสุดท้าย)
+            const startOrder = existingImages.length > 0
+                ? Math.max(...existingImages.map(img => img.order)) + 1
+                : 0;
+
+            // ตรวจสอบว่ามีรูปหลักอยู่แล้วหรือไม่
+            const hasPrimary = existingImages.some(img => img.isPrimary);
+
             // บันทึกข้อมูลรูปลง database
-            const dbImages = await prisma.vehicleImage.createMany({
+            await prisma.vehicleImage.createMany({
                 data: uploadedImages.map((img, index) => ({
                     listingId: id,
                     url: img.url,
-                    isPrimary: index === 0,
-                    order: index
+                    isPrimary: !hasPrimary && index === 0, // ถ้ายังไม่มีรูปหลัก ให้รูปแรกใหม่เป็นรูปหลัก
+                    order: startOrder + index
                 }))
             });
 
@@ -308,6 +328,194 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 filename: t.String(),
                 mimetype: t.String()
             })
+        })
+    })
+
+    // ลบรูปภาพเดี่ยว
+    .delete("/:id/images/:imageId", async ({ params, query, set }) => {
+        const { id, imageId } = params;
+        const userId = query.userId;
+
+        if (!userId) {
+            set.status = 400;
+            return { message: "กรุณาระบุ userId" };
+        }
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // หา image ที่ต้องการลบ
+        const imageToDelete = listing.images.find(img => img.id === imageId);
+        if (!imageToDelete) {
+            set.status = 404;
+            return { message: "ไม่พบรูปภาพนี้" };
+        }
+
+        try {
+            // ลบจาก MinIO โดยดึง path จาก URL
+            const url = new URL(imageToDelete.url);
+            const objectPath = url.pathname.replace(/^\/car2hand\//, '');
+            await deleteFile(objectPath);
+
+            // ลบจาก database
+            await prisma.vehicleImage.delete({
+                where: { id: imageId }
+            });
+
+            // ถ้าเป็นรูปหลักและยังมีรูปอื่น ให้ตั้งรูปแรกเป็นหลักแทน
+            if (imageToDelete.isPrimary && listing.images.length > 1) {
+                const remainingImages = listing.images.filter(img => img.id !== imageId);
+                if (remainingImages.length > 0) {
+                    await prisma.vehicleImage.update({
+                        where: { id: remainingImages[0].id },
+                        data: { isPrimary: true }
+                    });
+                }
+            }
+
+            // ดึงรูปที่เหลือกลับมา
+            const remainingImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "ลบรูปภาพสำเร็จ",
+                images: remainingImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการลบรูปภาพ" };
+        }
+    })
+
+    // เรียงลำดับรูปภาพใหม่
+    .put("/:id/images/reorder", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, imageIds } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            // อัพเดท order และ isPrimary
+            await Promise.all(imageIds.map((imageId: string, index: number) =>
+                prisma.vehicleImage.update({
+                    where: { id: imageId },
+                    data: {
+                        order: index,
+                        isPrimary: index === 0
+                    }
+                })
+            ));
+
+            // ดึงรูปที่อัพเดทแล้วกลับมา
+            const updatedImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "เรียงลำดับรูปภาพสำเร็จ",
+                images: updatedImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการเรียงลำดับรูปภาพ" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            imageIds: t.Array(t.String())
+        })
+    })
+
+    // ตั้งรูปหลัก
+    .put("/:id/images/:imageId/primary", async ({ params, body, set }) => {
+        const { id, imageId } = params;
+        const { userId } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // หา image ที่ต้องการตั้งเป็นหลัก
+        const targetImage = listing.images.find(img => img.id === imageId);
+        if (!targetImage) {
+            set.status = 404;
+            return { message: "ไม่พบรูปภาพนี้" };
+        }
+
+        try {
+            // ยกเลิกรูปหลักเดิม
+            await prisma.vehicleImage.updateMany({
+                where: { listingId: id, isPrimary: true },
+                data: { isPrimary: false }
+            });
+
+            // ตั้งรูปใหม่เป็นหลัก
+            await prisma.vehicleImage.update({
+                where: { id: imageId },
+                data: { isPrimary: true, order: 0 }
+            });
+
+            // ดึงรูปที่อัพเดทแล้วกลับมา
+            const updatedImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "ตั้งรูปหลักสำเร็จ",
+                images: updatedImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการตั้งรูปหลัก" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String()
         })
     })
 
