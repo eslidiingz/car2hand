@@ -124,3 +124,21 @@ body {
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
 }
+
+/* Custom Scrollbar for Filters */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #CBD5E1;
+}

@@ -806,22 +806,49 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             minPrice,
             maxPrice,
             province,
+            bodyType,
+            q,
             status = "ACTIVE",
             page = "1",
             limit = "20"
-        } = query;
+        } = query as any;
 
-        const where: Record<string, unknown> = {
+        console.log('Backend received query:', query);
+
+        const where: Record<string, any> = {
             status: status
         };
 
         if (vehicleType) where.vehicleType = vehicleType;
-        if (brand) where.brand = brand;
+        if (bodyType) where.bodyType = bodyType;
+        if (brand) {
+            const brandList = Array.isArray(brand) ? brand : brand.toString().split(',');
+            if (brandList.length > 1) {
+                where.brand = { in: brandList };
+            } else {
+                where.brand = brandList[0];
+            }
+        }
         if (province) where.province = province;
-        if (minPrice || maxPrice) {
+
+        // Price filtering
+        const minNum = minPrice ? parseFloat(minPrice.toString()) : null;
+        const maxNum = maxPrice ? parseFloat(maxPrice.toString()) : null;
+
+        if (minNum !== null || maxNum !== null) {
             where.price = {};
-            if (minPrice) (where.price as Record<string, unknown>).gte = parseFloat(minPrice);
-            if (maxPrice) (where.price as Record<string, unknown>).lte = parseFloat(maxPrice);
+            if (minNum !== null && !isNaN(minNum)) where.price.gte = minNum;
+            if (maxNum !== null && !isNaN(maxNum)) where.price.lte = maxNum;
+        }
+
+        if (q) {
+            const searchTerm = q.toString();
+            where.OR = [
+                { title: { contains: searchTerm, mode: 'insensitive' } },
+                { brand: { contains: searchTerm, mode: 'insensitive' } },
+                { model: { contains: searchTerm, mode: 'insensitive' } },
+                { description: { contains: searchTerm, mode: 'insensitive' } }
+            ];
         }
 
         const skip = (parseInt(page) - 1) * parseInt(limit);

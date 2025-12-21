@@ -9,46 +9,60 @@ import prisma from '../src/db';
 // รถยนต์ยอดนิยมในไทย
 // =============================================
 const carBrands = [
-    // ญี่ปุ่น
+    // 1. แบรนด์ญี่ปุ่น (เจ้าตลาดเดิม)
     { name: 'Toyota', nameTh: 'โตโยต้า', country: 'Japan', isPopular: true, order: 1, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/toyota.png' },
-    { name: 'Honda', nameTh: 'ฮอนด้า', country: 'Japan', isPopular: true, order: 2, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/honda.png' },
-    { name: 'Isuzu', nameTh: 'อีซูซุ', country: 'Japan', isPopular: true, order: 3, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/isuzu.png' },
-    { name: 'Mazda', nameTh: 'มาสด้า', country: 'Japan', isPopular: true, order: 4, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mazda.png' },
+    { name: 'Lexus', nameTh: 'เลกซัส', country: 'Japan', isPopular: false, order: 2, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/lexus.png' },
+    { name: 'Honda', nameTh: 'ฮอนด้า', country: 'Japan', isPopular: true, order: 3, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/honda.png' },
+    { name: 'Isuzu', nameTh: 'อีซูซุ', country: 'Japan', isPopular: true, order: 4, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/isuzu.png' },
     { name: 'Mitsubishi', nameTh: 'มิตซูบิชิ', country: 'Japan', isPopular: true, order: 5, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mitsubishi.png' },
-    { name: 'Nissan', nameTh: 'นิสสัน', country: 'Japan', isPopular: true, order: 6, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/nissan.png' },
-    { name: 'Suzuki', nameTh: 'ซูซูกิ', country: 'Japan', isPopular: false, order: 7, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/suzuki.png' },
-    { name: 'Subaru', nameTh: 'ซูบารุ', country: 'Japan', isPopular: false, order: 8, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/subaru.png' },
-    { name: 'Lexus', nameTh: 'เลกซัส', country: 'Japan', isPopular: false, order: 9, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/lexus.png' },
+    { name: 'Mazda', nameTh: 'มาสด้า', country: 'Japan', isPopular: true, order: 6, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mazda.png' },
+    { name: 'Nissan', nameTh: 'นิสสัน', country: 'Japan', isPopular: true, order: 7, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/nissan.png' },
+    { name: 'Suzuki', nameTh: 'ซูซูกิ', country: 'Japan', isPopular: false, order: 8, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/suzuki.png' },
+    { name: 'Subaru', nameTh: 'ซูบารุ', country: 'Japan', isPopular: false, order: 9, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/subaru.png' },
 
-    // เยอรมัน
-    { name: 'BMW', nameTh: 'บีเอ็มดับเบิลยู', country: 'Germany', isPopular: true, order: 10, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/bmw.png' },
-    { name: 'Mercedes-Benz', nameTh: 'เมอร์เซเดส-เบนซ์', country: 'Germany', isPopular: true, order: 11, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mercedes-benz.png' },
-    { name: 'Audi', nameTh: 'ออดี้', country: 'Germany', isPopular: false, order: 12, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/audi.png' },
-    { name: 'Volkswagen', nameTh: 'โฟล์คสวาเกน', country: 'Germany', isPopular: false, order: 13, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/volkswagen.png' },
-    { name: 'Porsche', nameTh: 'ปอร์เช่', country: 'Germany', isPopular: false, order: 14, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/porsche.png' },
+    // 2. แบรนด์จีน (กลุ่มดาวรุ่งและ EV)
+    { name: 'BYD', nameTh: 'บีวายดี', country: 'China', isPopular: true, order: 10, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/byd.png' },
+    { name: 'GWM', nameTh: 'เกรท วอลล์ มอเตอร์', country: 'China', isPopular: true, order: 11, logo: 'https://www.grandprix.co.th/wp-content/uploads/2025/06/2025-GWM-Logo-RGB-Digital_2-1-1-660x400.png' },
+    { name: 'MG', nameTh: 'เอ็มจี', country: 'China', isPopular: true, order: 12, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mg.png' },
+    { name: 'NETA', nameTh: 'เนต้า', country: 'China', isPopular: true, order: 13, logo: 'https://yt3.googleusercontent.com/QfhyKq0NKTVJPVYo2_umEltjZFZafyRGEQhoe64C_06dOOibpywmeBFtWBcFTqAGnaIwYirn=s160-c-k-c0x00ffffff-no-rj' },
+    { name: 'Changan', nameTh: 'ฉางอัน', country: 'China', isPopular: false, order: 14, logo: '' },
+    { name: 'AION', nameTh: 'ไอออน', country: 'China', isPopular: false, order: 15, logo: '' },
+    { name: 'Omoda', nameTh: 'โอโมด้า', country: 'China', isPopular: false, order: 16, logo: '' },
+    { name: 'Jaecoo', nameTh: 'เจโก้', country: 'China', isPopular: false, order: 17, logo: '' },
+    { name: 'XPeng', nameTh: 'เอ็กซ์เผิง', country: 'China', isPopular: false, order: 18, logo: '' },
+    { name: 'Zeekr', nameTh: 'ซีคเกอร์', country: 'China', isPopular: false, order: 19, logo: '' },
+    { name: 'Wuling', nameTh: 'วู่หลิง', country: 'China', isPopular: false, order: 20, logo: '' },
+    { name: 'Volvo', nameTh: 'วอลโว่', country: 'Sweden', isPopular: false, order: 21, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/volvo.png' },
 
-    // เกาหลี
-    { name: 'Hyundai', nameTh: 'ฮุนได', country: 'South Korea', isPopular: false, order: 15, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/hyundai.png' },
-    { name: 'Kia', nameTh: 'เกีย', country: 'South Korea', isPopular: false, order: 16, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/kia.png' },
+    // 3. แบรนด์ยุโรป (กลุ่มหรูหราและสมรรถนะ)
+    { name: 'Mercedes-Benz', nameTh: 'เมอร์เซเดส-เบนซ์', country: 'Germany', isPopular: true, order: 22, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mercedes-benz.png' },
+    { name: 'BMW', nameTh: 'บีเอ็มดับเบิลยู', country: 'Germany', isPopular: true, order: 23, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/bmw.png' },
+    { name: 'Audi', nameTh: 'ออดี้', country: 'Germany', isPopular: false, order: 24, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/audi.png' },
+    { name: 'Mini', nameTh: 'มินิ', country: 'UK', isPopular: false, order: 25, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mini.png' },
+    { name: 'Porsche', nameTh: 'ปอร์เช่', country: 'Germany', isPopular: false, order: 26, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/porsche.png' },
+    { name: 'Peugeot', nameTh: 'เปอโยต์', country: 'France', isPopular: false, order: 27, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/peugeot.png' },
+    { name: 'Volkswagen', nameTh: 'โฟล์คสวาเกน', country: 'Germany', isPopular: false, order: 28, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/volkswagen.png' },
+    { name: 'Land Rover', nameTh: 'แลนด์โรเวอร์', country: 'UK', isPopular: false, order: 29, logo: '' },
+    { name: 'Jaguar', nameTh: 'จากัวร์', country: 'UK', isPopular: false, order: 30, logo: '' },
 
-    // อเมริกา
-    { name: 'Ford', nameTh: 'ฟอร์ด', country: 'USA', isPopular: true, order: 17, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/ford.png' },
-    { name: 'Chevrolet', nameTh: 'เชฟโรเลต', country: 'USA', isPopular: false, order: 18, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/chevrolet.png' },
+    // 4. แบรนด์อเมริกัน
+    { name: 'Ford', nameTh: 'ฟอร์ด', country: 'USA', isPopular: true, order: 31, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/ford.png' },
+    { name: 'Tesla', nameTh: 'เทสล่า', country: 'USA', isPopular: false, order: 32, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/tesla.png' },
+    { name: 'Jeep', nameTh: 'จี๊ป', country: 'USA', isPopular: false, order: 33, logo: '' },
 
-    // อังกฤษ
-    { name: 'MG', nameTh: 'เอ็มจี', country: 'UK', isPopular: true, order: 19, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mg.png' },
-    { name: 'Mini', nameTh: 'มินิ', country: 'UK', isPopular: false, order: 20, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/mini.png' },
+    // 5. แบรนด์เกาหลี
+    { name: 'Hyundai', nameTh: 'ฮุนได', country: 'South Korea', isPopular: false, order: 34, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/hyundai.png' },
+    { name: 'Kia', nameTh: 'เกีย', country: 'South Korea', isPopular: false, order: 35, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/kia.png' },
 
-    // จีน
-    { name: 'BYD', nameTh: 'บีวายดี', country: 'China', isPopular: true, order: 21, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/byd.png' },
-    { name: 'Great Wall Motor', nameTh: 'เกรท วอลล์ มอเตอร์', country: 'China', isPopular: false, order: 22, logo: 'https://www.grandprix.co.th/wp-content/uploads/2025/06/2025-GWM-Logo-RGB-Digital_2-1-1-660x400.png' },
-    { name: 'Neta', nameTh: 'เนต้า', country: 'China', isPopular: false, order: 23, logo: 'https://yt3.googleusercontent.com/QfhyKq0NKTVJPVYo2_umEltjZFZafyRGEQhoe64C_06dOOibpywmeBFtWBcFTqAGnaIwYirn=s160-c-k-c0x00ffffff-no-rj' },
-    { name: 'ORA', nameTh: 'ออร่า', country: 'China', isPopular: false, order: 24, logo: 'https://i0.wp.com/southernqueenstown.co.nz/wp-content/uploads/2023/05/Ora-Logo-Grid-Web-Res-PNG.png' },
-
-    // อื่นๆ
-    { name: 'Volvo', nameTh: 'วอลโว่', country: 'Sweden', isPopular: false, order: 25, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/volvo.png' },
-    { name: 'Peugeot', nameTh: 'เปอโยต์', country: 'France', isPopular: false, order: 26, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/peugeot.png' },
-    { name: 'Tesla', nameTh: 'เทสล่า', country: 'USA', isPopular: false, order: 27, logo: 'https://raw.githubusercontent.com/filippofilip95/car-logos-dataset/master/logos/optimized/tesla.png' },
+    // 6. แบรนด์ Supercar & Ultra Luxury (มีตัวแทนจำหน่ายทางการ)
+    { name: 'Ferrari', nameTh: 'เฟอร์รารี่', country: 'Supercar', isPopular: false, order: 36, logo: '' },
+    { name: 'Lamborghini', nameTh: 'แลมโบกินี่', country: 'Supercar', isPopular: false, order: 37, logo: '' },
+    { name: 'Maserati', nameTh: 'มาเซราติ', country: 'Supercar', isPopular: false, order: 38, logo: '' },
+    { name: 'Bentley', nameTh: 'เบนท์ลีย์', country: 'Supercar', isPopular: false, order: 39, logo: '' },
+    { name: 'Rolls-Royce', nameTh: 'โรลส์-รอยซ์', country: 'Supercar', isPopular: false, order: 40, logo: '' },
+    { name: 'Aston Martin', nameTh: 'แอสตัน มาร์ติน', country: 'Supercar', isPopular: false, order: 41, logo: '' },
+    { name: 'McLaren', nameTh: 'แม็คลาเรน', country: 'Supercar', isPopular: false, order: 42, logo: '' },
+    { name: 'Lotus', nameTh: 'โลตัส', country: 'Supercar', isPopular: false, order: 43, logo: '' },
 ];
 
 // รุ่นรถยนต์ที่ได้รับความนิยม
@@ -345,7 +359,11 @@ async function seedMasterData() {
                 }
             },
             update: {
-                logo: brandData.logo
+                nameTh: brandData.nameTh,
+                country: brandData.country,
+                logo: brandData.logo,
+                isPopular: brandData.isPopular,
+                order: brandData.order
             },
             create: {
                 name: brandData.name,
