@@ -1059,6 +1059,7 @@ export const VehicleListingScalarFieldEnum = {
   fuelType: 'fuelType',
   transmission: 'transmission',
   engineSize: 'engineSize',
+  seats: 'seats',
   mileage: 'mileage',
   bodyType: 'bodyType',
   plateProvince: 'plateProvince',

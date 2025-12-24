@@ -584,16 +584,19 @@ export default function CreateListingPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่จดทะเบียน *</label>
-                                            <select
-                                                className="form-select"
-                                                value={formData.year}
-                                                onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
-                                            >
-                                                {years.map(y => (
-                                                    <option key={y} value={y}>{y}</option>
-                                                ))}
-                                            </select>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต *</label>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                placeholder="เช่น 2024"
+                                                className="form-input font-medium"
+                                                value={formData.year || ''}
+                                                maxLength={4}
+                                                onChange={(e) => {
+                                                    const value = e.target.value.replace(/\D/g, '');
+                                                    updateFormData({ year: parseInt(value) || 0 });
+                                                }}
+                                            />
                                         </div>
 
                                         <div ref={colorRef}>
@@ -670,6 +673,37 @@ export default function CreateListingPage() {
                                             </div>
                                         </div>
                                         {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์</p>}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC)</label>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                placeholder="เช่น 1500"
+                                                className="form-input font-medium"
+                                                value={formData.engineSize || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value.replace(/\D/g, '');
+                                                    updateFormData({ engineSize: parseInt(value) || undefined });
+                                                }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">จำนวนที่นั่ง</label>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                placeholder="เช่น 5"
+                                                className="form-input font-medium"
+                                                value={formData.seats || ''}
+                                                onChange={(e) => {
+                                                    const value = e.target.value.replace(/\D/g, '');
+                                                    updateFormData({ seats: parseInt(value) || undefined });
+                                                }}
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* Vehicle Extras */}

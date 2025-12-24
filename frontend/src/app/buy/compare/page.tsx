@@ -14,7 +14,9 @@ import {
     MapPin,
     Image as ImageIcon,
     ArrowLeft,
-    Warning
+    Warning,
+    Lightning,
+    Users
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 
@@ -23,6 +25,8 @@ interface CompareItem extends WishlistItem {
     mileage?: number | null;
     fuelType?: string;
     transmission?: string | null;
+    engineSize?: number | null;
+    seats?: number | null;
     province?: string;
     vehicleType?: 'CAR' | 'MOTORCYCLE';
     negotiable?: boolean;
@@ -51,6 +55,8 @@ export default function ComparePage() {
                                 mileage: listing.mileage,
                                 fuelType: listing.fuelType,
                                 transmission: listing.transmission,
+                                engineSize: listing.engineSize,
+                                seats: listing.seats,
                                 province: listing.province,
                                 vehicleType: listing.vehicleType,
                                 negotiable: listing.negotiable
@@ -319,6 +325,32 @@ export default function ComparePage() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Engine Size */}
+                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
+                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                            <Lightning size={18} className="text-primary" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">ขนาดเครื่องยนต์</div>
+                                            <div className="font-bold text-gray-800">
+                                                {item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-'}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Seats */}
+                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
+                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                            <Users size={18} className="text-primary" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">จำนวนที่นั่ง</div>
+                                            <div className="font-bold text-gray-800">
+                                                {item.seats ? `${item.seats} ที่นั่ง` : '-'}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -341,6 +373,8 @@ export default function ComparePage() {
 
                                 {/* Placeholder specs */}
                                 <div className="space-y-3 opacity-30 pointer-events-none">
+                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
+                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
                                     <div className="bg-gray-200 rounded-xl h-[64px]"></div>
                                     <div className="bg-gray-200 rounded-xl h-[64px]"></div>
                                     <div className="bg-gray-200 rounded-xl h-[64px]"></div>

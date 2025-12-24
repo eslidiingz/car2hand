@@ -147,6 +147,7 @@ model VehicleListing {
   fuelType     FuelType // ประเภทเชื้อเพลิง
   transmission Transmission? // ระบบเกียร์ (optional สำหรับมอเตอร์ไซค์บางรุ่น)
   engineSize   Int? // ขนาดเครื่อง (cc) เช่น 150, 300, 1800, 2000
+  seats        Int? // จำนวนที่นั่ง
   mileage      Int // เลขไมล์ (กม.)
 
   // ประเภทตัวถัง

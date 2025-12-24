@@ -15,6 +15,8 @@ export interface WishlistItem {
     mileage?: number | null;
     fuelType?: string;
     transmission?: string | null;
+    engineSize?: number | null;
+    seats?: number | null;
     province?: string;
     imageUrl?: string;
     images?: { url: string; isPrimary: boolean }[];

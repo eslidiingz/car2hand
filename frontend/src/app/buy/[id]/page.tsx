@@ -31,7 +31,9 @@ import {
     Certificate,
     Scales,
     Check,
-    AddressBook
+    AddressBook,
+    Lightning,
+    Users
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
@@ -61,6 +63,7 @@ interface VehicleListing {
     fuelType: string;
     transmission: string | null;
     engineSize: number | null;
+    seats: number | null;
     mileage: number | null;
     bodyType: string | null;
     plateProvince: string | null;
@@ -250,6 +253,8 @@ export default function CarDetailPage() {
             mileage: listing.mileage,
             fuelType: listing.fuelType,
             transmission: listing.transmission,
+            engineSize: listing.engineSize,
+            seats: (listing as any).seats,
             province: listing.province,
             imageUrl: listing.images[0]?.url,
             images: listing.images.map(img => ({ url: img.url, isPrimary: img.isPrimary })),
@@ -477,6 +482,16 @@ export default function CarDetailPage() {
                                     <Palette size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">สี</p>
                                     <p className="font-bold text-gray-800">{listing.color}</p>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <Lightning size={24} className="text-primary mx-auto mb-2" />
+                                    <p className="text-xs text-gray-500">ขนาดเครื่องยนต์</p>
+                                    <p className="font-bold text-gray-800">{listing.engineSize ? `${formatPrice(listing.engineSize)} CC` : '-'}</p>
+                                </div>
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <Users size={24} className="text-primary mx-auto mb-2" />
+                                    <p className="text-xs text-gray-500">จำนวนที่นั่ง</p>
+                                    <p className="font-bold text-gray-800">{(listing as any).seats ? `${(listing as any).seats} ที่นั่ง` : '-'}</p>
                                 </div>
                             </div>
                         </div>

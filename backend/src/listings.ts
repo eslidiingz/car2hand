@@ -37,6 +37,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     fuelType: listingData.fuelType,
                     transmission: listingData.transmission,
                     engineSize: listingData.engineSize,
+                    seats: listingData.seats,
                     mileage: listingData.mileage,
                     bodyType: listingData.bodyType,
                     plateProvince: listingData.plateProvince,
@@ -113,6 +114,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("SEMI_AUTO")
             ])),
             engineSize: t.Optional(t.Number()),
+            seats: t.Optional(t.Number()),
             mileage: t.Number(),
             bodyType: t.Union([
                 // รถยนต์
@@ -621,6 +623,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     fuelType: updateData.fuelType,
                     transmission: updateData.transmission,
                     engineSize: updateData.engineSize,
+                    seats: updateData.seats,
                     mileage: updateData.mileage,
                     bodyType: updateData.bodyType,
                     plateProvince: updateData.plateProvince,
@@ -698,6 +701,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("SEMI_AUTO")
             ])),
             engineSize: t.Optional(t.Number()),
+            seats: t.Optional(t.Number()),
             mileage: t.Optional(t.Number()),
             bodyType: t.Optional(t.Union([
                 t.Literal("SEDAN"),
@@ -853,7 +857,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
-        const [listings, total] = await Promise.all([
+        const [listings, total, brandStats] = await Promise.all([
             prisma.vehicleListing.findMany({
                 where,
                 include: {
@@ -872,11 +876,25 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 skip,
                 take: parseInt(limit)
             }),
-            prisma.vehicleListing.count({ where })
+            prisma.vehicleListing.count({ where }),
+            prisma.vehicleListing.groupBy({
+                by: ['brand'],
+                where: {
+                    status: 'ACTIVE',
+                    vehicleType: vehicleType || undefined
+                },
+                _count: {
+                    brand: true
+                }
+            })
         ]);
 
         return {
             listings,
+            brandStats: brandStats.reduce((acc: any, curr) => {
+                acc[curr.brand] = curr._count.brand;
+                return acc;
+            }, {}),
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),

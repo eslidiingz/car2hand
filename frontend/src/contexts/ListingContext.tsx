@@ -16,6 +16,7 @@ export interface ListingFormData {
     fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV';
     bodyType: string;
     engineSize?: number;
+    seats?: number;
 
     // Step 1.5: Condition
     condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
@@ -80,6 +81,7 @@ const defaultFormData: ListingFormData = {
     fuelType: 'PETROL',
     bodyType: 'SEDAN',
     engineSize: undefined,
+    seats: undefined,
     condition: 'GOOD',
     ownerCount: 1,
     hasAccident: false,
@@ -176,6 +178,7 @@ export async function createListing(userId: string, data: ListingFormData): Prom
             fuelType: data.fuelType,
             transmission: data.transmission,
             engineSize: data.engineSize,
+            seats: data.seats,
             mileage: data.mileage,
             bodyType: data.bodyType,
             plateProvince: data.plateProvince,

@@ -96,6 +96,8 @@ interface FormData {
     fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV';
     transmission: 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO';
     mileage: number;
+    engineSize: number;
+    seats: number;
     bodyType: string;
     condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
     ownerCount: number;
@@ -154,6 +156,8 @@ export default function EditListingPage() {
         fuelType: 'PETROL',
         transmission: 'AUTOMATIC',
         mileage: 0,
+        engineSize: 0,
+        seats: 0,
         bodyType: 'SEDAN',
         condition: 'GOOD',
         ownerCount: 1,
@@ -347,6 +351,8 @@ export default function EditListingPage() {
                     fuelType: listingData.fuelType as FormData['fuelType'],
                     transmission: (listingData.transmission as FormData['transmission']) || 'AUTOMATIC',
                     mileage: listingData.mileage || 0,
+                    engineSize: listingData.engineSize || 0,
+                    seats: (listingData as any).seats || 0,
                     bodyType: listingData.bodyType || 'SEDAN',
                     condition: (listingData.condition as FormData['condition']) || 'GOOD',
                     ownerCount: listingData.ownerCount,
@@ -756,16 +762,19 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่จดทะเบียน *</label>
-                                    <select
-                                        className="form-select"
-                                        value={formData.year}
-                                        onChange={(e) => updateFormData({ year: parseInt(e.target.value) })}
-                                    >
-                                        {years.map(y => (
-                                            <option key={y} value={y}>{y}</option>
-                                        ))}
-                                    </select>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต *</label>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        placeholder="เช่น 2024"
+                                        className="form-input font-medium"
+                                        value={formData.year || ''}
+                                        maxLength={4}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, '');
+                                            updateFormData({ year: parseInt(value) || 0 });
+                                        }}
+                                    />
                                 </div>
 
                                 <div>
@@ -837,6 +846,37 @@ export default function EditListingPage() {
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                         <Gauge size={20} />
                                     </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC) (ไม่บังคับ)</label>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        placeholder="เช่น 1500"
+                                        className="form-input font-medium"
+                                        value={formData.engineSize || ''}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, '');
+                                            updateFormData({ engineSize: parseInt(value) || 0 });
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">จำนวนที่นั่ง (ไม่บังคับ)</label>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        placeholder="เช่น 5"
+                                        className="form-input font-medium"
+                                        value={formData.seats || ''}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, '');
+                                            updateFormData({ seats: parseInt(value) || 0 });
+                                        }}
+                                    />
                                 </div>
                             </div>
 

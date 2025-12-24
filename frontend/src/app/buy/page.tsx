@@ -21,17 +21,26 @@ interface PaginationInfo {
     totalPages: number;
 }
 
-// Constants
-const CAR_BRANDS = ['Toyota', 'Honda', 'Mazda', 'Nissan', 'Mitsubishi', 'Isuzu', 'Ford', 'BMW', 'Mercedes-Benz', 'MG', 'Chevrolet', 'Suzuki', 'Hyundai', 'Kia'];
+// Types
+interface Brand {
+    id: string;
+    name: string;
+    nameTh: string | null;
+    logo: string | null;
+    vehicleType: 'CAR' | 'MOTORCYCLE';
+}
+
 
 function BuyContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [listings, setListings] = useState<VehicleListing[]>([]);
     const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+    const [brandStats, setBrandStats] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
 
     // Filters - Initialize directly from searchParams to avoid double-fetch/race condition
+    const [brands, setBrands] = useState<Brand[]>([]);
     const [vehicleType, setVehicleType] = useState<'CAR' | 'MOTORCYCLE' | ''>((searchParams.get('vehicleType') as any) || '');
     const [selectedBrands, setSelectedBrands] = useState<string[]>(searchParams.get('brand')?.split(',').filter(Boolean) || []);
     const [brandSearch, setBrandSearch] = useState('');
@@ -95,6 +104,7 @@ function BuyContent() {
 
             setListings(data.listings || []);
             setPagination(data.pagination);
+            setBrandStats(data.brandStats || {});
         } catch (error) {
             console.error('Error fetching listings:', error);
             setListings([]);
@@ -102,6 +112,25 @@ function BuyContent() {
             setLoading(false);
         }
     };
+
+    const fetchBrands = async () => {
+        try {
+            const params = new URLSearchParams();
+            if (vehicleType) params.append('vehicleType', vehicleType);
+
+            const response = await fetch(`http://localhost:8000/master-data/brands?${params.toString()}`);
+            const data = await response.json();
+            if (data.success) {
+                setBrands(data.brands);
+            }
+        } catch (error) {
+            console.error('Error fetching brands:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchBrands();
+    }, [vehicleType]);
 
     useEffect(() => {
         fetchListings();
@@ -126,7 +155,7 @@ function BuyContent() {
 
                 {/* Sidebar Filters */}
                 <aside className="hidden lg:block w-1/4 min-w-[280px]">
-                    <div className="bg-white p-5 rounded-2xl shadow-sm sticky top-24 border border-gray-100">
+                    <div className="bg-white p-5 rounded-2xl shadow-sm sticky top-24 border border-gray-100 h-[calc(100vh-120px)] flex flex-col">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg text-primary flex items-center gap-2">
                                 <Faders size={20} /> ตัวกรอง
@@ -185,7 +214,7 @@ function BuyContent() {
                         <hr className="border-gray-100 mb-6" />
 
                         {/* Brand */}
-                        <div className="mb-6">
+                        <div className="mb-6 flex-1 flex flex-col min-h-0">
                             <label className="text-sm font-semibold mb-3 block">ยี่ห้อ</label>
 
                             {/* Brand Search Input */}
@@ -200,19 +229,22 @@ function BuyContent() {
                                 />
                             </div>
 
-                            <div className="relative">
-                                <div className="space-y-1 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                                    {CAR_BRANDS.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase())).map(b => (
-                                        <label key={b} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition duration-200 group">
+                            <div className="relative flex-1 min-h-0">
+                                <div className="space-y-1 pr-2 h-full overflow-y-auto custom-scrollbar pb-6">
+                                    {brands.filter(b =>
+                                        b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
+                                        (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()))
+                                    ).map(b => (
+                                        <label key={b.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition duration-200 group">
                                             <div className="relative flex items-center">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedBrands.includes(b)}
+                                                    checked={selectedBrands.includes(b.name)}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setSelectedBrands([...selectedBrands, b]);
+                                                            setSelectedBrands([...selectedBrands, b.name]);
                                                         } else {
-                                                            setSelectedBrands(selectedBrands.filter(brand => brand !== b));
+                                                            setSelectedBrands(selectedBrands.filter(s => s !== b.name));
                                                         }
                                                         setPage(1);
                                                     }}
@@ -223,17 +255,20 @@ function BuyContent() {
                                                     <polyline points="20 6 9 17 4 12"></polyline>
                                                 </svg>
                                             </div>
-                                            <span className={`text-sm transition-colors duration-200 ${selectedBrands.includes(b) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'}`}>
-                                                {b}
+                                            <span className={`text-sm transition-colors duration-200 ${selectedBrands.includes(b.name) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'}`}>
+                                                {b.name} <span className="text-xs text-gray-400 font-normal ml-1">({brandStats[b.name] || 0})</span>
                                             </span>
                                         </label>
                                     ))}
-                                    {CAR_BRANDS.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase())).length === 0 && (
-                                        <p className="text-xs text-center text-gray-400 py-4">ไม่พบยี่ห้อนี้</p>
-                                    )}
+                                    {brands.filter(b =>
+                                        b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
+                                        (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()))
+                                    ).length === 0 && (
+                                            <p className="text-xs text-center text-gray-400 py-4">ไม่พบยี่ห้อนี้</p>
+                                        )}
                                 </div>
                                 {/* Visual cue: Bottom shadow/gradient for scrollable content */}
-                                <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/80 to-transparent pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
                             </div>
                         </div>
 

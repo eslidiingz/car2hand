@@ -30,6 +30,7 @@ export type VehicleListingAvgAggregateOutputType = {
   price: runtime.Decimal | null
   year: number | null
   engineSize: number | null
+  seats: number | null
   mileage: number | null
   ownerCount: number | null
   viewCount: number | null
@@ -41,6 +42,7 @@ export type VehicleListingSumAggregateOutputType = {
   price: runtime.Decimal | null
   year: number | null
   engineSize: number | null
+  seats: number | null
   mileage: number | null
   ownerCount: number | null
   viewCount: number | null
@@ -63,6 +65,7 @@ export type VehicleListingMinAggregateOutputType = {
   fuelType: $Enums.FuelType | null
   transmission: $Enums.Transmission | null
   engineSize: number | null
+  seats: number | null
   mileage: number | null
   bodyType: $Enums.BodyType | null
   plateProvince: string | null
@@ -113,6 +116,7 @@ export type VehicleListingMaxAggregateOutputType = {
   fuelType: $Enums.FuelType | null
   transmission: $Enums.Transmission | null
   engineSize: number | null
+  seats: number | null
   mileage: number | null
   bodyType: $Enums.BodyType | null
   plateProvince: string | null
@@ -163,6 +167,7 @@ export type VehicleListingCountAggregateOutputType = {
   fuelType: number
   transmission: number
   engineSize: number
+  seats: number
   mileage: number
   bodyType: number
   plateProvince: number
@@ -204,6 +209,7 @@ export type VehicleListingAvgAggregateInputType = {
   price?: true
   year?: true
   engineSize?: true
+  seats?: true
   mileage?: true
   ownerCount?: true
   viewCount?: true
@@ -215,6 +221,7 @@ export type VehicleListingSumAggregateInputType = {
   price?: true
   year?: true
   engineSize?: true
+  seats?: true
   mileage?: true
   ownerCount?: true
   viewCount?: true
@@ -237,6 +244,7 @@ export type VehicleListingMinAggregateInputType = {
   fuelType?: true
   transmission?: true
   engineSize?: true
+  seats?: true
   mileage?: true
   bodyType?: true
   plateProvince?: true
@@ -287,6 +295,7 @@ export type VehicleListingMaxAggregateInputType = {
   fuelType?: true
   transmission?: true
   engineSize?: true
+  seats?: true
   mileage?: true
   bodyType?: true
   plateProvince?: true
@@ -337,6 +346,7 @@ export type VehicleListingCountAggregateInputType = {
   fuelType?: true
   transmission?: true
   engineSize?: true
+  seats?: true
   mileage?: true
   bodyType?: true
   plateProvince?: true
@@ -474,6 +484,7 @@ export type VehicleListingGroupByOutputType = {
   fuelType: $Enums.FuelType
   transmission: $Enums.Transmission | null
   engineSize: number | null
+  seats: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince: string | null
@@ -547,6 +558,7 @@ export type VehicleListingWhereInput = {
   fuelType?: Prisma.EnumFuelTypeFilter<"VehicleListing"> | $Enums.FuelType
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
+  seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   mileage?: Prisma.IntFilter<"VehicleListing"> | number
   bodyType?: Prisma.EnumBodyTypeFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -600,6 +612,7 @@ export type VehicleListingOrderByWithRelationInput = {
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
+  seats?: Prisma.SortOrderInput | Prisma.SortOrder
   mileage?: Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -656,6 +669,7 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   fuelType?: Prisma.EnumFuelTypeFilter<"VehicleListing"> | $Enums.FuelType
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
+  seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   mileage?: Prisma.IntFilter<"VehicleListing"> | number
   bodyType?: Prisma.EnumBodyTypeFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -709,6 +723,7 @@ export type VehicleListingOrderByWithAggregationInput = {
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
+  seats?: Prisma.SortOrderInput | Prisma.SortOrder
   mileage?: Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -767,6 +782,7 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   fuelType?: Prisma.EnumFuelTypeWithAggregatesFilter<"VehicleListing"> | $Enums.FuelType
   transmission?: Prisma.EnumTransmissionNullableWithAggregatesFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
+  seats?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
   mileage?: Prisma.IntWithAggregatesFilter<"VehicleListing"> | number
   bodyType?: Prisma.EnumBodyTypeWithAggregatesFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
@@ -817,6 +833,7 @@ export type VehicleListingCreateInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -869,6 +886,7 @@ export type VehicleListingUncheckedCreateInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -921,6 +939,7 @@ export type VehicleListingUpdateInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -973,6 +992,7 @@ export type VehicleListingUncheckedUpdateInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1025,6 +1045,7 @@ export type VehicleListingCreateManyInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1075,6 +1096,7 @@ export type VehicleListingUpdateManyMutationInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1124,6 +1146,7 @@ export type VehicleListingUncheckedUpdateManyInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1189,6 +1212,7 @@ export type VehicleListingCountOrderByAggregateInput = {
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrder
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   mileage?: Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrder
@@ -1228,6 +1252,7 @@ export type VehicleListingAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
   year?: Prisma.SortOrder
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   mileage?: Prisma.SortOrder
   ownerCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -1250,6 +1275,7 @@ export type VehicleListingMaxOrderByAggregateInput = {
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrder
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   mileage?: Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrder
@@ -1300,6 +1326,7 @@ export type VehicleListingMinOrderByAggregateInput = {
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrder
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   mileage?: Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrder
@@ -1339,6 +1366,7 @@ export type VehicleListingSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
   year?: Prisma.SortOrder
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   mileage?: Prisma.SortOrder
   ownerCount?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -1471,6 +1499,7 @@ export type VehicleListingCreateWithoutUserInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1522,6 +1551,7 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1602,6 +1632,7 @@ export type VehicleListingScalarWhereInput = {
   fuelType?: Prisma.EnumFuelTypeFilter<"VehicleListing"> | $Enums.FuelType
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
+  seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   mileage?: Prisma.IntFilter<"VehicleListing"> | number
   bodyType?: Prisma.EnumBodyTypeFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -1652,6 +1683,7 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1703,6 +1735,7 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1770,6 +1803,7 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1821,6 +1855,7 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1872,6 +1907,7 @@ export type VehicleListingCreateWithoutImagesInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1923,6 +1959,7 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -1990,6 +2027,7 @@ export type VehicleListingUpdateWithoutImagesInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2041,6 +2079,7 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2092,6 +2131,7 @@ export type VehicleListingCreateManyUserInput = {
   fuelType: $Enums.FuelType
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
+  seats?: number | null
   mileage: number
   bodyType: $Enums.BodyType
   plateProvince?: string | null
@@ -2141,6 +2181,7 @@ export type VehicleListingUpdateWithoutUserInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2192,6 +2233,7 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2243,6 +2285,7 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   mileage?: Prisma.IntFieldUpdateOperationsInput | number
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2332,6 +2375,7 @@ export type VehicleListingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   fuelType?: boolean
   transmission?: boolean
   engineSize?: boolean
+  seats?: boolean
   mileage?: boolean
   bodyType?: boolean
   plateProvince?: boolean
@@ -2386,6 +2430,7 @@ export type VehicleListingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   fuelType?: boolean
   transmission?: boolean
   engineSize?: boolean
+  seats?: boolean
   mileage?: boolean
   bodyType?: boolean
   plateProvince?: boolean
@@ -2437,6 +2482,7 @@ export type VehicleListingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   fuelType?: boolean
   transmission?: boolean
   engineSize?: boolean
+  seats?: boolean
   mileage?: boolean
   bodyType?: boolean
   plateProvince?: boolean
@@ -2488,6 +2534,7 @@ export type VehicleListingSelectScalar = {
   fuelType?: boolean
   transmission?: boolean
   engineSize?: boolean
+  seats?: boolean
   mileage?: boolean
   bodyType?: boolean
   plateProvince?: boolean
@@ -2523,7 +2570,7 @@ export type VehicleListingSelectScalar = {
   userId?: boolean
 }
 
-export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "negotiable" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
+export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "negotiable" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
 export type VehicleListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
@@ -2559,6 +2606,7 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     fuelType: $Enums.FuelType
     transmission: $Enums.Transmission | null
     engineSize: number | null
+    seats: number | null
     mileage: number
     bodyType: $Enums.BodyType
     plateProvince: string | null
@@ -3032,6 +3080,7 @@ export interface VehicleListingFieldRefs {
   readonly fuelType: Prisma.FieldRef<"VehicleListing", 'FuelType'>
   readonly transmission: Prisma.FieldRef<"VehicleListing", 'Transmission'>
   readonly engineSize: Prisma.FieldRef<"VehicleListing", 'Int'>
+  readonly seats: Prisma.FieldRef<"VehicleListing", 'Int'>
   readonly mileage: Prisma.FieldRef<"VehicleListing", 'Int'>
   readonly bodyType: Prisma.FieldRef<"VehicleListing", 'BodyType'>
   readonly plateProvince: Prisma.FieldRef<"VehicleListing", 'String'>
