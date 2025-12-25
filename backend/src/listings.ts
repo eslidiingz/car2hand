@@ -926,6 +926,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
+        // Calculate brand stats based on other active filters (excluding the brand filter itself)
+        const brandWhere = { ...where };
+        delete brandWhere.brand;
+
         const [listings, total, brandStats] = await Promise.all([
             prisma.vehicleListing.findMany({
                 where,
@@ -948,10 +952,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             prisma.vehicleListing.count({ where }),
             prisma.vehicleListing.groupBy({
                 by: ['brand'],
-                where: {
-                    status: 'ACTIVE',
-                    vehicleType: vehicleType || undefined
-                },
+                where: brandWhere,
                 _count: {
                     brand: true
                 }
