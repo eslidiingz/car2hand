@@ -460,7 +460,7 @@ export default function CarDetailPage() {
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
                                     <CalendarBlank size={24} className="text-primary mx-auto mb-2" />
-                                    <p className="text-xs text-gray-500">ปี</p>
+                                    <p className="text-xs text-gray-500">ปีที่ผลิต</p>
                                     <p className="font-bold text-gray-800">{listing.year}</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">

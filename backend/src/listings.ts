@@ -811,6 +811,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             maxPrice,
             province,
             bodyType,
+            fuelType,
+            transmission,
+            minEngineSize,
+            maxEngineSize,
             q,
             status = "ACTIVE",
             page = "1",
@@ -824,7 +828,34 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         };
 
         if (vehicleType) where.vehicleType = vehicleType;
-        if (bodyType) where.bodyType = bodyType;
+
+        if (bodyType) {
+            const bodyList = Array.isArray(bodyType) ? bodyType : bodyType.toString().split(',');
+            if (bodyList.length > 1) {
+                where.bodyType = { in: bodyList };
+            } else {
+                where.bodyType = bodyList[0];
+            }
+        }
+
+        if (fuelType) {
+            const fuelList = Array.isArray(fuelType) ? fuelType : fuelType.toString().split(',');
+            if (fuelList.length > 1) {
+                where.fuelType = { in: fuelList };
+            } else {
+                where.fuelType = fuelList[0];
+            }
+        }
+
+        if (transmission) {
+            const transList = Array.isArray(transmission) ? transmission : transmission.toString().split(',');
+            if (transList.length > 1) {
+                where.transmission = { in: transList };
+            } else {
+                where.transmission = transList[0];
+            }
+        }
+
         if (brand) {
             const brandList = Array.isArray(brand) ? brand : brand.toString().split(',');
             if (brandList.length > 1) {
@@ -835,6 +866,24 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         }
         if (province) where.province = province;
 
+        if (query.seats) {
+            const seatCount = parseInt(query.seats.toString());
+            if (!isNaN(seatCount)) {
+                if (seatCount === 7) {
+                    where.seats = { gte: 7 };
+                } else {
+                    where.seats = seatCount;
+                }
+            }
+        }
+
+        if (query.maxMileage) {
+            const mileage = parseInt(query.maxMileage.toString());
+            if (!isNaN(mileage)) {
+                where.mileage = { lte: mileage };
+            }
+        }
+
         // Price filtering
         const minNum = minPrice ? parseFloat(minPrice.toString()) : null;
         const maxNum = maxPrice ? parseFloat(maxPrice.toString()) : null;
@@ -843,6 +892,26 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             where.price = {};
             if (minNum !== null && !isNaN(minNum)) where.price.gte = minNum;
             if (maxNum !== null && !isNaN(maxNum)) where.price.lte = maxNum;
+        }
+
+        // Year filtering
+        const minYearNum = query.minYear ? parseInt(query.minYear.toString()) : null;
+        const maxYearNum = query.maxYear ? parseInt(query.maxYear.toString()) : null;
+
+        if (minYearNum !== null || maxYearNum !== null) {
+            where.year = {};
+            if (minYearNum !== null && !isNaN(minYearNum)) where.year.gte = minYearNum;
+            if (maxYearNum !== null && !isNaN(maxYearNum)) where.year.lte = maxYearNum;
+        }
+
+        // Engine Size filtering
+        const minEngineNum = minEngineSize ? parseInt(minEngineSize.toString()) : null;
+        const maxEngineNum = maxEngineSize ? parseInt(maxEngineSize.toString()) : null;
+
+        if (minEngineNum !== null || maxEngineNum !== null) {
+            where.engineSize = {};
+            if (minEngineNum !== null && !isNaN(minEngineNum)) where.engineSize.gte = minEngineNum;
+            if (maxEngineNum !== null && !isNaN(maxEngineNum)) where.engineSize.lte = maxEngineNum;
         }
 
         if (q) {

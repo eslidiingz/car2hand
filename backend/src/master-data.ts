@@ -247,6 +247,37 @@ export const masterDataRoutes = new Elysia({ prefix: '/master-data' })
     })
 
     // =============================================
+    // GET /master-data/car-options - ดึงข้อมูลตัวเลือกเฉพาะรถยนต์
+    // =============================================
+    .get('/car-options', async () => {
+        const bodyStyles = [
+            { value: 'SEDAN', label: 'รถเก๋ง', icon: 'sedan' },
+            { value: 'HATCHBACK', label: 'แฮทช์แบ็ก', icon: 'hatchback' },
+            { value: 'SUV', label: 'SUV', icon: 'suv' },
+            { value: 'CROSSOVER', label: 'ครอสโอเวอร์', icon: 'crossover' },
+            { value: 'MPV', label: 'MPV/รถครอบครัว', icon: 'mpv' },
+            { value: 'PICKUP', label: 'รถกระบะ', icon: 'pickup' },
+            { value: 'COUPE', icon: 'coupe', label: 'คูเป้' },
+            { value: 'CONVERTIBLE', label: 'เปิดประทุน', icon: 'convertible' },
+            { value: 'WAGON', label: 'แวกอน', icon: 'wagon' },
+            { value: 'VAN', label: 'รถตู้', icon: 'van' },
+        ];
+
+        const seatOptions = [
+            { value: 2, label: '2 ที่นั่ง' },
+            { value: 4, label: '4 ที่นั่ง' },
+            { value: 5, label: '5 ที่นั่ง' },
+            { value: 7, label: '7 ที่นั่ง ขึ้นไป' },
+        ];
+
+        return {
+            success: true,
+            bodyStyles,
+            seatOptions
+        };
+    })
+
+    // =============================================
     // GET /master-data/popular - ดึงยี่ห้อ/รุ่นยอดนิยม
     // =============================================
     .get('/popular', async ({ query }) => {

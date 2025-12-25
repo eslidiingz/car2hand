@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
     Faders,
@@ -8,7 +8,12 @@ import {
     CircleNotch,
     MagnifyingGlass,
     Car,
-    Motorcycle
+    Motorcycle,
+    Gauge,
+    MapPin,
+    CaretDown,
+    Plus,
+    Minus
 } from '@phosphor-icons/react';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 import LoginModal from '@/components/LoginModal';
@@ -39,34 +44,85 @@ function BuyContent() {
     const [brandStats, setBrandStats] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
 
+    const PROVINCES = ['กรุงเทพมหานคร', 'กระบี่', 'กาญจนบุรี', 'กาฬสินธุ์', 'กำแพงเพชร', 'ขอนแก่น', 'จันทบุรี', 'ฉะเชิงเทรา', 'ชลบุรี', 'ชัยนาท', 'ชัยภูมิ', 'ชุมพร', 'เชียงราย', 'เชียงใหม่', 'ตรัง', 'ตราด', 'ตาก', 'นครนายก', 'นครปฐม', 'นครพนม', 'นครราชสีมา', 'นครศรีธรรมราช', 'นครสวรรค์', 'นนทบุรี', 'นราธิวาส', 'น่าน', 'บึงกาฬ', 'บุรีรัมย์', 'ปทุมธานี', 'ประจวบคีรีขันธ์', 'ปราจีนบุรี', 'ปัตตานี', 'พระนครศรีอยุธยา', 'พังงา', 'พัทลุง', 'พิจิตร', 'พิษณุโลก', 'เพชรบุรี', 'เพชรบูรณ์', 'แพร่', 'ภูเก็ต', 'มหาสารคาม', 'มุกดาหาร', 'แม่ฮ่องสอน', 'ยโสธร', 'ยะลา', 'ร้อยเอ็ด', 'ระนอง', 'ระยอง', 'ราชบุรี', 'ลพบุรี', 'ลำปาง', 'ลำพูน', 'เลย', 'ศรีสะเกษ', 'สกลนคร', 'สงขลา', 'สตูล', 'สมุทรปราการ', 'สมุทรสงคราม', 'สมุทรสาคร', 'สระแก้ว', 'สระบุรี', 'สิงห์บุรี', 'สุโขทัย', 'สุพรรณบุรี', 'สุราษฎร์ธานี', 'สุรินทร์', 'หนองคาย', 'หนองบัวลำภู', 'อ่างทอง', 'อำนาจเจริญ', 'อุดรธานี', 'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี'];
+
     // Filters - Initialize directly from searchParams to avoid double-fetch/race condition
     const [brands, setBrands] = useState<Brand[]>([]);
-    const [vehicleType, setVehicleType] = useState<'CAR' | 'MOTORCYCLE' | ''>((searchParams.get('vehicleType') as any) || '');
+    const [bodyStyles, setBodyStyles] = useState<{ value: string, label: string }[]>([]);
+    const [seatOptions, setSeatOptions] = useState<{ value: number, label: string }[]>([]);
+    const [vehicleType, setVehicleType] = useState<'CAR' | 'MOTORCYCLE' | ''>((searchParams.get('vehicleType') as any) || 'CAR');
     const [selectedBrands, setSelectedBrands] = useState<string[]>(searchParams.get('brand')?.split(',').filter(Boolean) || []);
+    const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(searchParams.get('bodyType')?.split(',').filter(Boolean) || []);
+    const [selectedSeats, setSelectedSeats] = useState<string>(searchParams.get('seats') || '');
+    const [selectedFuelTypes, setSelectedFuelTypes] = useState<string[]>(searchParams.get('fuelType')?.split(',').filter(Boolean) || []);
+    const [selectedTransmissions, setSelectedTransmissions] = useState<string[]>(searchParams.get('transmission')?.split(',').filter(Boolean) || []);
+    const [minEngineSize, setMinEngineSize] = useState(searchParams.get('minEngineSize') || '');
+    const [maxEngineSize, setMaxEngineSize] = useState(searchParams.get('maxEngineSize') || '');
     const [brandSearch, setBrandSearch] = useState('');
     const [bodyType, setBodyType] = useState(searchParams.get('bodyType') || '');
     const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
     const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
     const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
+    const [minYear, setMinYear] = useState(searchParams.get('minYear') || '');
+    const [maxYear, setMaxYear] = useState(searchParams.get('maxYear') || '');
+    const [maxMileage, setMaxMileage] = useState(searchParams.get('maxMileage') || '');
+    const [selectedProvince, setSelectedProvince] = useState(searchParams.get('province') || '');
+    const [provinceSearch, setProvinceSearch] = useState('');
+    const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
+    const [showOnlyWithListings, setShowOnlyWithListings] = useState(false);
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'));
+    const provinceRef = useRef<HTMLDivElement>(null);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (provinceRef.current && !provinceRef.current.contains(event.target as Node)) {
+                setShowProvinceDropdown(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Synchronize filters when searchParams change (e.g. user navigates back/forward)
     useEffect(() => {
         const vType = searchParams.get('vehicleType');
         const bType = searchParams.get('bodyType');
-        const brands = searchParams.get('brand');
+        const brandP = searchParams.get('brand');
         const minP = searchParams.get('minPrice');
         const maxP = searchParams.get('maxPrice');
+        const minY = searchParams.get('minYear');
+        const maxY = searchParams.get('maxYear');
         const q = searchParams.get('q');
         const p = searchParams.get('page');
+        const maxM = searchParams.get('maxMileage');
+        const prov = searchParams.get('province');
+        const seatsP = searchParams.get('seats');
+        const fuelP = searchParams.get('fuelType');
+        const transP = searchParams.get('transmission');
+        const minE = searchParams.get('minEngineSize');
+        const maxE = searchParams.get('maxEngineSize');
 
         if (vType === 'CAR' || vType === 'MOTORCYCLE' || vType === '') setVehicleType(vType as any || '');
-        if (bType !== null) setBodyType(bType);
-        if (brands !== null) setSelectedBrands(brands.split(',').filter(Boolean));
+        if (bType !== null) {
+            setBodyType(bType);
+            setSelectedBodyTypes(bType.split(',').filter(Boolean));
+        }
+        if (brandP !== null) setSelectedBrands(brandP.split(',').filter(Boolean));
         if (minP !== null) setMinPrice(minP);
         if (maxP !== null) setMaxPrice(maxP);
+        if (minY !== null) setMinYear(minY);
+        if (maxY !== null) setMaxYear(maxY);
         if (q !== null) setSearchQuery(q);
         if (p !== null) setPage(parseInt(p));
+        if (maxM !== null) setMaxMileage(maxM);
+        if (prov !== null) setSelectedProvince(prov);
+        if (seatsP !== null) setSelectedSeats(seatsP);
+        if (fuelP !== null) setSelectedFuelTypes(fuelP.split(',').filter(Boolean));
+        if (transP !== null) setSelectedTransmissions(transP.split(',').filter(Boolean));
+        if (minE !== null) setMinEngineSize(minE);
+        if (maxE !== null) setMaxEngineSize(maxE);
     }, [searchParams]);
 
     // Login modal
@@ -92,11 +148,20 @@ function BuyContent() {
             params.append('limit', '12');
 
             if (vehicleType) params.append('vehicleType', vehicleType);
-            if (bodyType) params.append('bodyType', bodyType);
+            if (selectedBodyTypes.length > 0) params.append('bodyType', selectedBodyTypes.join(','));
             if (searchQuery) params.append('q', searchQuery);
             if (selectedBrands.length > 0) params.append('brand', selectedBrands.join(','));
             if (minPrice) params.append('minPrice', minPrice);
             if (maxPrice) params.append('maxPrice', maxPrice);
+            if (minYear) params.append('minYear', minYear);
+            if (maxYear) params.append('maxYear', maxYear);
+            if (maxMileage) params.append('maxMileage', maxMileage);
+            if (selectedProvince) params.append('province', selectedProvince);
+            if (selectedSeats) params.append('seats', selectedSeats);
+            if (selectedFuelTypes.length > 0) params.append('fuelType', selectedFuelTypes.join(','));
+            if (selectedTransmissions.length > 0) params.append('transmission', selectedTransmissions.join(','));
+            if (minEngineSize) params.append('minEngineSize', minEngineSize);
+            if (maxEngineSize) params.append('maxEngineSize', maxEngineSize);
 
             console.log('Fetching listings with params:', params.toString());
             const response = await fetch(`http://localhost:8000/listings?${params.toString()}`);
@@ -128,26 +193,52 @@ function BuyContent() {
         }
     };
 
+    const fetchCarOptions = async () => {
+        try {
+            const response = await fetch(`http://localhost:8000/master-data/car-options`);
+            const data = await response.json();
+            if (data.success) {
+                setBodyStyles(data.bodyStyles);
+                setSeatOptions(data.seatOptions);
+            }
+        } catch (error) {
+            console.error('Error fetching car options:', error);
+        }
+    };
+
     useEffect(() => {
         fetchBrands();
+        if (vehicleType === 'CAR') {
+            fetchCarOptions();
+        }
     }, [vehicleType]);
 
     useEffect(() => {
         fetchListings();
-    }, [page, vehicleType, bodyType, searchQuery, selectedBrands, minPrice, maxPrice]);
+    }, [page, vehicleType, selectedBodyTypes, searchQuery, selectedBrands, minPrice, maxPrice, minYear, maxYear, maxMileage, selectedProvince, selectedSeats, selectedFuelTypes, selectedTransmissions, minEngineSize, maxEngineSize]);
 
     const clearFilters = () => {
-        setVehicleType('');
+        setVehicleType('CAR');
         setBodyType('');
+        setSelectedBodyTypes([]);
+        setSelectedSeats('');
         setSearchQuery('');
         setSelectedBrands([]);
         setMinPrice('');
         setMaxPrice('');
+        setMinYear('');
+        setMaxYear('');
+        setMaxMileage('');
+        setSelectedProvince('');
+        setSelectedFuelTypes([]);
+        setSelectedTransmissions([]);
+        setMinEngineSize('');
+        setMaxEngineSize('');
         setPage(1);
         router.push('/buy');
     };
 
-    const hasActiveFilters = vehicleType || bodyType || searchQuery || selectedBrands.length > 0 || minPrice || maxPrice;
+    const hasActiveFilters = vehicleType || selectedBodyTypes.length > 0 || searchQuery || selectedBrands.length > 0 || minPrice || maxPrice || minYear || maxYear || maxMileage || selectedProvince || selectedSeats || selectedFuelTypes.length > 0 || selectedTransmissions.length > 0 || minEngineSize || maxEngineSize;
 
     return (
         <div className="bg-surface text-gray-800 min-h-screen">
@@ -165,114 +256,408 @@ function BuyContent() {
                             )}
                         </div>
 
-                        {/* Vehicle Type */}
-                        <div className="mb-6">
-                            <label className="text-sm font-semibold mb-3 block">ประเภทยานพาหนะ</label>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
-                                    className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
-                                        }`}
-                                >
-                                    <Car weight="bold" size={24} />
-                                    <span className="text-xs font-medium">รถยนต์</span>
-                                </button>
-                                <button
-                                    onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
-                                    className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
-                                        }`}
-                                >
-                                    <Motorcycle weight="bold" size={24} />
-                                    <span className="text-xs font-medium">มอเตอร์ไซค์</span>
-                                </button>
-                            </div>
-                        </div>
+                        {/* Scrollable Content Container */}
+                        <div className="flex-1 overflow-y-auto pr-2 -mr-2 custom-scrollbar space-y-6">
 
-                        <hr className="border-gray-100 mb-6" />
 
-                        {/* Budget */}
-                        <div className="mb-6">
-                            <label className="text-sm font-semibold mb-2 block">งบประมาณ (บาท)</label>
-                            <div className="flex gap-2 mb-2">
-                                <input
-                                    type="number"
-                                    placeholder="ต่ำสุด"
-                                    value={minPrice}
-                                    onChange={(e) => setMinPrice(e.target.value)}
-                                    className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary"
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="สูงสุด"
-                                    value={maxPrice}
-                                    onChange={(e) => setMaxPrice(e.target.value)}
-                                    className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary"
-                                />
-                            </div>
-                        </div>
-
-                        <hr className="border-gray-100 mb-6" />
-
-                        {/* Brand */}
-                        <div className="mb-6 flex-1 flex flex-col min-h-0">
-                            <label className="text-sm font-semibold mb-3 block">ยี่ห้อ</label>
-
-                            {/* Brand Search Input */}
-                            <div className="relative mb-3">
-                                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                <input
-                                    type="text"
-                                    placeholder="ค้นหายี่ห้อ..."
-                                    value={brandSearch}
-                                    onChange={(e) => setBrandSearch(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
-                                />
+                            {/* Vehicle Type */}
+                            <div>
+                                <label className="text-sm font-semibold mb-3 block">ประเภทยานพาหนะ</label>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
+                                        className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
+                                            }`}
+                                    >
+                                        <Car weight="bold" size={24} />
+                                        <span className="text-xs font-medium">รถยนต์</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
+                                        className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
+                                            }`}
+                                    >
+                                        <Motorcycle weight="bold" size={24} />
+                                        <span className="text-xs font-medium">มอเตอร์ไซค์</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="relative flex-1 min-h-0">
-                                <div className="space-y-1 pr-2 h-full overflow-y-auto custom-scrollbar pb-6">
-                                    {brands.filter(b =>
-                                        b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
-                                        (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()))
-                                    ).map(b => (
-                                        <label key={b.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition duration-200 group">
-                                            <div className="relative flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedBrands.includes(b.name)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedBrands([...selectedBrands, b.name]);
-                                                        } else {
-                                                            setSelectedBrands(selectedBrands.filter(s => s !== b.name));
-                                                        }
-                                                        setPage(1);
+                            {/* Budget */}
+                            <div>
+                                <label className="text-sm font-semibold mb-2 block">งบประมาณ (บาท)</label>
+                                <div className="flex gap-2 mb-2">
+                                    <input
+                                        type="number"
+                                        placeholder="ต่ำสุด"
+                                        value={minPrice}
+                                        onChange={(e) => setMinPrice(e.target.value)}
+                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary"
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="สูงสุด"
+                                        value={maxPrice}
+                                        onChange={(e) => setMaxPrice(e.target.value)}
+                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Mileage */}
+                            <div>
+                                <label className="text-sm font-semibold mb-2 block">เลขไมล์ไม่เกิน (กม.)</label>
+                                <div className="relative">
+                                    <Gauge size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                    <input
+                                        type="number"
+                                        placeholder="เช่น 50,000"
+                                        value={maxMileage}
+                                        onChange={(e) => setMaxMileage(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Province */}
+                            <div className="relative" ref={provinceRef}>
+                                <label className="text-sm font-semibold mb-2 block">จังหวัด</label>
+                                <div className="relative">
+                                    <MapPin size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="เลือกจังหวัด..."
+                                        value={showProvinceDropdown ? provinceSearch : (selectedProvince || '')}
+                                        onChange={(e) => {
+                                            setProvinceSearch(e.target.value);
+                                            setShowProvinceDropdown(true);
+                                        }}
+                                        onFocus={() => {
+                                            setProvinceSearch('');
+                                            setShowProvinceDropdown(true);
+                                        }}
+                                        className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition cursor-pointer"
+                                    />
+                                    <div
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer p-1"
+                                        onClick={() => setShowProvinceDropdown(!showProvinceDropdown)}
+                                    >
+                                        <CaretDown size={14} weight="bold" className={`transition-transform duration-200 ${showProvinceDropdown ? 'rotate-180' : ''}`} />
+                                    </div>
+
+                                    {selectedProvince && !showProvinceDropdown && (
+                                        <button
+                                            onClick={() => setSelectedProvince('')}
+                                            className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
+                                        >
+                                            <X size={12} weight="bold" />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {showProvinceDropdown && (
+                                    <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl max-h-60 overflow-y-auto custom-scrollbar">
+                                        <div className="p-1">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedProvince('');
+                                                    setShowProvinceDropdown(false);
+                                                    setProvinceSearch('');
+                                                }}
+                                                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded-lg text-gray-500"
+                                            >
+                                                ทุกจังหวัด
+                                            </button>
+                                            {PROVINCES.filter(p =>
+                                                p.toLowerCase().includes(provinceSearch.toLowerCase())
+                                            ).map(p => (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => {
+                                                        setSelectedProvince(p);
+                                                        setShowProvinceDropdown(false);
+                                                        setProvinceSearch('');
                                                     }}
-                                                    className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-primary checked:border-primary transition-all duration-200 cursor-pointer"
+                                                    className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 rounded-lg transition-colors ${selectedProvince === p ? 'bg-blue-50 text-primary font-bold' : 'text-gray-700'}`}
+                                                >
+                                                    {p}
+                                                </button>
+                                            ))}
+                                            {PROVINCES.filter(p =>
+                                                p.toLowerCase().includes(provinceSearch.toLowerCase())
+                                            ).length === 0 && (
+                                                    <div className="px-3 py-2 text-xs text-gray-400 text-center italic">ไม่พบจังหวัด</div>
+                                                )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Advanced Filters Toggle */}
+                            <div className="pt-2">
+                                <button
+                                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                                    className="w-full py-3 px-4 rounded-xl border border-dashed border-gray-300 text-gray-500 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all flex items-center justify-center gap-2 text-sm font-semibold"
+                                >
+                                    {showAdvancedFilters ? <Minus size={16} /> : <Plus size={16} />}
+                                    {showAdvancedFilters ? 'ซ่อนการกรองแบบละเอียด' : 'แสดงการกรองแบบละเอียด'}
+                                </button>
+                            </div>
+
+                            {/* Advanced Filters Content */}
+                            <div className={`space-y-6 overflow-hidden transition-all duration-300 ${showAdvancedFilters ? 'max-h-[2000px] opacity-100 visible' : 'max-h-0 opacity-0 invisible overflow-hidden'}`}>
+                                {/* Year */}
+                                <div>
+                                    <label className="text-sm font-semibold mb-2 block text-gray-700">ปีที่ผลิต</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="number"
+                                            placeholder="ตั้งแต่ปี"
+                                            value={minYear}
+                                            onChange={(e) => setMinYear(e.target.value)}
+                                            className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                        />
+                                        <input
+                                            type="number"
+                                            placeholder="ถึงปี"
+                                            value={maxYear}
+                                            onChange={(e) => setMaxYear(e.target.value)}
+                                            className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Car Specific Filters: Body Style & Seats */}
+                                {vehicleType === 'CAR' && (
+                                    <>
+                                        <div>
+                                            <label className="text-sm font-semibold mb-3 block text-gray-700">รูปแบบรถ</label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {bodyStyles.map((style) => (
+                                                    <button
+                                                        key={style.value}
+                                                        onClick={() => {
+                                                            if (selectedBodyTypes.includes(style.value)) {
+                                                                setSelectedBodyTypes(selectedBodyTypes.filter(t => t !== style.value));
+                                                            } else {
+                                                                setSelectedBodyTypes([...selectedBodyTypes, style.value]);
+                                                            }
+                                                            setPage(1);
+                                                        }}
+                                                        className={`py-2 px-1 rounded-xl text-[11px] font-semibold border transition-all ${selectedBodyTypes.includes(style.value)
+                                                            ? 'bg-primary border-primary text-white shadow-md'
+                                                            : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary shadow-sm active:scale-95'
+                                                            }`}
+                                                    >
+                                                        {style.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-6">
+                                            <label className="text-sm font-semibold mb-3 block text-gray-700">จำนวนที่นั่ง</label>
+                                            <div className="grid grid-cols-4 gap-2">
+                                                {seatOptions.filter(o => o.value !== 8).map((option) => (
+                                                    <button
+                                                        key={option.value}
+                                                        onClick={() => {
+                                                            setSelectedSeats(selectedSeats === option.value.toString() ? '' : option.value.toString());
+                                                            setPage(1);
+                                                        }}
+                                                        className={`py-2.5 rounded-xl text-sm font-bold border transition-all flex items-center justify-center ${selectedSeats === option.value.toString()
+                                                            ? 'bg-primary border-primary text-white shadow-md translate-y-[-1px]'
+                                                            : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary shadow-sm active:scale-90'
+                                                            }`}
+                                                    >
+                                                        {option.value}{option.value === 7 ? '+' : ''}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-sm font-semibold mb-3 block text-gray-700">ระบบเกียร์</label>
+                                            <div className="flex gap-2">
+                                                {[
+                                                    { value: 'AUTOMATIC', label: 'ออโต้' },
+                                                    { value: 'MANUAL', label: 'ธรรมดา' }
+                                                ].map((t) => (
+                                                    <button
+                                                        key={t.value}
+                                                        onClick={() => {
+                                                            if (selectedTransmissions.includes(t.value)) {
+                                                                setSelectedTransmissions(selectedTransmissions.filter(item => item !== t.value));
+                                                            } else {
+                                                                setSelectedTransmissions([...selectedTransmissions, t.value]);
+                                                            }
+                                                            setPage(1);
+                                                        }}
+                                                        className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition-all ${selectedTransmissions.includes(t.value)
+                                                            ? 'bg-primary border-primary text-white shadow-md'
+                                                            : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary shadow-sm active:scale-95'
+                                                            }`}
+                                                    >
+                                                        {t.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-sm font-semibold mb-3 block text-gray-700">ประเภทเชื้อเพลิง</label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {[
+                                                    { value: 'PETROL', label: 'เบนซิน' },
+                                                    { value: 'DIESEL', label: 'ดีเซล' },
+                                                    { value: 'HYBRID', label: 'ไฮบริด' },
+                                                    { value: 'EV', label: 'ไฟฟ้า' },
+                                                    { value: 'LPG', label: 'LPG' },
+                                                    { value: 'NGV', label: 'NGV' }
+                                                ].map((f) => (
+                                                    <button
+                                                        key={f.value}
+                                                        onClick={() => {
+                                                            if (selectedFuelTypes.includes(f.value)) {
+                                                                setSelectedFuelTypes(selectedFuelTypes.filter(item => item !== f.value));
+                                                            } else {
+                                                                setSelectedFuelTypes([...selectedFuelTypes, f.value]);
+                                                            }
+                                                            setPage(1);
+                                                        }}
+                                                        className={`py-2 px-2 rounded-xl text-[11px] font-semibold border transition-all ${selectedFuelTypes.includes(f.value)
+                                                            ? 'bg-primary border-primary text-white shadow-md'
+                                                            : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary shadow-sm active:scale-95'
+                                                            }`}
+                                                    >
+                                                        {f.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-sm font-semibold mb-2 block text-gray-700">ขนาดเครื่องยนต์ (CC)</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="number"
+                                                    placeholder="เริ่มต้น"
+                                                    value={minEngineSize}
+                                                    onChange={(e) => setMinEngineSize(e.target.value)}
+                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
                                                 />
-                                                <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                <input
+                                                    type="number"
+                                                    placeholder="สูงสุด"
+                                                    value={maxEngineSize}
+                                                    onChange={(e) => setMaxEngineSize(e.target.value)}
+                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                                />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div> {/* End Advanced Filters Content */}
+
+                            {/* Brand */}
+                            <div className="flex flex-col min-h-[300px]">
+                                <div className="flex justify-between items-center mb-3">
+                                    <label className="text-sm font-semibold">ยี่ห้อ</label>
+                                    <label className="flex items-center gap-1.5 cursor-pointer group">
+                                        <input
+                                            type="checkbox"
+                                            checked={showOnlyWithListings}
+                                            onChange={(e) => setShowOnlyWithListings(e.target.checked)}
+                                            className="peer hidden"
+                                        />
+                                        <div className={`w-3.5 h-3.5 border rounded-sm flex items-center justify-center transition-colors ${showOnlyWithListings ? 'bg-primary border-primary' : 'border-gray-300 group-hover:border-primary'}`}>
+                                            {showOnlyWithListings && (
+                                                <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
                                                     <polyline points="20 6 9 17 4 12"></polyline>
                                                 </svg>
-                                            </div>
-                                            <span className={`text-sm transition-colors duration-200 ${selectedBrands.includes(b.name) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'}`}>
-                                                {b.name} <span className="text-xs text-gray-400 font-normal ml-1">({brandStats[b.name] || 0})</span>
-                                            </span>
-                                        </label>
-                                    ))}
-                                    {brands.filter(b =>
-                                        b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
-                                        (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()))
-                                    ).length === 0 && (
-                                            <p className="text-xs text-center text-gray-400 py-4">ไม่พบยี่ห้อนี้</p>
-                                        )}
+                                            )}
+                                        </div>
+                                        <span className={`text-[10px] font-medium transition-colors ${showOnlyWithListings ? 'text-primary' : 'text-gray-400 group-hover:text-primary'}`}>
+                                            แสดงเฉพาะที่มีรถ
+                                        </span>
+                                    </label>
                                 </div>
-                                {/* Visual cue: Bottom shadow/gradient for scrollable content */}
-                                <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
+
+                                {/* Brand Search Input */}
+                                <div className="relative mb-3">
+                                    <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    <input
+                                        type="text"
+                                        placeholder="ค้นหายี่ห้อ..."
+                                        value={brandSearch}
+                                        onChange={(e) => setBrandSearch(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
+                                    />
+                                </div>
+
+                                <div className="relative flex-1 min-h-0">
+                                    <div className="space-y-1 pr-2 h-full overflow-y-auto custom-scrollbar pb-6">
+                                        {[...brands]
+                                            .sort((a, b) => {
+                                                const countA = brandStats[a.name] || 0;
+                                                const countB = brandStats[b.name] || 0;
+                                                if (countB !== countA) return countB - countA;
+                                                return a.name.localeCompare(b.name);
+                                            })
+                                            .filter(b => {
+                                                const count = brandStats[b.name] || 0;
+                                                const passesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
+                                                    (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()));
+
+                                                if (showOnlyWithListings) {
+                                                    return count > 0 && passesSearch;
+                                                }
+                                                return passesSearch;
+                                            }).map(b => (
+                                                <label key={b.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition duration-200 group">
+                                                    <div className="relative flex items-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedBrands.includes(b.name)}
+                                                            onChange={(e) => {
+                                                                if (e.target.checked) {
+                                                                    setSelectedBrands([...selectedBrands, b.name]);
+                                                                } else {
+                                                                    setSelectedBrands(selectedBrands.filter(s => s !== b.name));
+                                                                }
+                                                                setPage(1);
+                                                            }}
+                                                            className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-primary checked:border-primary transition-all duration-200 cursor-pointer"
+                                                        />
+                                                        <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                                        </svg>
+                                                    </div>
+                                                    <span className={`text-sm transition-colors duration-200 ${selectedBrands.includes(b.name) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'}`}>
+                                                        {b.name} <span className="text-xs text-gray-400 font-normal ml-1">({brandStats[b.name] || 0})</span>
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        {brands.filter(b => {
+                                            const count = brandStats[b.name] || 0;
+                                            const passesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
+                                                (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()));
+
+                                            if (showOnlyWithListings) {
+                                                return count > 0 && passesSearch;
+                                            }
+                                            return passesSearch;
+                                        }).length === 0 && (
+                                                <p className="text-xs text-center text-gray-400 py-4">ไม่พบยี่ห้อนี้</p>
+                                            )}
+                                    </div>
+                                    {/* Visual cue: Bottom shadow/gradient for scrollable content */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
+                                </div>
                             </div>
-                        </div>
 
-
+                        </div> {/* End Scrollable Content Container */}
                     </div>
                 </aside>
 
@@ -302,10 +687,76 @@ function BuyContent() {
                                                 ค้นหา: "{searchQuery}" <X className="group-hover:text-primary" size={12} />
                                             </span>
                                         )}
-                                        {bodyType && (
-                                            <span className="bg-blue-50 text-primary border border-primary/20 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-blue-100 transition group"
-                                                onClick={() => setBodyType('')}>
-                                                ประเภท: {bodyType} <X className="group-hover:text-accent" size={12} />
+                                        {minPrice && (
+                                            <span className="bg-green-50 text-green-600 border border-green-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-green-100 transition group"
+                                                onClick={() => setMinPrice('')}>
+                                                ราคาเริ่มต้น: {Number(minPrice).toLocaleString()} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {maxPrice && (
+                                            <span className="bg-green-50 text-green-600 border border-green-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-green-100 transition group"
+                                                onClick={() => setMaxPrice('')}>
+                                                ราคาสูงสุด: {Number(maxPrice).toLocaleString()} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {minYear && (
+                                            <span className="bg-orange-50 text-orange-600 border border-orange-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-orange-100 transition group"
+                                                onClick={() => setMinYear('')}>
+                                                ตั้งแต่ปี: {minYear} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {maxYear && (
+                                            <span className="bg-orange-50 text-orange-600 border border-orange-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-orange-100 transition group"
+                                                onClick={() => setMaxYear('')}>
+                                                ถึงปี: {maxYear} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {maxMileage && (
+                                            <span className="bg-gray-100 text-gray-600 border border-gray-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-gray-200 transition group"
+                                                onClick={() => setMaxMileage('')}>
+                                                ไมล์ไม่เกิน: {Number(maxMileage).toLocaleString()} กม. <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {selectedBodyTypes.map(t => (
+                                            <span key={t} className="bg-blue-50 text-primary border border-primary/20 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-blue-100 transition group"
+                                                onClick={() => setSelectedBodyTypes(selectedBodyTypes.filter(type => type !== t))}>
+                                                รูปแบบ: {bodyStyles.find(bs => bs.value === t)?.label || t} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        ))}
+                                        {selectedSeats && (
+                                            <span className="bg-purple-50 text-purple-600 border border-purple-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-purple-100 transition group"
+                                                onClick={() => setSelectedSeats('')}>
+                                                {seatOptions.find(so => so.value.toString() === selectedSeats)?.label || `${selectedSeats}${selectedSeats === '7' ? '+' : ''} ที่นั่ง`} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {selectedTransmissions.map(t => (
+                                            <span key={t} className="bg-cyan-50 text-cyan-700 border border-cyan-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-cyan-100 transition group"
+                                                onClick={() => setSelectedTransmissions(selectedTransmissions.filter(item => item !== t))}>
+                                                เกียร์: {t === 'AUTOMATIC' ? 'ออโต้' : 'ธรรมดา'} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        ))}
+                                        {selectedFuelTypes.map(f => (
+                                            <span key={f} className="bg-yellow-50 text-yellow-700 border border-yellow-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-yellow-100 transition group"
+                                                onClick={() => setSelectedFuelTypes(selectedFuelTypes.filter(item => item !== f))}>
+                                                เชื้อเพลิง: {f === 'PETROL' ? 'เบนซิน' : f === 'DIESEL' ? 'ดีเซล' : f === 'HYBRID' ? 'ไฮบริด' : f === 'EV' ? 'ไฟฟ้า' : f} <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        ))}
+                                        {minEngineSize && (
+                                            <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-indigo-100 transition group"
+                                                onClick={() => setMinEngineSize('')}>
+                                                เครื่องยนต์ตั้งแต่: {Number(minEngineSize).toLocaleString()} CC <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {maxEngineSize && (
+                                            <span className="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-indigo-100 transition group"
+                                                onClick={() => setMaxEngineSize('')}>
+                                                เครื่องยนต์ไม่เกิน: {Number(maxEngineSize).toLocaleString()} CC <X className="group-hover:text-accent" size={12} />
+                                            </span>
+                                        )}
+                                        {selectedProvince && (
+                                            <span className="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:bg-red-100 transition group"
+                                                onClick={() => setSelectedProvince('')}>
+                                                จังหวัด: {selectedProvince} <X className="group-hover:text-accent" size={12} />
                                             </span>
                                         )}
                                         {selectedBrands.map(b => (
