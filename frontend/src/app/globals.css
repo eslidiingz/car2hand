@@ -24,15 +24,19 @@ body {
 /* Height: 48px (h-12) for all inputs */
 
 .form-input {
-  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base;
+  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
 }
 
 .form-input-icon {
-  @apply w-full h-12 pl-11 pr-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base;
+  @apply w-full h-12 pl-11 pr-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+}
+
+.form-textarea {
+  @apply w-full p-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100 resize-none;
 }
 
 .form-select {
-  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer;
+  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
@@ -41,7 +45,7 @@ body {
 }
 
 .form-select-icon {
-  @apply w-full h-12 pl-11 pr-10 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer;
+  @apply w-full h-12 pl-11 pr-10 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
@@ -68,15 +72,15 @@ body {
 /* Height: 40px (h-10) for modal/compact forms */
 
 .form-input-sm {
-  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm;
+  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
 }
 
 .form-input-icon-sm {
-  @apply w-full h-10 pl-10 pr-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm;
+  @apply w-full h-10 pl-10 pr-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
 }
 
 .form-select-sm {
-  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-sm appearance-none cursor-pointer;
+  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-sm appearance-none cursor-pointer disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;

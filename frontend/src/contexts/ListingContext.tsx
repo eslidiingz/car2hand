@@ -71,15 +71,15 @@ interface ListingContextType {
 
 const defaultFormData: ListingFormData = {
     vehicleType: 'CAR',
-    year: new Date().getFullYear(),
+    year: 0,
     brand: '',
     model: '',
     subModel: '',
     transmission: 'AUTOMATIC',
     mileage: 0,
     color: '',
-    fuelType: 'PETROL',
-    bodyType: 'SEDAN',
+    fuelType: '' as any,
+    bodyType: '',
     engineSize: undefined,
     seats: undefined,
     condition: 'GOOD',

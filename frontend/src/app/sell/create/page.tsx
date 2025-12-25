@@ -97,6 +97,11 @@ export default function CreateListingPage() {
     const imagesRef = useRef<HTMLDivElement>(null);
     const priceRef = useRef<HTMLDivElement>(null);
     const provinceRef = useRef<HTMLDivElement>(null);
+    const bodyTypeRef = useRef<HTMLDivElement>(null);
+    const fuelTypeRef = useRef<HTMLDivElement>(null);
+    const yearRef = useRef<HTMLDivElement>(null);
+    const contactNameRef = useRef<HTMLDivElement>(null);
+    const contactPhoneRef = useRef<HTMLDivElement>(null);
 
     // Master data states
     const [brands, setBrands] = useState<Brand[]>([]);
@@ -107,6 +112,8 @@ export default function CreateListingPage() {
     const [loadingSubModels, setLoadingSubModels] = useState(false);
     const [selectedBrandId, setSelectedBrandId] = useState<string>('');
     const [selectedModelId, setSelectedModelId] = useState<string>('');
+    const [bodyStyleOptions, setBodyStyleOptions] = useState<{ value: string; label: string }[]>([]);
+    const [motorcycleBodyOptions, setMotorcycleBodyOptions] = useState<{ value: string; label: string }[]>([]);
 
     // Check if user is logged in
     useEffect(() => {
@@ -127,7 +134,6 @@ export default function CreateListingPage() {
         }
     }, [router]);
 
-    // Fetch brands when vehicle type changes
     useEffect(() => {
         const fetchBrands = async () => {
             setLoadingBrands(true);
@@ -143,7 +149,23 @@ export default function CreateListingPage() {
                 setLoadingBrands(false);
             }
         };
+
+        const fetchOptions = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/master-data/car-options`);
+                const data = await response.json();
+                if (data.success) {
+                    setBodyStyleOptions(data.bodyStyles);
+                    setMotorcycleBodyOptions(data.motorcycleBodyStyles);
+                }
+            } catch (err) {
+                console.error('Error fetching options:', err);
+            }
+        };
+
         fetchBrands();
+        fetchOptions();
+
         // Reset selections when vehicle type changes
         setSelectedBrandId('');
         setSelectedModelId('');
@@ -211,16 +233,39 @@ export default function CreateListingPage() {
         const files = e.target.files;
         if (!files) return;
 
-        const newFiles = Array.from(files);
-        const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+        const currentTotal = formData.images.length;
+        const remainingSlots = 24 - currentTotal;
+
+        if (remainingSlots <= 0) {
+            setError('คุณสามารถอัพโหลดรูปภาพได้สูงสุด 24 รูป');
+            return;
+        }
+
+        let fileArray = Array.from(files);
+        if (fileArray.length > remainingSlots) {
+            setError(`เพิ่มรูปภาพได้อีกเพียง ${remainingSlots} รูป (ครบจำนวนสูงสุด 24 รูปแล้ว)`);
+            fileArray = fileArray.slice(0, remainingSlots);
+        } else {
+            setError(null);
+        }
+
+        const newPreviews = fileArray.map(file => URL.createObjectURL(file));
 
         updateFormData({
-            images: [...formData.images, ...newFiles],
+            images: [...formData.images, ...fileArray],
             imagesPreviews: [...formData.imagesPreviews, ...newPreviews]
         });
+
+        // Clear input value to allow selecting same files if needed
+        e.target.value = '';
     };
 
     const removeImage = (index: number) => {
+        if (formData.images.length <= 1) {
+            setError('ต้องมีรูปภาพอย่างน้อย 1 รูป');
+            return;
+        }
+
         const newImages = [...formData.images];
         const newPreviews = [...formData.imagesPreviews];
 
@@ -258,9 +303,21 @@ export default function CreateListingPage() {
                 errors.color = true;
                 missingFields.push('สี');
             }
+            if (!formData.fuelType) {
+                errors.fuelType = true;
+                missingFields.push('เชื้อเพลิง');
+            }
+            if (!formData.year || formData.year === 0) {
+                errors.year = true;
+                missingFields.push('ปีที่ผลิต');
+            }
             if (!formData.mileage) {
                 errors.mileage = true;
                 missingFields.push('เลขไมล์');
+            }
+            if (!formData.bodyType) {
+                errors.bodyType = true;
+                missingFields.push('รูปแบบรถ');
             }
 
             if (Object.keys(errors).length > 0) {
@@ -271,8 +328,11 @@ export default function CreateListingPage() {
                 const firstErrorRef = errors.brand ? brandRef
                     : errors.model ? modelRef
                         : errors.color ? colorRef
-                            : errors.mileage ? mileageRef
-                                : null;
+                            : errors.fuelType ? fuelTypeRef
+                                : errors.year ? yearRef
+                                    : errors.mileage ? mileageRef
+                                        : errors.bodyType ? bodyTypeRef
+                                            : null;
 
                 if (firstErrorRef?.current) {
                     firstErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -324,6 +384,16 @@ export default function CreateListingPage() {
             missingFields.push('จังหวัด');
         }
 
+        if (!formData.contactName) {
+            errors.contactName = true;
+            missingFields.push('ชื่อผู้ติดต่อ');
+        }
+
+        if (!formData.contactPhone) {
+            errors.contactPhone = true;
+            missingFields.push('เบอร์โทรติดต่อ');
+        }
+
         if (Object.keys(errors).length > 0) {
             setFieldErrors(errors);
             setError(`กรุณากรอกข้อมูลให้ครบ: ${missingFields.join(', ')}`);
@@ -331,7 +401,9 @@ export default function CreateListingPage() {
             // Scroll to first error field
             const firstErrorRef = errors.price ? priceRef
                 : errors.province ? provinceRef
-                    : null;
+                    : errors.contactName ? contactNameRef
+                        : errors.contactPhone ? contactPhoneRef
+                            : null;
 
             if (firstErrorRef?.current) {
                 firstErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -460,14 +532,14 @@ export default function CreateListingPage() {
                                         <div className="grid grid-cols-2 gap-3">
                                             <button
                                                 type="button"
-                                                onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: 'SEDAN' })}
+                                                onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: '' })}
                                                 className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
                                                 <Car size={20} weight="fill" /> รถยนต์
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: 'STANDARD' })}
+                                                onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: '' })}
                                                 className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
                                                 <Motorcycle size={20} weight="fill" /> มอเตอร์ไซค์
@@ -476,7 +548,7 @@ export default function CreateListingPage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                        <div ref={brandRef}>
+                                        <div className="md:col-span-2" ref={brandRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.brand ? 'text-red-600' : 'text-gray-700'}`}>ยี่ห้อ *</label>
                                             <div className={fieldErrors.brand ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                                 <SearchableSelect
@@ -490,8 +562,21 @@ export default function CreateListingPage() {
                                                     value={selectedBrandId}
                                                     onChange={(id, option) => {
                                                         setSelectedBrandId(id);
+                                                        setSelectedModelId('');
                                                         setFieldErrors(prev => ({ ...prev, brand: false }));
-                                                        updateFormData({ brand: option?.label || '', model: '', subModel: '' });
+                                                        updateFormData({
+                                                            brand: option?.label || '',
+                                                            model: '',
+                                                            subModel: '',
+                                                            bodyType: '',
+                                                            color: '',
+                                                            fuelType: '' as any,
+                                                            year: 0,
+                                                            transmission: 'AUTOMATIC',
+                                                            mileage: 0,
+                                                            engineSize: undefined,
+                                                            seats: undefined
+                                                        });
                                                     }}
                                                     placeholder="เลือกยี่ห้อ"
                                                     searchPlaceholder="พิมพ์ชื่อยี่ห้อ..."
@@ -579,57 +664,92 @@ export default function CreateListingPage() {
                                                     className="form-input"
                                                     value={formData.subModel}
                                                     onChange={(e) => updateFormData({ subModel: e.target.value })}
+                                                    disabled={!selectedModelId && !formData.model}
                                                 />
                                             )}
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต *</label>
-                                            <input
-                                                type="text"
-                                                inputMode="numeric"
-                                                placeholder="เช่น 2024"
-                                                className="form-input font-medium"
-                                                value={formData.year || ''}
-                                                maxLength={4}
-                                                onChange={(e) => {
-                                                    const value = e.target.value.replace(/\D/g, '');
-                                                    updateFormData({ year: parseInt(value) || 0 });
-                                                }}
-                                            />
+                                        <div ref={bodyTypeRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.bodyType ? 'text-red-600' : 'text-gray-700'}`}>รูปแบบรถ *</label>
+                                            <div className={fieldErrors.bodyType ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                <SearchableSelect
+                                                    options={(formData.vehicleType === 'CAR' ? bodyStyleOptions : motorcycleBodyOptions).map((style) => ({
+                                                        id: style.value,
+                                                        label: style.label
+                                                    }))}
+                                                    value={formData.bodyType}
+                                                    onChange={(value) => {
+                                                        setFieldErrors(prev => ({ ...prev, bodyType: false }));
+                                                        updateFormData({ bodyType: value });
+                                                    }}
+                                                    placeholder="เลือกรูปแบบรถ"
+                                                    searchPlaceholder="ค้นหารูปแบบรถ..."
+                                                    emptyMessage="ไม่พบรูปแบบรถ"
+                                                />
+                                            </div>
+                                            {fieldErrors.bodyType && <p className="text-red-500 text-xs mt-1">กรุณาเลือกรูปแบบรถ</p>}
                                         </div>
 
                                         <div ref={colorRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.color ? 'text-red-600' : 'text-gray-700'}`}>สี *</label>
-                                            <select
-                                                className={`form-select ${fieldErrors.color ? 'border-red-500 ring-2 ring-red-500' : ''}`}
-                                                value={formData.color}
-                                                onChange={(e) => {
-                                                    setFieldErrors(prev => ({ ...prev, color: false }));
-                                                    updateFormData({ color: e.target.value });
-                                                }}
-                                            >
-                                                <option value="">เลือกสี</option>
-                                                {COLORS.map(c => (
-                                                    <option key={c} value={c}>{c}</option>
-                                                ))}
-                                            </select>
+                                            <div className={fieldErrors.color ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                <SearchableSelect
+                                                    options={COLORS.map(c => ({ id: c, label: c }))}
+                                                    value={formData.color}
+                                                    onChange={(value) => {
+                                                        setFieldErrors(prev => ({ ...prev, color: false }));
+                                                        updateFormData({ color: value });
+                                                    }}
+                                                    placeholder="เลือกสี"
+                                                    searchPlaceholder="ค้นหาสี..."
+                                                    emptyMessage="ไม่พบสี"
+                                                />
+                                            </div>
                                             {fieldErrors.color && <p className="text-red-500 text-xs mt-1">กรุณาเลือกสี</p>}
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เชื้อเพลิง *</label>
-                                            <select
-                                                className="form-select"
-                                                value={formData.fuelType}
-                                                onChange={(e) => updateFormData({ fuelType: e.target.value as typeof formData.fuelType })}
-                                            >
-                                                <option value="PETROL">Petrol (เบนซิน)</option>
-                                                <option value="DIESEL">Diesel (ดีเซล)</option>
-                                                <option value="HYBRID">Hybrid (ไฮบริด)</option>
-                                                <option value="PLUGIN_HYBRID">Plug-in Hybrid (ปลั๊กอินไฮบริด)</option>
-                                                <option value="EV">EV (ไฟฟ้า)</option>
-                                            </select>
+                                        <div ref={fuelTypeRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.fuelType ? 'text-red-600' : 'text-gray-700'}`}>เชื้อเพลิง *</label>
+                                            <div className={fieldErrors.fuelType ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                <SearchableSelect
+                                                    options={[
+                                                        { id: 'PETROL', label: 'Petrol (เบนซิน)' },
+                                                        { id: 'DIESEL', label: 'Diesel (ดีเซล)' },
+                                                        { id: 'HYBRID', label: 'Hybrid (ไฮบริด)' },
+                                                        { id: 'PLUGIN_HYBRID', label: 'Plug-in Hybrid (ปลั๊กอินไฮบริด)' },
+                                                        { id: 'EV', label: 'EV (ไฟฟ้า)' },
+                                                        { id: 'LPG', label: 'LPG' },
+                                                        { id: 'NGV', label: 'NGV' }
+                                                    ]}
+                                                    value={formData.fuelType}
+                                                    onChange={(value) => {
+                                                        setFieldErrors(prev => ({ ...prev, fuelType: false }));
+                                                        updateFormData({ fuelType: value as any });
+                                                    }}
+                                                    placeholder="เลือกประเภทเชื้อเพลิง"
+                                                    searchPlaceholder="ค้นหาเชื้อเพลิง..."
+                                                    emptyMessage="ไม่พบประเภทเชื้อเพลิง"
+                                                />
+                                            </div>
+                                            {fieldErrors.fuelType && <p className="text-red-500 text-xs mt-1">กรุณาเลือกประเภทเชื้อเพลิง</p>}
+                                        </div>
+
+                                        <div ref={yearRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.year ? 'text-red-600' : 'text-gray-700'}`}>ปีที่ผลิต *</label>
+                                            <div className={fieldErrors.year ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                <SearchableSelect
+                                                    options={years.map(y => ({ id: y.toString(), label: y.toString() }))}
+                                                    value={formData.year ? formData.year.toString() : ''}
+                                                    onChange={(value) => {
+                                                        setFieldErrors(prev => ({ ...prev, year: false }));
+                                                        updateFormData({ year: parseInt(value) || 0 });
+                                                    }}
+                                                    placeholder="เลือกปีที่ผลิต"
+                                                    searchPlaceholder="ค้นหาปี..."
+                                                    emptyMessage="ไม่พบปีที่ผลิต"
+                                                />
+                                            </div>
+                                            {fieldErrors.year && <p className="text-red-500 text-xs mt-1">กรุณาเลือกปีที่ผลิต</p>}
                                         </div>
                                     </div>
 
@@ -663,7 +783,9 @@ export default function CreateListingPage() {
                                                 onChange={(e) => {
                                                     setFieldErrors(prev => ({ ...prev, mileage: false }));
                                                     const value = e.target.value.replace(/,/g, '');
-                                                    updateFormData({ mileage: parseInt(value) || 0 });
+                                                    if (value.length <= 6) {
+                                                        updateFormData({ mileage: parseInt(value) || 0 });
+                                                    }
                                                 }}
                                                 placeholder="เช่น 45,000"
                                                 className={`form-input-icon font-medium ${fieldErrors.mileage ? 'border-red-500 ring-2 ring-red-500' : ''}`}
@@ -685,7 +807,7 @@ export default function CreateListingPage() {
                                                 className="form-input font-medium"
                                                 value={formData.engineSize || ''}
                                                 onChange={(e) => {
-                                                    const value = e.target.value.replace(/\D/g, '');
+                                                    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
                                                     updateFormData({ engineSize: parseInt(value) || undefined });
                                                 }}
                                             />
@@ -699,7 +821,7 @@ export default function CreateListingPage() {
                                                 className="form-input font-medium"
                                                 value={formData.seats || ''}
                                                 onChange={(e) => {
-                                                    const value = e.target.value.replace(/\D/g, '');
+                                                    const value = e.target.value.replace(/\D/g, '').slice(0, 2);
                                                     updateFormData({ seats: parseInt(value) || undefined });
                                                 }}
                                             />
@@ -892,7 +1014,7 @@ export default function CreateListingPage() {
                                     </h2>
 
                                     <p className="text-gray-500 mb-6">
-                                        อัพโหลดรูปภาพรถของคุณ (อย่างน้อย 1 รูป, สูงสุด 20 รูป) รูปแรกจะเป็นรูปหลักในการแสดงผล
+                                        อัพโหลดรูปภาพรถของคุณ (อย่างน้อย 1 รูป, สูงสุด 24 รูป) รูปแรกจะเป็นรูปหลักในการแสดงผล
                                     </p>
 
                                     {/* Image Upload Area */}
@@ -915,7 +1037,7 @@ export default function CreateListingPage() {
                                             </div>
                                         ))}
 
-                                        {formData.images.length < 20 && (
+                                        {formData.images.length < 24 && (
                                             <label className="aspect-[4/3] rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-blue-50 transition">
                                                 <Plus size={32} className="text-gray-400 mb-2" />
                                                 <span className="text-xs text-gray-500">เพิ่มรูป</span>
@@ -968,7 +1090,7 @@ export default function CreateListingPage() {
                                         <textarea
                                             rows={4}
                                             placeholder="อธิบายสภาพรถ, ประวัติการซ่อมบำรุง, อุปกรณ์เพิ่มเติม..."
-                                            className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition resize-none"
+                                            className="form-textarea"
                                             value={formData.description}
                                             onChange={(e) => updateFormData({ description: e.target.value })}
                                         />
@@ -1000,21 +1122,19 @@ export default function CreateListingPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                                         <div ref={provinceRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัด *</label>
-                                            <div className="relative">
-                                                <MapPin className={`absolute left-3 top-1/2 -translate-y-1/2 z-10 ${fieldErrors.province ? 'text-red-500' : 'text-gray-400'}`} size={20} />
-                                                <select
-                                                    className={`form-select-icon ${fieldErrors.province ? 'border-red-500 ring-2 ring-red-500' : ''}`}
+                                            <div className={fieldErrors.province ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                                <SearchableSelect
+                                                    options={PROVINCES.map(p => ({ id: p, label: p }))}
                                                     value={formData.province}
-                                                    onChange={(e) => {
+                                                    onChange={(value) => {
                                                         setFieldErrors(prev => ({ ...prev, province: false }));
-                                                        updateFormData({ province: e.target.value });
+                                                        updateFormData({ province: value });
                                                     }}
-                                                >
-                                                    <option value="">เลือกจังหวัด</option>
-                                                    {PROVINCES.map(p => (
-                                                        <option key={p} value={p}>{p}</option>
-                                                    ))}
-                                                </select>
+                                                    placeholder="เลือกจังหวัด"
+                                                    searchPlaceholder="ค้นหาจังหวัด..."
+                                                    emptyMessage="ไม่พบจังหวัด"
+                                                    icon={<MapPin size={20} />}
+                                                />
                                             </div>
                                             {fieldErrors.province && <p className="text-red-500 text-xs mt-1">กรุณาเลือกจังหวัด</p>}
                                         </div>
@@ -1036,26 +1156,35 @@ export default function CreateListingPage() {
                                         <AddressBook size={24} weight="fill" className="text-accent" /> ข้อมูลติดต่อ
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ชื่อผู้ติดต่อ *</label>
+                                        <div ref={contactNameRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.contactName ? 'text-red-600' : 'text-gray-700'}`}>ชื่อผู้ติดต่อ *</label>
                                             <input
                                                 type="text"
                                                 placeholder="ชื่อที่ต้องการให้แสดง"
-                                                className="form-input"
+                                                className={`form-input ${fieldErrors.contactName ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                 value={formData.contactName}
-                                                onChange={(e) => updateFormData({ contactName: e.target.value })}
+                                                onChange={(e) => {
+                                                    setFieldErrors(prev => ({ ...prev, contactName: false }));
+                                                    updateFormData({ contactName: e.target.value });
+                                                }}
                                             />
+                                            {fieldErrors.contactName && <p className="text-red-500 text-xs mt-1">กรุณากรอกชื่อผู้ติดต่อ</p>}
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เบอร์โทรติดต่อ *</label>
+                                        <div ref={contactPhoneRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.contactPhone ? 'text-red-600' : 'text-gray-700'}`}>เบอร์โทรติดต่อ *</label>
                                             <input
                                                 type="tel"
                                                 placeholder="เช่น 0812345678"
-                                                className="form-input"
+                                                className={`form-input ${fieldErrors.contactPhone ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                 value={formData.contactPhone}
-                                                onChange={(e) => updateFormData({ contactPhone: e.target.value })}
+                                                onChange={(e) => {
+                                                    setFieldErrors(prev => ({ ...prev, contactPhone: false }));
+                                                    updateFormData({ contactPhone: e.target.value })
+                                                }
+                                                }
                                             />
+                                            {fieldErrors.contactPhone && <p className="text-red-500 text-xs mt-1">กรุณากรอกเบอร์โทรติดต่อ</p>}
                                         </div>
 
                                         <div>

@@ -247,7 +247,7 @@ export const masterDataRoutes = new Elysia({ prefix: '/master-data' })
     })
 
     // =============================================
-    // GET /master-data/car-options - ดึงข้อมูลตัวเลือกเฉพาะรถยนต์
+    // GET /master-data/car-options - ดึงข้อมูลตัวเลือกเฉพาะรถยนต์และมอเตอร์ไซค์
     // =============================================
     .get('/car-options', async () => {
         const bodyStyles = [
@@ -263,6 +263,20 @@ export const masterDataRoutes = new Elysia({ prefix: '/master-data' })
             { value: 'VAN', label: 'รถตู้', icon: 'van' },
         ];
 
+        const motorcycleBodyStyles = [
+            { value: 'STANDARD', label: 'สแตนดาร์ด' },
+            { value: 'SCOOTER', label: 'สกู๊ตเตอร์' },
+            { value: 'SPORT', label: 'สปอร์ต' },
+            { value: 'NAKED', label: 'เน็กเก็ต' },
+            { value: 'CRUISER', label: 'ครูเซอร์' },
+            { value: 'TOURING', label: 'ทัวร์ริ่ง' },
+            { value: 'ADVENTURE', label: 'แอดเวนเจอร์' },
+            { value: 'DIRT', label: 'วิบาก' },
+            { value: 'CAFE_RACER', label: 'คาเฟ่ เรเซอร์' },
+            { value: 'UNDERBONE', label: 'รถครอบครัว' },
+            { value: 'CUB', label: 'รถคลาสสิก' },
+        ];
+
         const seatOptions = [
             { value: 2, label: '2 ที่นั่ง' },
             { value: 4, label: '4 ที่นั่ง' },
@@ -273,6 +287,7 @@ export const masterDataRoutes = new Elysia({ prefix: '/master-data' })
         return {
             success: true,
             bodyStyles,
+            motorcycleBodyStyles,
             seatOptions
         };
     })

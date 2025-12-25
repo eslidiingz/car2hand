@@ -840,19 +840,35 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
 
         if (fuelType) {
             const fuelList = Array.isArray(fuelType) ? fuelType : fuelType.toString().split(',');
-            if (fuelList.length > 1) {
-                where.fuelType = { in: fuelList };
-            } else {
-                where.fuelType = fuelList[0];
+            const orConditions: any[] = [];
+
+            fuelList.forEach((fuel: string) => {
+                const conditions: any[] = [{ fuelType: fuel }];
+                // If filtering for LPG or NGV, also check the gasType field
+                if (fuel === 'LPG' || fuel === 'NGV') {
+                    conditions.push({ gasType: fuel });
+                }
+                orConditions.push(...conditions);
+            });
+
+            if (orConditions.length > 0) {
+                where.OR = where.OR ? [...where.OR, ...orConditions] : orConditions;
             }
         }
 
         if (transmission) {
             const transList = Array.isArray(transmission) ? transmission : transmission.toString().split(',');
-            if (transList.length > 1) {
-                where.transmission = { in: transList };
+            const expandedTransList = [...transList];
+
+            // If filtering for AUTOMATIC, also include CVT, DCT, and SEMI_AUTO
+            if (transList.includes('AUTOMATIC')) {
+                expandedTransList.push('CVT', 'DCT', 'SEMI_AUTO');
+            }
+
+            if (expandedTransList.length > 1) {
+                where.transmission = { in: Array.from(new Set(expandedTransList)) };
             } else {
-                where.transmission = transList[0];
+                where.transmission = expandedTransList[0];
             }
         }
 

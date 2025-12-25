@@ -49,6 +49,7 @@ function BuyContent() {
     // Filters - Initialize directly from searchParams to avoid double-fetch/race condition
     const [brands, setBrands] = useState<Brand[]>([]);
     const [bodyStyles, setBodyStyles] = useState<{ value: string, label: string }[]>([]);
+    const [motorcycleBodyStyles, setMotorcycleBodyStyles] = useState<{ value: string, label: string }[]>([]);
     const [seatOptions, setSeatOptions] = useState<{ value: number, label: string }[]>([]);
     const [vehicleType, setVehicleType] = useState<'CAR' | 'MOTORCYCLE' | ''>((searchParams.get('vehicleType') as any) || 'CAR');
     const [selectedBrands, setSelectedBrands] = useState<string[]>(searchParams.get('brand')?.split(',').filter(Boolean) || []);
@@ -199,6 +200,7 @@ function BuyContent() {
             const data = await response.json();
             if (data.success) {
                 setBodyStyles(data.bodyStyles);
+                setMotorcycleBodyStyles(data.motorcycleBodyStyles);
                 setSeatOptions(data.seatOptions);
             }
         } catch (error) {
@@ -208,9 +210,7 @@ function BuyContent() {
 
     useEffect(() => {
         fetchBrands();
-        if (vehicleType === 'CAR') {
-            fetchCarOptions();
-        }
+        fetchCarOptions();
     }, [vehicleType]);
 
     useEffect(() => {
@@ -427,13 +427,13 @@ function BuyContent() {
                                     </div>
                                 </div>
 
-                                {/* Car Specific Filters: Body Style & Seats */}
-                                {vehicleType === 'CAR' && (
+                                {/* Vehicle Specific Filters: Body Style, Seats, Transmission, Fuel, Engine Size */}
+                                {(vehicleType === 'CAR' || vehicleType === 'MOTORCYCLE') && (
                                     <>
                                         <div>
                                             <label className="text-sm font-semibold mb-3 block text-gray-700">รูปแบบรถ</label>
                                             <div className="grid grid-cols-2 gap-2">
-                                                {bodyStyles.map((style) => (
+                                                {(vehicleType === 'MOTORCYCLE' ? motorcycleBodyStyles : bodyStyles).map((style) => (
                                                     <button
                                                         key={style.value}
                                                         onClick={() => {
@@ -455,26 +455,28 @@ function BuyContent() {
                                             </div>
                                         </div>
 
-                                        <div className="mb-6">
-                                            <label className="text-sm font-semibold mb-3 block text-gray-700">จำนวนที่นั่ง</label>
-                                            <div className="grid grid-cols-4 gap-2">
-                                                {seatOptions.filter(o => o.value !== 8).map((option) => (
-                                                    <button
-                                                        key={option.value}
-                                                        onClick={() => {
-                                                            setSelectedSeats(selectedSeats === option.value.toString() ? '' : option.value.toString());
-                                                            setPage(1);
-                                                        }}
-                                                        className={`py-2.5 rounded-xl text-sm font-bold border transition-all flex items-center justify-center ${selectedSeats === option.value.toString()
-                                                            ? 'bg-primary border-primary text-white shadow-md translate-y-[-1px]'
-                                                            : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary shadow-sm active:scale-90'
-                                                            }`}
-                                                    >
-                                                        {option.value}{option.value === 7 ? '+' : ''}
-                                                    </button>
-                                                ))}
+                                        {vehicleType === 'CAR' && (
+                                            <div className="mb-6">
+                                                <label className="text-sm font-semibold mb-3 block text-gray-700">จำนวนที่นั่ง</label>
+                                                <div className="grid grid-cols-4 gap-2">
+                                                    {seatOptions.filter(o => o.value !== 8).map((option) => (
+                                                        <button
+                                                            key={option.value}
+                                                            onClick={() => {
+                                                                setSelectedSeats(selectedSeats === option.value.toString() ? '' : option.value.toString());
+                                                                setPage(1);
+                                                            }}
+                                                            className={`py-2.5 rounded-xl text-sm font-bold border transition-all flex items-center justify-center ${selectedSeats === option.value.toString()
+                                                                ? 'bg-primary border-primary text-white shadow-md translate-y-[-1px]'
+                                                                : 'bg-white border-gray-200 text-gray-600 hover:border-primary hover:text-primary shadow-sm active:scale-90'
+                                                                }`}
+                                                        >
+                                                            {option.value}{option.value === 7 ? '+' : ''}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
                                         <div>
                                             <label className="text-sm font-semibold mb-3 block text-gray-700">ระบบเกียร์</label>
@@ -511,10 +513,11 @@ function BuyContent() {
                                                     { value: 'PETROL', label: 'เบนซิน' },
                                                     { value: 'DIESEL', label: 'ดีเซล' },
                                                     { value: 'HYBRID', label: 'ไฮบริด' },
+                                                    { value: 'PLUGIN_HYBRID', label: 'ปลั๊กอิน' },
                                                     { value: 'EV', label: 'ไฟฟ้า' },
                                                     { value: 'LPG', label: 'LPG' },
                                                     { value: 'NGV', label: 'NGV' }
-                                                ].map((f) => (
+                                                ].filter(f => vehicleType === 'MOTORCYCLE' ? ['PETROL', 'EV'].includes(f.value) : true).map((f) => (
                                                     <button
                                                         key={f.value}
                                                         onClick={() => {

@@ -22,6 +22,7 @@ interface SearchableSelectProps {
     loading?: boolean;
     emptyMessage?: string;
     className?: string;
+    icon?: React.ReactNode;
 }
 
 export default function SearchableSelect({
@@ -33,7 +34,8 @@ export default function SearchableSelect({
     disabled = false,
     loading = false,
     emptyMessage = 'ไม่พบข้อมูล',
-    className = ''
+    className = '',
+    icon
 }: SearchableSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -103,10 +105,15 @@ export default function SearchableSelect({
             {/* Selected Value Trigger */}
             <div
                 onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
-                className={`w-full h-12 px-4 border rounded-xl bg-gray-50 outline-none transition text-base text-left flex items-center justify-between gap-2 ${disabled || loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-primary'
-                    } ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-gray-200'}`}
+                className={`w-full h-12 pr-4 border rounded-xl outline-none transition text-base text-left flex items-center justify-between gap-2 ${icon ? 'pl-11' : 'pl-4'} ${disabled || loading ? 'bg-gray-200/50 border-gray-100 cursor-not-allowed' : 'bg-white border-gray-200 cursor-pointer hover:border-primary'
+                    } ${isOpen ? 'border-primary ring-1 ring-primary' : ''}`}
             >
-                <span className={selectedOption ? 'text-gray-800' : 'text-gray-400'}>
+                {icon && (
+                    <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${disabled || loading ? 'text-gray-300' : 'text-gray-400'}`}>
+                        {icon}
+                    </div>
+                )}
+                <span className={selectedOption ? 'text-gray-800' : 'text-gray-400 truncate'}>
                     {loading ? 'กำลังโหลด...' : selectedOption ? (
                         <span className="flex items-center gap-2">
                             {selectedOption.image && (
@@ -170,9 +177,11 @@ export default function SearchableSelect({
                             sortedGroups.map(group => (
                                 <div key={group}>
                                     {/* Group Header */}
-                                    <div className="px-3 py-1.5 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wide sticky top-0">
-                                        {group}
-                                    </div>
+                                    {group !== 'อื่นๆ' && (
+                                        <div className="px-3 py-1.5 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wide sticky top-0">
+                                            {group}
+                                        </div>
+                                    )}
                                     {/* Group Options */}
                                     {groupedOptions[group].map(option => (
                                         <button
