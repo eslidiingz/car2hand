@@ -292,14 +292,14 @@ function BuyContent() {
                                         placeholder="ต่ำสุด"
                                         value={minPrice}
                                         onChange={(e) => setMinPrice(e.target.value)}
-                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary"
+                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
                                     />
                                     <input
                                         type="number"
                                         placeholder="สูงสุด"
                                         value={maxPrice}
                                         onChange={(e) => setMaxPrice(e.target.value)}
-                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary"
+                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
                                     />
                                 </div>
                             </div>
@@ -314,7 +314,7 @@ function BuyContent() {
                                         placeholder="เช่น 50,000"
                                         value={maxMileage}
                                         onChange={(e) => setMaxMileage(e.target.value)}
-                                        className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
+                                        className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
                                     />
                                 </div>
                             </div>
@@ -336,7 +336,7 @@ function BuyContent() {
                                             setProvinceSearch('');
                                             setShowProvinceDropdown(true);
                                         }}
-                                        className="w-full pl-9 pr-10 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition cursor-pointer"
+                                        className="w-full pl-9 pr-10 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition cursor-pointer"
                                     />
                                     <div
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer p-1"
@@ -415,14 +415,14 @@ function BuyContent() {
                                             placeholder="ตั้งแต่ปี"
                                             value={minYear}
                                             onChange={(e) => setMinYear(e.target.value)}
-                                            className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                            className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
                                         />
                                         <input
                                             type="number"
                                             placeholder="ถึงปี"
                                             value={maxYear}
                                             onChange={(e) => setMaxYear(e.target.value)}
-                                            className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                            className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
                                         />
                                     </div>
                                 </div>
@@ -512,11 +512,11 @@ function BuyContent() {
                                                 {[
                                                     { value: 'PETROL', label: 'เบนซิน' },
                                                     { value: 'DIESEL', label: 'ดีเซล' },
-                                                    { value: 'HYBRID', label: 'ไฮบริด' },
-                                                    { value: 'PLUGIN_HYBRID', label: 'ปลั๊กอิน' },
-                                                    { value: 'EV', label: 'ไฟฟ้า' },
+                                                    { value: 'EV', label: 'ไฟฟ้า (EV)' },
+                                                    { value: 'HYBRID', label: 'Hybrid' },
+                                                    { value: 'PLUGIN_HYBRID', label: 'Plug-in Hybrid' },
                                                     { value: 'LPG', label: 'LPG' },
-                                                    { value: 'NGV', label: 'NGV' }
+                                                    { value: 'NGV', label: 'NGV' },
                                                 ].filter(f => vehicleType === 'MOTORCYCLE' ? ['PETROL', 'EV'].includes(f.value) : true).map((f) => (
                                                     <button
                                                         key={f.value}
@@ -547,14 +547,14 @@ function BuyContent() {
                                                     placeholder="เริ่มต้น"
                                                     value={minEngineSize}
                                                     onChange={(e) => setMinEngineSize(e.target.value)}
-                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:border-primary shadow-sm"
                                                 />
                                                 <input
                                                     type="number"
                                                     placeholder="สูงสุด"
                                                     value={maxEngineSize}
                                                     onChange={(e) => setMaxEngineSize(e.target.value)}
-                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:border-primary shadow-sm"
+                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:border-primary shadow-sm"
                                                 />
                                             </div>
                                         </div>
@@ -594,7 +594,7 @@ function BuyContent() {
                                         placeholder="ค้นหายี่ห้อ..."
                                         value={brandSearch}
                                         onChange={(e) => setBrandSearch(e.target.value)}
-                                        className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
+                                        className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
                                     />
                                 </div>
 

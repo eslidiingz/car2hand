@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { MagnifyingGlass } from '@phosphor-icons/react';
 
 export default function Hero() {
     const router = useRouter();
@@ -95,6 +96,7 @@ export default function Hero() {
                     onClick={handleSearch}
                     className="bg-accent text-white rounded-xl px-10 py-4 font-bold hover:bg-orange-600 transition w-full md:w-auto shadow-lg shadow-orange-200 cursor-pointer active:scale-95"
                 >
+                    <MagnifyingGlass className="inline-block mr-2" size={20} />
                     ค้นหา
                 </button>
             </div>
