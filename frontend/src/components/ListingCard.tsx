@@ -48,13 +48,13 @@ interface ListingCardProps {
 // Fuel type labels
 const getFuelTypeLabel = (fuelType: string) => {
     const labels: Record<string, string> = {
-        'PETROL': 'Petrol (เบนซิน)',
-        'DIESEL': 'Diesel (ดีเซล)',
-        'HYBRID': 'Hybrid (ไฮบริด)',
-        'PLUGIN_HYBRID': 'Plug-in Hybrid (ปลั๊กอินไฮบริด)',
-        'EV': 'EV (ไฟฟ้า)',
-        'LPG': 'LPG (แก๊ส)',
-        'NGV': 'NGV (แก๊ส)'
+        'PETROL': 'เบนซิน',
+        'DIESEL': 'ดีเซล',
+        'HYBRID': 'Hybrid',
+        'PLUGIN_HYBRID': 'Plug-in',
+        'EV': 'ไฟฟ้า (EV)',
+        'LPG': 'LPG',
+        'NGV': 'NGV'
     };
     return labels[fuelType] || fuelType;
 };
@@ -210,18 +210,18 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                     </h3>
 
                     {/* Specs */}
-                    <div className="grid grid-cols-3 gap-2 text-xs text-gray-500 mb-4 bg-gray-50 p-2.5 rounded-xl border border-gray-50">
-                        <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200">
+                    <div className="grid grid-cols-3 gap-1 text-xs text-gray-500 mb-4 bg-gray-50 p-2 rounded-xl border border-gray-50">
+                        <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
                             <CalendarBlank size={16} className="text-primary" />
-                            <span>{listing.year}</span>
+                            <span className="font-medium">{listing.year}</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200">
+                        <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
                             <Gauge size={16} className="text-primary" />
-                            <span>{listing.mileage ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : '-'}</span>
+                            <span className="font-medium whitespace-nowrap">{listing.mileage ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : '-'}</span>
                         </div>
-                        <div className="flex flex-col items-center justify-center gap-1">
+                        <div className="flex flex-col items-center justify-center gap-1 py-1 px-1">
                             <GasPump size={16} className="text-primary" />
-                            <span>{getFuelTypeLabel(listing.fuelType)}</span>
+                            <span className="font-medium text-center leading-tight">{getFuelTypeLabel(listing.fuelType)}</span>
                         </div>
                     </div>
 

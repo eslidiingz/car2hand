@@ -60,6 +60,7 @@ function BuyContent() {
     const [minEngineSize, setMinEngineSize] = useState(searchParams.get('minEngineSize') || '');
     const [maxEngineSize, setMaxEngineSize] = useState(searchParams.get('maxEngineSize') || '');
     const [brandSearch, setBrandSearch] = useState('');
+    const [showAllBrands, setShowAllBrands] = useState(false);
     const [bodyType, setBodyType] = useState(searchParams.get('bodyType') || '');
     const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
     const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
@@ -292,14 +293,14 @@ function BuyContent() {
                                         placeholder="ต่ำสุด"
                                         value={minPrice}
                                         onChange={(e) => setMinPrice(e.target.value)}
-                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
+                                        className="form-input w-1/2 font-medium"
                                     />
                                     <input
                                         type="number"
                                         placeholder="สูงสุด"
                                         value={maxPrice}
                                         onChange={(e) => setMaxPrice(e.target.value)}
-                                        className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
+                                        className="form-input w-1/2 font-medium"
                                     />
                                 </div>
                             </div>
@@ -314,7 +315,7 @@ function BuyContent() {
                                         placeholder="เช่น 50,000"
                                         value={maxMileage}
                                         onChange={(e) => setMaxMileage(e.target.value)}
-                                        className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
+                                        className="form-input-icon font-medium"
                                     />
                                 </div>
                             </div>
@@ -336,7 +337,7 @@ function BuyContent() {
                                             setProvinceSearch('');
                                             setShowProvinceDropdown(true);
                                         }}
-                                        className="w-full pl-9 pr-10 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition cursor-pointer"
+                                        className="form-input-icon w-full cursor-pointer font-medium"
                                     />
                                     <div
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer p-1"
@@ -415,14 +416,14 @@ function BuyContent() {
                                             placeholder="ตั้งแต่ปี"
                                             value={minYear}
                                             onChange={(e) => setMinYear(e.target.value)}
-                                            className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
+                                            className="form-input w-1/2 font-medium"
                                         />
                                         <input
                                             type="number"
                                             placeholder="ถึงปี"
                                             value={maxYear}
                                             onChange={(e) => setMaxYear(e.target.value)}
-                                            className="w-1/2 p-2 border border-gray-200 rounded-lg text-sm bg-white outline-none focus:border-primary"
+                                            className="form-input w-1/2 font-medium"
                                         />
                                     </div>
                                 </div>
@@ -547,14 +548,14 @@ function BuyContent() {
                                                     placeholder="เริ่มต้น"
                                                     value={minEngineSize}
                                                     onChange={(e) => setMinEngineSize(e.target.value)}
-                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:border-primary shadow-sm"
+                                                    className="form-input w-1/2 font-medium"
                                                 />
                                                 <input
                                                     type="number"
                                                     placeholder="สูงสุด"
                                                     value={maxEngineSize}
                                                     onChange={(e) => setMaxEngineSize(e.target.value)}
-                                                    className="w-1/2 p-2.5 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:border-primary shadow-sm"
+                                                    className="form-input w-1/2 font-medium"
                                                 />
                                             </div>
                                         </div>
@@ -594,54 +595,77 @@ function BuyContent() {
                                         placeholder="ค้นหายี่ห้อ..."
                                         value={brandSearch}
                                         onChange={(e) => setBrandSearch(e.target.value)}
-                                        className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-primary transition"
+                                        className="form-input-icon font-medium"
                                     />
                                 </div>
 
                                 <div className="relative flex-1 min-h-0">
                                     <div className="space-y-1 pr-2 h-full overflow-y-auto custom-scrollbar pb-6">
-                                        {[...brands]
-                                            .sort((a, b) => {
-                                                const countA = brandStats[a.name] || 0;
-                                                const countB = brandStats[b.name] || 0;
-                                                if (countB !== countA) return countB - countA;
-                                                return a.name.localeCompare(b.name);
-                                            })
-                                            .filter(b => {
-                                                const count = brandStats[b.name] || 0;
-                                                const passesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
-                                                    (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()));
+                                        {(() => {
+                                            const filteredBrands = [...brands]
+                                                .sort((a, b) => {
+                                                    const countA = brandStats[a.name] || 0;
+                                                    const countB = brandStats[b.name] || 0;
+                                                    if (countB !== countA) return countB - countA;
+                                                    return a.name.localeCompare(b.name);
+                                                })
+                                                .filter(b => {
+                                                    const count = brandStats[b.name] || 0;
+                                                    const passesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
+                                                        (b.nameTh && b.nameTh.toLowerCase().includes(brandSearch.toLowerCase()));
 
-                                                if (showOnlyWithListings) {
-                                                    return count > 0 && passesSearch;
-                                                }
-                                                return passesSearch;
-                                            }).map(b => (
-                                                <label key={b.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition duration-200 group">
-                                                    <div className="relative flex items-center">
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedBrands.includes(b.name)}
-                                                            onChange={(e) => {
-                                                                if (e.target.checked) {
-                                                                    setSelectedBrands([...selectedBrands, b.name]);
-                                                                } else {
-                                                                    setSelectedBrands(selectedBrands.filter(s => s !== b.name));
-                                                                }
-                                                                setPage(1);
-                                                            }}
-                                                            className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-primary checked:border-primary transition-all duration-200 cursor-pointer"
-                                                        />
-                                                        <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                                        </svg>
-                                                    </div>
-                                                    <span className={`text-sm transition-colors duration-200 ${selectedBrands.includes(b.name) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'}`}>
-                                                        {b.name} <span className="text-xs text-gray-400 font-normal ml-1">({brandStats[b.name] || 0})</span>
-                                                    </span>
-                                                </label>
-                                            ))}
+                                                    if (showOnlyWithListings) {
+                                                        return count > 0 && passesSearch;
+                                                    }
+                                                    return passesSearch;
+                                                });
+
+                                            const displayedBrands = showAllBrands ? filteredBrands : filteredBrands.slice(0, 5);
+
+                                            return (
+                                                <>
+                                                    {displayedBrands.map(b => (
+                                                        <label key={b.id} className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition duration-200 group">
+                                                            <div className="relative flex items-center">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={selectedBrands.includes(b.name)}
+                                                                    onChange={(e) => {
+                                                                        if (e.target.checked) {
+                                                                            setSelectedBrands([...selectedBrands, b.name]);
+                                                                        } else {
+                                                                            setSelectedBrands(selectedBrands.filter(s => s !== b.name));
+                                                                        }
+                                                                        setPage(1);
+                                                                    }}
+                                                                    className="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-md checked:bg-primary checked:border-primary transition-all duration-200 cursor-pointer"
+                                                                />
+                                                                <svg className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                                </svg>
+                                                            </div>
+                                                            <span className={`text-sm transition-colors duration-200 ${selectedBrands.includes(b.name) ? 'text-primary font-bold' : 'text-gray-600 group-hover:text-primary'}`}>
+                                                                {b.name} <span className="text-xs text-gray-400 font-normal ml-1">({brandStats[b.name] || 0})</span>
+                                                            </span>
+                                                        </label>
+                                                    ))}
+
+                                                    {filteredBrands.length > 5 && (
+                                                        <button
+                                                            onClick={() => setShowAllBrands(!showAllBrands)}
+                                                            className="w-full py-2 text-xs font-bold text-primary hover:text-accent transition-colors flex items-center justify-center gap-1 mt-1 border-t border-gray-50"
+                                                        >
+                                                            {showAllBrands ? (
+                                                                <>แสดงน้อยลง <CaretDown size={14} className="rotate-180" /></>
+                                                            ) : (
+                                                                <>ดูยี่ห้อทั้งหมด ({filteredBrands.length}) <CaretDown size={14} /></>
+                                                            )}
+                                                        </button>
+                                                    )}
+                                                </>
+                                            );
+                                        })()}
                                         {brands.filter(b => {
                                             const count = brandStats[b.name] || 0;
                                             const passesSearch = b.name.toLowerCase().includes(brandSearch.toLowerCase()) ||
