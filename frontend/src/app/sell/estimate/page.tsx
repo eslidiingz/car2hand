@@ -22,7 +22,7 @@ export default function EstimatePricePage() {
                         <span className="font-bold text-xl text-primary">ผลการประเมินราคา</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Powered by Car2Hand AI</span>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Powered by Car2Hand</span>
                     </div>
                 </div>
             </nav>
@@ -130,9 +130,6 @@ export default function EstimatePricePage() {
                 {/* Footer Actions */}
                 <div className="bg-white p-4 border-t border-gray-100 md:border-none md:bg-transparent fixed bottom-0 left-0 w-full md:relative md:p-0 z-40">
                     <div className="max-w-4xl mx-auto flex gap-4">
-                        <button className="flex-1 bg-white border border-gray-300 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-50 transition">
-                            บันทึกไว้ก่อน
-                        </button>
                         <Link href="/sell/create" className="flex-[2] bg-accent text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-orange-600 transition flex items-center justify-center gap-2 text-lg">
                             ลงขายที่ราคานี้ <ArrowRight weight="bold" />
                         </Link>
