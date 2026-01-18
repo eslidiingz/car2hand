@@ -16,12 +16,19 @@ export const articleRoutes = new Elysia({ prefix: '/articles' })
             prisma.article.findMany({
                 where: {
                     status: 'PUBLISHED',
-                    ...(category && { category: category as any })
+                    ...(category && {
+                        category: {
+                            slug: category
+                        }
+                    })
                 },
                 skip,
                 take,
                 orderBy: { createdAt: 'desc' },
                 include: {
+                    category: {
+                        select: { name: true, slug: true }
+                    },
                     author: {
                         select: { fullName: true }
                     }
@@ -30,7 +37,11 @@ export const articleRoutes = new Elysia({ prefix: '/articles' })
             prisma.article.count({
                 where: {
                     status: 'PUBLISHED',
-                    ...(category && { category: category as any })
+                    ...(category && {
+                        category: {
+                            slug: category
+                        }
+                    })
                 }
             })
         ]);
@@ -58,6 +69,9 @@ export const articleRoutes = new Elysia({ prefix: '/articles' })
         const article = await prisma.article.findUnique({
             where: { slug },
             include: {
+                category: {
+                    select: { name: true, slug: true }
+                },
                 author: {
                     select: { fullName: true }
                 }

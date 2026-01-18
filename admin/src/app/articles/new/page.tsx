@@ -13,18 +13,12 @@ import {
     Loader2,
     Upload
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 
-const CATEGORIES = [
-    { value: 'BUYING_GUIDE', label: 'มือใหม่หัดซื้อ' },
-    { value: 'MAINTENANCE', label: 'การซ่อมบำรุง' },
-    { value: 'FINANCE_INSURANCE', label: 'ไฟแนนซ์ & ประกัน' },
-    { value: 'EV', label: 'รถ EV' },
-    { value: 'ENCYCLOPEDIA', label: 'สารานุกรมรุ่นรถ' },
-];
+
 
 export default function NewPostPage() {
     const router = useRouter();
@@ -32,14 +26,30 @@ export default function NewPostPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
     const [formData, setFormData] = useState({
         title: "",
         content: "",
         excerpt: "",
-        category: "BUYING_GUIDE",
+        categoryId: "",
         featuredImage: "",
         status: "DRAFT"
     });
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await apiFetch('/admin/categories');
+                setCategories(data);
+                if (data.length > 0) {
+                    setFormData(prev => ({ ...prev, categoryId: data[0].id }));
+                }
+            } catch (err) {
+                console.error("Fetch categories error:", err);
+            }
+        };
+        fetchCategories();
+    }, []);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -64,7 +74,7 @@ export default function NewPostPage() {
         payload.append('title', formData.title);
         payload.append('content', formData.content);
         payload.append('excerpt', formData.excerpt);
-        payload.append('category', formData.category);
+        payload.append('categoryId', formData.categoryId);
         payload.append('status', finalStatus);
 
         if (imageFile) {
@@ -164,12 +174,12 @@ export default function NewPostPage() {
                                         <Tag size={16} className="text-primary" /> หมวดหมู่
                                     </label>
                                     <select
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                        value={formData.categoryId}
+                                        onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
                                         className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-primary transition-all text-sm font-bold cursor-pointer appearance-none"
                                     >
-                                        {CATEGORIES.map(cat => (
-                                            <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.id} value={cat.id}>{cat.name}</option>
                                         ))}
                                     </select>
                                 </div>

@@ -48,34 +48,40 @@ model Admin {
 // Articles - บทความให้ความรู้
 // =============================================
 model Article {
-  id            String          @id @default(cuid())
+  id            String     @id @default(cuid())
   title         String
-  slug          String          @unique
-  content       String          @db.Text
-  excerpt       String?         @db.Text
-  category      ArticleCategory
+  slug          String     @unique
+  content       String     @db.Text
+  excerpt       String?    @db.Text
   featuredImage String?
-  status        PostStatus      @default(DRAFT)
-  viewCount     Int             @default(0)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  status        PostStatus @default(DRAFT)
+  viewCount     Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   // Relations
-  authorId String
-  author   Admin  @relation(fields: [authorId], references: [id])
+  authorId   String
+  author     Admin            @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   ArticleCategory? @relation(fields: [categoryId], references: [id])
 
-  @@index([category])
+  @@index([categoryId])
   @@index([status])
   @@index([createdAt])
   @@map("articles")
 }
 
-enum ArticleCategory {
-  BUYING_GUIDE // มือใหม่หัดซื้อ
-  MAINTENANCE // การซ่อมบำรุง
-  FINANCE_INSURANCE // ไฟแนนซ์ & ประกัน
-  EV // รถ EV
-  ENCYCLOPEDIA // สารานุกรมรุ่นรถ
+model ArticleCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  articles Article[]
+
+  @@map("article_categories")
 }
 
 enum PostStatus {

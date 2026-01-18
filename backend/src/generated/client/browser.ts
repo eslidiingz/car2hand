@@ -33,6 +33,11 @@ export type Admin = Prisma.AdminModel
  */
 export type Article = Prisma.ArticleModel
 /**
+ * Model ArticleCategory
+ * 
+ */
+export type ArticleCategory = Prisma.ArticleCategoryModel
+/**
  * Model Wishlist
  * 
  */

@@ -25,7 +25,9 @@ interface Post {
     id: string;
     title: string;
     slug: string;
-    category: string;
+    category: {
+        name: string;
+    };
     status: "DRAFT" | "PUBLISHED";
     createdAt: string;
     featuredImage?: string;
@@ -35,13 +37,7 @@ interface Post {
     }
 }
 
-const CATEGORY_MAP: Record<string, string> = {
-    'BUYING_GUIDE': 'มือใหม่หัดซื้อ',
-    'MAINTENANCE': 'การซ่อมบำรุง',
-    'FINANCE_INSURANCE': 'ไฟแนนซ์ & ประกัน',
-    'EV': 'รถ EV',
-    'ENCYCLOPEDIA': 'สารานุกรมรุ่นรถ',
-};
+
 
 export default function ArticlesManagementPage() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -141,7 +137,7 @@ export default function ArticlesManagementPage() {
                             <div className="flex-1 p-6 flex flex-col">
                                 <div className="mb-2">
                                     <span className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-2 py-1 rounded-md mb-2 inline-block italic">
-                                        {CATEGORY_MAP[post.category] || post.category}
+                                        {post.category?.name || "ไม่มีหมวดหมู่"}
                                     </span>
                                     <h2 className="text-lg font-bold text-slate-800 leading-snug group-hover:text-primary transition-colors line-clamp-2">{post.title}</h2>
                                 </div>

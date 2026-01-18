@@ -74,6 +74,117 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         })
     })
 
+    // Category Management
+    .group("/categories", (app) => app
+        .derive(async ({ jwt, headers, set }) => {
+            const authHeader = headers['authorization'];
+            if (!authHeader?.startsWith('Bearer ')) {
+                set.status = 401;
+                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+
+            const token = authHeader.slice(7).trim();
+            const payload = await jwt.verify(token);
+
+            if (!payload) {
+                set.status = 401;
+                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+
+            return { adminId: (payload as any).userId };
+        })
+        .onBeforeHandle(({ adminId, set }) => {
+            if (!adminId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+        })
+        .get("/", async () => {
+            return await prisma.articleCategory.findMany({
+                orderBy: { name: 'asc' }
+            });
+        })
+        .post("/", async ({ body, set }) => {
+            try {
+                const { categorySchema, validateInput } = await import("./validation");
+                const validatedData = validateInput(categorySchema, body);
+
+                // Check if slug exists
+                const existing = await prisma.articleCategory.findUnique({
+                    where: { slug: validatedData.slug }
+                });
+                if (existing) {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'Slug นี้ถูกใช้งานแล้ว' };
+                }
+
+                return await prisma.articleCategory.create({ data: validatedData });
+            } catch (error: any) {
+                if (error.status === 400) {
+                    set.status = 400;
+                    return error;
+                }
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถสร้างหมวดหมู่ได้' };
+            }
+        }, {
+            body: t.Object({
+                name: t.String(),
+                slug: t.String()
+            })
+        })
+        .patch("/:id", async ({ params: { id }, body, set }) => {
+            try {
+                const { categorySchema, validateInput } = await import("./validation");
+                const validatedData = validateInput(categorySchema.partial(), body);
+
+                if (validatedData.slug) {
+                    const existing = await prisma.articleCategory.findFirst({
+                        where: {
+                            slug: validatedData.slug,
+                            id: { not: id }
+                        }
+                    });
+                    if (existing) {
+                        set.status = 400;
+                        return { error: 'Bad Request', message: 'Slug นี้ถูกใช้งานแล้ว' };
+                    }
+                }
+
+                return await prisma.articleCategory.update({
+                    where: { id },
+                    data: validatedData
+                });
+            } catch (error: any) {
+                if (error.status === 400) {
+                    set.status = 400;
+                    return error;
+                }
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถแก้ไขหมวดหมู่ได้' };
+            }
+        }, {
+            body: t.Object({
+                name: t.Optional(t.String()),
+                slug: t.Optional(t.String())
+            })
+        })
+        .delete("/:id", async ({ params: { id }, set }) => {
+            try {
+                const count = await prisma.article.count({ where: { categoryId: id } });
+                if (count > 0) {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'ไม่สามารถลบหมวดหมู่ที่มีบทความอยู่ได้' };
+                }
+                await prisma.articleCategory.delete({ where: { id } });
+                return { message: 'ลบหมวดหมู่สำเร็จ' };
+            } catch (error) {
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถลบหมวดหมู่ได้' };
+            }
+        })
+    )
+
     // Protected Admin Routes
     .group("/posts", (app) => app
         .derive(async ({ jwt, headers, set }) => {
@@ -150,7 +261,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     title: b.title,
                     content: b.content,
                     excerpt: b.excerpt === "" ? null : b.excerpt,
-                    category: b.category,
+                    categoryId: b.categoryId,
                     status: b.status,
                     featuredImage: b.featuredImage === "" ? null : b.featuredImage
                 };
@@ -214,7 +325,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             body: t.Object({
                 title: t.String(),
                 content: t.String(),
-                category: t.String(),
+                categoryId: t.String(),
                 excerpt: t.Optional(t.String()),
                 status: t.Optional(t.String()),
                 featuredImage: t.Optional(t.String()),
@@ -234,6 +345,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     take,
                     orderBy: { createdAt: 'desc' },
                     include: {
+                        category: {
+                            select: { name: true }
+                        },
                         author: {
                             select: { fullName: true }
                         }
@@ -259,6 +373,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 const post = await prisma.article.findUnique({
                     where: { id },
                     include: {
+                        category: {
+                            select: { name: true }
+                        },
                         author: {
                             select: { fullName: true }
                         }
@@ -293,7 +410,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 let postData: any = {};
                 if (b.title !== undefined) postData.title = b.title;
                 if (b.content !== undefined) postData.content = b.content;
-                if (b.category !== undefined) postData.category = b.category;
+                if (b.categoryId !== undefined) postData.categoryId = b.categoryId;
                 if (b.status !== undefined) postData.status = b.status;
                 if (b.excerpt !== undefined) postData.excerpt = b.excerpt === "" ? null : b.excerpt;
                 if (b.featuredImage !== undefined) postData.featuredImage = b.featuredImage === "" ? null : b.featuredImage;
@@ -359,7 +476,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             body: t.Object({
                 title: t.Optional(t.String()),
                 content: t.Optional(t.String()),
-                category: t.Optional(t.String()),
+                categoryId: t.Optional(t.String()),
                 excerpt: t.Optional(t.String()),
                 status: t.Optional(t.String()),
                 featuredImage: t.Optional(t.String()),

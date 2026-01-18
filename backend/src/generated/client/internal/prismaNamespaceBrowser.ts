@@ -54,6 +54,7 @@ export const ModelName = {
   User: 'User',
   Admin: 'Admin',
   Article: 'Article',
+  ArticleCategory: 'ArticleCategory',
   Wishlist: 'Wishlist',
   Brand: 'Brand',
   VehicleModel: 'VehicleModel',
@@ -110,16 +111,27 @@ export const ArticleScalarFieldEnum = {
   slug: 'slug',
   content: 'content',
   excerpt: 'excerpt',
-  category: 'category',
   featuredImage: 'featuredImage',
   status: 'status',
   viewCount: 'viewCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  authorId: 'authorId'
+  authorId: 'authorId',
+  categoryId: 'categoryId'
 } as const
 
 export type ArticleScalarFieldEnum = (typeof ArticleScalarFieldEnum)[keyof typeof ArticleScalarFieldEnum]
+
+
+export const ArticleCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArticleCategoryScalarFieldEnum = (typeof ArticleCategoryScalarFieldEnum)[keyof typeof ArticleCategoryScalarFieldEnum]
 
 
 export const WishlistScalarFieldEnum = {

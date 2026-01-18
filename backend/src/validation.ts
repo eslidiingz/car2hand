@@ -221,9 +221,7 @@ export const articleSchema = z.object({
         .optional()
         .nullable(),
 
-    category: z.enum(['BUYING_GUIDE', 'MAINTENANCE', 'FINANCE_INSURANCE', 'EV', 'ENCYCLOPEDIA'], {
-        message: 'หมวดหมู่ไม่ถูกต้อง'
-    }),
+    categoryId: z.string().min(1, 'กรุณาเลือกหมวดหมู่'),
 
     featuredImage: z.string()
         .url('รูปแบบ URL รูปภาพไม่ถูกต้อง')
@@ -231,6 +229,20 @@ export const articleSchema = z.object({
         .nullable(),
 
     status: z.enum(['DRAFT', 'PUBLISHED']).default('DRAFT')
+});
+
+/**
+ * Article Category Schema
+ */
+export const categorySchema = z.object({
+    name: z.string()
+        .min(1, 'ชื่อหมวดหมู่ต้องมีอย่างน้อย 1 ตัวอักษร')
+        .max(100, 'ชื่อหมวดหมู่ต้องไม่เกิน 100 ตัวอักษร'),
+
+    slug: z.string()
+        .min(1, 'Slug ต้องมีอย่างน้อย 1 ตัวอักษร')
+        .max(100, 'Slug ต้องไม่เกิน 100 ตัวอักษร')
+        .regex(/^[a-z0-9-]+$/, 'Slug ต้องเป็นภาษาอังกฤษ ตัวเลข หรือขีดกลางเท่านั้น')
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

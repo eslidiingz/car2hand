@@ -9,7 +9,8 @@ import {
     BookOpen,
     Settings,
     LogOut,
-    Package
+    Package,
+    Tags
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -18,6 +19,7 @@ const navigation = [
     { name: "ผู้ใช้งาน", href: "/users", icon: Users },
     { name: "ประกาศขาย", href: "/listings", icon: Car },
     { name: "จัดการบทความ", href: "/articles", icon: BookOpen },
+    { name: "หมวดหมู่บทความ", href: "/categories", icon: Tags },
     { name: "แพ็กเกจ", href: "/packages", icon: Package },
 ];
 

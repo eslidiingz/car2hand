@@ -100,13 +100,6 @@ export type StringNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null
 }
 
-export type EnumArticleCategoryFilter<$PrismaModel = never> = {
-  equals?: $Enums.ArticleCategory | Prisma.EnumArticleCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumArticleCategoryFilter<$PrismaModel> | $Enums.ArticleCategory
-}
-
 export type EnumPostStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.PostStatus | Prisma.EnumPostStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PostStatus[] | Prisma.ListEnumPostStatusFieldRefInput<$PrismaModel>
@@ -146,16 +139,6 @@ export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedStringNullableFilter<$PrismaModel>
   _max?: Prisma.NestedStringNullableFilter<$PrismaModel>
-}
-
-export type EnumArticleCategoryWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.ArticleCategory | Prisma.EnumArticleCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumArticleCategoryWithAggregatesFilter<$PrismaModel> | $Enums.ArticleCategory
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumArticleCategoryFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumArticleCategoryFilter<$PrismaModel>
 }
 
 export type EnumPostStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -544,13 +527,6 @@ export type NestedStringNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null
 }
 
-export type NestedEnumArticleCategoryFilter<$PrismaModel = never> = {
-  equals?: $Enums.ArticleCategory | Prisma.EnumArticleCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumArticleCategoryFilter<$PrismaModel> | $Enums.ArticleCategory
-}
-
 export type NestedEnumPostStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.PostStatus | Prisma.EnumPostStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PostStatus[] | Prisma.ListEnumPostStatusFieldRefInput<$PrismaModel>
@@ -584,16 +560,6 @@ export type NestedIntNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.IntFieldRefInput<$PrismaModel>
   gte?: number | Prisma.IntFieldRefInput<$PrismaModel>
   not?: Prisma.NestedIntNullableFilter<$PrismaModel> | number | null
-}
-
-export type NestedEnumArticleCategoryWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.ArticleCategory | Prisma.EnumArticleCategoryFieldRefInput<$PrismaModel>
-  in?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ArticleCategory[] | Prisma.ListEnumArticleCategoryFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumArticleCategoryWithAggregatesFilter<$PrismaModel> | $Enums.ArticleCategory
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumArticleCategoryFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumArticleCategoryFilter<$PrismaModel>
 }
 
 export type NestedEnumPostStatusWithAggregatesFilter<$PrismaModel = never> = {
