@@ -23,9 +23,9 @@ export interface JWTPayload {
 }
 
 /**
- * JWT Plugin for Elysia
+ * JWT Plugin Factory for Elysia
  */
-export const jwtPlugin = new Elysia({ name: 'jwt' })
+export const jwtPlugin = () => new Elysia({ name: 'jwt' })
     .use(
         jwt({
             name: 'jwt',
@@ -95,7 +95,7 @@ export const blacklistToken = (token: string): void => {
  * Protects routes that require authentication
  */
 export const authGuard = new Elysia({ name: 'auth-guard' })
-    .use(jwtPlugin)
+    .use(jwtPlugin())
     .derive(async ({ jwt, request, set, cookie }) => {
         // Try to get token from Authorization header or cookie
         let token: string | null = null;
@@ -168,7 +168,7 @@ export const authGuard = new Elysia({ name: 'auth-guard' })
  * Optional Auth - doesn't block if not authenticated
  */
 export const optionalAuth = new Elysia({ name: 'optional-auth' })
-    .use(jwtPlugin)
+    .use(jwtPlugin())
     .derive(async ({ jwt, request, cookie }) => {
         let token: string | null = null;
 

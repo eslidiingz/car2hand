@@ -12,10 +12,107 @@ import {
     ArrowRight,
     Books,
     DotsThree,
-    Calculator
+    Calculator,
+    X
 } from '@phosphor-icons/react';
+import { useState, useEffect } from 'react';
 
-export default function KnowledgePage() {
+interface Brand {
+    id: string;
+    name: string;
+    nameTh: string;
+    logo: string | null;
+    vehicleType: 'CAR' | 'MOTORCYCLE';
+}
+
+export default function ArticlesPage() {
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [allBrands, setAllBrands] = useState<Brand[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showAllBrandsModal, setShowAllBrandsModal] = useState(false);
+
+    useEffect(() => {
+        const fetchBrands = async () => {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/master-data/brands`);
+                const data = await res.json();
+                if (data.success) {
+                    setAllBrands(data.brands);
+                    // Filter popular or just take first 6
+                    const popular = data.brands.filter((b: any) => b.isPopular).slice(0, 6);
+                    setBrands(popular.length > 0 ? popular : data.brands.slice(0, 6));
+                }
+            } catch (error) {
+                console.error('Fetch brands error:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBrands();
+    }, []);
+
+    const BrandsModal = () => {
+        const carBrands = allBrands.filter(b => b.vehicleType === 'CAR');
+        const bikeBrands = allBrands.filter(b => b.vehicleType === 'MOTORCYCLE');
+
+        const BrandGrid = ({ items }: { items: Brand[] }) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {items.map((brand) => (
+                    <div key={brand.id} className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary hover:shadow-md transition gap-2 group">
+                        {brand.logo ? (
+                            <img src={brand.logo} alt={brand.name} className="w-12 h-12 object-contain group-hover:scale-110 transition" />
+                        ) : (
+                            <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center font-bold text-gray-400 group-hover:bg-primary/5 group-hover:text-primary transition">
+                                {brand.name[0]}
+                            </div>
+                        )}
+                        <span className="text-xs font-bold text-gray-600 group-hover:text-primary text-center">{brand.name}</span>
+                    </div>
+                ))}
+            </div>
+        );
+
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowAllBrandsModal(false)}></div>
+                <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden relative z-10 flex flex-col">
+                    <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+                        <h3 className="text-xl font-bold text-primary flex items-center gap-2">
+                            <Books weight="fill" className="text-blue-500" /> ยี่ห้อรถทั้งหมด
+                        </h3>
+                        <button onClick={() => setShowAllBrandsModal(false)} className="p-2 hover:bg-gray-100 rounded-full transition">
+                            <X size={24} />
+                        </button>
+                    </div>
+                    <div className="p-8 overflow-y-auto space-y-10">
+                        {carBrands.length > 0 && (
+                            <section>
+                                <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-3">
+                                    <div className="h-px bg-slate-100 flex-1"></div>
+                                    รถยนต์ (Cars)
+                                    <div className="h-px bg-slate-100 flex-1"></div>
+                                </h4>
+                                <BrandGrid items={carBrands} />
+                            </section>
+                        )}
+
+                        {bikeBrands.length > 0 && (
+                            <section>
+                                <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-3">
+                                    <div className="h-px bg-slate-100 flex-1"></div>
+                                    รถมอเตอร์ไซค์ (Motorcycles)
+                                    <div className="h-px bg-slate-100 flex-1"></div>
+                                </h4>
+                                <BrandGrid items={bikeBrands} />
+                            </section>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="bg-surface text-gray-800 min-h-screen">
             {/* 
@@ -102,30 +199,27 @@ export default function KnowledgePage() {
                                 <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
                                     <Books weight="fill" className="text-blue-500" /> สารานุกรมรุ่นรถ
                                 </h2>
-                                <Link href="#" className="text-sm text-gray-500 hover:text-accent font-medium">ดูทุกยี่ห้อ &gt;</Link>
+                                <button
+                                    onClick={() => setShowAllBrandsModal(true)}
+                                    className="text-sm text-gray-500 hover:text-accent font-medium"
+                                >
+                                    ดูยี่ห้อทั้งหมด &gt;
+                                </button>
                             </div>
 
-                            <div className="grid grid-cols-4 md:grid-cols-6 gap-4 mb-6">
-                                {/* Toyota */}
-                                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary hover:shadow-md transition gap-2 group">
-                                    <div className="w-10 h-10 bg-black rounded-full text-white flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-110 transition">T</div>
-                                    <span className="text-xs font-bold text-gray-600 group-hover:text-primary">Toyota</span>
-                                </div>
-                                {/* Honda */}
-                                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary hover:shadow-md transition gap-2 group">
-                                    <div className="w-10 h-10 bg-gray-800 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-110 transition">H</div>
-                                    <span className="text-xs font-bold text-gray-600 group-hover:text-primary">Honda</span>
-                                </div>
-                                {/* BMW */}
-                                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary hover:shadow-md transition gap-2 group">
-                                    <div className="w-10 h-10 bg-blue-900 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-sm group-hover:scale-110 transition">B</div>
-                                    <span className="text-xs font-bold text-gray-600 group-hover:text-primary">BMW</span>
-                                </div>
-                                {/* Others */}
-                                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition gap-2 group">
-                                    <DotsThree weight="bold" className="text-gray-400 text-2xl group-hover:text-gray-600" />
-                                    <span className="text-xs font-bold text-gray-500 group-hover:text-gray-700">อื่นๆ</span>
-                                </div>
+                            <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+                                {brands.map((brand) => (
+                                    <div key={brand.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary hover:shadow-md transition gap-2 group">
+                                        {brand.logo ? (
+                                            <img src={brand.logo} alt={brand.name} className="w-10 h-10 object-contain group-hover:scale-110 transition" />
+                                        ) : (
+                                            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-gray-400 group-hover:bg-primary/5 group-hover:text-primary transition">
+                                                {brand.name[0]}
+                                            </div>
+                                        )}
+                                        <span className="text-xs font-bold text-gray-600 group-hover:text-primary truncate w-full text-center">{brand.name}</span>
+                                    </div>
+                                ))}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -247,6 +341,7 @@ export default function KnowledgePage() {
                     </aside>
                 </div>
             </div>
+            {showAllBrandsModal && <BrandsModal />}
         </div>
     );
 }

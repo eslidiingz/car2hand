@@ -30,7 +30,7 @@ export default function PackageManagementPage() {
                     </h1>
                     <p className="text-slate-500 mt-1 text-sm">กำหนดราคาและสิทธิพิเศษสำหรับผู้ลงโฆษณาขายรถ</p>
                 </div>
-                <button className="bg-primary hover:bg-slate-800 text-white px-6 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 shadow-xl shadow-primary/20 transition-all active:scale-95">
+                <button className="btn btn-primary btn-lg">
                     <Plus size={20} /> สร้างแพ็กเกจเพิ่ม
                 </button>
             </div>
@@ -67,10 +67,10 @@ export default function PackageManagementPage() {
                         </div>
 
                         <div className="flex gap-2 pt-6 border-t border-slate-50">
-                            <button className="flex-1 bg-white border border-slate-200 hover:border-slate-300 text-slate-600 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 text-sm shadow-sm hover:shadow-md">
+                            <button className="btn btn-secondary btn-md flex-1">
                                 <Edit3 size={16} /> แก้ไข
                             </button>
-                            <button className="p-3 bg-rose-50 text-rose-400 hover:text-rose-600 hover:bg-rose-100 rounded-xl transition-all border border-rose-100">
+                            <button className="btn btn-danger p-3 rounded-xl">
                                 <Trash2 size={18} />
                             </button>
                         </div>
@@ -84,8 +84,8 @@ export default function PackageManagementPage() {
                     <h3 className="text-2xl font-black italic mb-4">ตั้งค่าการชำระเงินอัตโนมัติ</h3>
                     <p className="text-blue-100/70 mb-8 max-w-xl text-sm font-medium">ระบบรองรับการชำระเงินผ่าน QR Code (PromptPay) และบัตรเครดิต โดยจะเปิดใช้งานแพ็กเกจให้ผู้ใช้งานทันทีที่การทำรายการเสร็จสมบูรณ์</p>
                     <div className="flex gap-4">
-                        <button className="bg-accent hover:bg-orange-600 text-white px-8 py-3 rounded-2xl font-bold italic transition-all shadow-lg shadow-accent/20">ไปที่ตั้งค่าการจ่ายเงิน</button>
-                        <button className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-2xl font-bold transition-all border border-white/10">ดูประวัติรายการ</button>
+                        <button className="btn btn-accent btn-lg px-8 py-3">ไปที่ตั้งค่าการจ่ายเงิน</button>
+                        <button className="btn btn-ghost btn-lg text-white border border-white/10 hover:bg-white/10">ดูประวัติรายการ</button>
                     </div>
                 </div>
             </div>

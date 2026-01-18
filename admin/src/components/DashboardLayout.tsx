@@ -2,12 +2,29 @@
 
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import { useAuth } from "@/contexts/AuthContext";
+import { Loader2 } from "lucide-react";
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const { isLoading, admin } = useAuth();
+
+    if (isLoading) {
+        return (
+            <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50">
+                <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+                <p className="text-slate-500 font-bold animate-pulse">กำลังเตรียมข้อมูล...</p>
+            </div>
+        );
+    }
+
+    if (!admin) {
+        return null; // AuthContext handles redirect
+    }
+
     return (
         <div className="flex h-screen bg-slate-50 overflow-hidden">
             {/* Sidebar - Desktop */}

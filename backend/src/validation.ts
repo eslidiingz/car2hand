@@ -47,13 +47,25 @@ export const loginSchema = z.object({
 
     rememberMe: z.boolean().optional().default(false)
 });
+/**
+ * Admin Login Schema
+ */
+export const adminLoginSchema = z.object({
+    email: z.string()
+        .email('รูปแบบอีเมลไม่ถูกต้อง'),
+
+    password: z.string()
+        .min(1, 'กรุณากรอกรหัสผ่าน'),
+
+    rememberMe: z.boolean().optional().default(false)
+});
 
 /**
  * Vehicle Listing Schema
  */
 export const vehicleListingSchema = z.object({
     vehicleType: z.enum(['CAR', 'MOTORCYCLE'], {
-        errorMap: () => ({ message: 'ประเภทยานพาหนะไม่ถูกต้อง' })
+        message: 'ประเภทยานพาหนะไม่ถูกต้อง'
     }),
 
     title: z.string()
@@ -94,11 +106,11 @@ export const vehicleListingSchema = z.object({
         .max(50, 'สีต้องไม่เกิน 50 ตัวอักษร'),
 
     fuelType: z.enum(['PETROL', 'DIESEL', 'HYBRID', 'PLUGIN_HYBRID', 'EV', 'LPG', 'NGV'], {
-        errorMap: () => ({ message: 'ประเภทเชื้อเพลิงไม่ถูกต้อง' })
+        message: 'ประเภทเชื้อเพลิงไม่ถูกต้อง'
     }),
 
     transmission: z.enum(['AUTOMATIC', 'MANUAL', 'CVT', 'DCT', 'SEMI_AUTO'], {
-        errorMap: () => ({ message: 'ประเภทเกียร์ไม่ถูกต้อง' })
+        message: 'ประเภทเกียร์ไม่ถูกต้อง'
     }).optional().nullable(),
 
     engineSize: z.number()
@@ -114,7 +126,7 @@ export const vehicleListingSchema = z.object({
         .nullable(),
 
     bodyType: z.enum(['SEDAN', 'HATCHBACK', 'SUV', 'MPV', 'PICKUP', 'COUPE', 'CONVERTIBLE', 'VAN', 'WAGON', 'SPORT', 'NAKED', 'CRUISER', 'TOURING', 'SCOOTER', 'CUB', 'TRAIL'], {
-        errorMap: () => ({ message: 'ประเภทตัวถังไม่ถูกต้อง' })
+        message: 'ประเภทตัวถังไม่ถูกต้อง'
     }).optional().nullable(),
 
     plateProvince: z.string()
@@ -123,11 +135,11 @@ export const vehicleListingSchema = z.object({
         .nullable(),
 
     registrationType: z.enum(['FIRST_HAND', 'USED'], {
-        errorMap: () => ({ message: 'ประเภทการจดทะเบียนไม่ถูกต้อง' })
+        message: 'ประเภทการจดทะเบียนไม่ถูกต้อง'
     }).optional().nullable(),
 
     condition: z.enum(['EXCELLENT', 'GOOD', 'FAIR', 'POOR'], {
-        errorMap: () => ({ message: 'สภาพรถไม่ถูกต้อง' })
+        message: 'สภาพรถไม่ถูกต้อง'
     }).optional().nullable(),
 
     ownerCount: z.number()
@@ -177,7 +189,7 @@ export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
     const result = schema.safeParse(data);
 
     if (!result.success) {
-        const errors = result.error.errors.map(e => ({
+        const errors = result.error.issues.map((e: any) => ({
             field: e.path.join('.'),
             message: e.message
         }));
@@ -193,7 +205,36 @@ export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
     return result.data;
 };
 
+/**
+ * Article Schema
+ */
+export const articleSchema = z.object({
+    title: z.string()
+        .min(2, 'หัวข้อต้องมีอย่างน้อย 2 ตัวอักษร')
+        .max(200, 'หัวข้อต้องไม่เกิน 200 ตัวอักษร'),
+
+    content: z.string()
+        .min(20, 'เนื้อหาต้องมีอย่างน้อย 20 ตัวอักษร'),
+
+    excerpt: z.string()
+        .max(500, 'คำโปรยต้องไม่เกิน 500 ตัวอักษร')
+        .optional()
+        .nullable(),
+
+    category: z.enum(['BUYING_GUIDE', 'MAINTENANCE', 'FINANCE_INSURANCE', 'EV', 'ENCYCLOPEDIA'], {
+        message: 'หมวดหมู่ไม่ถูกต้อง'
+    }),
+
+    featuredImage: z.string()
+        .url('รูปแบบ URL รูปภาพไม่ถูกต้อง')
+        .optional()
+        .nullable(),
+
+    status: z.enum(['DRAFT', 'PUBLISHED']).default('DRAFT')
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type VehicleListingInput = z.infer<typeof vehicleListingSchema>;
 export type UpdateListingInput = z.infer<typeof updateListingSchema>;
+export type ArticleInput = z.infer<typeof articleSchema>;

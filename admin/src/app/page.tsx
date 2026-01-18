@@ -52,7 +52,7 @@ export default function HomePage() {
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-slate-800">ประกาศขายล่าสุด</h2>
-            <button className="text-sm font-bold text-primary hover:text-accent transition-colors">ดูทั้งหมด</button>
+            <button className="btn btn-ghost btn-sm text-primary">ดูทั้งหมด</button>
           </div>
 
           <div className="space-y-4">
@@ -112,7 +112,7 @@ export default function HomePage() {
               ))}
             </ul>
           </div>
-          <button className="w-full mt-4 py-2 text-xs font-bold text-slate-400 hover:text-primary transition-colors border-t border-slate-50 pt-4">แสดงกิจกรรมทั้งหมด</button>
+          <button className="btn btn-ghost btn-md w-full mt-4 text-slate-400 border-t border-slate-50 pt-4 rounded-none">แสดงกิจกรรมทั้งหมด</button>
         </div>
       </div>
     </DashboardLayout>

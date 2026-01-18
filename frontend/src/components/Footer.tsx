@@ -13,7 +13,7 @@ export default function Footer() {
                     <ul className="space-y-2">
                         <li><Link href="/buy" className="text-gray-400 hover:text-white">Buy a Car</Link></li>
                         <li><Link href="/sell" className="text-gray-400 hover:text-white">Sell Your Car</Link></li>
-                        <li><Link href="/knowledge" className="text-gray-400 hover:text-white">Knowledge Base</Link></li>
+                        <li><Link href="/articles" className="text-gray-400 hover:text-white">Articles</Link></li>
                         <li><Link href="/community" className="text-gray-400 hover:text-white">Community</Link></li>
                     </ul>
                 </div>

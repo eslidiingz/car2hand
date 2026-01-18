@@ -7,16 +7,21 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 
 import { authRoutes, usersRoutes } from "./auth";
+import { adminRoutes } from "./admin";
 import { listingRoutes } from "./listings";
 import { masterDataRoutes } from "./master-data";
 import { wishlistRoutes } from "./wishlist";
+import { articleRoutes as publicArticleRoutes } from "./articles";
 import { securityHeaders, requestLogger, rateLimiter } from "./security";
 
 // Allowed origins (update for production)
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://127.0.0.1:3000',
-  process.env.FRONTEND_URL
+  'http://127.0.0.1:3001',
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL
 ].filter(Boolean) as string[];
 
 const app = new Elysia()
@@ -49,10 +54,12 @@ const app = new Elysia()
 
   // API Routes
   .use(authRoutes)
+  .use(adminRoutes)
   .use(usersRoutes)
   .use(listingRoutes)
   .use(masterDataRoutes)
   .use(wishlistRoutes)
+  .use(publicArticleRoutes)
 
   // Global error handler
   .onError(({ code, error, set }) => {

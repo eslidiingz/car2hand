@@ -175,7 +175,7 @@ export default function Navbar() {
                             <Link href="/buy" className={getLinkClass('/buy')}>ซื้อรถ</Link>
                             <Link href="/sell" className={getLinkClass('/sell')}>ลงขายกับเรา</Link>
                             <Link href="/services" className={getLinkClass('/services')}>บริการ</Link>
-                            <Link href="/knowledge" className={getLinkClass('/knowledge')}>ความรู้เรื่องรถ</Link>
+                            <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
                             <Link href="/community" className={getLinkClass('/community')}>ชุมชน</Link>
                         </div>
                         <div className="flex items-center gap-2">

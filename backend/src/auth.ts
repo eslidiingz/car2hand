@@ -13,7 +13,7 @@ import { registerSchema, loginSchema, validateInput } from "./validation";
 import { sanitizeObject, authRateLimiter } from "./security";
 
 export const authRoutes = new Elysia({ prefix: "/auth" })
-    .use(jwtPlugin)
+    .use(jwtPlugin())
     .use(authRateLimiter)
 
     // Register

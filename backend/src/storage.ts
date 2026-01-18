@@ -33,6 +33,15 @@ export function buildListingImagePath(userId: string, listingId: string, filenam
     return `${userId}/listings/${listingId}/${filename}`;
 }
 
+/**
+ * สร้าง path สำหรับรูปบทความ
+ * Structure: admin/articles/{filename}
+ */
+export function buildArticlePath(filename: string): string {
+    return `articles/${filename}`;
+}
+
+
 // =============================================
 // URL Builders
 // =============================================
@@ -159,6 +168,29 @@ export async function uploadListingImage(
 
     return { url, order: order ?? 0 };
 }
+
+/**
+ * อัพโหลดรูปของ Article - แปลงเป็น WebP อัตโนมัติ
+ * @returns URL ของรูป
+ */
+export async function uploadArticleImage(
+    file: { buffer: Buffer; originalname: string; mimetype: string }
+): Promise<string> {
+    // แปลงรูปเป็น WebP
+    const webpBuffer = await processImage(file.buffer, {
+        maxWidth: 1200,
+        maxHeight: 800,
+        quality: 85
+    });
+
+    // สร้างชื่อไฟล์แบบ .webp
+    const baseFilename = generateFilename(file.originalname);
+    const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
+    const objectPath = buildArticlePath(webpFilename);
+
+    return uploadFile(objectPath, webpBuffer, 'image/webp');
+}
+
 
 /**
  * อัพโหลดหลายรูปสำหรับ Listing

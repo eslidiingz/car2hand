@@ -1,8 +1,11 @@
 "use client";
 
 import { Bell, Search, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Navbar() {
+    const { admin } = useAuth();
+
     return (
         <header className="h-16 border-b border-slate-200 bg-white px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm">
             <div className="flex-1 max-w-md">
@@ -17,22 +20,22 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center gap-4">
-                <button className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg relative transition-all">
+                <button className="btn btn-secondary p-2 relative">
                     <Bell className="h-5 w-5" />
                     <span className="absolute top-2 right-2 h-2 w-2 bg-accent rounded-full border-2 border-white"></span>
                 </button>
 
                 <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
 
-                <button className="flex items-center gap-3 pl-2 pr-1 py-1 hover:bg-slate-50 rounded-xl transition-all group">
+                <div className="flex items-center gap-3 pl-2 pr-1 py-1 group">
                     <div className="text-right hidden sm:block">
-                        <p className="text-sm font-bold text-slate-700 leading-tight">สมชาย รักรถ</p>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Administrator</p>
+                        <p className="text-sm font-bold text-slate-700 leading-tight">{admin?.fullName || 'Admin'}</p>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">{admin?.email || 'Administrator'}</p>
                     </div>
                     <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
                         <User className="h-5 w-5" />
                     </div>
-                </button>
+                </div>
             </div>
         </header>
     );

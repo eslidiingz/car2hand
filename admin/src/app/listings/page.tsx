@@ -109,20 +109,20 @@ export default function ListingModerationPage() {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
+                                    <button className="btn btn-secondary btn-sm">
                                         <Eye size={14} /> ดูรายละเอียด
                                     </button>
                                 </div>
                             </div>
 
                             <div className="mt-auto pt-6 flex flex-col sm:flex-row gap-3">
-                                <button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
+                                <button className="btn btn-success btn-lg flex-1">
                                     <CheckCircle size={20} /> อนุมัติประกาศ
                                 </button>
-                                <button className="flex-1 bg-white border border-rose-200 hover:border-rose-300 text-rose-500 font-bold py-3 rounded-2xl transition-all flex items-center justify-center gap-2">
+                                <button className="btn btn-danger btn-lg flex-1">
                                     <XCircle size={20} /> ไม่อนุมัติ
                                 </button>
-                                <button className="p-3 bg-slate-50 text-slate-400 hover:text-slate-600 rounded-2xl transition-all">
+                                <button className="btn btn-secondary p-3 rounded-2xl">
                                     <MoreHorizontal size={20} />
                                 </button>
                             </div>
@@ -133,11 +133,11 @@ export default function ListingModerationPage() {
 
             {/* Pagination Placeholder */}
             <div className="mt-8 flex items-center justify-center gap-4">
-                <button className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:text-primary transition-all">
+                <button className="btn btn-secondary p-2 rounded-xl">
                     <ChevronLeft size={20} />
                 </button>
                 <span className="text-sm font-bold text-slate-600">หน้า 1 จาก 12</span>
-                <button className="p-2 border border-slate-200 rounded-xl text-slate-400 hover:text-primary transition-all">
+                <button className="btn btn-secondary p-2 rounded-xl">
                     <ChevronRight size={20} />
                 </button>
             </div>

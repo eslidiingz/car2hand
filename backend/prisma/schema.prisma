@@ -30,6 +30,59 @@ model User {
   @@map("users")
 }
 
+model Admin {
+  id        String   @id @default(cuid())
+  fullName  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  articles Article[]
+
+  @@map("admins")
+}
+
+// =============================================
+// Articles - บทความให้ความรู้
+// =============================================
+model Article {
+  id            String          @id @default(cuid())
+  title         String
+  slug          String          @unique
+  content       String          @db.Text
+  excerpt       String?         @db.Text
+  category      ArticleCategory
+  featuredImage String?
+  status        PostStatus      @default(DRAFT)
+  viewCount     Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  authorId String
+  author   Admin  @relation(fields: [authorId], references: [id])
+
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+  @@map("articles")
+}
+
+enum ArticleCategory {
+  BUYING_GUIDE // มือใหม่หัดซื้อ
+  MAINTENANCE // การซ่อมบำรุง
+  FINANCE_INSURANCE // ไฟแนนซ์ & ประกัน
+  EV // รถ EV
+  ENCYCLOPEDIA // สารานุกรมรุ่นรถ
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
 // Wishlist - รายการโปรดของผู้ใช้
 model Wishlist {
   id        String   @id @default(cuid())

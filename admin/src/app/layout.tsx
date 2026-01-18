@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Administrative dashboard for Car2Hand marketplace.",
 };
 
+import { AuthProvider } from '@/contexts/AuthContext';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="th" className={`${ibmPlexSansThai.variable}`}>
       <body className="font-sans antialiased bg-slate-50 text-slate-900 min-h-screen">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

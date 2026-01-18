@@ -54,7 +54,7 @@ export default function UserManagementPage() {
                     </h1>
                     <p className="text-slate-500 mt-1 text-sm">ตรวจสอบและบริหารจัดการข้อมูลผู้ใช้งานทั้งหมดในระบบ</p>
                 </div>
-                <button className="bg-primary hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95">
+                <button className="btn btn-primary btn-md">
                     <Plus size={20} /> เพิ่มผู้ใช้งานใหม่
                 </button>
             </div>
@@ -72,10 +72,10 @@ export default function UserManagementPage() {
                     />
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all">
+                    <button className="btn btn-secondary btn-md">
                         <Filter size={18} /> ตัวกรอง
                     </button>
-                    <button className="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all">
+                    <button className="btn btn-secondary btn-md">
                         ส่งออกข้อมูล (CSV)
                     </button>
                 </div>
@@ -124,13 +124,13 @@ export default function UserManagementPage() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 text-slate-400 hover:text-primary hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-100">
+                                            <button className="btn btn-secondary p-2 rounded-lg">
                                                 <Edit2 size={16} />
                                             </button>
-                                            <button className="p-2 text-slate-400 hover:text-red-500 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-100">
+                                            <button className="btn btn-danger p-2 rounded-lg">
                                                 <Trash2 size={16} />
                                             </button>
-                                            <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-white rounded-lg transition-all shadow-sm border border-transparent hover:border-slate-100">
+                                            <button className="btn btn-secondary p-2 rounded-lg">
                                                 <MoreVertical size={16} />
                                             </button>
                                         </div>
@@ -145,10 +145,10 @@ export default function UserManagementPage() {
                 <div className="px-6 py-4 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between">
                     <p className="text-xs text-slate-500 font-medium">แสดงผล 1 - 5 จากทั้งหมด 1,284 รายการ</p>
                     <div className="flex gap-2">
-                        <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary transition-all disabled:opacity-30" disabled>
+                        <button className="btn btn-secondary p-2 rounded-lg" disabled>
                             <ChevronLeft size={18} />
                         </button>
-                        <button className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary transition-all">
+                        <button className="btn btn-secondary p-2 rounded-lg">
                             <ChevronRight size={18} />
                         </button>
                     </div>

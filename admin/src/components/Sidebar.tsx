@@ -11,20 +11,23 @@ import {
     LogOut,
     Package
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navigation = [
     { name: "สรุปภาพรวม", href: "/", icon: LayoutDashboard },
     { name: "ผู้ใช้งาน", href: "/users", icon: Users },
     { name: "ประกาศขาย", href: "/listings", icon: Car },
-    { name: "จัดการความรู้", href: "/knowledge", icon: BookOpen },
+    { name: "จัดการบทความ", href: "/articles", icon: BookOpen },
     { name: "แพ็กเกจ", href: "/packages", icon: Package },
 ];
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { logout } = useAuth();
 
     return (
         <div className="flex h-full w-64 flex-col bg-primary text-white shadow-xl">
+
             <div className="flex h-16 items-center px-6">
                 <span className="text-xl font-bold tracking-tight">
                     Car<span className="text-accent">2</span>Hand <span className="text-xs font-normal opacity-70 ml-1">Admin</span>
@@ -39,8 +42,8 @@ export default function Sidebar() {
                             key={item.name}
                             href={item.href}
                             className={`group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${isActive
-                                    ? "bg-accent text-white shadow-lg shadow-accent/20"
-                                    : "text-blue-100 hover:bg-white/10 hover:text-white"
+                                ? "bg-accent text-white shadow-lg shadow-accent/20"
+                                : "text-blue-100 hover:bg-white/10 hover:text-white"
                                 }`}
                         >
                             <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
@@ -58,7 +61,10 @@ export default function Sidebar() {
                     <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
                     ตั้งค่าระบบ
                 </Link>
-                <button className="mt-1 flex w-full items-center rounded-xl px-3 py-2.5 text-sm font-medium text-red-300 hover:bg-red-500/10 hover:text-red-200 transition-all">
+                <button
+                    onClick={logout}
+                    className="btn btn-ghost w-full justify-start text-red-300 hover:bg-red-500/10 hover:text-red-200"
+                >
                     <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
                     ออกจากระบบ
                 </button>

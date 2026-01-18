@@ -499,20 +499,8 @@ export type BrandScalarRelationFilter = {
   isNot?: Prisma.BrandWhereInput
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumVehicleTypeFieldUpdateOperationsInput = {
   set?: $Enums.VehicleType
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type BrandCreateNestedOneWithoutModelsInput = {

@@ -9,6 +9,25 @@
 * 🟢 You can import this file directly.
 */
 
+export const ArticleCategory = {
+  BUYING_GUIDE: 'BUYING_GUIDE',
+  MAINTENANCE: 'MAINTENANCE',
+  FINANCE_INSURANCE: 'FINANCE_INSURANCE',
+  EV: 'EV',
+  ENCYCLOPEDIA: 'ENCYCLOPEDIA'
+} as const
+
+export type ArticleCategory = (typeof ArticleCategory)[keyof typeof ArticleCategory]
+
+
+export const PostStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED'
+} as const
+
+export type PostStatus = (typeof PostStatus)[keyof typeof PostStatus]
+
+
 export const VehicleType = {
   CAR: 'CAR',
   MOTORCYCLE: 'MOTORCYCLE'
