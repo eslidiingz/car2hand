@@ -13,6 +13,7 @@ import {
     Tags
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { cn } from "@/lib/utils";
 
 const navigation = [
     { name: "สรุปภาพรวม", href: "/", icon: LayoutDashboard },
@@ -28,11 +29,11 @@ export default function Sidebar() {
     const { logout } = useAuth();
 
     return (
-        <div className="flex h-full w-64 flex-col bg-primary text-white shadow-xl">
+        <div className="flex h-full w-64 flex-col bg-brand-primary text-white shadow-xl">
 
             <div className="flex h-16 items-center px-6">
                 <span className="text-xl font-bold tracking-tight">
-                    Car<span className="text-accent">2</span>Hand <span className="text-xs font-normal opacity-70 ml-1">Admin</span>
+                    Car<span className="text-brand-accent">2</span>Hand <span className="text-xs font-normal opacity-70 ml-1">Admin</span>
                 </span>
             </div>
 
@@ -43,12 +44,15 @@ export default function Sidebar() {
                         <Link
                             key={item.name}
                             href={item.href}
-                            className={`group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${isActive
-                                ? "bg-accent text-white shadow-lg shadow-accent/20"
-                                : "text-blue-100 hover:bg-white/10 hover:text-white"
+                            className={`group flex items-center rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 ${isActive
+                                ? "bg-brand-accent text-white shadow-lg shadow-brand-accent/30 translate-x-1"
+                                : "text-slate-300 hover:bg-white/10 hover:text-white hover:translate-x-1"
                                 }`}
                         >
-                            <item.icon className="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                            <item.icon className={cn(
+                                "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
+                                isActive ? "text-white" : "text-slate-400 group-hover:text-white"
+                            )} aria-hidden="true" />
                             {item.name}
                         </Link>
                     );
@@ -58,16 +62,16 @@ export default function Sidebar() {
             <div className="border-t border-white/10 p-4">
                 <Link
                     href="/settings"
-                    className="group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium text-blue-100 hover:bg-white/10 hover:text-white transition-all"
+                    className="group flex items-center rounded-xl px-4 py-3 text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-all duration-300"
                 >
                     <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
                     ตั้งค่าระบบ
                 </Link>
                 <button
                     onClick={logout}
-                    className="btn btn-ghost w-full justify-start text-red-300 hover:bg-red-500/10 hover:text-red-200"
+                    className="flex items-center w-full px-4 py-3 text-sm font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-all duration-300 group mt-2"
                 >
-                    <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
+                    <LogOut className="mr-3 h-5 w-5 flex-shrink-0 transition-colors group-hover:text-rose-200" />
                     ออกจากระบบ
                 </button>
             </div>
