@@ -1,6 +1,6 @@
 export default function Features() {
     return (
-        <section className="max-w-7xl mx-auto px-4 mt-12 mb-6">
+        <section className="max-w-7xl mx-auto px-4 mt-12 mb-6 hidden md:block">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4 hover:-translate-y-1 transition duration-300">
                     <div className="bg-blue-50 p-3 rounded-lg text-2xl">🛡️</div>

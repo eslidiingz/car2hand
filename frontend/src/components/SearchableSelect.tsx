@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { CaretDown, MagnifyingGlass, Check, X } from '@phosphor-icons/react';
+import { CaretDown, MagnifyingGlass, Check, X, Plus } from '@phosphor-icons/react';
 
 export interface SelectOption {
     id: string;
@@ -23,6 +23,8 @@ interface SearchableSelectProps {
     emptyMessage?: string;
     className?: string;
     icon?: React.ReactNode;
+    allowCustom?: boolean;
+    customLabel?: string;
 }
 
 export default function SearchableSelect({
@@ -35,7 +37,9 @@ export default function SearchableSelect({
     loading = false,
     emptyMessage = 'ไม่พบข้อมูล',
     className = '',
-    icon
+    icon,
+    allowCustom = false,
+    customLabel = 'ใช้ค่า "{search}"'
 }: SearchableSelectProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState('');
@@ -43,7 +47,7 @@ export default function SearchableSelect({
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Find selected option
-    const selectedOption = options.find(opt => opt.id === value);
+    const selectedOption = options.find(opt => opt.id === value) || (value && allowCustom ? { id: value, label: value } : null);
 
     // Filter options based on search
     const filteredOptions = options.filter(opt => {
@@ -173,7 +177,20 @@ export default function SearchableSelect({
                             <div className="p-4 text-center text-gray-400 text-sm">
                                 {emptyMessage}
                             </div>
-                        ) : (
+                        ) : null}
+
+                        {allowCustom && search.trim() !== '' && !options.some(opt => opt.label.toLowerCase() === search.toLowerCase()) && (
+                            <button
+                                type="button"
+                                onClick={() => handleSelect({ id: search, label: search })}
+                                className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-blue-50 transition border-t border-gray-100 italic text-primary"
+                            >
+                                <Plus size={18} weight="bold" />
+                                <span>{customLabel.replace('{search}', search)}</span>
+                            </button>
+                        )}
+
+                        {filteredOptions.length > 0 && (
                             sortedGroups.map(group => (
                                 <div key={group}>
                                     {/* Group Header */}

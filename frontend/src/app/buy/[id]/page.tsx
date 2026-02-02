@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -111,6 +111,8 @@ export default function CarDetailPage() {
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const thumbnailRef = useRef<HTMLDivElement>(null);
+    const thumbnailFullscreenRef = useRef<HTMLDivElement>(null);
 
     // Get current user
     const getCurrentUserId = () => {
@@ -225,6 +227,28 @@ export default function CarDetailPage() {
             fetchListing();
         }
     }, [listingId]);
+
+    // Scroll active thumbnail into view
+    useEffect(() => {
+        const scrollToActiveThumb = (containerRef: React.RefObject<HTMLDivElement | null>) => {
+            if (containerRef.current) {
+                const activeThumb = containerRef.current.children[currentImageIndex] as HTMLElement;
+                if (activeThumb) {
+                    activeThumb.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                        inline: 'center'
+                    });
+                }
+            }
+        };
+
+        if (showFullscreenGallery) {
+            scrollToActiveThumb(thumbnailFullscreenRef);
+        } else {
+            scrollToActiveThumb(thumbnailRef);
+        }
+    }, [currentImageIndex, showFullscreenGallery]);
 
     const nextImage = () => {
         if (listing && listing.images.length > 0) {
@@ -380,9 +404,10 @@ export default function CarDetailPage() {
                             >
                                 {listing.images.length > 0 ? (
                                     <img
+                                        key={`main-${currentImageIndex}`}
                                         src={listing.images[currentImageIndex]?.url}
                                         alt={listing.title}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover animate-image-change"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -399,28 +424,28 @@ export default function CarDetailPage() {
                                     <>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                                            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
+                                            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
                                         >
-                                            <CaretLeft weight="bold" size={20} />
+                                            <CaretLeft weight="bold" className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
+                                            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
                                         >
-                                            <CaretRight weight="bold" size={20} />
+                                            <CaretRight weight="bold" className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
                                         </button>
                                     </>
                                 )}
 
                                 {/* Image Counter */}
                                 {listing.images.length > 0 && (
-                                    <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                                    <div className="absolute bottom-2 md:bottom-4 right-2 md:right-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm">
                                         {currentImageIndex + 1} / {listing.images.length}
                                     </div>
                                 )}
 
                                 {/* Province Badge */}
-                                <div className="absolute bottom-4 left-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1.5">
+                                <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1.5">
                                     <MapPin size={14} weight="fill" />
                                     {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
                                 </div>
@@ -428,7 +453,7 @@ export default function CarDetailPage() {
 
                             {/* Thumbnail Strip */}
                             {listing.images.length > 1 && (
-                                <div className="p-3 flex gap-2 overflow-x-auto">
+                                <div ref={thumbnailRef} className="p-3 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth">
                                     {listing.images.map((img, index) => (
                                         <button
                                             key={img.id}
@@ -768,9 +793,10 @@ export default function CarDetailPage() {
                     {/* Main Image */}
                     <div className="flex-1 flex items-center justify-center px-4 relative">
                         <img
+                            key={`full-${currentImageIndex}`}
                             src={listing.images[currentImageIndex]?.url}
                             alt={listing.title}
-                            className="max-w-full max-h-full object-contain"
+                            className="max-w-full max-h-full object-contain animate-image-change"
                         />
 
                         {/* Navigation Arrows - Hidden on mobile, visible on desktop */}
@@ -794,7 +820,7 @@ export default function CarDetailPage() {
 
                     {/* Thumbnail Strip */}
                     {listing.images.length > 1 && (
-                        <div className="p-4 flex gap-2 justify-center overflow-x-auto">
+                        <div ref={thumbnailFullscreenRef} className="p-4 flex gap-2 justify-start overflow-x-auto no-scrollbar scroll-smooth">
                             {listing.images.map((img, index) => (
                                 <button
                                     key={img.id}

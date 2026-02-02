@@ -723,7 +723,7 @@ export default function EditListingPage() {
                             ) : (
                                 <>
                                     <FloppyDisk size={20} weight="bold" />
-                                    บันทึกการเปลี่ยนแปลง
+                                    บันทึก
                                 </>
                             )}
                         </button>
@@ -1450,7 +1450,7 @@ export default function EditListingPage() {
                                     ) : (
                                         <>
                                             <FloppyDisk size={20} weight="bold" />
-                                            บันทึกการเปลี่ยนแปลง
+                                            บันทึก
                                         </>
                                     )}
                                 </button>

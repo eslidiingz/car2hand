@@ -31,6 +31,7 @@ import {
 } from '@phosphor-icons/react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
+import BrandSelectionModal from '@/components/BrandSelectionModal';
 import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, publishListing } from '@/contexts/ListingContext';
 
 // Thai provinces list
@@ -112,6 +113,7 @@ export default function CreateListingPage() {
     const [loadingSubModels, setLoadingSubModels] = useState(false);
     const [selectedBrandId, setSelectedBrandId] = useState<string>('');
     const [selectedModelId, setSelectedModelId] = useState<string>('');
+    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
     const [bodyStyleOptions, setBodyStyleOptions] = useState<{ value: string; label: string }[]>([]);
     const [motorcycleBodyOptions, setMotorcycleBodyOptions] = useState<{ value: string; label: string }[]>([]);
 
@@ -550,123 +552,137 @@ export default function CreateListingPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                         <div className="md:col-span-2" ref={brandRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.brand ? 'text-red-600' : 'text-gray-700'}`}>ยี่ห้อ *</label>
-                                            <div className={fieldErrors.brand ? 'ring-2 ring-red-500 rounded-xl' : ''}>
-                                                <SearchableSelect
-                                                    options={brands.map(b => ({
-                                                        id: b.id,
-                                                        label: b.name,
-                                                        subLabel: b.nameTh || undefined,
-                                                        image: b.logo || undefined,
-                                                        isPopular: b.isPopular
-                                                    }))}
-                                                    value={selectedBrandId}
-                                                    onChange={(id, option) => {
-                                                        setSelectedBrandId(id);
-                                                        setSelectedModelId('');
-                                                        setFieldErrors(prev => ({ ...prev, brand: false }));
-                                                        updateFormData({
-                                                            brand: option?.label || '',
-                                                            model: '',
-                                                            subModel: '',
-                                                            bodyType: '',
-                                                            color: '',
-                                                            fuelType: '' as any,
-                                                            year: 0,
-                                                            transmission: 'AUTOMATIC',
-                                                            mileage: 0,
-                                                            engineSize: undefined,
-                                                            seats: undefined
-                                                        });
-                                                    }}
-                                                    placeholder="เลือกยี่ห้อ"
-                                                    searchPlaceholder="พิมพ์ชื่อยี่ห้อ..."
-                                                    loading={loadingBrands}
-                                                    emptyMessage="ไม่พบยี่ห้อที่ค้นหา"
-                                                />
-                                            </div>
-                                            {fieldErrors.brand && <p className="text-red-500 text-xs mt-1">กรุณาเลือกยี่ห้อ</p>}
+
+                                            {/* Brand Selection Trigger */}
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsBrandModalOpen(true)}
+                                                className={`w-full h-14 px-4 border rounded-2xl flex items-center justify-between transition-all bg-white hover:border-primary group ${fieldErrors.brand ? 'border-red-500 bg-red-50' : 'border-gray-200 shadow-sm'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    {formData.brand ? (
+                                                        <>
+                                                            <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
+                                                                {brands.find(b => b.name === formData.brand)?.logo ? (
+                                                                    <img
+                                                                        src={brands.find(b => b.name === formData.brand)?.logo || ''}
+                                                                        alt={formData.brand}
+                                                                        className="w-8 h-8 object-contain"
+                                                                    />
+                                                                ) : (
+                                                                    <span className="font-bold text-gray-400">{formData.brand[0]}</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-left">
+                                                                <div className="font-bold text-gray-800">{formData.brand}</div>
+                                                                <div className="text-xs text-gray-400">{brands.find(b => b.name === formData.brand)?.nameTh}</div>
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                                <Car size={24} className="text-gray-300" />
+                                                            </div>
+                                                            <span className="text-gray-400 text-lg">เลือกยี่ห้อรถ</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                                <div className={`p-2 rounded-xl group-hover:bg-blue-50 transition-colors ${formData.brand ? 'text-primary' : 'text-gray-300'}`}>
+                                                    <ArrowRight size={20} weight="bold" />
+                                                </div>
+                                            </button>
+
+                                            {/* Brand Selection Modal */}
+                                            <BrandSelectionModal
+                                                isOpen={isBrandModalOpen}
+                                                onClose={() => setIsBrandModalOpen(false)}
+                                                brands={brands}
+                                                selectedBrandId={selectedBrandId}
+                                                loading={loadingBrands}
+                                                onSelect={(brand) => {
+                                                    setSelectedBrandId(brand.id);
+                                                    setSelectedModelId('');
+                                                    setFieldErrors(prev => ({ ...prev, brand: false }));
+                                                    updateFormData({
+                                                        brand: brand.name,
+                                                        model: '',
+                                                        subModel: '',
+                                                        bodyType: '',
+                                                        color: '',
+                                                        fuelType: '' as any,
+                                                        year: 0,
+                                                        transmission: 'AUTOMATIC',
+                                                        mileage: 0,
+                                                        engineSize: undefined,
+                                                        seats: undefined
+                                                    });
+                                                    setIsBrandModalOpen(false);
+                                                }}
+                                            />
+
+                                            {fieldErrors.brand && <p className="text-red-500 text-xs mt-1 ml-1 font-medium">กรุณาเลือกยี่ห้อ</p>}
                                         </div>
 
                                         <div ref={modelRef}>
                                             <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.model ? 'text-red-600' : 'text-gray-700'}`}>รุ่น *</label>
                                             <div className={fieldErrors.model ? 'ring-2 ring-red-500 rounded-xl' : ''}>
-                                                {models.length > 0 || loadingModels ? (
-                                                    <SearchableSelect
-                                                        options={models.map(m => ({
-                                                            id: m.id,
-                                                            label: m.name,
-                                                            subLabel: m.bodyType || undefined,
-                                                            isPopular: m.isPopular
-                                                        }))}
-                                                        value={selectedModelId}
-                                                        onChange={(id, option) => {
-                                                            setSelectedModelId(id);
-                                                            setFieldErrors(prev => ({ ...prev, model: false }));
-                                                            const model = models.find(m => m.id === id);
-                                                            updateFormData({
-                                                                model: option?.label || '',
-                                                                subModel: '',
-                                                                bodyType: model?.bodyType || formData.bodyType
-                                                            });
-                                                        }}
-                                                        placeholder={!selectedBrandId ? "เลือกยี่ห้อก่อน" : "เลือกรุ่น"}
-                                                        searchPlaceholder="พิมพ์ชื่อรุ่น..."
-                                                        loading={loadingModels}
-                                                        disabled={!selectedBrandId}
-                                                        emptyMessage="ไม่พบรุ่นที่ค้นหา"
-                                                    />
-                                                ) : (
-                                                    <input
-                                                        type="text"
-                                                        placeholder={!selectedBrandId ? 'เลือกยี่ห้อก่อน' : 'พิมพ์ชื่อรุ่น'}
-                                                        className={`form-input ${fieldErrors.model ? 'border-red-500' : ''}`}
-                                                        value={formData.model}
-                                                        onChange={(e) => {
-                                                            setFieldErrors(prev => ({ ...prev, model: false }));
-                                                            updateFormData({ model: e.target.value });
-                                                        }}
-                                                        disabled={!selectedBrandId && !formData.brand}
-                                                    />
-                                                )}
+                                                <SearchableSelect
+                                                    options={models.map(m => ({
+                                                        id: m.id,
+                                                        label: m.name,
+                                                        subLabel: m.bodyType || undefined,
+                                                        isPopular: m.isPopular
+                                                    }))}
+                                                    value={selectedModelId || formData.model}
+                                                    onChange={(id, option) => {
+                                                        setSelectedModelId(id);
+                                                        setFieldErrors(prev => ({ ...prev, model: false }));
+                                                        const model = models.find(m => m.id === id);
+                                                        updateFormData({
+                                                            model: option?.label || id,
+                                                            subModel: '',
+                                                            bodyType: model?.bodyType || formData.bodyType
+                                                        });
+                                                    }}
+                                                    placeholder={!selectedBrandId ? "เลือกยี่ห้อก่อน" : "เลือกรุ่น"}
+                                                    searchPlaceholder="พิมพ์ชื่อรุ่น..."
+                                                    loading={loadingModels}
+                                                    disabled={!selectedBrandId && !formData.brand}
+                                                    emptyMessage="ไม่พบรุ่นที่ค้นหา (สามารถพิมพ์เพื่อใช้ชื่อที่ต้องการได้)"
+                                                    allowCustom={true}
+                                                    customLabel="ใช้ชื่อรุ่น '{search}'"
+                                                />
                                             </div>
                                             {fieldErrors.model && <p className="text-red-500 text-xs mt-1">กรุณาเลือกรุ่น</p>}
                                         </div>
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">รุ่นย่อย (ถ้ามี)</label>
-                                            {subModels.length > 0 || loadingSubModels ? (
-                                                <SearchableSelect
-                                                    options={subModels.map(s => ({
-                                                        id: s.id,
-                                                        label: s.name,
-                                                        subLabel: s.engineSize ? `${s.engineSize}cc` : undefined
-                                                    }))}
-                                                    value={subModels.find(s => s.name === formData.subModel)?.id || ''}
-                                                    onChange={(id, option) => {
-                                                        const subModel = subModels.find(s => s.id === id);
-                                                        updateFormData({
-                                                            subModel: option?.label || '',
-                                                            ...(subModel?.engineSize && { engineSize: subModel.engineSize }),
-                                                            ...(subModel?.fuelType && { fuelType: subModel.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV' }),
-                                                            ...(subModel?.transmission && { transmission: subModel.transmission as 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO' })
-                                                        });
-                                                    }}
-                                                    placeholder="เลือกรุ่นย่อย (ไม่บังคับ)"
-                                                    searchPlaceholder="พิมพ์ชื่อรุ่นย่อย..."
-                                                    loading={loadingSubModels}
-                                                    disabled={!selectedModelId}
-                                                    emptyMessage="ไม่พบรุ่นย่อย"
-                                                />
-                                            ) : (
-                                                <input
-                                                    type="text"
-                                                    placeholder="เช่น 1.5 Turbo RS, ABS Edition"
-                                                    className="form-input"
-                                                    value={formData.subModel}
-                                                    onChange={(e) => updateFormData({ subModel: e.target.value })}
-                                                    disabled={!selectedModelId && !formData.model}
-                                                />
-                                            )}
+                                            <SearchableSelect
+                                                options={subModels.map(s => ({
+                                                    id: s.id,
+                                                    label: s.name,
+                                                    subLabel: s.engineSize ? `${s.engineSize}cc` : undefined
+                                                }))}
+                                                value={subModels.find(s => s.name === formData.subModel)?.id || formData.subModel || ''}
+                                                onChange={(id, option) => {
+                                                    const subModel = subModels.find(s => s.id === id);
+                                                    updateFormData({
+                                                        subModel: option?.label || id,
+                                                        ...(subModel?.engineSize && { engineSize: subModel.engineSize }),
+                                                        ...(subModel?.fuelType && { fuelType: subModel.fuelType as 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV' }),
+                                                        ...(subModel?.transmission && { transmission: subModel.transmission as 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO' })
+                                                    });
+                                                }}
+                                                placeholder="เลือกรุ่นย่อย (ไม่บังคับ)"
+                                                searchPlaceholder="พิมพ์ชื่อรุ่นย่อย..."
+                                                loading={loadingSubModels}
+                                                disabled={!selectedModelId && !formData.model}
+                                                emptyMessage="ไม่พบรุ่นย่อย (สามารถพิมพ์เพื่อใช้ชื่อที่ต้องการได้)"
+                                                allowCustom={true}
+                                                customLabel="ใช้ชื่อรุ่นย่อย '{search}'"
+                                            />
                                         </div>
 
                                         <div ref={bodyTypeRef}>

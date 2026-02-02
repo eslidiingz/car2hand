@@ -167,7 +167,7 @@ export default function MyListingsPage() {
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800">จัดการรถที่ลงขาย</h1>
                 <Link href="/sell/create" className="bg-accent text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-orange-600 transition shadow-lg shadow-orange-100">
-                    + ลงขายรถใหม่
+                    + ลงขายรถ
                 </Link>
             </div>
 
@@ -189,7 +189,7 @@ export default function MyListingsPage() {
                         href="/sell/create"
                         className="inline-block bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition"
                     >
-                        ลงขายรถใหม่
+                        ลงขายรถ
                     </Link>
                 </div>
             ) : (
@@ -265,20 +265,20 @@ export default function MyListingsPage() {
                                         >
                                             <PencilSimple weight="bold" size={18} />
                                         </Link>
-                                        <button
+                                        {/* <button
                                             className="tooltip p-2 text-gray-400 hover:text-accent hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
                                             data-tooltip="ดันประกาศ"
                                         >
                                             <Megaphone weight="bold" size={18} />
-                                        </button>
-                                        {item.status === 'ACTIVE' && (
+                                        </button> */}
+                                        {/* {item.status === 'ACTIVE' && (
                                             <button
                                                 className="tooltip p-2 text-gray-400 hover:text-green-600 hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
                                                 data-tooltip="ขายแล้ว"
                                             >
                                                 <CurrencyCircleDollar weight="bold" size={18} />
                                             </button>
-                                        )}
+                                        )} */}
                                         <button
                                             onClick={() => setDeleteConfirm(item.id)}
                                             className="tooltip p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
