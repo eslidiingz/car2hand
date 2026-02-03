@@ -38,6 +38,7 @@ import {
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
+import Toast from '@/components/Toast';
 
 // Types
 interface VehicleImage {
@@ -636,15 +637,9 @@ export default function CarDetailPage() {
 
             {/* Toast Notification */}
             {showToast && (
-                <div
-                    className={`fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 z-50 animate-fade-in ${toastType === 'success'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white'
-                        }`}
-                >
-                    <span className="text-sm font-medium">{toastMessage}</span>
-                </div>
+                <Toast type={toastType} message={toastMessage} />
             )}
+
 
             {/* Login Modal */}
             <LoginModal

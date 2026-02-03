@@ -14,6 +14,7 @@ import {
     Scales
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
+import Toast from '@/components/Toast';
 
 // Types
 export interface VehicleListing {
@@ -258,17 +259,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
 
             {/* Toast Notification */}
             {showToast && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-                    <div
-                        className={`px-6 py-3 rounded-2xl shadow-2xl animate-fade-in flex items-center gap-3 backdrop-blur-md border ${toastType === 'success'
-                            ? 'bg-green-500/90 border-green-400 text-white'
-                            : 'bg-red-500/90 border-red-400 text-white'
-                            }`}
-                    >
-                        <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                        <span className="text-base font-bold tracking-wide">{toastMessage}</span>
-                    </div>
-                </div>
+                <Toast message={toastMessage} type={toastType} />
             )}
         </>
     );
