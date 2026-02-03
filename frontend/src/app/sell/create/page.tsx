@@ -1229,43 +1229,43 @@ export default function CreateListingPage() {
                             )}
 
                             {/* Navigation Buttons */}
-                            <div className="flex justify-between pt-4 border-t border-gray-100">
-                                {currentStep > 1 ? (
+                            <div className="flex gap-4 pt-8 border-t border-gray-100 mt-6">
+                                {currentStep > 1 && (
                                     <button
                                         type="button"
                                         onClick={goToPrevStep}
-                                        className="px-6 py-3 border border-gray-300 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition flex items-center gap-2"
+                                        className="flex-1 h-14 border-2 border-gray-100 rounded-2xl font-bold text-gray-400 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all flex items-center justify-center gap-2 group"
                                     >
-                                        <ArrowLeft weight="bold" /> ย้อนกลับ
+                                        <ArrowLeft weight="bold" className="group-hover:-translate-x-1 transition-transform" />
+                                        <span>ย้อนกลับ</span>
                                     </button>
-                                ) : (
-                                    <div></div>
                                 )}
 
                                 {currentStep < 3 ? (
                                     <button
                                         type="button"
                                         onClick={goToNextStep}
-                                        className="bg-accent text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition flex items-center gap-2 group transform active:scale-[0.98]"
+                                        className={`flex-1 h-14 bg-accent text-white rounded-2xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 group transform active:scale-[0.98] ${currentStep === 1 ? 'w-full' : ''}`}
                                     >
-                                        ไปต่อ <ArrowRight weight="bold" className="group-hover:translate-x-1 transition" />
+                                        <span>ไปต่อ</span>
+                                        <ArrowRight weight="bold" className="group-hover:translate-x-1 transition-transform" />
                                     </button>
                                 ) : (
                                     <button
                                         type="button"
                                         onClick={handleSubmit}
                                         disabled={isSubmitting}
-                                        className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-1 h-14 bg-primary text-white rounded-2xl font-bold shadow-xl shadow-blue-900/10 hover:bg-opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]"
                                     >
                                         {isSubmitting ? (
                                             <>
                                                 <CircleNotch weight="bold" className="animate-spin" />
-                                                กำลังลงประกาศ...
+                                                <span>กำลังลงประกาศ...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <CheckCircle weight="bold" />
-                                                ลงประกาศ
+                                                <CheckCircle weight="bold" size={22} />
+                                                <span>ลงประกาศ</span>
                                             </>
                                         )}
                                     </button>

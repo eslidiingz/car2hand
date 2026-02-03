@@ -68,8 +68,18 @@ export default function MyListingsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<{ id: string } | null>(null);
+    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'DRAFT' | 'SOLD' | 'INACTIVE'>('ALL');
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+
+    const statuses = [
+        { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
+        { key: 'ACTIVE', label: 'กำลังขาย', count: listings.filter(l => l.status === 'ACTIVE').length },
+        { key: 'PENDING', label: 'รอตรวจ', count: listings.filter(l => l.status === 'PENDING').length },
+        { key: 'SOLD', label: 'ขายแล้ว', count: listings.filter(l => l.status === 'SOLD').length },
+        { key: 'DRAFT', label: 'แบบร่าง', count: listings.filter(l => l.status === 'DRAFT').length },
+        { key: 'INACTIVE', label: 'ปิดการขาย', count: listings.filter(l => l.status === 'INACTIVE').length },
+    ];
 
     // Check authentication and fetch listings
     useEffect(() => {
@@ -171,6 +181,29 @@ export default function MyListingsPage() {
                 </Link>
             </div>
 
+            {/* Status Filters */}
+            <div className="flex overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar">
+                <div className="flex gap-2">
+                    {statuses.map((s) => (
+                        <button
+                            key={s.key}
+                            onClick={() => setStatusFilter(s.key as any)}
+                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${statusFilter === s.key
+                                ? 'bg-primary text-white shadow-lg shadow-blue-100 scale-[1.02]'
+                                : 'bg-white text-gray-500 border border-gray-100 hover:border-primary/30 hover:text-primary'
+                                }`}
+                        >
+                            {s.label}
+                            {s.count > 0 && (
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${statusFilter === s.key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                    {s.count}
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {error && (
                 <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
                     <WarningCircle weight="bold" className="text-xl flex-shrink-0" />
@@ -193,105 +226,101 @@ export default function MyListingsPage() {
                     </Link>
                 </div>
             ) : (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    {/* Header (Desktop) */}
-                    <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wide">
-                        <div className="col-span-5">รายละเอียดรถ</div>
-                        <div className="col-span-2 text-center">สถานะ</div>
-                        <div className="col-span-2 text-center">สถิติ</div>
-                        <div className="col-span-3 text-right">ดำเนินการ</div>
-                    </div>
+                <div className="space-y-4">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        {/* Header (Desktop) */}
+                        <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wide">
+                            <div className="col-span-5">รายละเอียดรถ</div>
+                            <div className="col-span-2 text-center">สถานะ</div>
+                            <div className="col-span-2 text-center">สถิติ</div>
+                            <div className="col-span-3 text-right">ดำเนินการ</div>
+                        </div>
 
-                    {listings.map((item) => {
-                        const status = STATUS_CONFIG[item.status] || STATUS_CONFIG['DRAFT'];
-                        const daysLeft = getDaysLeft(item.expiredAt);
+                        {(() => {
+                            const filteredItems = listings.filter(item => statusFilter === 'ALL' || item.status === statusFilter);
+                            if (filteredItems.length === 0) {
+                                return (
+                                    <div className="p-12 text-center text-gray-500 text-sm">
+                                        ไม่พบรายการในสถานะนี้
+                                    </div>
+                                );
+                            }
+                            return filteredItems.map((item) => {
+                                const status = STATUS_CONFIG[item.status] || STATUS_CONFIG['DRAFT'];
+                                const daysLeft = getDaysLeft(item.expiredAt);
 
-                        return (
-                            <div key={item.id} className="p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition">
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-
-                                    {/* Car Info */}
-                                    <div className="col-span-5 flex gap-4">
-                                        <div className="relative">
-                                            <img
-                                                src={getPrimaryImage(item.images)}
-                                                className="w-24 h-16 object-cover rounded-lg bg-gray-100"
-                                                alt={item.title}
-                                            />
-                                            {item.vehicleType === 'MOTORCYCLE' && (
-                                                <div className="absolute -top-1 -right-1 bg-primary text-white p-1 rounded-full">
-                                                    <Motorcycle weight="bold" size={10} />
+                                return (
+                                    <div key={item.id} className="p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition">
+                                        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:items-center">
+                                            {/* Car Info & Image */}
+                                            <div className="md:col-span-5 flex gap-4">
+                                                <div className="relative flex-shrink-0">
+                                                    <img
+                                                        src={getPrimaryImage(item.images)}
+                                                        className="w-28 h-20 md:w-24 md:h-16 object-cover rounded-xl bg-gray-100 shadow-sm"
+                                                        alt={item.title}
+                                                    />
+                                                    {item.vehicleType === 'MOTORCYCLE' && (
+                                                        <div className="absolute -top-1 -right-1 bg-primary text-white p-1 rounded-full shadow-sm">
+                                                            <Motorcycle weight="bold" size={10} />
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            )}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="font-bold text-gray-900 text-sm md:text-base truncate">{item.title}</h3>
-                                            <div className="text-primary font-bold mt-1">{formatPrice(item.price)} บาท</div>
-                                            {daysLeft !== null && item.status === 'ACTIVE' && (
-                                                <span className="text-xs text-gray-400">เหลือ {daysLeft} วัน</span>
-                                            )}
+                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                                    <h3 className="font-bold text-gray-900 text-sm md:text-base leading-snug line-clamp-2 md:truncate">{item.title}</h3>
+                                                    <div className="text-primary font-bold mt-1 text-base md:text-lg">฿{formatPrice(item.price)}</div>
+                                                    {daysLeft !== null && item.status === 'ACTIVE' && (
+                                                        <div className="text-[11px] text-gray-400 mt-0.5">เหลือ {daysLeft} วัน</div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Status Badge */}
+                                            <div className="md:col-span-2 flex justify-start md:justify-center my-2 md:my-0">
+                                                <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 ${status.bgColor} ${status.textColor} whitespace-nowrap`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${status.dotColor}`}></span>
+                                                    {status.label}
+                                                </span>
+                                            </div>
+
+                                            {/* Stats */}
+                                            <div className="md:col-span-2 flex flex-row md:flex-col items-center md:justify-center gap-4 md:gap-1">
+                                                <div className="flex items-center gap-3 text-xs text-gray-500">
+                                                    <span className="flex items-center gap-1" title="ยอดดู">
+                                                        <Eye weight="bold" size={14} /> {item.viewCount}
+                                                    </span>
+                                                    <span className="flex items-center gap-1" title="บันทึก">
+                                                        <Heart weight="bold" size={14} /> {item.favoriteCount}
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] text-gray-400">
+                                                    ลงเมื่อ {formatDate(item.createdAt)}
+                                                </div>
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="md:col-span-3 flex justify-end items-center gap-2 pt-3 md:pt-0 border-t border-gray-50 md:border-0 mt-3 md:mt-0">
+                                                <Link
+                                                    href={`/sell/edit/${item.id}`}
+                                                    className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-blue-50 rounded-xl transition border border-gray-100 md:border-transparent"
+                                                    title="แก้ไข"
+                                                >
+                                                    <PencilSimple weight="bold" size={18} />
+                                                </Link>
+                                                <button
+                                                    onClick={() => setDeleteConfirm(item.id)}
+                                                    className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition border border-gray-100 md:border-transparent"
+                                                    title="ลบประกาศ"
+                                                >
+                                                    <Trash weight="bold" size={18} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-
-                                    {/* Status */}
-                                    <div className="col-span-2 flex justify-center">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${status.bgColor} ${status.textColor}`}>
-                                            <span className={`w-2 h-2 rounded-full ${status.dotColor}`}></span>
-                                            {status.label}
-                                        </span>
-                                    </div>
-
-                                    {/* Stats */}
-                                    <div className="col-span-2 text-center">
-                                        <div className="flex items-center justify-center gap-3 text-xs text-gray-500">
-                                            <span className="flex items-center gap-1" title="ยอดดู">
-                                                <Eye weight="bold" /> {item.viewCount}
-                                            </span>
-                                            <span className="flex items-center gap-1" title="บันทึก">
-                                                <Heart weight="bold" /> {item.favoriteCount}
-                                            </span>
-                                        </div>
-                                        <div className="text-[10px] text-gray-400 mt-1">
-                                            ลงเมื่อ {formatDate(item.createdAt)}
-                                        </div>
-                                    </div>
-
-                                    {/* Actions */}
-                                    <div className="col-span-3 flex justify-end gap-2">
-                                        <Link
-                                            href={`/sell/edit/${item.id}`}
-                                            className="tooltip p-2 text-gray-400 hover:text-primary hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
-                                            data-tooltip="แก้ไข"
-                                        >
-                                            <PencilSimple weight="bold" size={18} />
-                                        </Link>
-                                        {/* <button
-                                            className="tooltip p-2 text-gray-400 hover:text-accent hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
-                                            data-tooltip="ดันประกาศ"
-                                        >
-                                            <Megaphone weight="bold" size={18} />
-                                        </button> */}
-                                        {/* {item.status === 'ACTIVE' && (
-                                            <button
-                                                className="tooltip p-2 text-gray-400 hover:text-green-600 hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
-                                                data-tooltip="ขายแล้ว"
-                                            >
-                                                <CurrencyCircleDollar weight="bold" size={18} />
-                                            </button>
-                                        )} */}
-                                        <button
-                                            onClick={() => setDeleteConfirm(item.id)}
-                                            className="tooltip p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg transition border border-transparent hover:border-gray-200"
-                                            data-tooltip="ลบประกาศ"
-                                        >
-                                            <Trash weight="bold" size={18} />
-                                        </button>
-                                    </div>
-
-                                </div>
-                            </div>
-                        );
-                    })}
+                                );
+                            });
+                        })()}
+                    </div>
                 </div>
             )}
 
@@ -313,20 +342,17 @@ export default function MyListingsPage() {
                                 <button
                                     onClick={() => setDeleteConfirm(null)}
                                     disabled={deleting}
-                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition disabled:opacity-50"
+                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
                                 >
                                     ยกเลิก
                                 </button>
                                 <button
                                     onClick={() => handleDelete(deleteConfirm)}
                                     disabled={deleting}
-                                    className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition flex items-center justify-center gap-2"
                                 >
                                     {deleting ? (
-                                        <>
-                                            <CircleNotch weight="bold" className="animate-spin" />
-                                            กำลังลบ...
-                                        </>
+                                        <CircleNotch weight="bold" className="animate-spin" />
                                     ) : (
                                         'ลบประกาศ'
                                     )}
