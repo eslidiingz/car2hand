@@ -756,7 +756,7 @@ export default function CarDetailPage() {
             {/* Fullscreen Gallery Modal */}
             {showFullscreenGallery && listing && listing.images.length > 0 && (
                 <div
-                    className="fixed inset-0 bg-black z-50 flex flex-col"
+                    className="fixed inset-0 bg-black z-50 flex flex-col h-[100dvh]"
                     onTouchStart={(e) => setTouchStart(e.targetTouches[0].clientX)}
                     onTouchMove={(e) => setTouchEnd(e.targetTouches[0].clientX)}
                     onTouchEnd={() => {
@@ -773,25 +773,25 @@ export default function CarDetailPage() {
                     }}
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-4 text-white">
-                        <div className="text-sm">
+                    <div className="flex-shrink-0 flex items-center justify-between p-4 text-white bg-gradient-to-b from-black/50 to-transparent">
+                        <div className="text-sm font-medium">
                             {currentImageIndex + 1} / {listing.images.length}
                         </div>
                         <button
                             onClick={() => setShowFullscreenGallery(false)}
-                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition"
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition backdrop-blur-sm"
                         >
                             <XCircle size={28} weight="fill" />
                         </button>
                     </div>
 
-                    {/* Main Image */}
-                    <div className="flex-1 flex items-center justify-center px-4 relative">
+                    {/* Main Image Container */}
+                    <div className="flex-1 min-h-0 flex items-center justify-center px-4 relative group">
                         <img
                             key={`full-${currentImageIndex}`}
                             src={listing.images[currentImageIndex]?.url}
                             alt={listing.title}
-                            className="max-w-full max-h-full object-contain animate-image-change"
+                            className="max-w-full max-h-full object-contain animate-image-change shadow-2xl"
                         />
 
                         {/* Navigation Arrows - Hidden on mobile, visible on desktop */}
@@ -799,13 +799,13 @@ export default function CarDetailPage() {
                             <>
                                 <button
                                     onClick={prevImage}
-                                    className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full items-center justify-center text-white transition"
+                                    className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/30 hover:bg-black/50 backdrop-blur rounded-full items-center justify-center text-white transition-all opacity-0 group-hover:opacity-100"
                                 >
                                     <CaretLeft weight="bold" size={24} />
                                 </button>
                                 <button
                                     onClick={nextImage}
-                                    className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur rounded-full items-center justify-center text-white transition"
+                                    className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/30 hover:bg-black/50 backdrop-blur rounded-full items-center justify-center text-white transition-all opacity-0 group-hover:opacity-100"
                                 >
                                     <CaretRight weight="bold" size={24} />
                                 </button>
@@ -813,25 +813,34 @@ export default function CarDetailPage() {
                         )}
                     </div>
 
-                    {/* Thumbnail Strip */}
-                    {listing.images.length > 1 && (
-                        <div ref={thumbnailFullscreenRef} className="p-4 flex gap-2 justify-start overflow-x-auto no-scrollbar scroll-smooth">
-                            {listing.images.map((img, index) => (
-                                <button
-                                    key={img.id}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                    className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition ${index === currentImageIndex ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'
-                                        }`}
-                                >
-                                    <img src={img.url} alt="" className="w-full h-full object-cover" />
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                    {/* Footer Section: Thumbnails + Swipe Hint */}
+                    <div className="flex-shrink-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-4">
+                        {/* Thumbnail Strip */}
+                        {listing.images.length > 1 && (
+                            <div
+                                ref={thumbnailFullscreenRef}
+                                className="px-4 py-2 flex gap-2 justify-start md:justify-center overflow-x-auto no-scrollbar scroll-smooth"
+                                style={{ maxHeight: '80px' }}
+                            >
+                                {listing.images.map((img, index) => (
+                                    <button
+                                        key={img.id}
+                                        onClick={() => setCurrentImageIndex(index)}
+                                        className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${index === currentImageIndex
+                                                ? 'border-white scale-110 shadow-lg z-10'
+                                                : 'border-transparent opacity-40 hover:opacity-100 hover:scale-105'
+                                            }`}
+                                    >
+                                        <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
-                    {/* Swipe Hint for Mobile */}
-                    <div className="md:hidden text-center pb-4 text-white/50 text-sm">
-                        ← เลื่อนเพื่อดูรูปถัดไป →
+                        {/* Swipe Hint for Mobile */}
+                        <div className="md:hidden text-center py-3 text-white/40 text-[10px] tracking-widest font-light uppercase">
+                            ← เลื่อนเพื่อดูรูป →
+                        </div>
                     </div>
                 </div>
             )}
