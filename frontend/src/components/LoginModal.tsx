@@ -124,7 +124,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
             ></div>
 
             {/* Modal Content */}
-            <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex relative transform transition-transform duration-300 z-10 mx-4 ${isOpen ? 'scale-100' : 'scale-95'}`}>
+            <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative transform transition-transform duration-300 z-10 mx-4 ${isOpen ? 'scale-100' : 'scale-95'}`}>
 
                 <button
                     onClick={onClose}
@@ -133,52 +133,11 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                     <X weight="bold" />
                 </button>
 
-                {/* Left Side (Image) - Hidden on mobile */}
-                <div className="hidden md:flex md:w-5/12 bg-primary relative items-end justify-center">
-                    <img
-                        src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1000&auto=format&fit=crop"
-                        className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
-                        alt="Login Background"
-                    />
-
-                    <div className="relative z-10 p-8 text-center text-white pb-12">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center mx-auto mb-4 border border-white/30">
-                            <CarProfile weight="fill" className="text-2xl" />
-                        </div>
-                        <h2 className="text-2xl font-bold mb-2">ซื้อขายมั่นใจ</h2>
-                        <p className="text-sm text-blue-100 leading-relaxed">
-                            เข้าสู่ระบบเพื่อใช้งานฟีเจอร์เต็มรูปแบบ<br />
-                            ทั้งลงขายฟรี และพูดคุยกับผู้ขาย
-                        </p>
-                    </div>
-                </div>
-
-                {/* Right Side (Form) */}
-                <div className="w-full md:w-7/12 p-8 md:p-12 bg-white">
+                {/* Content */}
+                <div className="w-full p-8 md:p-12 bg-white">
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold text-gray-800">ยินดีต้อนรับกลับมา! 👋</h2>
-                        <p className="text-gray-500 text-sm mt-1">เข้าสู่ระบบ Car2Hand เพื่อดำเนินการต่อ</p>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3 mb-6">
-                        <button type="button" className="flex items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition gap-2 group">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" className="w-5 h-5" alt="Google" />
-                            <span className="text-xs font-bold text-gray-600 hidden sm:inline">Google</span>
-                        </button>
-                        <button type="button" className="flex items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-[#1877F2]/10 hover:border-[#1877F2] transition gap-2 group">
-                            <FacebookLogo weight="fill" className="text-[#1877F2] text-xl" />
-                            <span className="text-xs font-bold text-gray-600 group-hover:text-[#1877F2] hidden sm:inline">Facebook</span>
-                        </button>
-                        <button type="button" className="flex items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-[#06C755]/10 hover:border-[#06C755] transition gap-2 group">
-                            <ChatCircleDots weight="fill" className="text-[#06C755] text-xl" />
-                            <span className="text-xs font-bold text-gray-600 group-hover:text-[#06C755] hidden sm:inline">Line</span>
-                        </button>
-                    </div>
-
-                    <div className="relative flex py-2 items-center mb-6">
-                        <div className="flex-grow border-t border-gray-200"></div>
-                        <span className="flex-shrink-0 mx-4 text-xs text-gray-400 font-medium">หรือเข้าสู่ระบบด้วยเบอร์โทรศัพท์</span>
-                        <div className="flex-grow border-t border-gray-200"></div>
+                        <h2 className="text-2xl font-bold text-gray-800">ยินดีต้อนรับ 👋</h2>
+                        <p className="text-gray-500 text-sm mt-1">เข้าสู่ระบบเพื่อดำเนินการต่อ</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-4">

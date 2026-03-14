@@ -35,7 +35,7 @@ export default function CarList() {
                 </h2>
                 <Link
                     href="/buy"
-                    className="text-primary font-bold text-sm flex items-center gap-1 hover:underline"
+                    className="text-accent font-bold text-sm flex items-center gap-1 hover:underline"
                 >
                     ดูทั้งหมด <CaretRight weight="bold" />
                 </Link>

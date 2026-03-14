@@ -154,7 +154,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
             ></div>
 
             {/* Modal Content */}
-            <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden flex relative transform transition-transform duration-300 z-10 h-[90vh] md:h-auto overflow-y-auto md:overflow-hidden mx-4 ${isOpen ? 'scale-100' : 'scale-95'}`}>
+            <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative transform transition-transform duration-300 z-10 h-auto overflow-y-auto mx-4 ${isOpen ? 'scale-100' : 'scale-95'}`}>
 
                 <button
                     onClick={onClose}
@@ -163,67 +163,13 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
                     <X weight="bold" />
                 </button>
 
-                {/* Left Side (Image & Info) - Hidden on mobile */}
-                <div className="hidden md:flex md:w-5/12 bg-primary relative flex-col justify-between p-8 text-white">
-                    <img
-                        src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000&auto=format&fit=crop"
-                        className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
-                        alt="Register Background"
-                    />
-
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-6">
-                            <div className="w-8 h-8 bg-white text-primary rounded-lg flex items-center justify-center font-bold">C</div>
-                            <span className="font-bold text-xl">Car2Hand</span>
-                        </div>
-                        <h2 className="text-3xl font-bold mb-4">เข้าร่วมชุมชน<br />คนรักรถอันดับ 1</h2>
-                        <p className="text-blue-100 text-sm">สมัครวันนี้ รับสิทธิพิเศษมากมาย</p>
-                    </div>
-
-                    <div className="relative z-10 space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><Tag weight="bold" className="text-accent" /></div>
-                            <span className="text-sm font-medium">ลงขายรถฟรี ไม่มีค่าธรรมเนียม</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><MagicWand weight="bold" className="text-accent" /></div>
-                            <span className="text-sm font-medium">ใช้ AI ประเมินราคาฟรี</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><ChatsCircle weight="bold" className="text-accent" /></div>
-                            <span className="text-sm font-medium">พูดคุยกับกูรูในบอร์ด</span>
-                        </div>
-                    </div>
-
-                    <div className="relative z-10 mt-8 text-xs text-blue-200 opacity-60">
-                        © 2025 Car2Hand. All rights reserved.
-                    </div>
-                </div>
-
-                {/* Right Side (Form) */}
-                <div className="w-full md:w-7/12 p-8 md:p-10 bg-white overflow-y-auto">
+                {/* Content */}
+                <div className="w-full p-8 md:p-10 bg-white">
                     <div className="text-center mb-6">
                         <h2 className="text-2xl font-bold text-gray-800">สร้างบัญชีใหม่</h2>
                         <p className="text-gray-500 text-sm mt-1">ใช้เวลาไม่ถึง 1 นาที</p>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-3 mb-6">
-                        <button className="flex items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition gap-2 group">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" className="w-5 h-5" alt="Google" />
-                            <span className="text-xs font-bold text-gray-600">สมัครด้วย Google</span>
-                        </button>
-                        <button className="flex items-center justify-center py-2.5 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition gap-2 group">
-                            <FacebookLogo weight="fill" className="text-[#1877F2] text-xl" />
-                            <span className="text-xs font-bold text-gray-600">สมัครด้วย Facebook</span>
-                        </button>
-                    </div>
-
-                    <div className="relative flex py-2 items-center mb-6">
-                        <div className="flex-grow border-t border-gray-200"></div>
-                        <span className="flex-shrink-0 mx-4 text-xs text-gray-400 font-medium">หรือกรอกข้อมูลของคุณ</span>
-                        <div className="flex-grow border-t border-gray-200"></div>
-                    </div>
-
+                    
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         {/* Error Message */}
                         {error && (
@@ -241,7 +187,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">ชื่อ-นามสกุล <span className="text-red-500">*</span></label>
                                 <div className="relative">
