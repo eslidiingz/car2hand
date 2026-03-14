@@ -55,7 +55,6 @@ interface VehicleListing {
     title: string;
     description: string | null;
     price: number;
-    negotiable: boolean;
     brand: string;
     model: string;
     subModel: string | null;
@@ -88,7 +87,6 @@ interface FormData {
     title: string;
     description: string;
     price: number;
-    negotiable: boolean;
     brand: string;
     model: string;
     subModel: string;
@@ -174,7 +172,6 @@ export default function EditListingPage() {
         title: '',
         description: '',
         price: 0,
-        negotiable: true,
         brand: '',
         model: '',
         subModel: '',
@@ -374,7 +371,6 @@ export default function EditListingPage() {
                     title: listingData.title,
                     description: listingData.description || '',
                     price: Number(listingData.price),
-                    negotiable: listingData.negotiable,
                     brand: listingData.brand,
                     model: listingData.model,
                     subModel: listingData.subModel || '',
@@ -1473,7 +1469,6 @@ export default function EditListingPage() {
                             <PreviewCard
                                 title={formData.title || (formData.brand && formData.model ? `${formData.brand} ${formData.model}` : undefined)}
                                 price={formData.price}
-                                negotiable={formData.negotiable}
                                 vehicleType={formData.vehicleType}
                                 year={formData.year || new Date().getFullYear()}
                                 mileage={formData.mileage}

@@ -434,7 +434,7 @@ export default function CreateListingPage() {
             }
 
             // Step 3: Publish
-            await publishListing(user.id, newListingId, formData.price, formData.negotiable);
+            await publishListing(user.id, newListingId, formData.price);
 
             // Success - redirect to listing page
             router.push(`/profile/listings`);
@@ -1290,7 +1290,6 @@ export default function CreateListingPage() {
                             <PreviewCard
                                 title={formData.title || (formData.brand && formData.model ? `${formData.brand} ${formData.model}` : undefined)}
                                 price={formData.price}
-                                negotiable={formData.negotiable}
                                 vehicleType={formData.vehicleType}
                                 year={formData.year || new Date().getFullYear()}
                                 mileage={formData.mileage}

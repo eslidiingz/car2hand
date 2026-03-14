@@ -81,8 +81,6 @@ export const vehicleListingSchema = z.object({
         .positive('ราคาต้องมากกว่า 0')
         .max(100000000, 'ราคาต้องไม่เกิน 100,000,000 บาท'),
 
-    negotiable: z.boolean().default(false),
-
     brand: z.string()
         .min(1, 'กรุณาระบุยี่ห้อ')
         .max(100, 'ยี่ห้อต้องไม่เกิน 100 ตัวอักษร'),

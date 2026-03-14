@@ -112,7 +112,7 @@ export default function Navbar() {
         return (
             <Link
                 href="/buy/compare"
-                className="relative p-2 rounded-full hover:bg-gray-100 transition group"
+                className="relative p-2 rounded-full transition group"
                 title={`เปรียบเทียบ (${count}/${maxCompareItems} รายการ)`}
             >
                 <Scales

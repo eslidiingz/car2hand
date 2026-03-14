@@ -21,7 +21,6 @@ export interface VehicleListing {
     id: string;
     title: string;
     price: number;
-    negotiable: boolean;
     vehicleType: 'CAR' | 'MOTORCYCLE';
     brand: string;
     model: string;
@@ -83,7 +82,6 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
         id: listing.id,
         title: listing.title,
         price: typeof listing.price === 'string' ? parseFloat(listing.price) : listing.price,
-        negotiable: listing.negotiable,
         vehicleType: listing.vehicleType,
         brand: listing.brand,
         model: listing.model,
@@ -132,10 +130,10 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
         <>
             <Link
                 href={`/buy/${listing.id}`}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer relative flex flex-col h-full"
+                className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer relative flex flex-col h-full"
             >
                 {/* Image */}
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div className="relative aspect-3/2 overflow-hidden">
                     {listing.images[0] ? (
                         <img
                             src={listing.images[0].url}
@@ -230,30 +228,9 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                     <div className="mt-auto mb-3">
                         <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-accent">฿{formatPrice(listing.price)}</span>
-                            {listing.negotiable && (
-                                <span className="text-xs text-gray-400">ต่อรองได้</span>
-                            )}
                         </div>
                     </div>
 
-                    <hr className="border-gray-100 mb-3" />
-
-                    {/* Seller */}
-                    <div className="flex items-center gap-2">
-                        {listing.user?.fullName && listing.user.fullName !== 'ไม่ระบุ' ? (
-                            <>
-                                <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold">
-                                    {listing.user.fullName.charAt(0).toUpperCase()}
-                                </div>
-                                <span className="text-xs text-gray-600 truncate max-w-[120px]">{listing.user.fullName}</span>
-                            </>
-                        ) : (
-                            <span className="text-xs text-gray-500 truncate max-w-[150px]">{listing.brand} {listing.model}</span>
-                        )}
-                        <span className="ml-auto text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-medium">
-                            {listing.vehicleType === 'CAR' ? 'รถยนต์' : 'มอเตอร์ไซค์'}
-                        </span>
-                    </div>
                 </div>
             </Link>
 

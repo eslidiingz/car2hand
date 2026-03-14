@@ -193,7 +193,6 @@ model VehicleListing {
   title       String // หัวข้อประกาศ เช่น "Honda Civic 2020 สภาพดีมาก"
   description String? @db.Text // รายละเอียดเพิ่มเติม
   price       Decimal @db.Decimal(12, 2) // ราคา (รองรับถึง 9,999,999,999.99)
-  negotiable  Boolean @default(true) // ต่อรองราคาได้
 
   // ข้อมูลยานพาหนะ
   brand    String // ยี่ห้อ เช่น Toyota, Honda, BMW, Kawasaki, Yamaha

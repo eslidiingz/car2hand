@@ -46,7 +46,6 @@ export default function WishlistPage() {
         id: item.id,
         title: item.title,
         price: item.price,
-        negotiable: item.negotiable || false,
         vehicleType: item.vehicleType || 'CAR',
         brand: item.brand,
         model: item.model,

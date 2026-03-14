@@ -7,7 +7,6 @@ export interface WishlistItem {
     id: string;
     title: string;
     price: number;
-    negotiable?: boolean;
     vehicleType?: 'CAR' | 'MOTORCYCLE';
     brand: string;
     model: string;

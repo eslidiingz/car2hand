@@ -28,7 +28,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     title: listingData.title,
                     description: listingData.description,
                     price: listingData.price,
-                    negotiable: listingData.negotiable ?? true,
                     brand: listingData.brand,
                     model: listingData.model,
                     subModel: listingData.subModel,
@@ -91,7 +90,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             title: t.String(),
             description: t.Optional(t.String()),
             price: t.Number(),
-            negotiable: t.Optional(t.Boolean()),
             brand: t.String(),
             model: t.String(),
             subModel: t.Optional(t.String()),
@@ -524,7 +522,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
     // อัพเดทราคาและเผยแพร่ประกาศ
     .patch("/:id/publish", async ({ params, body, set }) => {
         const { id } = params;
-        const { userId, price, negotiable } = body;
+        const { userId, price } = body;
 
         // ตรวจสอบ listing
         const listing = await prisma.vehicleListing.findUnique({
@@ -553,7 +551,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 where: { id },
                 data: {
                     price,
-                    negotiable: negotiable ?? true,
                     status: "ACTIVE",
                     expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 วัน
                 },
@@ -581,8 +578,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
     }, {
         body: t.Object({
             userId: t.String(),
-            price: t.Number(),
-            negotiable: t.Optional(t.Boolean())
+            price: t.Number()
         })
     })
 
@@ -614,7 +610,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     title: updateData.title,
                     description: updateData.description,
                     price: updateData.price,
-                    negotiable: updateData.negotiable ?? true,
                     brand: updateData.brand,
                     model: updateData.model,
                     subModel: updateData.subModel,
@@ -678,7 +673,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             title: t.String(),
             description: t.Optional(t.String()),
             price: t.Number(),
-            negotiable: t.Optional(t.Boolean()),
             brand: t.String(),
             model: t.String(),
             subModel: t.Optional(t.String()),

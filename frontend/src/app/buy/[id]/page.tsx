@@ -55,7 +55,6 @@ interface VehicleListing {
     title: string;
     description: string | null;
     price: number;
-    negotiable: boolean;
     brand: string;
     model: string;
     subModel: string | null;
@@ -270,7 +269,6 @@ export default function CarDetailPage() {
             id: listing.id,
             title: listing.title,
             price: typeof listing.price === 'string' ? parseFloat(listing.price) : Number(listing.price),
-            negotiable: listing.negotiable,
             vehicleType: listing.vehicleType,
             brand: listing.brand,
             model: listing.model,
@@ -474,9 +472,6 @@ export default function CarDetailPage() {
                             <h1 className="text-2xl font-bold text-gray-800 mb-3">{listing.title}</h1>
                             <div className="flex items-baseline gap-2 mb-4">
                                 <span className="text-3xl font-bold text-accent">฿{formatPrice(listing.price)}</span>
-                                {listing.negotiable && (
-                                    <span className="text-sm text-gray-400">ต่อรองได้</span>
-                                )}
                             </div>
                         </div>
 
@@ -538,9 +533,6 @@ export default function CarDetailPage() {
                             <h1 className="text-xl font-bold text-gray-800 mb-3">{listing.title}</h1>
                             <div className="flex items-baseline gap-2 mb-6">
                                 <span className="text-3xl font-bold text-accent">฿{formatPrice(listing.price)}</span>
-                                {listing.negotiable && (
-                                    <span className="text-sm text-gray-400">ต่อรองได้</span>
-                                )}
                             </div>
 
                             {/* Actions */}

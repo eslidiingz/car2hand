@@ -12,7 +12,6 @@ interface WishlistWithListing {
         id: string;
         title: string;
         price: { toString(): string };
-        negotiable: boolean;
         vehicleType: string;
         brand: string;
         model: string;
@@ -81,7 +80,6 @@ export const wishlistRoutes = new Elysia({ prefix: '/wishlists' })
             id: w.listing.id,
             title: w.listing.title,
             price: Number(w.listing.price),
-            negotiable: w.listing.negotiable,
             vehicleType: w.listing.vehicleType,
             brand: w.listing.brand,
             model: w.listing.model,

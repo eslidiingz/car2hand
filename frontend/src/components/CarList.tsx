@@ -49,7 +49,7 @@ export default function CarList() {
                     </div>
                 </div>
             ) : listings.length === 0 ? (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 text-center">
                     <p className="text-gray-500">ยังไม่มีรถลงขายในขณะนี้</p>
                     <Link href="/sell" className="mt-4 inline-block bg-accent text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition">
                         ลงขายรถของคุณ

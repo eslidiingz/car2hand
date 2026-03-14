@@ -35,7 +35,6 @@ export interface ListingFormData {
     title: string;
     description?: string;
     price: number;
-    negotiable: boolean;
     province: string;
     district?: string;
 
@@ -94,7 +93,6 @@ const defaultFormData: ListingFormData = {
     title: '',
     description: '',
     price: 0,
-    negotiable: true,
     province: '',
     district: '',
     contactName: '',
@@ -169,7 +167,6 @@ export async function createListing(userId: string, data: ListingFormData): Prom
             title: data.title || `${data.brand} ${data.model} ${data.year}`,
             description: data.description,
             price: data.price,
-            negotiable: data.negotiable,
             brand: data.brand,
             model: data.model,
             subModel: data.subModel,
@@ -274,13 +271,12 @@ export async function uploadServiceHistoryImage(
 export async function publishListing(
     userId: string,
     listingId: string,
-    price: number,
-    negotiable: boolean
+    price: number
 ): Promise<void> {
     const response = await fetch(`${API_BASE}/listings/${listingId}/publish`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, price, negotiable })
+        body: JSON.stringify({ userId, price })
     });
 
     if (!response.ok) {

@@ -29,7 +29,6 @@ interface CompareItem extends WishlistItem {
     seats?: number | null;
     province?: string;
     vehicleType?: 'CAR' | 'MOTORCYCLE';
-    negotiable?: boolean;
 }
 
 export default function ComparePage() {
@@ -58,8 +57,7 @@ export default function ComparePage() {
                                 engineSize: listing.engineSize,
                                 seats: listing.seats,
                                 province: listing.province,
-                                vehicleType: listing.vehicleType,
-                                negotiable: listing.negotiable
+                                vehicleType: listing.vehicleType
                             };
                         }
                     } catch (error) {
@@ -244,9 +242,6 @@ export default function ComparePage() {
                                     {/* Price - Fixed height */}
                                     <div className="text-xl font-bold text-accent mb-3 h-[28px] flex items-center">
                                         ฿{formatPrice(item.price)}
-                                        {item.negotiable && (
-                                            <span className="text-xs font-normal text-gray-400 ml-1">ต่อรองได้</span>
-                                        )}
                                     </div>
 
                                     {/* View Button - at bottom */}

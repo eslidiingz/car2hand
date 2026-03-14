@@ -14,7 +14,6 @@ import {
 interface PreviewCardProps {
     title?: string;
     price?: number | string;
-    negotiable?: boolean;
     vehicleType?: 'CAR' | 'MOTORCYCLE';
     year?: number;
     mileage?: number | string;
@@ -49,7 +48,6 @@ const formatPrice = (price?: number | string) => {
 export default function PreviewCard({
     title = 'ชื่อรถของคุณ',
     price = 0,
-    negotiable = false,
     vehicleType = 'CAR',
     year = new Date().getFullYear(),
     mileage = 0,
@@ -123,9 +121,6 @@ export default function PreviewCard({
                 <div className="mt-auto mb-3">
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-bold text-accent">฿{formatPrice(price)}</span>
-                        {negotiable && (
-                            <span className="text-xs text-gray-400">ต่อรองได้</span>
-                        )}
                     </div>
                 </div>
 
