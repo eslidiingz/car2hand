@@ -217,11 +217,6 @@ export default function EditListingPage() {
 
     // Image management functions
     const handleDeleteImage = (imageId: string) => {
-        if (displayImages.length <= 1) {
-            setError('ต้องมีรูปภาพอย่างน้อย 1 รูป');
-            return;
-        }
-
         const imageToDelete = displayImages.find(img => img.id === imageId);
         if (!imageToDelete) return;
 
@@ -534,6 +529,11 @@ export default function EditListingPage() {
         if (!formData.province) errors.province = true;
         if (!formData.contactName) errors.contactName = true;
         if (!formData.contactPhone) errors.contactPhone = true;
+
+        if (displayImages.length === 0) {
+            setError('กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป');
+            return;
+        }
 
         if (Object.keys(errors).length > 0) {
             setFieldErrors(errors);
@@ -1474,7 +1474,7 @@ export default function EditListingPage() {
                                 mileage={formData.mileage}
                                 fuelType={formData.fuelType}
                                 province={formData.province}
-                                imageUrl={listing?.images[0]?.url}
+                                imageUrl={displayImages[0]?.url}
                                 sellerName={listing?.user?.fullName || 'ผู้ขาย'}
                             />
 

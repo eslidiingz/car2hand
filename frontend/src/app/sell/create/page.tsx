@@ -263,11 +263,6 @@ export default function CreateListingPage() {
     };
 
     const removeImage = (index: number) => {
-        if (formData.images.length <= 1) {
-            setError('ต้องมีรูปภาพอย่างน้อย 1 รูป');
-            return;
-        }
-
         const newImages = [...formData.images];
         const newPreviews = [...formData.imagesPreviews];
 
