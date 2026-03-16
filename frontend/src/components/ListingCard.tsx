@@ -224,10 +224,16 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         </div>
                     </div>
 
-                    {/* Price */}
-                    <div className="mt-auto mb-3">
+                    {/* Price & Seller */}
+                    <div className="flex items-center justify-between mt-auto">
                         <div className="flex items-baseline gap-2">
                             <span className="text-2xl font-bold text-accent">฿{formatPrice(listing.price)}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-gray-500">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span className="text-[12px] font-bold text-primary">{listing.user.fullName.charAt(0)}</span>
+                            </div>
+                            <span className="text-sm font-semibold">{listing.user.fullName}</span>
                         </div>
                     </div>
 
