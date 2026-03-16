@@ -53,7 +53,7 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 const COMPARE_STORAGE_KEY = 'car2hand_compare';
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // Helper to get auth token
 const getAuthToken = (): string | null => {

@@ -155,7 +155,7 @@ export function useListingForm() {
 }
 
 // API Functions
-const API_BASE = 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export async function createListing(userId: string, data: ListingFormData): Promise<{ listing: { id: string } }> {
     const response = await fetch(`${API_BASE}/listings`, {

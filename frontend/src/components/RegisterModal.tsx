@@ -109,7 +109,8 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8000/auth/register', {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

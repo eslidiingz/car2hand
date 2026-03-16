@@ -65,7 +65,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             const userData = JSON.parse(storedUser) as UserData;
 
             // Fetch user data from API to get latest info including createdAt
-            fetch(`http://localhost:8000/users/${userData.id}`)
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            fetch(`${API_URL}/users/${userData.id}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.user) {

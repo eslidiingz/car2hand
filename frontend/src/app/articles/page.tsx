@@ -34,7 +34,8 @@ export default function ArticlesPage() {
     useEffect(() => {
         const fetchBrands = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/master-data/brands`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const res = await fetch(`${API_URL}/master-data/brands`);
                 const data = await res.json();
                 if (data.success) {
                     setAllBrands(data.brands);

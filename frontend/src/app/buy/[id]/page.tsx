@@ -202,10 +202,11 @@ export default function CarDetailPage() {
     const fetchListing = async () => {
         setLoading(true);
         try {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
             const userId = getCurrentUserId();
             const url = userId
-                ? `http://localhost:8000/listings/${listingId}?viewerId=${userId}`
-                : `http://localhost:8000/listings/${listingId}`;
+                ? `${API_URL}/listings/${listingId}?viewerId=${userId}`
+                : `${API_URL}/listings/${listingId}`;
 
             const response = await fetch(url);
             const data = await response.json();

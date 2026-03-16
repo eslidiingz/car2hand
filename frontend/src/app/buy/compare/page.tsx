@@ -41,11 +41,12 @@ export default function ComparePage() {
         const fetchCompareData = async () => {
             setLoading(true);
 
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
             // Fetch full data for each item
             const enrichedItems: CompareItem[] = await Promise.all(
                 compareList.map(async (item) => {
                     try {
-                        const response = await fetch(`http://localhost:8000/listings/${item.id}`);
+                        const response = await fetch(`${API_URL}/listings/${item.id}`);
                         if (response.ok) {
                             const data = await response.json();
                             const listing = data.listing;

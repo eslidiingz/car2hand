@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MagnifyingGlass, CaretDown } from '@phosphor-icons/react';
 import QuickCategories from './QuickCategories';
@@ -11,6 +11,24 @@ export default function Hero() {
     const [brand, setBrand] = useState('');
     const [budget, setBudget] = useState('all');
     const [type, setType] = useState('all');
+    const [brands, setBrands] = useState<{ id: string, name: string }[]>([]);
+
+    useEffect(() => {
+        const fetchBrands = async () => {
+            try {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/brands?vehicleType=CAR`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setBrands(data.brands || []);
+                }
+            } catch (error) {
+                console.error('Error fetching brands:', error);
+            }
+        };
+
+        fetchBrands();
+    }, []);
 
     const handleSearch = () => {
         const params = new URLSearchParams();
@@ -77,12 +95,9 @@ export default function Hero() {
                                 className="w-full outline-none font-bold text-slate-700 bg-transparent cursor-pointer text-base appearance-none relative z-10 pr-8"
                             >
                                 <option value="">ทุกยี่ห้อ</option>
-                                <option value="honda">Honda</option>
-                                <option value="toyota">Toyota</option>
-                                <option value="mazda">Mazda</option>
-                                <option value="nissan">Nissan</option>
-                                <option value="mitsubishi">Mitsubishi</option>
-                                <option value="isuzu">Isuzu</option>
+                                {brands.map((b) => (
+                                    <option key={b.id} value={b.name}>{b.name}</option>
+                                ))}
                             </select>
                             <CaretDown size={16} weight="bold" className="absolute right-0 text-slate-400 pointer-events-none group-focus-within:text-primary transition-colors" />
                         </div>

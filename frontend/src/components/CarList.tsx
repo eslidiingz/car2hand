@@ -12,7 +12,8 @@ export default function CarList() {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await fetch('http://localhost:8000/listings?status=ACTIVE&limit=8');
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/listings?status=ACTIVE&limit=8`);
                 const data = await response.json();
                 setListings(data.listings || []);
             } catch (error) {

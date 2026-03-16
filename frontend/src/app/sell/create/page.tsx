@@ -140,7 +140,8 @@ export default function CreateListingPage() {
         const fetchBrands = async () => {
             setLoadingBrands(true);
             try {
-                const response = await fetch(`http://localhost:8000/master-data/brands?vehicleType=${formData.vehicleType}`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/brands?vehicleType=${formData.vehicleType}`);
                 const data = await response.json();
                 if (data.success) {
                     setBrands(data.brands);
@@ -154,7 +155,8 @@ export default function CreateListingPage() {
 
         const fetchOptions = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/master-data/car-options`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/car-options`);
                 const data = await response.json();
                 if (data.success) {
                     setBodyStyleOptions(data.bodyStyles);
@@ -185,7 +187,8 @@ export default function CreateListingPage() {
         const fetchModels = async () => {
             setLoadingModels(true);
             try {
-                const response = await fetch(`http://localhost:8000/master-data/brands/${selectedBrandId}/models`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/brands/${selectedBrandId}/models`);
                 const data = await response.json();
                 if (data.success) {
                     setModels(data.models);
@@ -212,7 +215,8 @@ export default function CreateListingPage() {
         const fetchSubModels = async () => {
             setLoadingSubModels(true);
             try {
-                const response = await fetch(`http://localhost:8000/master-data/models/${selectedModelId}/sub-models`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/models/${selectedModelId}/sub-models`);
                 const data = await response.json();
                 if (data.success) {
                     setSubModels(data.subModels);

@@ -177,7 +177,8 @@ function BuyContent() {
             if (maxEngineSize) params.append('maxEngineSize', maxEngineSize);
 
             console.log('Fetching listings with params:', params.toString());
-            const response = await fetch(`http://localhost:8000/listings?${params.toString()}`);
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${API_URL}/listings?${params.toString()}`);
             const data = await response.json();
 
             setListings(data.listings || []);
@@ -196,7 +197,8 @@ function BuyContent() {
             const params = new URLSearchParams();
             if (vehicleType) params.append('vehicleType', vehicleType);
 
-            const response = await fetch(`http://localhost:8000/master-data/brands?${params.toString()}`);
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${API_URL}/master-data/brands?${params.toString()}`);
             const data = await response.json();
             if (data.success) {
                 setBrands(data.brands);
@@ -208,7 +210,8 @@ function BuyContent() {
 
     const fetchCarOptions = async () => {
         try {
-            const response = await fetch(`http://localhost:8000/master-data/car-options`);
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${API_URL}/master-data/car-options`);
             const data = await response.json();
             if (data.success) {
                 setBodyStyles(data.bodyStyles);

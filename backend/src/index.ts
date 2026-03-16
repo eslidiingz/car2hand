@@ -53,13 +53,16 @@ const app = new Elysia()
   }))
 
   // API Routes
-  .use(authRoutes)
-  .use(adminRoutes)
-  .use(usersRoutes)
-  .use(listingRoutes)
-  .use(masterDataRoutes)
-  .use(wishlistRoutes)
-  .use(publicArticleRoutes)
+  .group("/api", app => 
+    app
+      .use(authRoutes)
+      .use(adminRoutes)
+      .use(usersRoutes)
+      .use(listingRoutes)
+      .use(masterDataRoutes)
+      .use(wishlistRoutes)
+      .use(publicArticleRoutes)
+  )
 
   // Global error handler
   .onError(({ code, error, set }) => {

@@ -49,7 +49,7 @@ interface ApiResponse {
     };
 }
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // Status mapping
 const STATUS_CONFIG: Record<string, { label: string; bgColor: string; textColor: string; dotColor: string }> = {

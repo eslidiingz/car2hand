@@ -331,8 +331,9 @@ export default function EditListingPage() {
         const fetchListing = async () => {
             try {
                 setLoading(true);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
                 // ส่ง viewerId เพื่อไม่นับ view เมื่อเจ้าของดูเอง
-                const response = await fetch(`http://localhost:8000/listings/${listingId}?viewerId=${userId}`);
+                const response = await fetch(`${API_URL}/listings/${listingId}?viewerId=${userId}`);
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -412,7 +413,8 @@ export default function EditListingPage() {
             try {
                 const params = new URLSearchParams();
                 params.append('vehicleType', formData.vehicleType);
-                const response = await fetch(`http://localhost:8000/master-data/brands?${params.toString()}`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/brands?${params.toString()}`);
                 const data = await response.json();
                 if (data.success) {
                     setBrandsList(data.brands);
@@ -426,7 +428,8 @@ export default function EditListingPage() {
 
         const fetchOptions = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/master-data/car-options`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/car-options`);
                 const data = await response.json();
                 if (data.success) {
                     setBodyStyleOptions(data.bodyStyles);
@@ -462,7 +465,8 @@ export default function EditListingPage() {
         const fetchModels = async () => {
             setLoadingModels(true);
             try {
-                const response = await fetch(`http://localhost:8000/master-data/brands/${selectedBrandId}/models`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/brands/${selectedBrandId}/models`);
                 const data = await response.json();
                 if (data.success) {
                     setModelsList(data.models);
@@ -494,7 +498,8 @@ export default function EditListingPage() {
         const fetchSubModels = async () => {
             setLoadingSubModels(true);
             try {
-                const response = await fetch(`http://localhost:8000/master-data/models/${selectedModelId}/sub-models`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/master-data/models/${selectedModelId}/sub-models`);
                 const data = await response.json();
                 if (data.success) {
                     setSubModelsList(data.subModels);
@@ -567,8 +572,9 @@ export default function EditListingPage() {
         try {
             // 1. Process deletions
             if (deletedImageIds.length > 0) {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
                 await Promise.all(deletedImageIds.map(id =>
-                    fetch(`http://localhost:8000/listings/${listingId}/images/${id}?userId=${userId}`, { method: 'DELETE' })
+                    fetch(`${API_URL}/listings/${listingId}/images/${id}?userId=${userId}`, { method: 'DELETE' })
                 ));
             }
 
@@ -590,7 +596,8 @@ export default function EditListingPage() {
 
                 const imageData = await Promise.all(imagePromises);
 
-                const uploadRes = await fetch(`http://localhost:8000/listings/${listingId}/images`, {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const uploadRes = await fetch(`${API_URL}/listings/${listingId}/images`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId, images: imageData })
@@ -625,7 +632,8 @@ export default function EditListingPage() {
 
             // 3. Reorder
             if (finalImageOrder.length > 0) {
-                await fetch(`http://localhost:8000/listings/${listingId}/images/reorder`, {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                await fetch(`${API_URL}/listings/${listingId}/images/reorder`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -636,7 +644,8 @@ export default function EditListingPage() {
             }
 
             // 4. Update listing data
-            const response = await fetch(`http://localhost:8000/listings/${listingId}`, {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const response = await fetch(`${API_URL}/listings/${listingId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -33,7 +33,8 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/articles/${slug}`);
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const response = await fetch(`${API_URL}/articles/${slug}`);
                 const data = await response.json();
 
                 if (data.success) {
