@@ -1261,8 +1261,9 @@ export default function EditListingPage() {
                                         className={`form-input ${fieldErrors.contactPhone ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                         value={formData.contactPhone}
                                         onChange={(e) => {
+                                            const value = e.target.value.replace(/\D/g, '').slice(0, 10);
                                             setFieldErrors(prev => ({ ...prev, contactPhone: false }));
-                                            updateFormData({ contactPhone: e.target.value });
+                                            updateFormData({ contactPhone: value });
                                         }}
                                     />
                                     {fieldErrors.contactPhone && <p className="text-red-500 text-xs mt-1">กรุณากรอกเบอร์โทรติดต่อ</p>}

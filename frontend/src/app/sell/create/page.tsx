@@ -337,6 +337,7 @@ export default function CreateListingPage() {
                 return;
             }
             setCurrentStep(2);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (currentStep === 2) {
             // Validate step 2 - images
             if (formData.images.length === 0) {
@@ -350,12 +351,14 @@ export default function CreateListingPage() {
                 return;
             }
             setCurrentStep(3);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
     const goToPrevStep = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
@@ -1190,10 +1193,10 @@ export default function CreateListingPage() {
                                                 className={`form-input ${fieldErrors.contactPhone ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                 value={formData.contactPhone}
                                                 onChange={(e) => {
+                                                    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
                                                     setFieldErrors(prev => ({ ...prev, contactPhone: false }));
-                                                    updateFormData({ contactPhone: e.target.value })
-                                                }
-                                                }
+                                                    updateFormData({ contactPhone: value });
+                                                }}
                                             />
                                             {fieldErrors.contactPhone && <p className="text-red-500 text-xs mt-1">กรุณากรอกเบอร์โทรติดต่อ</p>}
                                         </div>

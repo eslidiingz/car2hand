@@ -12,6 +12,13 @@ import {
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('profile');
+    const [displayName, setDisplayName] = useState('Boy_CityZone');
+    const [phoneNumber, setPhoneNumber] = useState('0812345678');
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        setPhoneNumber(value);
+    };
 
     return (
         <div className="space-y-6">
@@ -60,14 +67,25 @@ export default function SettingsPage() {
                                 <label className="text-sm font-bold text-gray-700">ชื่อผู้ใช้ (Display Name)</label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                    <input type="text" defaultValue="Boy_CityZone" className="form-input-icon-sm font-medium" />
+                                    <input 
+                                        type="text" 
+                                        value={displayName} 
+                                        onChange={(e) => setDisplayName(e.target.value)}
+                                        className="form-input-icon-sm font-medium" 
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-gray-700">เบอร์โทรศัพท์</label>
                                 <div className="relative">
                                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
-                                    <input type="tel" defaultValue="081-234-5678" className="form-input-icon-sm font-medium" />
+                                    <input 
+                                        type="tel" 
+                                        value={phoneNumber} 
+                                        onChange={handlePhoneChange}
+                                        className="form-input-icon-sm font-medium" 
+                                        placeholder="08xxxxxxxx"
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2 md:col-span-2">
