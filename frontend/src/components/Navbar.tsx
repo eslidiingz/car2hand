@@ -172,7 +172,14 @@ export default function Navbar() {
                     <div className="flex justify-between h-16 items-center">
                         {/* Logo Component */}
                         <div className="flex-shrink-0">
-                            <Link href="/" className="flex items-center gap-2 group">
+                            <Link 
+                                href="/" 
+                                className="flex items-center gap-2 group"
+                                onClick={() => {
+                                    setShowAccountMenu(false);
+                                    setShowMobileMenu(false);
+                                }}
+                            >
                                 <img src="/logo-2tone.png" alt="Car2Hand" className="h-7 sm:h-8 w-auto" />
                                 <span className="font-bold text-xl sm:text-2xl text-primary tracking-tight group-hover:text-accent transition">Car<span className="text-accent">2</span>Hand</span>
                             </Link>
