@@ -14,7 +14,7 @@ export default function DashboardPage() {
     const stats = [
         { label: 'รถที่ลงขาย', value: '3', icon: <Car weight="fill" className="text-blue-500" />, change: '+1 เดือนนี้' },
         { label: 'ยอดเข้าชมรวม', value: '1,240', icon: <Eye weight="fill" className="text-green-500" />, change: '+12% จากเดือนก่อน' },
-        { label: 'ข้อความใหม่', value: '5', icon: <ChatCircleDots weight="fill" className="text-accent" />, change: 'ตอบกลับเร็ว' },
+        // { label: 'ข้อความใหม่', value: '5', icon: <ChatCircleDots weight="fill" className="text-accent" />, change: 'ตอบกลับเร็ว' },
         { label: 'คนกดถูกใจ', value: '28', icon: <Heart weight="fill" className="text-red-500" />, change: '+4 สัปดาห์นี้' },
     ];
 

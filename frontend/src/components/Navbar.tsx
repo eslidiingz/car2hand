@@ -269,7 +269,7 @@ export default function Navbar() {
                                                     <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
                                                         <User weight="bold" size={20} />
                                                     </div>
-                                                    <span>ข้อมูลส่วนตัว</span>
+                                                    <span>ภาพรวมบัญชี</span>
                                                 </Link>
                                                 <Link href="/profile/listings" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
                                                     <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">

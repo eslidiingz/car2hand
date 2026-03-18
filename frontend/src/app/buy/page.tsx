@@ -866,7 +866,10 @@ function BuyContent() {
                             {pagination && pagination.totalPages > 1 && (
                                 <div className="mt-12 flex justify-center gap-2">
                                     <button
-                                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                                        onClick={() => {
+                                            setPage(p => Math.max(1, p - 1));
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
                                         disabled={page === 1}
                                         className="w-10 h-10 rounded-xl bg-white border border-gray-200 text-gray-500 hover:border-primary hover:text-primary hover:bg-gray-50 transition flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
@@ -880,7 +883,10 @@ function BuyContent() {
                                         return (
                                             <button
                                                 key={pageNum}
-                                                onClick={() => setPage(pageNum)}
+                                                onClick={() => {
+                                                    setPage(pageNum);
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}
                                                 className={`w-10 h-10 rounded-xl font-bold transition flex items-center justify-center shadow-sm ${page === pageNum
                                                     ? 'bg-primary text-white shadow-primary/30'
                                                     : 'bg-white border border-gray-200 text-gray-500 hover:border-primary hover:text-primary hover:bg-gray-50'
@@ -891,7 +897,10 @@ function BuyContent() {
                                         );
                                     })}
                                     <button
-                                        onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                                        onClick={() => {
+                                            setPage(p => Math.min(pagination.totalPages, p + 1));
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
                                         disabled={page === pagination.totalPages}
                                         className="w-10 h-10 rounded-xl bg-white border border-gray-200 text-gray-500 hover:border-primary hover:text-primary hover:bg-gray-50 transition flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
