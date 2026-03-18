@@ -7,15 +7,20 @@ import {
     ChatCircleDots,
     Heart,
     TrendUp,
-    Warning
+    Warning,
+    Plus,
+    Megaphone,
+    ListChecks,
+    Phone,
+    UserCircle
 } from '@phosphor-icons/react';
 
 export default function DashboardPage() {
     const stats = [
-        { label: 'รถที่ลงขาย', value: '3', icon: <Car weight="fill" className="text-blue-500" />, change: '+1 เดือนนี้' },
-        { label: 'ยอดเข้าชมรวม', value: '1,240', icon: <Eye weight="fill" className="text-green-500" />, change: '+12% จากเดือนก่อน' },
-        // { label: 'ข้อความใหม่', value: '5', icon: <ChatCircleDots weight="fill" className="text-accent" />, change: 'ตอบกลับเร็ว' },
+        { label: 'ยอดเข้าชมประกาศ', value: '1,240', icon: <Eye weight="fill" className="text-blue-500" />, change: '+12% จากเดือนก่อน' },
+        { label: 'คนดูเบอร์โทรศัพท์', value: '42', icon: <Phone weight="fill" className="text-green-500" />, change: 'สนใจสูง' },
         { label: 'คนกดถูกใจ', value: '28', icon: <Heart weight="fill" className="text-red-500" />, change: '+4 สัปดาห์นี้' },
+        { label: 'ผู้เข้าชมโปรไฟล์', value: '156', icon: <UserCircle weight="fill" className="text-orange-500" />, change: 'กำลังเป็นที่นิยม' },
     ];
 
     return (
@@ -36,6 +41,37 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-500">{stat.label}</p>
                     </div>
                 ))}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition shadow-sm group">
+                    <div className="bg-white/20 p-2 rounded-xl group-hover:scale-110 transition">
+                        <Plus weight="bold" className="text-xl" />
+                    </div>
+                    <div className="text-left">
+                        <p className="font-bold">ลงขายรถรุ่นใหม่</p>
+                        <p className="text-xs text-blue-100">เพิ่มโอกาสในการขาย</p>
+                    </div>
+                </button>
+                <button className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-2xl border border-gray-100 transition shadow-sm group">
+                    <div className="bg-orange-50 p-2 rounded-xl text-orange-500 group-hover:scale-110 transition">
+                        <Megaphone weight="bold" className="text-xl" />
+                    </div>
+                    <div className="text-left">
+                        <p className="font-bold text-gray-900">ดันประกาศ (Boost)</p>
+                        <p className="text-xs text-gray-500">เพิ่มการมองเห็น 3 เท่า</p>
+                    </div>
+                </button>
+                <button className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-2xl border border-gray-100 transition shadow-sm group">
+                    <div className="bg-green-50 p-2 rounded-xl text-green-500 group-hover:scale-110 transition">
+                        <ListChecks weight="bold" className="text-xl" />
+                    </div>
+                    <div className="text-left">
+                        <p className="font-bold text-gray-900">จัดการประกาศ</p>
+                        <p className="text-xs text-gray-500">แก้ไขหรือปิดการขาย</p>
+                    </div>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -76,47 +112,56 @@ export default function DashboardPage() {
 
                 {/* Listing Performance */}
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                    <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-bold text-lg text-gray-800">ประสิทธิภาพประกาศ</h3>
-                        <button className="text-accent text-sm font-bold hover:underline">ดูทั้งหมด</button>
+                    <div className="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 className="font-bold text-lg text-gray-800">ประสิทธิภาพประกาศ</h3>
+                            <p className="text-xs text-gray-500">ข้อมูลย้อนหลัง 30 วัน</p>
+                        </div>
+                        <button className="text-blue-600 text-sm font-bold hover:underline">ดูสถิติแยกตามคัน</button>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <div className="flex items-center gap-4">
-                            <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=100" className="w-16 h-12 rounded-lg object-cover" />
+                            <div className="relative">
+                                <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=100" className="w-16 h-12 rounded-lg object-cover" />
+                                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">Active</span>
+                            </div>
                             <div className="flex-1">
                                 <div className="flex justify-between mb-1">
                                     <span className="text-sm font-bold text-gray-800">Honda City 1.0 SV</span>
-                                    <span className="text-xs font-bold text-gray-500">1,204 views</span>
+                                    <div className="flex gap-3 text-xs font-bold text-gray-500">
+                                        <span className="flex items-center gap-1"><Eye className="text-blue-500" /> 1,204</span>
+                                        <span className="flex items-center gap-1"><Phone className="text-green-500" /> 12</span>
+                                    </div>
                                 </div>
-                                <div className="w-full bg-gray-100 rounded-full h-2">
-                                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '70%' }}></div>
+                                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                    <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
                                 </div>
+                                <p className="text-[10px] text-green-600 mt-1 font-bold">ประกาศของคุณอยู่ในลำดับหน้าแรก</p>
                             </div>
                         </div>
+                        
                         <div className="flex items-center gap-4">
-                            <img src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=100" className="w-16 h-12 rounded-lg object-cover" />
+                            <div className="relative">
+                                <img src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=100" className="w-16 h-12 rounded-lg object-cover" />
+                                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">Active</span>
+                            </div>
                             <div className="flex-1">
                                 <div className="flex justify-between mb-1">
                                     <span className="text-sm font-bold text-gray-800">Toyota Camry 2.5 G</span>
-                                    <span className="text-xs font-bold text-gray-500">856 views</span>
+                                    <div className="flex gap-3 text-xs font-bold text-gray-500">
+                                        <span className="flex items-center gap-1"><Eye className="text-blue-500" /> 856</span>
+                                        <span className="flex items-center gap-1"><Phone className="text-green-500" /> 5</span>
+                                    </div>
                                 </div>
-                                <div className="w-full bg-gray-100 rounded-full h-2">
-                                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+                                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                                    <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '45%' }}></div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-blue-50 p-4 rounded-xl mt-4 flex items-center gap-3">
-                            <TrendUp weight="fill" className="text-blue-500 text-2xl flex-shrink-0" />
-                            <div>
-                                <p className="text-sm text-gray-800 font-bold">เคล็ดลับเพิ่มยอดขาย!</p>
-                                <p className="text-xs text-gray-500">การเพิ่มรูปภาพห้องเครื่องที่ชัดเจน ช่วยเพิ่มความน่าเชื่อถือได้ 30%</p>
+                                <p className="text-[10px] text-gray-400 mt-1">แนะนำ: เพิ่มการดันประกาศเพื่อยอดวิวที่มากขึ้น</p>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

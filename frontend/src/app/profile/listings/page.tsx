@@ -11,33 +11,12 @@ import {
     CurrencyCircleDollar,
     Trash,
     CircleNotch,
+    DotsThreeVertical,
+    Lightning,
     CarProfile,
-    Motorcycle,
-    WarningCircle,
-    CheckCircle
+    WarningCircle
 } from '@phosphor-icons/react';
-
-interface VehicleListing {
-    id: string;
-    vehicleType: 'CAR' | 'MOTORCYCLE';
-    title: string;
-    brand: string;
-    model: string;
-    year: number;
-    price: string;
-    mileage: number;
-    province: string;
-    status: 'DRAFT' | 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'EXPIRED' | 'SUSPENDED';
-    viewCount: number;
-    favoriteCount: number;
-    createdAt: string;
-    expiredAt: string | null;
-    images: Array<{
-        id: string;
-        url: string;
-        isPrimary: boolean;
-    }>;
-}
+import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
 
 interface ApiResponse {
     listings: VehicleListing[];
@@ -51,17 +30,6 @@ interface ApiResponse {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-// Status mapping
-const STATUS_CONFIG: Record<string, { label: string; bgColor: string; textColor: string; dotColor: string }> = {
-    'ACTIVE': { label: 'กำลังขาย', bgColor: 'bg-green-100', textColor: 'text-green-700', dotColor: 'bg-green-500' },
-    'PENDING': { label: 'รอตรวจสอบ', bgColor: 'bg-yellow-100', textColor: 'text-yellow-700', dotColor: 'bg-yellow-500' },
-    'DRAFT': { label: 'แบบร่าง', bgColor: 'bg-gray-100', textColor: 'text-gray-500', dotColor: 'bg-gray-400' },
-    'SOLD': { label: 'ขายแล้ว', bgColor: 'bg-blue-100', textColor: 'text-blue-700', dotColor: 'bg-blue-500' },
-    'EXPIRED': { label: 'หมดอายุ', bgColor: 'bg-red-100', textColor: 'text-red-700', dotColor: 'bg-red-500' },
-    'INACTIVE': { label: 'ไม่ใช้งาน', bgColor: 'bg-gray-100', textColor: 'text-gray-500', dotColor: 'bg-gray-400' },
-    'SUSPENDED': { label: 'ถูกระงับ', bgColor: 'bg-red-100', textColor: 'text-red-700', dotColor: 'bg-red-500' },
-};
-
 export default function MyListingsPage() {
     const router = useRouter();
     const [listings, setListings] = useState<VehicleListing[]>([]);
@@ -71,6 +39,7 @@ export default function MyListingsPage() {
     const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'DRAFT' | 'SOLD' | 'INACTIVE'>('ALL');
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
     const statuses = [
         { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
@@ -160,7 +129,7 @@ export default function MyListingsPage() {
     };
 
     const getPrimaryImage = (images: VehicleListing['images']) => {
-        const primary = images.find(img => img.isPrimary);
+        const primary = images.find((img: any) => img.isPrimary);
         return primary?.url || images[0]?.url || '/placeholder-car.jpg';
     };
 
@@ -227,100 +196,29 @@ export default function MyListingsPage() {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        {/* Header (Desktop) */}
-                        <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wide">
-                            <div className="col-span-5">รายละเอียดรถ</div>
-                            <div className="col-span-2 text-center">สถานะ</div>
-                            <div className="col-span-2 text-center">สถิติ</div>
-                            <div className="col-span-3 text-right">ดำเนินการ</div>
-                        </div>
-
-                        {(() => {
-                            const filteredItems = listings.filter(item => statusFilter === 'ALL' || item.status === statusFilter);
-                            if (filteredItems.length === 0) {
-                                return (
-                                    <div className="p-12 text-center text-gray-500 text-sm">
-                                        ไม่พบรายการในสถานะนี้
-                                    </div>
-                                );
-                            }
-                            return filteredItems.map((item) => {
-                                const status = STATUS_CONFIG[item.status] || STATUS_CONFIG['DRAFT'];
-                                const daysLeft = getDaysLeft(item.expiredAt);
-
-                                return (
-                                    <div key={item.id} className="p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition">
-                                        <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:items-center">
-                                            {/* Car Info & Image */}
-                                            <div className="md:col-span-5 flex gap-4">
-                                                <div className="relative flex-shrink-0">
-                                                    <img
-                                                        src={getPrimaryImage(item.images)}
-                                                        className="w-28 h-20 md:w-24 md:h-16 object-cover rounded-xl bg-gray-100 shadow-sm"
-                                                        alt={item.title}
-                                                    />
-                                                    {item.vehicleType === 'MOTORCYCLE' && (
-                                                        <div className="absolute -top-1 -right-1 bg-primary text-white p-1 rounded-full shadow-sm">
-                                                            <Motorcycle weight="bold" size={10} />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                    <h3 className="font-bold text-gray-900 text-sm md:text-base leading-snug line-clamp-2 md:truncate">{item.title}</h3>
-                                                    <div className="text-primary font-bold mt-1 text-base md:text-lg">฿{formatPrice(item.price)}</div>
-                                                    {daysLeft !== null && item.status === 'ACTIVE' && (
-                                                        <div className="text-[11px] text-gray-400 mt-0.5">เหลือ {daysLeft} วัน</div>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Status Badge */}
-                                            <div className="md:col-span-2 flex justify-start md:justify-center my-2 md:my-0">
-                                                <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 ${status.bgColor} ${status.textColor} whitespace-nowrap`}>
-                                                    <span className={`w-1.5 h-1.5 rounded-full ${status.dotColor}`}></span>
-                                                    {status.label}
-                                                </span>
-                                            </div>
-
-                                            {/* Stats */}
-                                            <div className="md:col-span-2 flex flex-row md:flex-col items-center md:justify-center gap-4 md:gap-1">
-                                                <div className="flex items-center gap-3 text-xs text-gray-500">
-                                                    <span className="flex items-center gap-1" title="ยอดดู">
-                                                        <Eye weight="bold" size={14} /> {item.viewCount}
-                                                    </span>
-                                                    <span className="flex items-center gap-1" title="บันทึก">
-                                                        <Heart weight="bold" size={14} /> {item.favoriteCount}
-                                                    </span>
-                                                </div>
-                                                <div className="text-[10px] text-gray-400">
-                                                    ลงเมื่อ {formatDate(item.createdAt)}
-                                                </div>
-                                            </div>
-
-                                            {/* Actions */}
-                                            <div className="md:col-span-3 flex justify-end items-center gap-2 pt-3 md:pt-0 border-t border-gray-50 md:border-0 mt-3 md:mt-0">
-                                                <Link
-                                                    href={`/sell/edit/${item.id}`}
-                                                    className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-blue-50 rounded-xl transition border border-gray-100 md:border-transparent"
-                                                    title="แก้ไข"
-                                                >
-                                                    <PencilSimple weight="bold" size={18} />
-                                                </Link>
-                                                <button
-                                                    onClick={() => setDeleteConfirm(item.id)}
-                                                    className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition border border-gray-100 md:border-transparent"
-                                                    title="ลบประกาศ"
-                                                >
-                                                    <Trash weight="bold" size={18} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            });
-                        })()}
-                    </div>
+                    {(() => {
+                        const filteredItems = listings.filter(item => statusFilter === 'ALL' || item.status === statusFilter);
+                        if (filteredItems.length === 0) {
+                            return (
+                                <div className="p-12 text-center text-gray-500 text-sm">
+                                    ไม่พบรายการในสถานะนี้
+                                </div>
+                            );
+                        }
+                        return filteredItems.map((item) => (
+                            <ProfileListingCard
+                                key={item.id}
+                                listing={item}
+                                isActive={activeMenu === item.id}
+                                onToggleMenu={setActiveMenu}
+                                onDelete={setDeleteConfirm}
+                                formatPrice={formatPrice}
+                                formatDate={formatDate}
+                                getDaysLeft={getDaysLeft}
+                                getPrimaryImage={getPrimaryImage}
+                            />
+                        ));
+                    })()}
                 </div>
             )}
 
