@@ -6,8 +6,8 @@ export const minioClient = new Minio.Client({
     endPoint: process.env.MINIO_ENDPOINT || 'localhost',
     port: parseInt(process.env.MINIO_PORT || '9000'),
     useSSL: process.env.MINIO_USE_SSL === 'true',
-    accessKey: process.env.MINIO_ACCESS_KEY || 'car2hand',
-    secretKey: process.env.MINIO_SECRET_KEY || 'car2hand123',
+    accessKey: process.env.MINIO_ACCESS_KEY,
+    secretKey: process.env.MINIO_SECRET_KEY,
 });
 
 // Single bucket for all uploads
@@ -103,10 +103,12 @@ export async function processImage(
         quality?: number;
     } = {}
 ): Promise<Buffer> {
-    const { maxWidth = 1920, maxHeight = 1080, quality = 80 } = options;
+    const { maxWidth, maxHeight, quality = 80 } = options;
 
     return sharp(buffer)
-        .resize(maxWidth, maxHeight, {
+        .resize({
+            width: maxWidth,
+            height: maxHeight,
             fit: 'inside',
             withoutEnlargement: true
         })
@@ -128,8 +130,7 @@ export async function uploadAvatar(
     // แปลงรูปเป็น WebP (ขนาดเล็กกว่าสำหรับ avatar)
     const webpBuffer = await processImage(file.buffer, {
         maxWidth: 400,
-        maxHeight: 400,
-        quality: 85
+        maxHeight: 400
     });
 
     const baseFilename = generateFilename(file.originalname);
@@ -151,9 +152,7 @@ export async function uploadListingImage(
 ): Promise<{ url: string; order: number }> {
     // แปลงรูปเป็น WebP
     const webpBuffer = await processImage(file.buffer, {
-        maxWidth: 1920,
-        maxHeight: 1440,
-        quality: 85
+        maxWidth: 800
     });
 
     // สร้างชื่อไฟล์แบบ .webp
@@ -178,9 +177,8 @@ export async function uploadArticleImage(
 ): Promise<string> {
     // แปลงรูปเป็น WebP
     const webpBuffer = await processImage(file.buffer, {
-        maxWidth: 1200,
-        maxHeight: 800,
-        quality: 85
+        maxWidth: 960,
+        maxHeight: 640
     });
 
     // สร้างชื่อไฟล์แบบ .webp
