@@ -101,17 +101,35 @@ export async function processImage(
         maxWidth?: number;
         maxHeight?: number;
         quality?: number;
+        addWatermark?: boolean;
     } = {}
 ): Promise<Buffer> {
-    const { maxWidth, maxHeight, quality = 80 } = options;
+    const { maxWidth, maxHeight, quality = 80, addWatermark = false } = options;
 
-    return sharp(buffer)
+    let image = sharp(buffer)
         .resize({
             width: maxWidth,
             height: maxHeight,
             fit: 'inside',
             withoutEnlargement: true
-        })
+        });
+
+    if (addWatermark) {
+        const watermarkBuffer = await sharp('assets/watermark.svg')
+            .extend({
+                bottom: 16,
+                right: 16,
+                background: { r: 0, g: 0, b: 0, alpha: 0 }
+            })
+            .toBuffer();
+
+        image = image.composite([{
+            input: watermarkBuffer,
+            gravity: 'southeast'
+        }]);
+    }
+
+    return image
         .webp({ quality })
         .toBuffer();
 }
@@ -152,7 +170,8 @@ export async function uploadListingImage(
 ): Promise<{ url: string; order: number }> {
     // แปลงรูปเป็น WebP
     const webpBuffer = await processImage(file.buffer, {
-        maxWidth: 800
+        maxWidth: 800,
+        addWatermark: true
     });
 
     // สร้างชื่อไฟล์แบบ .webp
