@@ -12,6 +12,7 @@ import { listingRoutes } from "./listings";
 import { masterDataRoutes } from "./master-data";
 import { wishlistRoutes } from "./wishlist";
 import { articleRoutes as publicArticleRoutes } from "./articles";
+import { packageRoutes } from "./packages";
 import { securityHeaders, requestLogger, rateLimiter } from "./security";
 
 // Allowed origins (update for production)
@@ -62,6 +63,7 @@ const app = new Elysia()
       .use(masterDataRoutes)
       .use(wishlistRoutes)
       .use(publicArticleRoutes)
+      .use(packageRoutes)
   )
 
   // Global error handler

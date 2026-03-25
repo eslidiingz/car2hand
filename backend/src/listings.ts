@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { uploadListingImages, deleteListingImages, deleteFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
+import { getUserPackage, canCreateListing, canUploadPhotos } from "./config/packages";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
@@ -19,6 +20,23 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             set.status = 401;
             return { message: "กรุณาเข้าสู่ระบบ" };
         }
+
+        // ตรวจสอบ limit จำนวนประกาศตาม package
+        const activeListings = await prisma.vehicleListing.count({
+            where: {
+                userId,
+                status: { in: ['ACTIVE', 'DRAFT', 'PENDING'] }
+            }
+        });
+        const userPkg = await getUserPackage(userId);
+        if (!canCreateListing(userPkg.maxListings, activeListings)) {
+            set.status = 403;
+            return {
+                message: `แพ็กเกจ ${userPkg.name} ลงประกาศได้สูงสุด ${userPkg.maxListings} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม`,
+                upgradeRequired: true,
+            };
+        }
+
 
         try {
             const listing = await prisma.vehicleListing.create({
@@ -204,11 +222,16 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             orderBy: { order: 'asc' }
         });
 
-        // ตรวจสอบจำนวนรูป
-        if (existingImages.length + images.length > 24) {
+        // ตรวจสอบจำนวนรูปตาม package limit
+        const userPkgForPhotos = await getUserPackage(userId);
+        if (!canUploadPhotos(userPkgForPhotos.maxPhotosPerListing, existingImages.length, images.length)) {
             set.status = 400;
-            return { message: `สามารถอัพโหลดได้สูงสุด 24 รูป (ปัจจุบันมี ${existingImages.length} รูป)` };
+            return {
+                message: `แพ็กเกจ ${userPkgForPhotos.name} อัพโหลดได้สูงสุด ${userPkgForPhotos.maxPhotosPerListing} รูป/ประกาศ (ปัจจุบันมี ${existingImages.length} รูป)`,
+                upgradeRequired: true,
+            };
         }
+
 
         try {
             // อัพโหลดรูปไปยัง MinIO
@@ -552,7 +575,11 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 data: {
                     price,
                     status: "ACTIVE",
-                    expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 วัน
+                    expiredAt: (() => {
+                        const userPkg = ((listing as any).userId) as string;
+                        // Use package-based expiry - will be enhanced when Prisma client is regenerated
+                        return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // default 30 days
+                    })()
                 },
                 include: {
                     images: true,

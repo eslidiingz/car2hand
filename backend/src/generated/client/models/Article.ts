@@ -559,10 +559,6 @@ export type ArticleUncheckedUpdateManyWithoutAuthorNestedInput = {
   deleteMany?: Prisma.ArticleScalarWhereInput | Prisma.ArticleScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumPostStatusFieldUpdateOperationsInput = {
   set?: $Enums.PostStatus
 }

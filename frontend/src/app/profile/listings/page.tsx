@@ -14,7 +14,9 @@ import {
     DotsThreeVertical,
     Lightning,
     CarProfile,
-    WarningCircle
+    WarningCircle,
+    Crown,
+    ArrowRight
 } from '@phosphor-icons/react';
 import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
 
@@ -30,6 +32,19 @@ interface ApiResponse {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+interface PackageInfo {
+    currentPackage: {
+        name: string;
+        nameTh: string;
+        slug: string;
+        maxListings: number;
+    } | null;
+    usage: {
+        activeListings: number;
+        maxListings: number;
+    };
+}
+
 export default function MyListingsPage() {
     const router = useRouter();
     const [listings, setListings] = useState<VehicleListing[]>([]);
@@ -40,6 +55,7 @@ export default function MyListingsPage() {
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
+    const [packageInfo, setPackageInfo] = useState<PackageInfo | null>(null);
 
     const statuses = [
         { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
@@ -61,7 +77,20 @@ export default function MyListingsPage() {
         const userData = JSON.parse(storedUser);
         setUser(userData);
         fetchListings(userData.id);
+        fetchPackageInfo(userData.id);
     }, [router]);
+
+    const fetchPackageInfo = async (userId: string) => {
+        try {
+            const response = await fetch(`${API_BASE}/packages/my?userId=${userId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setPackageInfo(data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch package info:', err);
+        }
+    };
 
     const fetchListings = async (userId: string) => {
         try {
@@ -141,6 +170,17 @@ export default function MyListingsPage() {
         );
     }
 
+    // Calculate usage percentage for progress bar
+    const usagePercent = packageInfo
+        ? packageInfo.usage.maxListings === -1
+            ? 0
+            : Math.min((packageInfo.usage.activeListings / packageInfo.usage.maxListings) * 100, 100)
+        : 0;
+    const isAtLimit = packageInfo
+        ? packageInfo.usage.maxListings !== -1 && packageInfo.usage.activeListings >= packageInfo.usage.maxListings
+        : false;
+    const isUnlimited = packageInfo?.usage.maxListings === -1;
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -149,6 +189,57 @@ export default function MyListingsPage() {
                     + ลงขายรถ
                 </Link>
             </div>
+
+            {/* Package Usage Quota Banner */}
+            {packageInfo && (
+                <div className={`rounded-2xl border p-4 sm:p-5 ${
+                    isAtLimit
+                        ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-200'
+                        : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                }`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Crown weight="fill" className={`text-lg ${isAtLimit ? 'text-orange-500' : 'text-blue-500'}`} />
+                                <span className="font-bold text-gray-700 text-sm">
+                                    {packageInfo.currentPackage?.nameTh || 'แพ็กเกจพื้นฐาน'}
+                                </span>
+                            </div>
+                            <div className="flex items-baseline gap-1.5 mb-2">
+                                <span className={`text-2xl font-bold ${isAtLimit ? 'text-red-600' : 'text-gray-800'}`}>
+                                    {packageInfo.usage.activeListings}
+                                </span>
+                                <span className="text-gray-400 text-sm">/</span>
+                                <span className="text-gray-500 text-sm font-semibold">
+                                    {isUnlimited ? 'ไม่จำกัด' : `${packageInfo.usage.maxListings} รายการ`}
+                                </span>
+                            </div>
+                            {!isUnlimited && (
+                                <div className="w-full bg-white/70 rounded-full h-2 overflow-hidden">
+                                    <div
+                                        className={`h-2 rounded-full transition-all duration-500 ${isAtLimit ? 'bg-gradient-to-r from-red-400 to-orange-500' : 'bg-gradient-to-r from-blue-400 to-indigo-500'}`}
+                                        style={{ width: `${usagePercent}%` }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        {isAtLimit && (
+                            <Link
+                                href="/profile/packages"
+                                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 whitespace-nowrap"
+                            >
+                                อัพเกรดแพ็กเกจ
+                                <ArrowRight weight="bold" className="text-sm" />
+                            </Link>
+                        )}
+                    </div>
+                    {isAtLimit && (
+                        <p className="text-xs text-red-500 mt-2 font-medium">
+                            สิทธิการลงประกาศเต็มแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม
+                        </p>
+                    )}
+                </div>
+            )}
 
             {/* Status Filters */}
             <div className="flex overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 no-scrollbar">

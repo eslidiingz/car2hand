@@ -67,3 +67,13 @@ export type VehicleListing = Prisma.VehicleListingModel
  * 
  */
 export type VehicleImage = Prisma.VehicleImageModel
+/**
+ * Model Package
+ * 
+ */
+export type Package = Prisma.PackageModel
+/**
+ * Model PackageTransaction
+ * 
+ */
+export type PackageTransaction = Prisma.PackageTransactionModel

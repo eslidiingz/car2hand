@@ -13,7 +13,8 @@ import {
     SignOut,
     User,
     CaretRight,
-    CircleNotch
+    CircleNotch,
+    Package
 } from '@phosphor-icons/react';
 import ProfileSidebar from '@/components/ProfileSidebar';
 
@@ -112,6 +113,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart weight={pathname === '/profile/wishlist' ? 'fill' : 'bold'} /> },
         // { name: 'กล่องข้อความ', href: '/profile/messages', icon: <ChatCircleDots weight={pathname === '/profile/messages' ? 'fill' : 'bold'} />, badge: 3 },
         { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Gear weight={pathname === '/profile/settings' ? 'fill' : 'bold'} /> },
+        { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package weight={pathname === '/profile/packages' ? 'fill' : 'bold'} /> },
     ];
 
     // Show loading state while checking authentication

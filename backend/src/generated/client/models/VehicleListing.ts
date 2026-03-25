@@ -56,7 +56,6 @@ export type VehicleListingMinAggregateOutputType = {
   title: string | null
   description: string | null
   price: runtime.Decimal | null
-  negotiable: boolean | null
   brand: string | null
   model: string | null
   subModel: string | null
@@ -107,7 +106,6 @@ export type VehicleListingMaxAggregateOutputType = {
   title: string | null
   description: string | null
   price: runtime.Decimal | null
-  negotiable: boolean | null
   brand: string | null
   model: string | null
   subModel: string | null
@@ -158,7 +156,6 @@ export type VehicleListingCountAggregateOutputType = {
   title: number
   description: number
   price: number
-  negotiable: number
   brand: number
   model: number
   subModel: number
@@ -235,7 +232,6 @@ export type VehicleListingMinAggregateInputType = {
   title?: true
   description?: true
   price?: true
-  negotiable?: true
   brand?: true
   model?: true
   subModel?: true
@@ -286,7 +282,6 @@ export type VehicleListingMaxAggregateInputType = {
   title?: true
   description?: true
   price?: true
-  negotiable?: true
   brand?: true
   model?: true
   subModel?: true
@@ -337,7 +332,6 @@ export type VehicleListingCountAggregateInputType = {
   title?: true
   description?: true
   price?: true
-  negotiable?: true
   brand?: true
   model?: true
   subModel?: true
@@ -475,7 +469,6 @@ export type VehicleListingGroupByOutputType = {
   title: string
   description: string | null
   price: runtime.Decimal
-  negotiable: boolean
   brand: string
   model: string
   subModel: string | null
@@ -549,7 +542,6 @@ export type VehicleListingWhereInput = {
   title?: Prisma.StringFilter<"VehicleListing"> | string
   description?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   price?: Prisma.DecimalFilter<"VehicleListing"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFilter<"VehicleListing"> | boolean
   brand?: Prisma.StringFilter<"VehicleListing"> | string
   model?: Prisma.StringFilter<"VehicleListing"> | string
   subModel?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -603,7 +595,6 @@ export type VehicleListingOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
-  negotiable?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
   subModel?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -660,7 +651,6 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"VehicleListing"> | string
   description?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   price?: Prisma.DecimalFilter<"VehicleListing"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFilter<"VehicleListing"> | boolean
   brand?: Prisma.StringFilter<"VehicleListing"> | string
   model?: Prisma.StringFilter<"VehicleListing"> | string
   subModel?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -714,7 +704,6 @@ export type VehicleListingOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   price?: Prisma.SortOrder
-  negotiable?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
   subModel?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -773,7 +762,6 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   price?: Prisma.DecimalWithAggregatesFilter<"VehicleListing"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   brand?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
   model?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
   subModel?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
@@ -824,7 +812,6 @@ export type VehicleListingCreateInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -877,7 +864,6 @@ export type VehicleListingUncheckedCreateInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -930,7 +916,6 @@ export type VehicleListingUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -983,7 +968,6 @@ export type VehicleListingUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1036,7 +1020,6 @@ export type VehicleListingCreateManyInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -1087,7 +1070,6 @@ export type VehicleListingUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1137,7 +1119,6 @@ export type VehicleListingUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1203,7 +1184,6 @@ export type VehicleListingCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  negotiable?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
   subModel?: Prisma.SortOrder
@@ -1266,7 +1246,6 @@ export type VehicleListingMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  negotiable?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
   subModel?: Prisma.SortOrder
@@ -1317,7 +1296,6 @@ export type VehicleListingMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
-  negotiable?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
   subModel?: Prisma.SortOrder
@@ -1466,10 +1444,6 @@ export type EnumListingStatusFieldUpdateOperationsInput = {
   set?: $Enums.ListingStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type VehicleListingCreateNestedOneWithoutImagesInput = {
   create?: Prisma.XOR<Prisma.VehicleListingCreateWithoutImagesInput, Prisma.VehicleListingUncheckedCreateWithoutImagesInput>
   connectOrCreate?: Prisma.VehicleListingCreateOrConnectWithoutImagesInput
@@ -1490,7 +1464,6 @@ export type VehicleListingCreateWithoutUserInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -1542,7 +1515,6 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -1623,7 +1595,6 @@ export type VehicleListingScalarWhereInput = {
   title?: Prisma.StringFilter<"VehicleListing"> | string
   description?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   price?: Prisma.DecimalFilter<"VehicleListing"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFilter<"VehicleListing"> | boolean
   brand?: Prisma.StringFilter<"VehicleListing"> | string
   model?: Prisma.StringFilter<"VehicleListing"> | string
   subModel?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -1674,7 +1645,6 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -1726,7 +1696,6 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -1794,7 +1763,6 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1846,7 +1814,6 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1898,7 +1865,6 @@ export type VehicleListingCreateWithoutImagesInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -1950,7 +1916,6 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -2018,7 +1983,6 @@ export type VehicleListingUpdateWithoutImagesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2070,7 +2034,6 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2122,7 +2085,6 @@ export type VehicleListingCreateManyUserInput = {
   title: string
   description?: string | null
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: boolean
   brand: string
   model: string
   subModel?: string | null
@@ -2172,7 +2134,6 @@ export type VehicleListingUpdateWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2224,7 +2185,6 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2276,7 +2236,6 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  negotiable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2366,7 +2325,6 @@ export type VehicleListingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   title?: boolean
   description?: boolean
   price?: boolean
-  negotiable?: boolean
   brand?: boolean
   model?: boolean
   subModel?: boolean
@@ -2421,7 +2379,6 @@ export type VehicleListingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   title?: boolean
   description?: boolean
   price?: boolean
-  negotiable?: boolean
   brand?: boolean
   model?: boolean
   subModel?: boolean
@@ -2473,7 +2430,6 @@ export type VehicleListingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   title?: boolean
   description?: boolean
   price?: boolean
-  negotiable?: boolean
   brand?: boolean
   model?: boolean
   subModel?: boolean
@@ -2525,7 +2481,6 @@ export type VehicleListingSelectScalar = {
   title?: boolean
   description?: boolean
   price?: boolean
-  negotiable?: boolean
   brand?: boolean
   model?: boolean
   subModel?: boolean
@@ -2570,7 +2525,7 @@ export type VehicleListingSelectScalar = {
   userId?: boolean
 }
 
-export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "negotiable" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
+export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
 export type VehicleListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
@@ -2597,7 +2552,6 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     title: string
     description: string | null
     price: runtime.Decimal
-    negotiable: boolean
     brand: string
     model: string
     subModel: string | null
@@ -3071,7 +3025,6 @@ export interface VehicleListingFieldRefs {
   readonly title: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly description: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly price: Prisma.FieldRef<"VehicleListing", 'Decimal'>
-  readonly negotiable: Prisma.FieldRef<"VehicleListing", 'Boolean'>
   readonly brand: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly model: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly subModel: Prisma.FieldRef<"VehicleListing", 'String'>

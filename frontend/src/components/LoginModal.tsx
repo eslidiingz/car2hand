@@ -51,7 +51,12 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
     }, [isOpen]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
+        let { name, value } = e.target;
+
+        if (name === 'phoneNumber') {
+            value = value.replace(/\D/g, '').slice(0, 10);
+        }
+
         setFormData(prev => ({ ...prev, [name]: value }));
         setError(null);
     };
@@ -156,11 +161,13 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                                 <Phone weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type="tel"
+                                    inputMode="numeric"
                                     name="phoneNumber"
                                     value={formData.phoneNumber}
                                     onChange={handleInputChange}
                                     placeholder="08x-xxx-xxxx"
                                     className="form-input-icon-sm"
+                                    maxLength={10}
                                     disabled={isLoading}
                                 />
                             </div>

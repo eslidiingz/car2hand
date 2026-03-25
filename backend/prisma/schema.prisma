@@ -23,10 +23,17 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  listings  VehicleListing[]
-  wishlists Wishlist[]
+  // Package
+  currentPackageId String?
+  currentPackage   Package?  @relation("UserCurrentPackage", fields: [currentPackageId], references: [id])
+  packageExpiresAt DateTime?
 
+  // Relations
+  listings            VehicleListing[]
+  wishlists           Wishlist[]
+  packageTransactions PackageTransaction[]
+
+  @@index([currentPackageId])
   @@map("users")
 }
 
@@ -386,3 +393,68 @@ enum GasType {
   LPG // LPG
   NGV // NGV/CNG
 }
+
+// =============================================
+// Package System - ระบบแพ็กเกจผู้ลงขาย
+// =============================================
+
+// Master Data แพ็กเกจ
+model Package {
+  id                  String   @id @default(cuid())
+  name                String   @unique // e.g. Basic, Standard, Professional, Premium
+  nameTh              String // ชื่อภาษาไทย
+  slug                String   @unique // e.g. basic, standard, professional, premium
+  description         String?  @db.Text
+  targetAudience      String? // กลุ่มเป้าหมาย
+  price               Decimal  @db.Decimal(10, 2) // ราคา/เดือน
+  maxListings         Int // จำนวนประกาศสูงสุด (-1 = ไม่จำกัด)
+  maxPhotosPerListing Int // จำนวนรูปสูงสุด/ประกาศ
+  listingDurationDays Int // ระยะเวลาประกาศ (วัน), -1 = จนกว่าจะขายได้
+  autoBumpPerDay      Int      @default(0) // จำนวนดันโพสต์อัตโนมัติ/วัน
+  badge               String? // ป้ายพิเศษ เช่น Verified Seller, Hot Deal
+  searchPriority      String   @default("normal") // normal, higher, top, priority
+  features            Json     @default("[]") // Array ของฟีเจอร์เพิ่มเติม
+  sortOrder           Int      @default(0) // ลำดับการแสดง
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  users        User[]               @relation("UserCurrentPackage")
+  transactions PackageTransaction[]
+
+  @@index([sortOrder])
+  @@map("packages")
+}
+
+// สถานะการชำระเงิน
+enum PaymentStatus {
+  PENDING // รอตรวจสอบ
+  APPROVED // อนุมัติแล้ว
+  REJECTED // ถูกปฏิเสธ
+}
+
+// รายการอัพเกรดแพ็กเกจ
+model PackageTransaction {
+  id         String        @id @default(cuid())
+  amount     Decimal       @db.Decimal(10, 2) // จำนวนเงิน
+  slipImage  String // URL รูปสลิปการโอนเงิน
+  status     PaymentStatus @default(PENDING)
+  adminNote  String? // หมายเหตุจาก admin (เหตุผลกรณีปฏิเสธ)
+  reviewedAt DateTime? // วันที่ตรวจสอบ
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  packageId String
+  package   Package @relation(fields: [packageId], references: [id])
+
+  @@index([userId])
+  @@index([packageId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("package_transactions")
+}
+

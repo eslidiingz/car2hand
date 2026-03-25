@@ -527,4 +527,327 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 return { error: 'Server Error', message: 'ไม่สามารถลบบทความได้' };
             }
         })
+    )
+
+    // Package Management (CRUD + Transactions)
+    .group("/packages", (app) => app
+        .derive(async ({ jwt, headers, set }) => {
+            const authHeader = headers['authorization'];
+            if (!authHeader?.startsWith('Bearer ')) {
+                set.status = 401;
+                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+
+            const token = authHeader.slice(7).trim();
+            const payload = await jwt.verify(token);
+
+            if (!payload) {
+                set.status = 401;
+                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+
+            return { adminId: (payload as any).userId };
+        })
+        .onBeforeHandle(({ adminId, set }) => {
+            if (!adminId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+        })
+
+        // =============================================
+        // Package CRUD - จัดการ Master Data แพ็กเกจ
+        // =============================================
+
+        // ดึงรายการแพ็กเกจทั้งหมด (รวม inactive)
+        .get("/", async () => {
+            const packages = await prisma.package.findMany({
+                orderBy: { sortOrder: 'asc' },
+                include: {
+                    _count: { select: { users: true, transactions: true } }
+                }
+            });
+            return { packages };
+        })
+
+        // สร้างแพ็กเกจใหม่
+        .post("/", async ({ body, set }) => {
+            try {
+                const pkg = await prisma.package.create({
+                    data: {
+                        name: body.name,
+                        nameTh: body.nameTh,
+                        slug: body.slug,
+                        description: body.description,
+                        targetAudience: body.targetAudience,
+                        price: body.price,
+                        maxListings: body.maxListings,
+                        maxPhotosPerListing: body.maxPhotosPerListing,
+                        listingDurationDays: body.listingDurationDays,
+                        autoBumpPerDay: body.autoBumpPerDay ?? 0,
+                        badge: body.badge,
+                        searchPriority: body.searchPriority ?? 'normal',
+                        features: body.features ?? [],
+                        sortOrder: body.sortOrder ?? 0,
+                        isActive: body.isActive ?? true,
+                    }
+                });
+                return { message: 'สร้างแพ็กเกจสำเร็จ', package: pkg };
+            } catch (error: any) {
+                if (error?.code === 'P2002') {
+                    set.status = 400;
+                    return { error: 'Duplicate', message: 'ชื่อหรือ slug ซ้ำกับแพ็กเกจที่มีอยู่แล้ว' };
+                }
+                console.error('Create package error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถสร้างแพ็กเกจได้' };
+            }
+        }, {
+            body: t.Object({
+                name: t.String(),
+                nameTh: t.String(),
+                slug: t.String(),
+                description: t.Optional(t.String()),
+                targetAudience: t.Optional(t.String()),
+                price: t.Number(),
+                maxListings: t.Number(),
+                maxPhotosPerListing: t.Number(),
+                listingDurationDays: t.Number(),
+                autoBumpPerDay: t.Optional(t.Number()),
+                badge: t.Optional(t.String()),
+                searchPriority: t.Optional(t.String()),
+                features: t.Optional(t.Array(t.String())),
+                sortOrder: t.Optional(t.Number()),
+                isActive: t.Optional(t.Boolean()),
+            })
+        })
+
+        // อัพเดทแพ็กเกจ
+        .put("/:id", async ({ params: { id }, body, set }) => {
+            try {
+                const pkg = await prisma.package.update({
+                    where: { id },
+                    data: {
+                        name: body.name,
+                        nameTh: body.nameTh,
+                        slug: body.slug,
+                        description: body.description,
+                        targetAudience: body.targetAudience,
+                        price: body.price,
+                        maxListings: body.maxListings,
+                        maxPhotosPerListing: body.maxPhotosPerListing,
+                        listingDurationDays: body.listingDurationDays,
+                        autoBumpPerDay: body.autoBumpPerDay,
+                        badge: body.badge,
+                        searchPriority: body.searchPriority,
+                        features: body.features,
+                        sortOrder: body.sortOrder,
+                        isActive: body.isActive,
+                    }
+                });
+                return { message: 'อัพเดทแพ็กเกจสำเร็จ', package: pkg };
+            } catch (error: any) {
+                if (error?.code === 'P2025') {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบแพ็กเกจ' };
+                }
+                console.error('Update package error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอัพเดทแพ็กเกจได้' };
+            }
+        }, {
+            body: t.Object({
+                name: t.Optional(t.String()),
+                nameTh: t.Optional(t.String()),
+                slug: t.Optional(t.String()),
+                description: t.Optional(t.Nullable(t.String())),
+                targetAudience: t.Optional(t.Nullable(t.String())),
+                price: t.Optional(t.Number()),
+                maxListings: t.Optional(t.Number()),
+                maxPhotosPerListing: t.Optional(t.Number()),
+                listingDurationDays: t.Optional(t.Number()),
+                autoBumpPerDay: t.Optional(t.Number()),
+                badge: t.Optional(t.Nullable(t.String())),
+                searchPriority: t.Optional(t.String()),
+                features: t.Optional(t.Array(t.String())),
+                sortOrder: t.Optional(t.Number()),
+                isActive: t.Optional(t.Boolean()),
+            })
+        })
+
+        // ลบแพ็กเกจ (soft delete = set isActive = false)
+        .delete("/:id", async ({ params: { id }, set }) => {
+            try {
+                // ตรวจสอบว่ามี user ที่ใช้ package นี้อยู่ไหม
+                const usersCount = await prisma.user.count({
+                    where: { currentPackageId: id }
+                });
+
+                if (usersCount > 0) {
+                    // Soft delete เท่านั้น เพราะยังมี user อยู่
+                    await prisma.package.update({
+                        where: { id },
+                        data: { isActive: false }
+                    });
+                    return { message: `ปิดการใช้งานแพ็กเกจสำเร็จ (มีผู้ใช้งาน ${usersCount} คน จึงไม่สามารถลบถาวรได้)` };
+                }
+
+                await prisma.package.delete({ where: { id } });
+                return { message: 'ลบแพ็กเกจสำเร็จ' };
+            } catch (error: any) {
+                if (error?.code === 'P2025') {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบแพ็กเกจ' };
+                }
+                console.error('Delete package error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถลบแพ็กเกจได้' };
+            }
+        })
+
+        // =============================================
+        // Transaction Management - จัดการคำขออัพเกรด
+        // =============================================
+
+        // ดึงรายการ transaction ทั้งหมด (filter by status)
+        .get("/transactions", async ({ query }) => {
+            const { status, page = '1', limit = '20' } = query;
+            const skip = (parseInt(page) - 1) * parseInt(limit);
+            const take = parseInt(limit);
+
+            const where: any = {};
+            if (status) where.status = status;
+
+            const [transactions, total] = await Promise.all([
+                prisma.packageTransaction.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                fullName: true,
+                                email: true,
+                                phoneNumber: true,
+                                currentPackageId: true,
+                                currentPackage: {
+                                    select: { name: true, slug: true }
+                                }
+                            }
+                        },
+                        package: {
+                            select: { id: true, name: true, nameTh: true, slug: true, price: true, listingDurationDays: true }
+                        }
+                    }
+                }),
+                prisma.packageTransaction.count({ where })
+            ]);
+
+            return {
+                transactions,
+                pagination: {
+                    total,
+                    page: parseInt(page),
+                    limit: parseInt(limit),
+                    totalPages: Math.ceil(total / take)
+                }
+            };
+        })
+
+        // อนุมัติรายการ
+        .post("/transactions/:id/approve", async ({ params: { id }, set }) => {
+            try {
+                const transaction = await prisma.packageTransaction.findUnique({
+                    where: { id },
+                    include: { package: true }
+                });
+
+                if (!transaction) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบรายการนี้' };
+                }
+
+                if (transaction.status !== 'PENDING') {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'รายการนี้ถูกตรวจสอบแล้ว' };
+                }
+
+                // คำนวณ packageExpiresAt จากระยะเวลาของ package
+                const durationDays = transaction.package.listingDurationDays;
+                const packageExpiresAt = durationDays === -1
+                    ? null // ไม่มีหมดอายุ
+                    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // ใช้ 30 วันเป็นรอบสมาชิก
+
+                // อัพเดท transaction + user package พร้อมกัน
+                const [updatedTransaction] = await prisma.$transaction([
+                    prisma.packageTransaction.update({
+                        where: { id },
+                        data: {
+                            status: 'APPROVED',
+                            reviewedAt: new Date()
+                        }
+                    }),
+                    prisma.user.update({
+                        where: { id: transaction.userId },
+                        data: {
+                            currentPackageId: transaction.packageId,
+                            packageExpiresAt
+                        }
+                    })
+                ]);
+
+                return {
+                    message: 'อนุมัติรายการสำเร็จ',
+                    transaction: updatedTransaction
+                };
+            } catch (error) {
+                console.error('Approve transaction error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอนุมัติรายการได้' };
+            }
+        })
+
+        // ปฏิเสธรายการ
+        .post("/transactions/:id/reject", async ({ params: { id }, body, set }) => {
+            try {
+                const transaction = await prisma.packageTransaction.findUnique({
+                    where: { id }
+                });
+
+                if (!transaction) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบรายการนี้' };
+                }
+
+                if (transaction.status !== 'PENDING') {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'รายการนี้ถูกตรวจสอบแล้ว' };
+                }
+
+                const updatedTransaction = await prisma.packageTransaction.update({
+                    where: { id },
+                    data: {
+                        status: 'REJECTED',
+                        adminNote: (body as any).adminNote || null,
+                        reviewedAt: new Date()
+                    }
+                });
+
+                return {
+                    message: 'ปฏิเสธรายการเรียบร้อย',
+                    transaction: updatedTransaction
+                };
+            } catch (error) {
+                console.error('Reject transaction error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถปฏิเสธรายการได้' };
+            }
+        }, {
+            body: t.Object({
+                adminNote: t.Optional(t.String())
+            })
+        })
     );
+

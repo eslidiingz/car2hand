@@ -33,6 +33,8 @@ export type UserMinAggregateOutputType = {
   password: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  currentPackageId: string | null
+  packageExpiresAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -44,6 +46,8 @@ export type UserMaxAggregateOutputType = {
   password: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  currentPackageId: string | null
+  packageExpiresAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -55,6 +59,8 @@ export type UserCountAggregateOutputType = {
   password: number
   createdAt: number
   updatedAt: number
+  currentPackageId: number
+  packageExpiresAt: number
   _all: number
 }
 
@@ -68,6 +74,8 @@ export type UserMinAggregateInputType = {
   password?: true
   createdAt?: true
   updatedAt?: true
+  currentPackageId?: true
+  packageExpiresAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -79,6 +87,8 @@ export type UserMaxAggregateInputType = {
   password?: true
   createdAt?: true
   updatedAt?: true
+  currentPackageId?: true
+  packageExpiresAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -90,6 +100,8 @@ export type UserCountAggregateInputType = {
   password?: true
   createdAt?: true
   updatedAt?: true
+  currentPackageId?: true
+  packageExpiresAt?: true
   _all?: true
 }
 
@@ -174,6 +186,8 @@ export type UserGroupByOutputType = {
   password: string
   createdAt: Date
   updatedAt: Date
+  currentPackageId: string | null
+  packageExpiresAt: Date | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -206,8 +220,12 @@ export type UserWhereInput = {
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
+  packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
   listings?: Prisma.VehicleListingListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
+  packageTransactions?: Prisma.PackageTransactionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -219,8 +237,12 @@ export type UserOrderByWithRelationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
+  packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentPackage?: Prisma.PackageOrderByWithRelationInput
   listings?: Prisma.VehicleListingOrderByRelationAggregateInput
   wishlists?: Prisma.WishlistOrderByRelationAggregateInput
+  packageTransactions?: Prisma.PackageTransactionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -235,8 +257,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
+  packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
   listings?: Prisma.VehicleListingListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
+  packageTransactions?: Prisma.PackageTransactionListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -248,6 +274,8 @@ export type UserOrderByWithAggregationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
+  packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -265,6 +293,8 @@ export type UserScalarWhereWithAggregatesInput = {
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  currentPackageId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  packageExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -276,8 +306,11 @@ export type UserCreateInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -289,8 +322,11 @@ export type UserUncheckedCreateInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -302,8 +338,11 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -315,8 +354,11 @@ export type UserUncheckedUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -328,6 +370,8 @@ export type UserCreateManyInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -339,6 +383,7 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -350,6 +395,8 @@ export type UserUncheckedUpdateManyInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -361,6 +408,8 @@ export type UserCountOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  currentPackageId?: Prisma.SortOrder
+  packageExpiresAt?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -372,6 +421,8 @@ export type UserMaxOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  currentPackageId?: Prisma.SortOrder
+  packageExpiresAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -383,11 +434,23 @@ export type UserMinOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  currentPackageId?: Prisma.SortOrder
+  packageExpiresAt?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -400,6 +463,14 @@ export type BoolFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type UserCreateNestedOneWithoutWishlistsInput = {
@@ -430,6 +501,62 @@ export type UserUpdateOneRequiredWithoutListingsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutListingsInput, Prisma.UserUpdateWithoutListingsInput>, Prisma.UserUncheckedUpdateWithoutListingsInput>
 }
 
+export type UserCreateNestedManyWithoutCurrentPackageInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCurrentPackageInput, Prisma.UserUncheckedCreateWithoutCurrentPackageInput> | Prisma.UserCreateWithoutCurrentPackageInput[] | Prisma.UserUncheckedCreateWithoutCurrentPackageInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCurrentPackageInput | Prisma.UserCreateOrConnectWithoutCurrentPackageInput[]
+  createMany?: Prisma.UserCreateManyCurrentPackageInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutCurrentPackageInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCurrentPackageInput, Prisma.UserUncheckedCreateWithoutCurrentPackageInput> | Prisma.UserCreateWithoutCurrentPackageInput[] | Prisma.UserUncheckedCreateWithoutCurrentPackageInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCurrentPackageInput | Prisma.UserCreateOrConnectWithoutCurrentPackageInput[]
+  createMany?: Prisma.UserCreateManyCurrentPackageInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateManyWithoutCurrentPackageNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCurrentPackageInput, Prisma.UserUncheckedCreateWithoutCurrentPackageInput> | Prisma.UserCreateWithoutCurrentPackageInput[] | Prisma.UserUncheckedCreateWithoutCurrentPackageInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCurrentPackageInput | Prisma.UserCreateOrConnectWithoutCurrentPackageInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutCurrentPackageInput | Prisma.UserUpsertWithWhereUniqueWithoutCurrentPackageInput[]
+  createMany?: Prisma.UserCreateManyCurrentPackageInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutCurrentPackageInput | Prisma.UserUpdateWithWhereUniqueWithoutCurrentPackageInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutCurrentPackageInput | Prisma.UserUpdateManyWithWhereWithoutCurrentPackageInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutCurrentPackageNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCurrentPackageInput, Prisma.UserUncheckedCreateWithoutCurrentPackageInput> | Prisma.UserCreateWithoutCurrentPackageInput[] | Prisma.UserUncheckedCreateWithoutCurrentPackageInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCurrentPackageInput | Prisma.UserCreateOrConnectWithoutCurrentPackageInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutCurrentPackageInput | Prisma.UserUpsertWithWhereUniqueWithoutCurrentPackageInput[]
+  createMany?: Prisma.UserCreateManyCurrentPackageInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutCurrentPackageInput | Prisma.UserUpdateWithWhereUniqueWithoutCurrentPackageInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutCurrentPackageInput | Prisma.UserUpdateManyWithWhereWithoutCurrentPackageInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserCreateNestedOneWithoutPackageTransactionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPackageTransactionsInput, Prisma.UserUncheckedCreateWithoutPackageTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPackageTransactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPackageTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPackageTransactionsInput, Prisma.UserUncheckedCreateWithoutPackageTransactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPackageTransactionsInput
+  upsert?: Prisma.UserUpsertWithoutPackageTransactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPackageTransactionsInput, Prisma.UserUpdateWithoutPackageTransactionsInput>, Prisma.UserUncheckedUpdateWithoutPackageTransactionsInput>
+}
+
 export type UserCreateWithoutWishlistsInput = {
   id?: string
   fullName: string
@@ -439,7 +566,10 @@ export type UserCreateWithoutWishlistsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWishlistsInput = {
@@ -451,7 +581,10 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWishlistsInput = {
@@ -479,7 +612,10 @@ export type UserUpdateWithoutWishlistsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWishlistsInput = {
@@ -491,7 +627,10 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutListingsInput = {
@@ -503,7 +642,10 @@ export type UserCreateWithoutListingsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutListingsInput = {
@@ -515,7 +657,10 @@ export type UserUncheckedCreateWithoutListingsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutListingsInput = {
@@ -543,7 +688,10 @@ export type UserUpdateWithoutListingsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutListingsInput = {
@@ -555,7 +703,212 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCurrentPackageInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCurrentPackageInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCurrentPackageInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCurrentPackageInput, Prisma.UserUncheckedCreateWithoutCurrentPackageInput>
+}
+
+export type UserCreateManyCurrentPackageInputEnvelope = {
+  data: Prisma.UserCreateManyCurrentPackageInput | Prisma.UserCreateManyCurrentPackageInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserUpsertWithWhereUniqueWithoutCurrentPackageInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCurrentPackageInput, Prisma.UserUncheckedUpdateWithoutCurrentPackageInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCurrentPackageInput, Prisma.UserUncheckedCreateWithoutCurrentPackageInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutCurrentPackageInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCurrentPackageInput, Prisma.UserUncheckedUpdateWithoutCurrentPackageInput>
+}
+
+export type UserUpdateManyWithWhereWithoutCurrentPackageInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutCurrentPackageInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.StringFilter<"User"> | string
+  fullName?: Prisma.StringFilter<"User"> | string
+  isActive?: Prisma.BoolFilter<"User"> | boolean
+  email?: Prisma.StringFilter<"User"> | string
+  phoneNumber?: Prisma.StringFilter<"User"> | string
+  password?: Prisma.StringFilter<"User"> | string
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
+  packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+}
+
+export type UserCreateWithoutPackageTransactionsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPackageTransactionsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPackageTransactionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPackageTransactionsInput, Prisma.UserUncheckedCreateWithoutPackageTransactionsInput>
+}
+
+export type UserUpsertWithoutPackageTransactionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPackageTransactionsInput, Prisma.UserUncheckedUpdateWithoutPackageTransactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPackageTransactionsInput, Prisma.UserUncheckedCreateWithoutPackageTransactionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPackageTransactionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPackageTransactionsInput, Prisma.UserUncheckedUpdateWithoutPackageTransactionsInput>
+}
+
+export type UserUpdateWithoutPackageTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateManyCurrentPackageInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+}
+
+export type UserUpdateWithoutCurrentPackageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCurrentPackageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutCurrentPackageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -566,11 +919,13 @@ export type UserUncheckedUpdateWithoutListingsInput = {
 export type UserCountOutputType = {
   listings: number
   wishlists: number
+  packageTransactions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listings?: boolean | UserCountOutputTypeCountListingsArgs
   wishlists?: boolean | UserCountOutputTypeCountWishlistsArgs
+  packageTransactions?: boolean | UserCountOutputTypeCountPackageTransactionsArgs
 }
 
 /**
@@ -597,6 +952,13 @@ export type UserCountOutputTypeCountWishlistsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.WishlistWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPackageTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PackageTransactionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -607,8 +969,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  currentPackageId?: boolean
+  packageExpiresAt?: boolean
+  currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
   wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
+  packageTransactions?: boolean | Prisma.User$packageTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -621,6 +987,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  currentPackageId?: boolean
+  packageExpiresAt?: boolean
+  currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -632,6 +1001,9 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  currentPackageId?: boolean
+  packageExpiresAt?: boolean
+  currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -643,22 +1015,32 @@ export type UserSelectScalar = {
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  currentPackageId?: boolean
+  packageExpiresAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "createdAt" | "updatedAt" | "currentPackageId" | "packageExpiresAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
   wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
+  packageTransactions?: boolean | Prisma.User$packageTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
+}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
+}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    currentPackage: Prisma.$PackagePayload<ExtArgs> | null
     listings: Prisma.$VehicleListingPayload<ExtArgs>[]
     wishlists: Prisma.$WishlistPayload<ExtArgs>[]
+    packageTransactions: Prisma.$PackageTransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -669,6 +1051,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     password: string
     createdAt: Date
     updatedAt: Date
+    currentPackageId: string | null
+    packageExpiresAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1063,8 +1447,10 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  currentPackage<T extends Prisma.User$currentPackageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$currentPackageArgs<ExtArgs>>): Prisma.Prisma__PackageClient<runtime.Types.Result.GetResult<Prisma.$PackagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   listings<T extends Prisma.User$listingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$listingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleListingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   wishlists<T extends Prisma.User$wishlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  packageTransactions<T extends Prisma.User$packageTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$packageTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PackageTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1102,6 +1488,8 @@ export interface UserFieldRefs {
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly currentPackageId: Prisma.FieldRef<"User", 'String'>
+  readonly packageExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 
@@ -1351,6 +1739,10 @@ export type UserCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.UserCreateManyInput | Prisma.UserCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1421,6 +1813,10 @@ export type UserUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Users to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1490,6 +1886,25 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * User.currentPackage
+ */
+export type User$currentPackageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Package
+   */
+  select?: Prisma.PackageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Package
+   */
+  omit?: Prisma.PackageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PackageInclude<ExtArgs> | null
+  where?: Prisma.PackageWhereInput
+}
+
+/**
  * User.listings
  */
 export type User$listingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1535,6 +1950,30 @@ export type User$wishlistsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.WishlistScalarFieldEnum | Prisma.WishlistScalarFieldEnum[]
+}
+
+/**
+ * User.packageTransactions
+ */
+export type User$packageTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PackageTransaction
+   */
+  select?: Prisma.PackageTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PackageTransaction
+   */
+  omit?: Prisma.PackageTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PackageTransactionInclude<ExtArgs> | null
+  where?: Prisma.PackageTransactionWhereInput
+  orderBy?: Prisma.PackageTransactionOrderByWithRelationInput | Prisma.PackageTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.PackageTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PackageTransactionScalarFieldEnum | Prisma.PackageTransactionScalarFieldEnum[]
 }
 
 /**

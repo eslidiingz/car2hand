@@ -154,6 +154,15 @@ export function useListingForm() {
     return context;
 }
 
+// Custom error for upgrade prompts
+export class UpgradeRequiredError extends Error {
+    upgradeRequired = true;
+    constructor(message: string) {
+        super(message);
+        this.name = 'UpgradeRequiredError';
+    }
+}
+
 // API Functions
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -204,8 +213,11 @@ export async function createListing(userId: string, data: ListingFormData): Prom
     });
 
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create listing');
+        const errorData = await response.json();
+        if (errorData.upgradeRequired) {
+            throw new UpgradeRequiredError(errorData.message || 'กรุณาอัพเกรดแพ็กเกจ');
+        }
+        throw new Error(errorData.message || 'Failed to create listing');
     }
 
     return response.json();

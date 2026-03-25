@@ -122,3 +122,12 @@ export const GasType = {
 } as const
 
 export type GasType = (typeof GasType)[keyof typeof GasType]
+
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]

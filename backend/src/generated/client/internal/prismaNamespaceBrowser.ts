@@ -60,7 +60,9 @@ export const ModelName = {
   VehicleModel: 'VehicleModel',
   VehicleSubModel: 'VehicleSubModel',
   VehicleListing: 'VehicleListing',
-  VehicleImage: 'VehicleImage'
+  VehicleImage: 'VehicleImage',
+  Package: 'Package',
+  PackageTransaction: 'PackageTransaction'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -87,7 +89,9 @@ export const UserScalarFieldEnum = {
   phoneNumber: 'phoneNumber',
   password: 'password',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  currentPackageId: 'currentPackageId',
+  packageExpiresAt: 'packageExpiresAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -203,7 +207,6 @@ export const VehicleListingScalarFieldEnum = {
   title: 'title',
   description: 'description',
   price: 'price',
-  negotiable: 'negotiable',
   brand: 'brand',
   model: 'model',
   subModel: 'subModel',
@@ -264,12 +267,59 @@ export const VehicleImageScalarFieldEnum = {
 export type VehicleImageScalarFieldEnum = (typeof VehicleImageScalarFieldEnum)[keyof typeof VehicleImageScalarFieldEnum]
 
 
+export const PackageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  nameTh: 'nameTh',
+  slug: 'slug',
+  description: 'description',
+  targetAudience: 'targetAudience',
+  price: 'price',
+  maxListings: 'maxListings',
+  maxPhotosPerListing: 'maxPhotosPerListing',
+  listingDurationDays: 'listingDurationDays',
+  autoBumpPerDay: 'autoBumpPerDay',
+  badge: 'badge',
+  searchPriority: 'searchPriority',
+  features: 'features',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PackageScalarFieldEnum = (typeof PackageScalarFieldEnum)[keyof typeof PackageScalarFieldEnum]
+
+
+export const PackageTransactionScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  slipImage: 'slipImage',
+  status: 'status',
+  adminNote: 'adminNote',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  packageId: 'packageId'
+} as const
+
+export type PackageTransactionScalarFieldEnum = (typeof PackageTransactionScalarFieldEnum)[keyof typeof PackageTransactionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull'
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -286,4 +336,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull',
+  AnyNull: 'AnyNull'
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

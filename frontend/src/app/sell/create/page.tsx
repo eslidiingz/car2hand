@@ -32,7 +32,7 @@ import {
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
-import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, publishListing } from '@/contexts/ListingContext';
+import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, publishListing, UpgradeRequiredError } from '@/contexts/ListingContext';
 
 // Thai provinces list
 const PROVINCES = [
@@ -88,6 +88,8 @@ export default function CreateListingPage() {
     const { formData, updateFormData, currentStep, setCurrentStep, listingId, setListingId, isSubmitting, setIsSubmitting } = useListingForm();
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [upgradeMessage, setUpgradeMessage] = useState('');
     const [user, setUser] = useState<{ id: string; fullName?: string } | null>(null);
 
     // Refs for scroll-to-error
@@ -441,7 +443,12 @@ export default function CreateListingPage() {
             // Success - redirect to listing page
             router.push(`/profile/listings`);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+            if (err instanceof UpgradeRequiredError) {
+                setUpgradeMessage(err.message);
+                setShowUpgradeModal(true);
+            } else {
+                setError(err instanceof Error ? err.message : 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -1325,6 +1332,47 @@ export default function CreateListingPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Upgrade Package Modal */}
+            {showUpgradeModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowUpgradeModal(false)}
+                    ></div>
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
+                        {/* Gradient icon background */}
+                        <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-white" viewBox="0 0 256 256" fill="currentColor">
+                                <path d="M243.84,76.19a12.08,12.08,0,0,0-13.34-1.7L178.83,100.3,138.33,42.08a12.11,12.11,0,0,0-20.66,0L77.17,100.3,25.5,74.49a12.1,12.1,0,0,0-17.15,13.65L36.1,198.55A16,16,0,0,0,51.55,212H204.45a16,16,0,0,0,15.45-13.46l27.75-110.4A12.06,12.06,0,0,0,243.84,76.19ZM204.45,196H51.55L26.42,92l45.25,22.63a12,12,0,0,0,15.18-4.39L128,46.67l41.15,63.58a12,12,0,0,0,15.18,4.39L229.58,92ZM172,160a12,12,0,0,1-12,12H96a12,12,0,0,1,0-24h64A12,12,0,0,1,172,160Z"/>
+                            </svg>
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
+                        <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                            {upgradeMessage || 'คุณใช้สิทธิลงประกาศครบตามแพ็กเกจปัจจุบันแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม'}
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() => router.push('/profile/packages')}
+                                className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 256 256" fill="currentColor">
+                                    <path d="M152,224a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,224Zm74.69-184.34-27.75,110.4A16,16,0,0,1,183.45,164H72.55a16,16,0,0,1-15.45-11.94L29.34,41.66a4,4,0,0,1,5.72-4.55L83.51,63.48a4,4,0,0,0,5.06-1.46L122.78,11A12.11,12.11,0,0,1,128,7.12h0A12.11,12.11,0,0,1,133.22,11l34.21,51A4,4,0,0,0,172.49,63.48l48.45-26.37a4,4,0,0,1,5.72,4.55Z"/>
+                                </svg>
+                                ดูแพ็กเกจ
+                            </button>
+                            <button
+                                onClick={() => setShowUpgradeModal(false)}
+                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
+                            >
+                                ปิด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
