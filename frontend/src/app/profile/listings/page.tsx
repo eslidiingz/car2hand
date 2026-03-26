@@ -56,6 +56,7 @@ export default function MyListingsPage() {
     const [deleting, setDeleting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [packageInfo, setPackageInfo] = useState<PackageInfo | null>(null);
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
     const statuses = [
         { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
@@ -162,6 +163,14 @@ export default function MyListingsPage() {
         return primary?.url || images[0]?.url || '/placeholder-car.jpg';
     };
 
+    const handleCreateListingClick = () => {
+        if (isAtLimit) {
+            setShowUpgradeModal(true);
+        } else {
+            router.push('/sell/create');
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
@@ -185,9 +194,12 @@ export default function MyListingsPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800">จัดการรถที่ลงขาย</h1>
-                <Link href="/sell/create" className="bg-accent text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-orange-600 transition shadow-lg shadow-orange-100">
+                <button
+                    onClick={handleCreateListingClick}
+                    className="bg-accent text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-orange-600 transition shadow-lg shadow-orange-100"
+                >
                     + ลงขายรถ
-                </Link>
+                </button>
             </div>
 
             {/* Package Usage Quota Banner */}
@@ -278,12 +290,12 @@ export default function MyListingsPage() {
                     </div>
                     <h3 className="text-lg font-bold text-gray-800 mb-2">ยังไม่มีรถที่ลงขาย</h3>
                     <p className="text-gray-500 mb-6">เริ่มลงขายรถของคุณได้เลย!</p>
-                    <Link
-                        href="/sell/create"
+                    <button
+                        onClick={handleCreateListingClick}
                         className="inline-block bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition"
                     >
                         ลงขายรถ
-                    </Link>
+                    </button>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -347,6 +359,42 @@ export default function MyListingsPage() {
                                     )}
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Upgrade Package Modal */}
+            {showUpgradeModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowUpgradeModal(false)}
+                    ></div>
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
+                        <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                            <Crown weight="fill" className="text-4xl text-white" />
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
+                        <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                            คุณใช้สิทธิลงประกาศครบ {packageInfo?.usage.maxListings} รายการตามแพ็กเกจปัจจุบันแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <Link
+                                href="/profile/packages"
+                                className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+                            >
+                                ดูแพ็กเกจ
+                                <ArrowRight weight="bold" className="text-sm" />
+                            </Link>
+                            <button
+                                onClick={() => setShowUpgradeModal(false)}
+                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
+                            >
+                                ยกเลิก
+                            </button>
                         </div>
                     </div>
                 </div>

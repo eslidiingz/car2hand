@@ -182,10 +182,10 @@ export default function PackagesPage() {
     };
 
     const currentSortOrder = currentPkg
-        ? packages.find(p => p.id === currentPkg.id)?.sortOrder ?? -1
-        : -1;
+        ? packages.find(p => p.id === currentPkg.id || p.slug === currentPkg.slug)?.sortOrder ?? -1
+        : packages.find(p => p.slug === 'basic' || p.price === 0)?.sortOrder ?? -1;
 
-    const featureRows = [
+    const featureRows: { label: string; key: keyof PackageData; format?: (v: any) => React.ReactNode }[] = [
         { label: 'เหมาะสำหรับ', key: 'targetAudience' },
         { label: 'จำนวนประกาศ', key: 'maxListings', format: (v: number) => v === -1 ? 'ไม่จำกัด' : `${v} รายการ` },
         { label: 'จำนวนรูปสูงสุด', key: 'maxPhotosPerListing', format: (v: number) => `${v} รูป` },
@@ -249,7 +249,9 @@ export default function PackagesPage() {
                                                 {getIcon(pkg.slug)}
                                             </div>
                                             <span className="font-bold text-sm text-gray-800">{pkg.name}</span>
-                                            {currentPkg?.id === pkg.id && (
+                                            {(currentPkg
+                                                ? (currentPkg.id === pkg.id || currentPkg.slug === pkg.slug)
+                                                : (pkg.slug === 'basic' || pkg.price === 0)) && (
                                                 <span className="text-[10px] font-bold bg-primary text-white px-2 py-0.5 rounded-full">ปัจจุบัน</span>
                                             )}
                                         </div>
@@ -287,7 +289,9 @@ export default function PackagesPage() {
                             <tr>
                                 <td className="p-4"></td>
                                 {packages.map(pkg => {
-                                    const isCurrent = currentPkg?.id === pkg.id;
+                                    const isCurrent = currentPkg
+                                        ? (currentPkg.id === pkg.id || currentPkg.slug === pkg.slug)
+                                        : (pkg.slug === 'basic' || pkg.price === 0);
                                     const isLower = pkg.sortOrder <= currentSortOrder;
 
                                     return (
