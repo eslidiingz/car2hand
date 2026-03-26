@@ -4,6 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:backend": "cd backend && bun dev",
+    "dev:frontend": "cd frontend && pnpm dev",
+    "dev:admin": "cd admin && pnpm dev",
     "dev": "concurrently \"cd backend && bun dev\" \"cd frontend && pnpm dev\" \"cd admin && pnpm dev\""
   },
   "keywords": [],
