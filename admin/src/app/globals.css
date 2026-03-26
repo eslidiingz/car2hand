@@ -109,6 +109,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  --font-sans: var(--font-ibm-plex-sans-thai), ui-sans-serif, system-ui, sans-serif;
+
   /* Car2Hand Brand Colors */
   --color-brand-primary: #0F3460;
   --color-brand-accent: #FF6B35;
