@@ -529,6 +529,151 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         })
     )
 
+    // =============================================
+    // Listing Management - จัดการประกาศขาย
+    // =============================================
+    .group("/listings", (app) => app
+        .derive(async ({ jwt, headers, set }) => {
+            const authHeader = headers['authorization'];
+            if (!authHeader?.startsWith('Bearer ')) {
+                set.status = 401;
+                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+
+            const token = authHeader.slice(7).trim();
+            const payload = await jwt.verify(token);
+
+            if (!payload) {
+                set.status = 401;
+                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+
+            return { adminId: (payload as any).userId };
+        })
+        .onBeforeHandle(({ adminId, set }) => {
+            if (!adminId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+        })
+
+        // ดึงรายการประกาศทั้งหมด (filter by status, search, pagination)
+        .get("/", async ({ query }) => {
+            const { status, search, page = '1', limit = '20' } = query;
+            const skip = (parseInt(page) - 1) * parseInt(limit);
+            const take = parseInt(limit);
+
+            const where: any = {};
+            if (status) where.status = status;
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { user: { fullName: { contains: search, mode: 'insensitive' } } },
+                    { user: { email: { contains: search, mode: 'insensitive' } } },
+                ];
+            }
+
+            const [listings, total] = await Promise.all([
+                prisma.vehicleListing.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                fullName: true,
+                                email: true,
+                                currentPackage: { select: { name: true, slug: true } }
+                            }
+                        },
+                        images: { take: 1, orderBy: { order: 'asc' } },
+                    }
+                }),
+                prisma.vehicleListing.count({ where })
+            ]);
+
+            return {
+                listings,
+                pagination: {
+                    total,
+                    page: parseInt(page),
+                    limit: take,
+                    totalPages: Math.ceil(total / take)
+                }
+            };
+        })
+
+        // อนุมัติประกาศ
+        .post("/:id/approve", async ({ params: { id }, set }) => {
+            try {
+                const listing = await prisma.vehicleListing.findUnique({
+                    where: { id }
+                });
+
+                if (!listing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบประกาศนี้' };
+                }
+
+                if (listing.status !== 'PENDING') {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'สามารถอนุมัติได้เฉพาะประกาศที่รอตรวจสอบเท่านั้น' };
+                }
+
+                const updated = await prisma.vehicleListing.update({
+                    where: { id },
+                    data: {
+                        status: 'ACTIVE',
+                        expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    }
+                });
+
+                return { message: 'อนุมัติประกาศสำเร็จ', listing: updated };
+            } catch (error) {
+                console.error('Approve listing error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอนุมัติประกาศได้' };
+            }
+        })
+
+        // ปฏิเสธประกาศ
+        .post("/:id/reject", async ({ params: { id }, body, set }) => {
+            try {
+                const listing = await prisma.vehicleListing.findUnique({
+                    where: { id }
+                });
+
+                if (!listing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบประกาศนี้' };
+                }
+
+                if (listing.status !== 'PENDING') {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'สามารถปฏิเสธได้เฉพาะประกาศที่รอตรวจสอบเท่านั้น' };
+                }
+
+                const { reason } = body as { reason?: string };
+
+                const updated = await prisma.vehicleListing.update({
+                    where: { id },
+                    data: {
+                        status: 'SUSPENDED',
+                        adminNote: reason || 'ประกาศไม่ผ่านการตรวจสอบ'
+                    }
+                });
+
+                return { message: 'ปฏิเสธประกาศเรียบร้อย', listing: updated };
+            } catch (error) {
+                console.error('Reject listing error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถปฏิเสธประกาศได้' };
+            }
+        })
+    )
+
     // Package Management (CRUD + Transactions)
     .group("/packages", (app) => app
         .derive(async ({ jwt, headers, set }) => {
@@ -847,6 +992,119 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         }, {
             body: t.Object({
                 adminNote: t.Optional(t.String())
+            })
+        })
+    )
+
+    // =============================================
+    // System Settings - ตั้งค่าระบบ
+    // =============================================
+    .group("/settings", (app) => app
+        .derive(async ({ jwt, headers, set }) => {
+            const authHeader = headers['authorization'];
+            if (!authHeader?.startsWith('Bearer ')) {
+                set.status = 401;
+                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+
+            const token = authHeader.slice(7).trim();
+            const payload = await jwt.verify(token);
+
+            if (!payload) {
+                set.status = 401;
+                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+
+            return { adminId: (payload as any).userId };
+        })
+        .onBeforeHandle(({ adminId, set }) => {
+            if (!adminId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+        })
+
+        // ดึงการตั้งค่าทั้งหมด (หรือตาม prefix)
+        .get("/", async ({ query }) => {
+            const { prefix } = query;
+            const where: any = {};
+            if (prefix) {
+                where.key = { startsWith: prefix };
+            }
+
+            const settings = await prisma.systemSetting.findMany({ where });
+
+            // Convert to object { key: value }
+            const result: Record<string, string> = {};
+            for (const s of settings) {
+                result[s.key] = s.value;
+            }
+            return result;
+        })
+
+        // อัพเดทการตั้งค่า (batch upsert)
+        .put("/", async ({ body, set }) => {
+            try {
+                const entries = body as Record<string, string>;
+                const operations = Object.entries(entries).map(([key, value]) =>
+                    prisma.systemSetting.upsert({
+                        where: { key },
+                        create: { key, value },
+                        update: { value }
+                    })
+                );
+
+                await prisma.$transaction(operations);
+                return { message: 'บันทึกการตั้งค่าสำเร็จ' };
+            } catch (error) {
+                console.error('Update settings error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถบันทึกการตั้งค่าได้' };
+            }
+        })
+
+        // อัพโหลด QR Code สำหรับการชำระเงิน
+        .post("/upload-qr", async ({ body: { file }, set }) => {
+            try {
+                const { uploadFile, isValidImageType, isValidFileSize } = await import("./storage");
+
+                if (!file) {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'กรุณาเลือกไฟล์ QR Code' };
+                }
+
+                if (!isValidImageType(file.type)) {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'ประเภทไฟล์ไม่ถูกต้อง (รองรับเฉพาะ JPEG, PNG, WebP)' };
+                }
+
+                if (!isValidFileSize(file.size)) {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'ขนาดไฟล์ใหญ่เกินไป (สูงสุด 10MB)' };
+                }
+
+                const buffer = Buffer.from(await file.arrayBuffer());
+                const ext = file.name.split('.').pop() || 'png';
+                const filename = `settings/payment-qr-${Date.now()}.${ext}`;
+
+                const url = await uploadFile(filename, buffer, file.type);
+
+                // บันทึก URL ลง settings
+                await prisma.systemSetting.upsert({
+                    where: { key: 'payment.qrCodeImage' },
+                    create: { key: 'payment.qrCodeImage', value: url },
+                    update: { value: url }
+                });
+
+                return { url, message: 'อัพโหลด QR Code สำเร็จ' };
+            } catch (error) {
+                console.error('Upload QR code error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอัพโหลด QR Code ได้' };
+            }
+        }, {
+            body: t.Object({
+                file: t.File()
             })
         })
     );

@@ -89,6 +89,7 @@ export type VehicleListingMinAggregateOutputType = {
   hasSpareKey: boolean | null
   serviceHistoryImage: string | null
   status: $Enums.ListingStatus | null
+  adminNote: string | null
   isFeatured: boolean | null
   isPremium: boolean | null
   viewCount: number | null
@@ -139,6 +140,7 @@ export type VehicleListingMaxAggregateOutputType = {
   hasSpareKey: boolean | null
   serviceHistoryImage: string | null
   status: $Enums.ListingStatus | null
+  adminNote: string | null
   isFeatured: boolean | null
   isPremium: boolean | null
   viewCount: number | null
@@ -189,6 +191,7 @@ export type VehicleListingCountAggregateOutputType = {
   hasSpareKey: number
   serviceHistoryImage: number
   status: number
+  adminNote: number
   isFeatured: number
   isPremium: number
   viewCount: number
@@ -265,6 +268,7 @@ export type VehicleListingMinAggregateInputType = {
   hasSpareKey?: true
   serviceHistoryImage?: true
   status?: true
+  adminNote?: true
   isFeatured?: true
   isPremium?: true
   viewCount?: true
@@ -315,6 +319,7 @@ export type VehicleListingMaxAggregateInputType = {
   hasSpareKey?: true
   serviceHistoryImage?: true
   status?: true
+  adminNote?: true
   isFeatured?: true
   isPremium?: true
   viewCount?: true
@@ -365,6 +370,7 @@ export type VehicleListingCountAggregateInputType = {
   hasSpareKey?: true
   serviceHistoryImage?: true
   status?: true
+  adminNote?: true
   isFeatured?: true
   isPremium?: true
   viewCount?: true
@@ -502,6 +508,7 @@ export type VehicleListingGroupByOutputType = {
   hasSpareKey: boolean
   serviceHistoryImage: string | null
   status: $Enums.ListingStatus
+  adminNote: string | null
   isFeatured: boolean
   isPremium: boolean
   viewCount: number
@@ -575,6 +582,7 @@ export type VehicleListingWhereInput = {
   hasSpareKey?: Prisma.BoolFilter<"VehicleListing"> | boolean
   serviceHistoryImage?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusFilter<"VehicleListing"> | $Enums.ListingStatus
+  adminNote?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   isFeatured?: Prisma.BoolFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolFilter<"VehicleListing"> | boolean
   viewCount?: Prisma.IntFilter<"VehicleListing"> | number
@@ -628,6 +636,7 @@ export type VehicleListingOrderByWithRelationInput = {
   hasSpareKey?: Prisma.SortOrder
   serviceHistoryImage?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -684,6 +693,7 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   hasSpareKey?: Prisma.BoolFilter<"VehicleListing"> | boolean
   serviceHistoryImage?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusFilter<"VehicleListing"> | $Enums.ListingStatus
+  adminNote?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   isFeatured?: Prisma.BoolFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolFilter<"VehicleListing"> | boolean
   viewCount?: Prisma.IntFilter<"VehicleListing"> | number
@@ -737,6 +747,7 @@ export type VehicleListingOrderByWithAggregationInput = {
   hasSpareKey?: Prisma.SortOrder
   serviceHistoryImage?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -795,6 +806,7 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   hasSpareKey?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   serviceHistoryImage?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusWithAggregatesFilter<"VehicleListing"> | $Enums.ListingStatus
+  adminNote?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   isFeatured?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   viewCount?: Prisma.IntWithAggregatesFilter<"VehicleListing"> | number
@@ -845,6 +857,7 @@ export type VehicleListingCreateInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -897,6 +910,7 @@ export type VehicleListingUncheckedCreateInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -949,6 +963,7 @@ export type VehicleListingUpdateInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1001,6 +1016,7 @@ export type VehicleListingUncheckedUpdateInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1053,6 +1069,7 @@ export type VehicleListingCreateManyInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -1103,6 +1120,7 @@ export type VehicleListingUpdateManyMutationInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1152,6 +1170,7 @@ export type VehicleListingUncheckedUpdateManyInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1217,6 +1236,7 @@ export type VehicleListingCountOrderByAggregateInput = {
   hasSpareKey?: Prisma.SortOrder
   serviceHistoryImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -1279,6 +1299,7 @@ export type VehicleListingMaxOrderByAggregateInput = {
   hasSpareKey?: Prisma.SortOrder
   serviceHistoryImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -1329,6 +1350,7 @@ export type VehicleListingMinOrderByAggregateInput = {
   hasSpareKey?: Prisma.SortOrder
   serviceHistoryImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  adminNote?: Prisma.SortOrder
   isFeatured?: Prisma.SortOrder
   isPremium?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
@@ -1497,6 +1519,7 @@ export type VehicleListingCreateWithoutUserInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -1548,6 +1571,7 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -1628,6 +1652,7 @@ export type VehicleListingScalarWhereInput = {
   hasSpareKey?: Prisma.BoolFilter<"VehicleListing"> | boolean
   serviceHistoryImage?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   status?: Prisma.EnumListingStatusFilter<"VehicleListing"> | $Enums.ListingStatus
+  adminNote?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   isFeatured?: Prisma.BoolFilter<"VehicleListing"> | boolean
   isPremium?: Prisma.BoolFilter<"VehicleListing"> | boolean
   viewCount?: Prisma.IntFilter<"VehicleListing"> | number
@@ -1678,6 +1703,7 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -1729,6 +1755,7 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -1796,6 +1823,7 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1847,6 +1875,7 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1898,6 +1927,7 @@ export type VehicleListingCreateWithoutImagesInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -1949,6 +1979,7 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -2016,6 +2047,7 @@ export type VehicleListingUpdateWithoutImagesInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2067,6 +2099,7 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2118,6 +2151,7 @@ export type VehicleListingCreateManyUserInput = {
   hasSpareKey?: boolean
   serviceHistoryImage?: string | null
   status?: $Enums.ListingStatus
+  adminNote?: string | null
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: number
@@ -2167,6 +2201,7 @@ export type VehicleListingUpdateWithoutUserInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2218,6 +2253,7 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2269,6 +2305,7 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   hasSpareKey?: Prisma.BoolFieldUpdateOperationsInput | boolean
   serviceHistoryImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumListingStatusFieldUpdateOperationsInput | $Enums.ListingStatus
+  adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isPremium?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -2358,6 +2395,7 @@ export type VehicleListingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   hasSpareKey?: boolean
   serviceHistoryImage?: boolean
   status?: boolean
+  adminNote?: boolean
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: boolean
@@ -2412,6 +2450,7 @@ export type VehicleListingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   hasSpareKey?: boolean
   serviceHistoryImage?: boolean
   status?: boolean
+  adminNote?: boolean
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: boolean
@@ -2463,6 +2502,7 @@ export type VehicleListingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   hasSpareKey?: boolean
   serviceHistoryImage?: boolean
   status?: boolean
+  adminNote?: boolean
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: boolean
@@ -2514,6 +2554,7 @@ export type VehicleListingSelectScalar = {
   hasSpareKey?: boolean
   serviceHistoryImage?: boolean
   status?: boolean
+  adminNote?: boolean
   isFeatured?: boolean
   isPremium?: boolean
   viewCount?: boolean
@@ -2525,7 +2566,7 @@ export type VehicleListingSelectScalar = {
   userId?: boolean
 }
 
-export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
+export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "ownerCount" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "status" | "adminNote" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "expiredAt" | "userId", ExtArgs["result"]["vehicleListing"]>
 export type VehicleListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
@@ -2585,6 +2626,7 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     hasSpareKey: boolean
     serviceHistoryImage: string | null
     status: $Enums.ListingStatus
+    adminNote: string | null
     isFeatured: boolean
     isPremium: boolean
     viewCount: number
@@ -3058,6 +3100,7 @@ export interface VehicleListingFieldRefs {
   readonly hasSpareKey: Prisma.FieldRef<"VehicleListing", 'Boolean'>
   readonly serviceHistoryImage: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly status: Prisma.FieldRef<"VehicleListing", 'ListingStatus'>
+  readonly adminNote: Prisma.FieldRef<"VehicleListing", 'String'>
   readonly isFeatured: Prisma.FieldRef<"VehicleListing", 'Boolean'>
   readonly isPremium: Prisma.FieldRef<"VehicleListing", 'Boolean'>
   readonly viewCount: Prisma.FieldRef<"VehicleListing", 'Int'>

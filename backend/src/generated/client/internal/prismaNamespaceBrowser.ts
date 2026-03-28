@@ -62,6 +62,7 @@ export const ModelName = {
   VehicleListing: 'VehicleListing',
   VehicleImage: 'VehicleImage',
   Package: 'Package',
+  SystemSetting: 'SystemSetting',
   PackageTransaction: 'PackageTransaction'
 } as const
 
@@ -240,6 +241,7 @@ export const VehicleListingScalarFieldEnum = {
   hasSpareKey: 'hasSpareKey',
   serviceHistoryImage: 'serviceHistoryImage',
   status: 'status',
+  adminNote: 'adminNote',
   isFeatured: 'isFeatured',
   isPremium: 'isPremium',
   viewCount: 'viewCount',
@@ -289,6 +291,15 @@ export const PackageScalarFieldEnum = {
 } as const
 
 export type PackageScalarFieldEnum = (typeof PackageScalarFieldEnum)[keyof typeof PackageScalarFieldEnum]
+
+
+export const SystemSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
 
 
 export const PackageTransactionScalarFieldEnum = {

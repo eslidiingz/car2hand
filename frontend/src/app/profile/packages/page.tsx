@@ -94,6 +94,7 @@ export default function PackagesPage() {
     const [slipPreview, setSlipPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
+    const [paymentInfo, setPaymentInfo] = useState<Record<string, string>>({});
 
     const getUserId = () => {
         const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -124,6 +125,11 @@ export default function PackagesPage() {
             .then(r => r.json())
             .then(data => setTransactions(data.transactions || []))
             .catch(console.error);
+
+        fetch(`${API_URL}/packages/payment-info`)
+            .then(r => r.json())
+            .then(data => setPaymentInfo(data || {}))
+            .catch(console.error);
     }, []);
 
     const handleSlipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +150,13 @@ export default function PackagesPage() {
         setIsSubmitting(true);
         try {
             const buffer = await slipFile.arrayBuffer();
-            const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            const chunkSize = 8192;
+            for (let i = 0; i < bytes.length; i += chunkSize) {
+                binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+            }
+            const base64 = btoa(binary);
 
             const res = await fetch(`${API_URL}/packages/upgrade`, {
                 method: 'POST',
@@ -385,15 +397,42 @@ export default function PackagesPage() {
                                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                                     <CreditCard weight="bold" className="text-primary" /> ข้อมูลการชำระเงิน
                                 </h4>
-                                <div className="bg-blue-50 rounded-xl p-4 space-y-2 text-sm">
+                                <div className="bg-blue-50 rounded-xl p-4 space-y-3 text-sm">
                                     <p className="font-bold text-blue-800">โอนเงินผ่านบัญชีธนาคาร</p>
                                     <div className="space-y-1 text-blue-700">
-                                        <p>ธนาคาร: <span className="font-bold">กสิกรไทย (KBank)</span></p>
-                                        <p>ชื่อบัญชี: <span className="font-bold">บริษัท คาร์ทูแฮนด์ จำกัด</span></p>
-                                        <p>เลขบัญชี: <span className="font-bold font-mono">xxx-x-xxxxx-x</span></p>
+                                        {paymentInfo.bankName && (
+                                            <p>ธนาคาร: <span className="font-bold">{paymentInfo.bankName}</span></p>
+                                        )}
+                                        {paymentInfo.accountName && (
+                                            <p>ชื่อบัญชี: <span className="font-bold">{paymentInfo.accountName}</span></p>
+                                        )}
+                                        {paymentInfo.accountNumber && (
+                                            <p>เลขบัญชี: <span className="font-bold font-mono">{paymentInfo.accountNumber}</span></p>
+                                        )}
+                                        {paymentInfo.promptPayNumber && (
+                                            <p>พร้อมเพย์: <span className="font-bold font-mono">{paymentInfo.promptPayNumber}</span></p>
+                                        )}
                                         <p>จำนวน: <span className="font-bold text-lg">฿{Number(selectedPackage.price).toLocaleString()}</span></p>
                                     </div>
+                                    {paymentInfo.note && (
+                                        <p className="text-xs text-blue-600 border-t border-blue-100 pt-2">{paymentInfo.note}</p>
+                                    )}
+                                    {paymentInfo.qrCodeImage && (
+                                        <div className="border-t border-blue-100 pt-3">
+                                            <p className="font-bold text-blue-800 mb-2 text-center">สแกน QR Code เพื่อชำระเงิน</p>
+                                            <div className="flex justify-center">
+                                                <img
+                                                    src={paymentInfo.qrCodeImage}
+                                                    alt="QR Code สำหรับชำระเงิน"
+                                                    className="w-48 h-48 object-contain rounded-lg border border-blue-200 bg-white p-1"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
+                                {!paymentInfo.bankName && !paymentInfo.qrCodeImage && (
+                                    <p className="text-xs text-gray-400 mt-2">กรุณาติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลการชำระเงิน</p>
+                                )}
                             </div>
 
                             {/* Slip Upload */}

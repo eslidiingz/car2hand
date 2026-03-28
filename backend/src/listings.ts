@@ -570,16 +570,27 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         }
 
         try {
+            // ตรวจสอบแพ็กเกจผู้ใช้ — Basic (Free) ต้องรอ admin อนุมัติ
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { currentPackage: { select: { slug: true, price: true } } }
+            });
+
+            const isBasicFree = !user?.currentPackage
+                || user.currentPackage.slug === 'basic'
+                || Number(user.currentPackage.price) === 0;
+
+            const newStatus = isBasicFree ? "PENDING" : "ACTIVE";
+
             const updatedListing = await prisma.vehicleListing.update({
                 where: { id },
                 data: {
                     price,
-                    status: "ACTIVE",
-                    expiredAt: (() => {
-                        const userPkg = ((listing as any).userId) as string;
-                        // Use package-based expiry - will be enhanced when Prisma client is regenerated
-                        return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // default 30 days
-                    })()
+                    status: newStatus,
+                    // ตั้ง expiredAt เฉพาะเมื่อ ACTIVE ทันที (แพ็กเกจที่ไม่ใช่ Basic)
+                    ...(newStatus === "ACTIVE" ? {
+                        expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    } : {})
                 },
                 include: {
                     images: true,
@@ -594,8 +605,11 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             });
 
             return {
-                message: "เผยแพร่ประกาศสำเร็จ",
-                listing: updatedListing
+                message: isBasicFree
+                    ? "ส่งประกาศเพื่อรอการตรวจสอบจากผู้ดูแลระบบ"
+                    : "เผยแพร่ประกาศสำเร็จ",
+                listing: updatedListing,
+                requiresApproval: isBasicFree
             };
         } catch (error) {
             console.error(error);
