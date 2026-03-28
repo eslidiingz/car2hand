@@ -214,6 +214,7 @@ export default function EditListingPage() {
     const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
     const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
     const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
+    const [maxPhotos, setMaxPhotos] = useState(10);
 
     // Image management functions
     const handleDeleteImage = (imageId: string) => {
@@ -285,16 +286,16 @@ export default function EditListingPage() {
         if (!files) return;
 
         const currentTotal = displayImages.length;
-        const remainingSlots = 24 - currentTotal;
+        const remainingSlots = maxPhotos - currentTotal;
 
         if (remainingSlots <= 0) {
-            setError('คุณสามารถอัพโหลดรูปภาพได้สูงสุด 24 รูป');
+            setError(`คุณสามารถอัพโหลดรูปภาพได้สูงสุด ${maxPhotos} รูป`);
             return;
         }
 
         let fileArray = Array.from(files);
         if (fileArray.length > remainingSlots) {
-            setError(`เพิ่มรูปภาพได้อีกเพียง ${remainingSlots} รูป (ครบจำนวนสูงสุด 24 รูปแล้ว)`);
+            setError(`เพิ่มรูปภาพได้อีกเพียง ${remainingSlots} รูป (ครบจำนวนสูงสุด ${maxPhotos} รูปแล้ว)`);
             fileArray = fileArray.slice(0, remainingSlots);
         } else {
             setError(null);
@@ -322,6 +323,15 @@ export default function EditListingPage() {
         }
         const user = JSON.parse(userData);
         setUserId(user.id);
+
+        // Fetch package image limit
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+        fetch(`${API_URL}/packages/my?userId=${user.id}`)
+            .then(r => r.json())
+            .then(data => {
+                setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 10);
+            })
+            .catch(() => {});
     }, [router]);
 
     // Load listing data
@@ -766,6 +776,9 @@ export default function EditListingPage() {
                             <div className="mb-8">
                                 <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
                                     <Camera size={24} weight="fill" className="text-accent" /> จัดการรูปภาพ
+                                    <span className="ml-auto text-sm font-medium text-gray-400">
+                                        {displayImages.length}/{maxPhotos} รูป
+                                    </span>
                                 </h3>
 
                                 {/* Existing Images */}
@@ -835,7 +848,7 @@ export default function EditListingPage() {
                                 )}
 
                                 {/* Add New Image Button */}
-                                {displayImages.length < 24 ? (
+                                {displayImages.length < maxPhotos ? (
                                     <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition cursor-pointer">
                                         <input
                                             type="file"
@@ -861,7 +874,7 @@ export default function EditListingPage() {
                                             <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
                                                 <CheckCircle size={24} className="text-gray-400" />
                                             </div>
-                                            <p className="text-sm font-medium text-gray-500">คุณอัพโหลดรูปภาพครบ 24 รูปแล้ว</p>
+                                            <p className="text-sm font-medium text-gray-500">คุณอัพโหลดรูปภาพครบ {maxPhotos} รูปแล้ว</p>
                                         </div>
                                     </div>
                                 )}
@@ -1203,9 +1216,10 @@ export default function EditListingPage() {
                                         placeholder="เช่น 650,000"
                                         className={`form-input-icon font-bold text-lg ${fieldErrors.price ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                         value={formData.price ? formData.price.toLocaleString('en-US') : ''}
+                                        maxLength={14}
                                         onChange={(e) => {
                                             setFieldErrors(prev => ({ ...prev, price: false }));
-                                            const value = e.target.value.replace(/,/g, '');
+                                            const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
                                             const numValue = parseInt(value) || 0;
                                             updateFormData({ price: numValue });
                                         }}

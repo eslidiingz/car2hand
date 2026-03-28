@@ -13,7 +13,7 @@ import {
     Tags
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePendingUpgrades, usePendingListings } from "@/hooks/usePendingUpgrades";
+import { usePendingCounts } from "@/contexts/PendingContext";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -28,8 +28,7 @@ const navigation = [
 export default function Sidebar() {
     const pathname = usePathname();
     const { logout } = useAuth();
-    const { count: pendingUpgradeCount } = usePendingUpgrades();
-    const { count: pendingListingCount } = usePendingListings();
+    const { pendingUpgradeCount, pendingListingCount } = usePendingCounts();
 
     return (
         <div className="flex h-full w-60 flex-col bg-white border-r border-slate-200">

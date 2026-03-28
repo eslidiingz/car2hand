@@ -396,7 +396,8 @@ export const ModelName = {
   VehicleImage: 'VehicleImage',
   Package: 'Package',
   SystemSetting: 'SystemSetting',
-  PackageTransaction: 'PackageTransaction'
+  PackageTransaction: 'PackageTransaction',
+  ListingRenewal: 'ListingRenewal'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -412,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction"
+    modelProps: "user" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction" | "listingRenewal"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1378,6 +1379,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ListingRenewal: {
+      payload: Prisma.$ListingRenewalPayload<ExtArgs>
+      fields: Prisma.ListingRenewalFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ListingRenewalFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ListingRenewalFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>
+        }
+        findFirst: {
+          args: Prisma.ListingRenewalFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ListingRenewalFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>
+        }
+        findMany: {
+          args: Prisma.ListingRenewalFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>[]
+        }
+        create: {
+          args: Prisma.ListingRenewalCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>
+        }
+        createMany: {
+          args: Prisma.ListingRenewalCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ListingRenewalCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>[]
+        }
+        delete: {
+          args: Prisma.ListingRenewalDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>
+        }
+        update: {
+          args: Prisma.ListingRenewalUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>
+        }
+        deleteMany: {
+          args: Prisma.ListingRenewalDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ListingRenewalUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ListingRenewalUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>[]
+        }
+        upsert: {
+          args: Prisma.ListingRenewalUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingRenewalPayload>
+        }
+        aggregate: {
+          args: Prisma.ListingRenewalAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateListingRenewal>
+        }
+        groupBy: {
+          args: Prisma.ListingRenewalGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListingRenewalGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ListingRenewalCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListingRenewalCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1651,6 +1726,22 @@ export const PackageTransactionScalarFieldEnum = {
 } as const
 
 export type PackageTransactionScalarFieldEnum = (typeof PackageTransactionScalarFieldEnum)[keyof typeof PackageTransactionScalarFieldEnum]
+
+
+export const ListingRenewalScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  slipImage: 'slipImage',
+  status: 'status',
+  adminNote: 'adminNote',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  listingId: 'listingId'
+} as const
+
+export type ListingRenewalScalarFieldEnum = (typeof ListingRenewalScalarFieldEnum)[keyof typeof ListingRenewalScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2051,6 +2142,7 @@ export type GlobalOmitConfig = {
   package?: Prisma.PackageOmit
   systemSetting?: Prisma.SystemSettingOmit
   packageTransaction?: Prisma.PackageTransactionOmit
+  listingRenewal?: Prisma.ListingRenewalOmit
 }
 
 /* Types for Logging */

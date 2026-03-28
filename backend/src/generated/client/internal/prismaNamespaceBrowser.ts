@@ -63,7 +63,8 @@ export const ModelName = {
   VehicleImage: 'VehicleImage',
   Package: 'Package',
   SystemSetting: 'SystemSetting',
-  PackageTransaction: 'PackageTransaction'
+  PackageTransaction: 'PackageTransaction',
+  ListingRenewal: 'ListingRenewal'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -316,6 +317,22 @@ export const PackageTransactionScalarFieldEnum = {
 } as const
 
 export type PackageTransactionScalarFieldEnum = (typeof PackageTransactionScalarFieldEnum)[keyof typeof PackageTransactionScalarFieldEnum]
+
+
+export const ListingRenewalScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  slipImage: 'slipImage',
+  status: 'status',
+  adminNote: 'adminNote',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  listingId: 'listingId'
+} as const
+
+export type ListingRenewalScalarFieldEnum = (typeof ListingRenewalScalarFieldEnum)[keyof typeof ListingRenewalScalarFieldEnum]
 
 
 export const SortOrder = {

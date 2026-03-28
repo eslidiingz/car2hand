@@ -2,15 +2,14 @@
 
 import { Bell, Search, User, Package, Car } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { usePendingUpgrades, usePendingListings } from "@/hooks/usePendingUpgrades";
+import { usePendingCounts } from "@/contexts/PendingContext";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
     const { admin } = useAuth();
-    const { count: pendingUpgradeCount } = usePendingUpgrades();
-    const { count: pendingListingCount } = usePendingListings();
+    const { pendingUpgradeCount, pendingListingCount } = usePendingCounts();
     const totalPending = pendingUpgradeCount + pendingListingCount;
     const [showNotif, setShowNotif] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);

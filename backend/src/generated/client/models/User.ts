@@ -226,6 +226,7 @@ export type UserWhereInput = {
   listings?: Prisma.VehicleListingListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
   packageTransactions?: Prisma.PackageTransactionListRelationFilter
+  listingRenewals?: Prisma.ListingRenewalListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type UserOrderByWithRelationInput = {
   listings?: Prisma.VehicleListingOrderByRelationAggregateInput
   wishlists?: Prisma.WishlistOrderByRelationAggregateInput
   packageTransactions?: Prisma.PackageTransactionOrderByRelationAggregateInput
+  listingRenewals?: Prisma.ListingRenewalOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -263,6 +265,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   listings?: Prisma.VehicleListingListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
   packageTransactions?: Prisma.PackageTransactionListRelationFilter
+  listingRenewals?: Prisma.ListingRenewalListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -311,6 +314,7 @@ export type UserCreateInput = {
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -327,6 +331,7 @@ export type UserUncheckedCreateInput = {
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -343,6 +348,7 @@ export type UserUpdateInput = {
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -359,6 +365,7 @@ export type UserUncheckedUpdateInput = {
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -557,6 +564,20 @@ export type UserUpdateOneRequiredWithoutPackageTransactionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPackageTransactionsInput, Prisma.UserUpdateWithoutPackageTransactionsInput>, Prisma.UserUncheckedUpdateWithoutPackageTransactionsInput>
 }
 
+export type UserCreateNestedOneWithoutListingRenewalsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutListingRenewalsInput, Prisma.UserUncheckedCreateWithoutListingRenewalsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutListingRenewalsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutListingRenewalsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutListingRenewalsInput, Prisma.UserUncheckedCreateWithoutListingRenewalsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutListingRenewalsInput
+  upsert?: Prisma.UserUpsertWithoutListingRenewalsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutListingRenewalsInput, Prisma.UserUpdateWithoutListingRenewalsInput>, Prisma.UserUncheckedUpdateWithoutListingRenewalsInput>
+}
+
 export type UserCreateWithoutWishlistsInput = {
   id?: string
   fullName: string
@@ -570,6 +591,7 @@ export type UserCreateWithoutWishlistsInput = {
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWishlistsInput = {
@@ -585,6 +607,7 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWishlistsInput = {
@@ -616,6 +639,7 @@ export type UserUpdateWithoutWishlistsInput = {
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWishlistsInput = {
@@ -631,6 +655,7 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutListingsInput = {
@@ -646,6 +671,7 @@ export type UserCreateWithoutListingsInput = {
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutListingsInput = {
@@ -661,6 +687,7 @@ export type UserUncheckedCreateWithoutListingsInput = {
   packageExpiresAt?: Date | string | null
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutListingsInput = {
@@ -692,6 +719,7 @@ export type UserUpdateWithoutListingsInput = {
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutListingsInput = {
@@ -707,6 +735,7 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCurrentPackageInput = {
@@ -722,6 +751,7 @@ export type UserCreateWithoutCurrentPackageInput = {
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCurrentPackageInput = {
@@ -737,6 +767,7 @@ export type UserUncheckedCreateWithoutCurrentPackageInput = {
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCurrentPackageInput = {
@@ -794,6 +825,7 @@ export type UserCreateWithoutPackageTransactionsInput = {
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPackageTransactionsInput = {
@@ -809,6 +841,7 @@ export type UserUncheckedCreateWithoutPackageTransactionsInput = {
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPackageTransactionsInput = {
@@ -840,6 +873,7 @@ export type UserUpdateWithoutPackageTransactionsInput = {
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
@@ -855,6 +889,87 @@ export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutListingRenewalsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutListingRenewalsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutListingRenewalsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutListingRenewalsInput, Prisma.UserUncheckedCreateWithoutListingRenewalsInput>
+}
+
+export type UserUpsertWithoutListingRenewalsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutListingRenewalsInput, Prisma.UserUncheckedUpdateWithoutListingRenewalsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutListingRenewalsInput, Prisma.UserUncheckedCreateWithoutListingRenewalsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutListingRenewalsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutListingRenewalsInput, Prisma.UserUncheckedUpdateWithoutListingRenewalsInput>
+}
+
+export type UserUpdateWithoutListingRenewalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutListingRenewalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyCurrentPackageInput = {
@@ -882,6 +997,7 @@ export type UserUpdateWithoutCurrentPackageInput = {
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCurrentPackageInput = {
@@ -897,6 +1013,7 @@ export type UserUncheckedUpdateWithoutCurrentPackageInput = {
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutCurrentPackageInput = {
@@ -920,12 +1037,14 @@ export type UserCountOutputType = {
   listings: number
   wishlists: number
   packageTransactions: number
+  listingRenewals: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   listings?: boolean | UserCountOutputTypeCountListingsArgs
   wishlists?: boolean | UserCountOutputTypeCountWishlistsArgs
   packageTransactions?: boolean | UserCountOutputTypeCountPackageTransactionsArgs
+  listingRenewals?: boolean | UserCountOutputTypeCountListingRenewalsArgs
 }
 
 /**
@@ -959,6 +1078,13 @@ export type UserCountOutputTypeCountPackageTransactionsArgs<ExtArgs extends runt
   where?: Prisma.PackageTransactionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountListingRenewalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ListingRenewalWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -975,6 +1101,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
   wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
   packageTransactions?: boolean | Prisma.User$packageTransactionsArgs<ExtArgs>
+  listingRenewals?: boolean | Prisma.User$listingRenewalsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1025,6 +1152,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
   wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
   packageTransactions?: boolean | Prisma.User$packageTransactionsArgs<ExtArgs>
+  listingRenewals?: boolean | Prisma.User$listingRenewalsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1041,6 +1169,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     listings: Prisma.$VehicleListingPayload<ExtArgs>[]
     wishlists: Prisma.$WishlistPayload<ExtArgs>[]
     packageTransactions: Prisma.$PackageTransactionPayload<ExtArgs>[]
+    listingRenewals: Prisma.$ListingRenewalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1451,6 +1580,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   listings<T extends Prisma.User$listingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$listingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleListingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   wishlists<T extends Prisma.User$wishlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packageTransactions<T extends Prisma.User$packageTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$packageTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PackageTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  listingRenewals<T extends Prisma.User$listingRenewalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$listingRenewalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingRenewalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1974,6 +2104,30 @@ export type User$packageTransactionsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.PackageTransactionScalarFieldEnum | Prisma.PackageTransactionScalarFieldEnum[]
+}
+
+/**
+ * User.listingRenewals
+ */
+export type User$listingRenewalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ListingRenewal
+   */
+  select?: Prisma.ListingRenewalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ListingRenewal
+   */
+  omit?: Prisma.ListingRenewalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ListingRenewalInclude<ExtArgs> | null
+  where?: Prisma.ListingRenewalWhereInput
+  orderBy?: Prisma.ListingRenewalOrderByWithRelationInput | Prisma.ListingRenewalOrderByWithRelationInput[]
+  cursor?: Prisma.ListingRenewalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ListingRenewalScalarFieldEnum | Prisma.ListingRenewalScalarFieldEnum[]
 }
 
 /**

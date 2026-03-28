@@ -58,10 +58,15 @@ export default function MyListingsPage() {
     const [packageInfo, setPackageInfo] = useState<PackageInfo | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+    const [renewId, setRenewId] = useState<string | null>(null);
+    const [renewLoading, setRenewLoading] = useState(false);
+    const [paymentInfo, setPaymentInfo] = useState<any>(null);
+
     const statuses = [
         { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
         { key: 'ACTIVE', label: 'กำลังขาย', count: listings.filter(l => l.status === 'ACTIVE').length },
         { key: 'PENDING', label: 'รอตรวจ', count: listings.filter(l => l.status === 'PENDING').length },
+        { key: 'EXPIRED', label: 'หมดอายุ', count: listings.filter(l => l.status === 'EXPIRED').length },
         { key: 'SOLD', label: 'ขายแล้ว', count: listings.filter(l => l.status === 'SOLD').length },
         { key: 'DRAFT', label: 'แบบร่าง', count: listings.filter(l => l.status === 'DRAFT').length },
         { key: 'INACTIVE', label: 'ปิดการขาย', count: listings.filter(l => l.status === 'INACTIVE').length },
@@ -126,13 +131,79 @@ export default function MyListingsPage() {
                 throw new Error('Failed to delete listing');
             }
 
-            // Remove from local state
+            // Remove from local state and refresh package info
             setListings(prev => prev.filter(l => l.id !== listingId));
             setDeleteConfirm(null);
+            fetchPackageInfo(user.id);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'เกิดข้อผิดพลาดในการลบประกาศ');
         } finally {
             setDeleting(false);
+        }
+    };
+
+    // ต่ออายุ / รีประกาศ
+    const handleRenewClick = async (listingId: string) => {
+        if (!user) return;
+
+        // เช็คว่าเป็น paid user หรือไม่ → ถ้าใช่ repost ทันที
+        const isBasicFree = !packageInfo?.currentPackage || packageInfo.currentPackage.slug === 'basic';
+
+        if (!isBasicFree) {
+            // Paid user → repost ทันที
+            setRenewLoading(true);
+            try {
+                const response = await fetch(`${API_BASE}/listings/${listingId}/renew`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.id })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    // Refresh listings
+                    fetchListings(user.id);
+                    fetchPackageInfo(user.id);
+                } else {
+                    alert(data.message || 'เกิดข้อผิดพลาด');
+                }
+            } catch {
+                alert('เกิดข้อผิดพลาดในการรีประกาศ');
+            } finally {
+                setRenewLoading(false);
+            }
+        } else {
+            // Basic user → แสดง modal ต่ออายุ (จ่าย 50 บาท)
+            setRenewId(listingId);
+            // Fetch payment info
+            try {
+                const res = await fetch(`${API_BASE}/packages/payment-info`);
+                const data = await res.json();
+                setPaymentInfo(data);
+            } catch { /* silent */ }
+        }
+    };
+
+    const handleBasicRenew = async (slipBase64: string) => {
+        if (!user || !renewId) return;
+        setRenewLoading(true);
+        try {
+            const response = await fetch(`${API_BASE}/listings/${renewId}/renew`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, paymentSlip: slipBase64 })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setRenewId(null);
+                alert('ส่งคำขอต่ออายุแล้ว รอ admin ตรวจสอบ');
+                fetchListings(user.id);
+            } else {
+                alert(data.message || 'เกิดข้อผิดพลาด');
+            }
+        } catch {
+            alert('เกิดข้อผิดพลาด');
+        } finally {
+            setRenewLoading(false);
         }
     };
 
@@ -315,6 +386,7 @@ export default function MyListingsPage() {
                                 isActive={activeMenu === item.id}
                                 onToggleMenu={setActiveMenu}
                                 onDelete={setDeleteConfirm}
+                                onRenew={handleRenewClick}
                                 formatPrice={formatPrice}
                                 formatDate={formatDate}
                                 getDaysLeft={getDaysLeft}
@@ -395,6 +467,76 @@ export default function MyListingsPage() {
                             >
                                 ยกเลิก
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Renewal Modal (Basic user — จ่าย 50 บาท) */}
+            {renewId && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setRenewId(null)}
+                    ></div>
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 relative z-10">
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <ArrowRight weight="bold" className="text-3xl text-emerald-500 rotate-[-45deg]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">ต่ออายุประกาศ</h3>
+                            <p className="text-gray-500 text-sm mb-4">
+                                ต่ออายุประกาศ 30 วัน ในราคา <span className="font-bold text-orange-500">50 บาท</span>
+                            </p>
+
+                            {paymentInfo && (
+                                <div className="bg-gray-50 rounded-xl p-4 mb-4 text-left text-sm">
+                                    <p className="font-bold text-gray-700 mb-2">ข้อมูลการชำระเงิน:</p>
+                                    {paymentInfo.bankName && <p className="text-gray-600">ธนาคาร: {paymentInfo.bankName}</p>}
+                                    {paymentInfo.accountName && <p className="text-gray-600">ชื่อบัญชี: {paymentInfo.accountName}</p>}
+                                    {paymentInfo.accountNumber && <p className="text-gray-600">เลขบัญชี: {paymentInfo.accountNumber}</p>}
+                                </div>
+                            )}
+
+                            <label className="block mb-4">
+                                <span className="block text-sm font-bold text-gray-700 mb-2 text-left">อัพโหลดสลิปการโอนเงิน</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-emerald-50 file:text-emerald-600 hover:file:bg-emerald-100"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => {
+                                            handleBasicRenew(reader.result as string);
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }}
+                                    disabled={renewLoading}
+                                />
+                            </label>
+
+                            {renewLoading && (
+                                <div className="flex items-center justify-center gap-2 text-emerald-600 font-medium mb-4">
+                                    <CircleNotch weight="bold" className="animate-spin" />
+                                    กำลังส่งคำขอ...
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 mt-2">
+                                <button
+                                    onClick={() => setRenewId(null)}
+                                    disabled={renewLoading}
+                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
+                                >
+                                    ยกเลิก
+                                </button>
+                            </div>
+
+                            <p className="text-xs text-gray-400 mt-4">
+                                หรือลบประกาศเดิมแล้วลงประกาศใหม่ได้ฟรี
+                            </p>
                         </div>
                     </div>
                 </div>

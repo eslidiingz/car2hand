@@ -20,6 +20,7 @@ import {
     Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePendingCounts } from "@/contexts/PendingContext";
 
 interface PackageData {
     id: string;
@@ -80,6 +81,7 @@ function getSlugIcon(slug: string) {
 }
 
 export default function AdminPackagesPage() {
+    const { refreshUpgrades: refreshUpgradeBadge } = usePendingCounts();
     const [activeTab, setActiveTab] = useState<'packages' | 'transactions'>('transactions');
     const [packages, setPackages] = useState<PackageData[]>([]);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -132,6 +134,7 @@ export default function AdminPackagesPage() {
             await apiFetch(`/admin/packages/transactions/${approveId}/approve`, { method: 'POST' });
             setApproveId(null);
             fetchTransactions();
+            refreshUpgradeBadge();
         } catch (error: any) {
             alert(error.message || 'เกิดข้อผิดพลาด');
         } finally {
@@ -150,6 +153,7 @@ export default function AdminPackagesPage() {
             setRejectId(null);
             setRejectNote('');
             fetchTransactions();
+            refreshUpgradeBadge();
         } catch (error: any) {
             alert(error.message || 'เกิดข้อผิดพลาด');
         } finally {

@@ -82,3 +82,8 @@ export type SystemSetting = Prisma.SystemSettingModel
  * 
  */
 export type PackageTransaction = Prisma.PackageTransactionModel
+/**
+ * Model ListingRenewal
+ * 
+ */
+export type ListingRenewal = Prisma.ListingRenewalModel
