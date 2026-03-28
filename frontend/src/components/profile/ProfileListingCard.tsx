@@ -11,7 +11,8 @@ import {
     CheckCircle,
     DotsThreeVertical,
     Lightning,
-    Phone
+    Phone,
+    ArrowClockwise
 } from '@phosphor-icons/react';
 
 export interface VehicleListing {
@@ -51,6 +52,7 @@ interface ProfileListingCardProps {
     isActive: boolean;
     onToggleMenu: (id: string | null) => void;
     onDelete: (id: string) => void;
+    onRenew?: (id: string) => void;
     formatPrice: (price: string | number) => string;
     formatDate: (dateStr: string) => string;
     getDaysLeft: (expiredAt: string | null) => number | null;
@@ -62,6 +64,7 @@ export default function ProfileListingCard({
     isActive,
     onToggleMenu,
     onDelete,
+    onRenew,
     formatPrice,
     formatDate,
     getDaysLeft,
@@ -114,32 +117,60 @@ export default function ProfileListingCard({
                                             onClick={() => onToggleMenu(null)}
                                         ></div>
                                         <div className="absolute right-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-20 overflow-hidden text-[#1E293B]">
-                                            <Link
-                                                href={`/sell/edit/${listing.id}`}
-                                                onClick={() => onToggleMenu(null)}
-                                                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
-                                            >
-                                                <PencilSimple weight="bold" />
-                                                แก้ไขประกาศ
-                                            </Link>
-                                            <button
-                                                onClick={() => onToggleMenu(null)}
-                                                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
-                                            >
-                                                <Megaphone weight="bold" />
-                                                โปรโมทประกาศ
-                                            </button>
-                                            <div className="border-t border-gray-50 my-1"></div>
-                                            <button
-                                                onClick={() => {
-                                                    onDelete(listing.id);
-                                                    onToggleMenu(null);
-                                                }}
-                                                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition font-medium"
-                                            >
-                                                <Trash weight="bold" />
-                                                ลบประกาศ
-                                            </button>
+                                            {listing.status === 'EXPIRED' ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => {
+                                                            onRenew?.(listing.id);
+                                                            onToggleMenu(null);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-emerald-50 flex items-center gap-2 transition font-medium text-emerald-600"
+                                                    >
+                                                        <ArrowClockwise weight="bold" />
+                                                        ต่ออายุ / รีประกาศ
+                                                    </button>
+                                                    <div className="border-t border-gray-50 my-1"></div>
+                                                    <button
+                                                        onClick={() => {
+                                                            onDelete(listing.id);
+                                                            onToggleMenu(null);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition font-medium"
+                                                    >
+                                                        <Trash weight="bold" />
+                                                        ลบประกาศ
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Link
+                                                        href={`/sell/edit/${listing.id}`}
+                                                        onClick={() => onToggleMenu(null)}
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
+                                                    >
+                                                        <PencilSimple weight="bold" />
+                                                        แก้ไขประกาศ
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => onToggleMenu(null)}
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
+                                                    >
+                                                        <Megaphone weight="bold" />
+                                                        โปรโมทประกาศ
+                                                    </button>
+                                                    <div className="border-t border-gray-50 my-1"></div>
+                                                    <button
+                                                        onClick={() => {
+                                                            onDelete(listing.id);
+                                                            onToggleMenu(null);
+                                                        }}
+                                                        className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition font-medium"
+                                                    >
+                                                        <Trash weight="bold" />
+                                                        ลบประกาศ
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </>
                                 )}

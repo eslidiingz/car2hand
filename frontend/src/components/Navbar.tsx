@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
-import { User, CaretDown, SignOut, Garage, CarProfile, Heart, Gear, Scales, List, X } from '@phosphor-icons/react';
+import { User, CaretDown, SignOut, Garage, CarProfile, Heart, Gear, Scales, List, X, Package } from '@phosphor-icons/react';
 import { useWishlist } from '@/contexts/WishlistContext';
 
 interface UserData {
@@ -237,9 +237,17 @@ export default function Navbar() {
                                                         <CarProfile weight="bold" className="text-lg" />
                                                         <span className="font-medium">รถที่ลงขาย</span>
                                                     </Link>
+                                                    <Link href="/profile/garage" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
+                                                        <Garage weight="bold" className="text-lg" />
+                                                        <span className="font-medium">โรงรถของฉัน</span>
+                                                    </Link>
                                                     <Link href="/profile/wishlist" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
                                                         <Heart weight="bold" className="text-lg" />
                                                         <span className="font-medium">รายการที่บันทึก</span>
+                                                    </Link>
+                                                    <Link href="/profile/packages" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
+                                                        <Package weight="bold" className="text-lg" />
+                                                        <span className="font-medium">แพ็กเกจของฉัน</span>
                                                     </Link>
                                                     <Link href="/profile/settings" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
                                                         <Gear weight="bold" className="text-lg" />
@@ -276,11 +284,23 @@ export default function Navbar() {
                                                     </div>
                                                     <span>รถที่ลงขาย</span>
                                                 </Link>
+                                                <Link href="/profile/garage" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
+                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                        <Garage weight="bold" size={20} />
+                                                    </div>
+                                                    <span>โรงรถของฉัน</span>
+                                                </Link>
                                                 <Link href="/profile/wishlist" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
                                                     <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
                                                         <Heart weight="bold" size={20} />
                                                     </div>
                                                     <span>รายการที่บันทึก</span>
+                                                </Link>
+                                                <Link href="/profile/packages" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
+                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
+                                                        <Package weight="bold" size={20} />
+                                                    </div>
+                                                    <span>แพ็กเกจของฉัน</span>
                                                 </Link>
                                                 <Link href="/profile/settings" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
                                                     <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">

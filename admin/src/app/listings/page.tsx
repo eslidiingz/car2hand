@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { usePendingCounts } from "@/contexts/PendingContext";
 
 interface ListingImage {
     id: string;
@@ -67,6 +68,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 };
 
 export default function ListingModerationPage() {
+    const { refreshListings: refreshPendingBadge } = usePendingCounts();
     const [filterStatus, setFilterStatus] = useState("PENDING");
     const [searchQuery, setSearchQuery] = useState("");
     const [listings, setListings] = useState<Listing[]>([]);
@@ -134,6 +136,7 @@ export default function ListingModerationPage() {
             setApproveId(null);
             fetchListings();
             fetchStatusCounts();
+            refreshPendingBadge();
         } catch (error: any) {
             alert(error.message || 'เกิดข้อผิดพลาด');
         } finally {
@@ -153,6 +156,7 @@ export default function ListingModerationPage() {
             setRejectNote('');
             fetchListings();
             fetchStatusCounts();
+            refreshPendingBadge();
         } catch (error: any) {
             alert(error.message || 'เกิดข้อผิดพลาด');
         } finally {

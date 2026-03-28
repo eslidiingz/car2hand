@@ -118,6 +118,7 @@ export default function CreateListingPage() {
     const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
     const [bodyStyleOptions, setBodyStyleOptions] = useState<{ value: string; label: string }[]>([]);
     const [motorcycleBodyOptions, setMotorcycleBodyOptions] = useState<{ value: string; label: string }[]>([]);
+    const [maxPhotos, setMaxPhotos] = useState(10);
 
     // Check if user is logged in
     useEffect(() => {
@@ -136,6 +137,15 @@ export default function CreateListingPage() {
         if (!formData.contactPhone && userData.phoneNumber) {
             updateFormData({ contactPhone: userData.phoneNumber });
         }
+
+        // Fetch package image limit
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+        fetch(`${API_URL}/packages/my?userId=${userData.id}`)
+            .then(r => r.json())
+            .then(data => {
+                setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 10);
+            })
+            .catch(() => {});
     }, [router]);
 
     useEffect(() => {
@@ -242,16 +252,16 @@ export default function CreateListingPage() {
         if (!files) return;
 
         const currentTotal = formData.images.length;
-        const remainingSlots = 24 - currentTotal;
+        const remainingSlots = maxPhotos - currentTotal;
 
         if (remainingSlots <= 0) {
-            setError('คุณสามารถอัพโหลดรูปภาพได้สูงสุด 24 รูป');
+            setError(`คุณสามารถอัพโหลดรูปภาพได้สูงสุด ${maxPhotos} รูป`);
             return;
         }
 
         let fileArray = Array.from(files);
         if (fileArray.length > remainingSlots) {
-            setError(`เพิ่มรูปภาพได้อีกเพียง ${remainingSlots} รูป (ครบจำนวนสูงสุด 24 รูปแล้ว)`);
+            setError(`เพิ่มรูปภาพได้อีกเพียง ${remainingSlots} รูป (ครบจำนวนสูงสุด ${maxPhotos} รูปแล้ว)`);
             fileArray = fileArray.slice(0, remainingSlots);
         } else {
             setError(null);
@@ -1036,10 +1046,13 @@ export default function CreateListingPage() {
                                 <>
                                     <h2 ref={imagesRef} className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
                                         <ImageIcon size={24} weight="fill" className="text-accent" /> อัพโหลดรูปภาพ
+                                        <span className="ml-auto text-sm font-medium text-gray-400">
+                                            {formData.images.length}/{maxPhotos} รูป
+                                        </span>
                                     </h2>
 
                                     <p className="text-gray-500 mb-6">
-                                        อัพโหลดรูปภาพรถของคุณ (อย่างน้อย 1 รูป, สูงสุด 24 รูป) รูปแรกจะเป็นรูปหลักในการแสดงผล
+                                        อัพโหลดรูปภาพรถของคุณ (อย่างน้อย 1 รูป, สูงสุด {maxPhotos} รูป) รูปแรกจะเป็นรูปหลักในการแสดงผล
                                     </p>
 
                                     {/* Image Upload Area */}
@@ -1062,7 +1075,7 @@ export default function CreateListingPage() {
                                             </div>
                                         ))}
 
-                                        {formData.images.length < 24 && (
+                                        {formData.images.length < maxPhotos && (
                                             <label className="aspect-[4/3] rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-blue-50 transition">
                                                 <Plus size={32} className="text-gray-400 mb-2" />
                                                 <span className="text-xs text-gray-500">เพิ่มรูป</span>
@@ -1131,9 +1144,10 @@ export default function CreateListingPage() {
                                                     placeholder="เช่น 650,000"
                                                     className={`form-input-icon font-bold text-lg ${fieldErrors.price ? 'border-red-500 ring-2 ring-red-500' : ''}`}
                                                     value={formData.price ? formData.price.toLocaleString('en-US') : ''}
+                                                    maxLength={14}
                                                     onChange={(e) => {
                                                         setFieldErrors(prev => ({ ...prev, price: false }));
-                                                        const value = e.target.value.replace(/,/g, '');
+                                                        const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
                                                         const numValue = parseInt(value) || 0;
                                                         updateFormData({ price: numValue });
                                                     }}

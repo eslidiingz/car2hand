@@ -32,6 +32,7 @@ model User {
   listings            VehicleListing[]
   wishlists           Wishlist[]
   packageTransactions PackageTransaction[]
+  listingRenewals     ListingRenewal[]
 
   @@index([currentPackageId])
   @@map("users")
@@ -270,6 +271,7 @@ model VehicleListing {
   user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   images    VehicleImage[]
   wishlists Wishlist[]
+  renewals  ListingRenewal[]
 
   @@index([vehicleType])
   @@index([brand, model])
@@ -468,5 +470,28 @@ model PackageTransaction {
   @@index([status])
   @@index([createdAt])
   @@map("package_transactions")
+}
+
+// รายการต่ออายุประกาศ (Basic user จ่าย 50 บาท)
+model ListingRenewal {
+  id         String        @id @default(cuid())
+  amount     Decimal       @db.Decimal(10, 2) // จำนวนเงิน (50 บาท)
+  slipImage  String        @db.Text // base64 รูปสลิปการโอนเงิน
+  status     PaymentStatus @default(PENDING)
+  adminNote  String? // หมายเหตุจาก admin
+  reviewedAt DateTime? // วันที่ตรวจสอบ
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   VehicleListing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([listingId])
+  @@index([status])
+  @@map("listing_renewals")
 }
 

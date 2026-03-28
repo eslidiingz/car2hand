@@ -8,6 +8,7 @@ import prisma from "./db";
 import { jwtPlugin, generateAccessToken, authGuard } from "./jwt";
 import { adminLoginSchema, validateInput } from "./validation";
 import { authRateLimiter } from "./security";
+import { getUserPackage, getListingExpiryDate } from "./config/packages";
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
     .use(jwtPlugin())
@@ -622,11 +623,15 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Bad Request', message: 'สามารถอนุมัติได้เฉพาะประกาศที่รอตรวจสอบเท่านั้น' };
                 }
 
+                // ดึง package ของ user เพื่อคำนวณวันหมดอายุตามแพ็กเกจ
+                const userPkg = await getUserPackage(listing.userId);
+                const expiredAt = getListingExpiryDate(userPkg.listingDurationDays);
+
                 const updated = await prisma.vehicleListing.update({
                     where: { id },
                     data: {
                         status: 'ACTIVE',
-                        expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                        expiredAt
                     }
                 });
 
@@ -670,6 +675,231 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 console.error('Reject listing error:', error);
                 set.status = 500;
                 return { error: 'Server Error', message: 'ไม่สามารถปฏิเสธประกาศได้' };
+            }
+        })
+
+        // ดึงรายการต่ออายุรออนุมัติ
+        .get("/renewals", async ({ query }) => {
+            const { status = 'PENDING', page = '1', limit = '20' } = query;
+            const skip = (parseInt(page) - 1) * parseInt(limit);
+            const take = parseInt(limit);
+
+            const where: any = {};
+            if (status) where.status = status;
+
+            const [renewals, total] = await Promise.all([
+                prisma.listingRenewal.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        user: { select: { id: true, fullName: true, email: true } },
+                        listing: { select: { id: true, title: true, brand: true, model: true, year: true } }
+                    }
+                }),
+                prisma.listingRenewal.count({ where })
+            ]);
+
+            return {
+                renewals,
+                pagination: {
+                    total,
+                    page: parseInt(page),
+                    limit: take,
+                    totalPages: Math.ceil(total / take)
+                }
+            };
+        })
+
+        // อนุมัติต่ออายุ
+        .post("/renewals/:id/approve", async ({ params: { id }, set }) => {
+            try {
+                const renewal = await prisma.listingRenewal.findUnique({
+                    where: { id },
+                    include: { listing: true }
+                });
+
+                if (!renewal) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบรายการต่ออายุนี้' };
+                }
+
+                if (renewal.status !== 'PENDING') {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'รายการนี้ถูกดำเนินการแล้ว' };
+                }
+
+                // ต่ออายุ 30 วัน (Basic package)
+                const newExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+                await prisma.$transaction([
+                    prisma.listingRenewal.update({
+                        where: { id },
+                        data: { status: 'APPROVED', reviewedAt: new Date() }
+                    }),
+                    prisma.vehicleListing.update({
+                        where: { id: renewal.listingId },
+                        data: { status: 'ACTIVE', expiredAt: newExpiry }
+                    })
+                ]);
+
+                return { message: 'อนุมัติต่ออายุประกาศสำเร็จ' };
+            } catch (error) {
+                console.error('Approve renewal error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอนุมัติได้' };
+            }
+        })
+
+        // ปฏิเสธต่ออายุ
+        .post("/renewals/:id/reject", async ({ params: { id }, body, set }) => {
+            try {
+                const renewal = await prisma.listingRenewal.findUnique({
+                    where: { id }
+                });
+
+                if (!renewal) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบรายการต่ออายุนี้' };
+                }
+
+                if (renewal.status !== 'PENDING') {
+                    set.status = 400;
+                    return { error: 'Bad Request', message: 'รายการนี้ถูกดำเนินการแล้ว' };
+                }
+
+                await prisma.listingRenewal.update({
+                    where: { id },
+                    data: {
+                        status: 'REJECTED',
+                        adminNote: (body as any)?.reason || null,
+                        reviewedAt: new Date()
+                    }
+                });
+
+                return { message: 'ปฏิเสธการต่ออายุเรียบร้อย' };
+            } catch (error) {
+                console.error('Reject renewal error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถปฏิเสธได้' };
+            }
+        })
+    )
+
+    // User Management
+    .group("/users", (app) => app
+        .derive(async ({ jwt, headers, set }) => {
+            const authHeader = headers['authorization'];
+            if (!authHeader?.startsWith('Bearer ')) {
+                set.status = 401;
+                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+
+            const token = authHeader.slice(7).trim();
+            const payload = await jwt.verify(token);
+
+            if (!payload) {
+                set.status = 401;
+                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+
+            return { adminId: (payload as any).userId };
+        })
+        .onBeforeHandle(({ adminId, set }) => {
+            if (!adminId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+        })
+
+        .get("/", async ({ query }) => {
+            const { search, page = '1', limit = '20' } = query;
+            const skip = (parseInt(page) - 1) * parseInt(limit);
+            const take = parseInt(limit);
+
+            const where: any = {};
+            if (search) {
+                where.OR = [
+                    { fullName: { contains: search, mode: 'insensitive' } },
+                    { email: { contains: search, mode: 'insensitive' } },
+                    { phoneNumber: { contains: search } },
+                ];
+            }
+
+            const [users, total] = await Promise.all([
+                prisma.user.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy: { createdAt: 'desc' },
+                    select: {
+                        id: true,
+                        fullName: true,
+                        email: true,
+                        phoneNumber: true,
+                        isActive: true,
+                        createdAt: true,
+                        currentPackage: { select: { name: true, slug: true } },
+                        _count: { select: { listings: true } },
+                    }
+                }),
+                prisma.user.count({ where })
+            ]);
+
+            return {
+                users,
+                pagination: {
+                    total,
+                    page: parseInt(page),
+                    limit: take,
+                    totalPages: Math.ceil(total / take)
+                }
+            };
+        })
+
+        .get("/:id", async ({ params: { id }, set }) => {
+            try {
+                const user = await prisma.user.findUnique({
+                    where: { id },
+                    select: {
+                        id: true,
+                        fullName: true,
+                        email: true,
+                        phoneNumber: true,
+                        isActive: true,
+                        createdAt: true,
+                        currentPackage: { select: { name: true, slug: true } },
+                        _count: { select: { listings: true } },
+                    }
+                });
+                if (!user) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบผู้ใช้งาน' };
+                }
+                return user;
+            } catch (error) {
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถดึงข้อมูลผู้ใช้งานได้' };
+            }
+        })
+
+        .put("/:id/toggle-status", async ({ params: { id }, set }) => {
+            try {
+                const user = await prisma.user.findUnique({ where: { id } });
+                if (!user) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบผู้ใช้งาน' };
+                }
+                const updated = await prisma.user.update({
+                    where: { id },
+                    data: { isActive: !user.isActive },
+                    select: { id: true, isActive: true }
+                });
+                return { message: updated.isActive ? 'เปิดการใช้งานแล้ว' : 'ปิดการใช้งานแล้ว', user: updated };
+            } catch (error) {
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถเปลี่ยนสถานะได้' };
             }
         })
     )

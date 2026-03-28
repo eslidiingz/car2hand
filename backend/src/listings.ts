@@ -1,10 +1,32 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { uploadListingImages, deleteListingImages, deleteFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
-import { getUserPackage, canCreateListing, canUploadPhotos } from "./config/packages";
+import { getUserPackage, canCreateListing, canUploadPhotos, getListingExpiryDate } from "./config/packages";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
+
+// Auto-expire: อัปเดตสถานะประกาศที่หมดอายุเป็น EXPIRED อัตโนมัติ
+async function expireListings() {
+    try {
+        const result = await prisma.vehicleListing.updateMany({
+            where: {
+                status: 'ACTIVE',
+                expiredAt: { lt: new Date() }
+            },
+            data: { status: 'EXPIRED' }
+        });
+        if (result.count > 0) {
+            console.log(`[Auto-Expire] อัปเดต ${result.count} ประกาศเป็น EXPIRED`);
+        }
+    } catch (error) {
+        console.error('[Auto-Expire] Error:', error);
+    }
+}
+
+// เรียกตอน startup + ทุก 1 ชม.
+expireListings();
+setInterval(expireListings, 60 * 60 * 1000);
 
 export const listingRoutes = new Elysia({ prefix: "/listings" })
     // สร้างประกาศขายใหม่
@@ -571,16 +593,17 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
 
         try {
             // ตรวจสอบแพ็กเกจผู้ใช้ — Basic (Free) ต้องรอ admin อนุมัติ
-            const user = await prisma.user.findUnique({
+            const userWithPkg = await prisma.user.findUnique({
                 where: { id: userId },
-                select: { currentPackage: { select: { slug: true, price: true } } }
+                select: { currentPackage: { select: { slug: true, price: true, listingDurationDays: true } } }
             });
 
-            const isBasicFree = !user?.currentPackage
-                || user.currentPackage.slug === 'basic'
-                || Number(user.currentPackage.price) === 0;
+            const isBasicFree = !userWithPkg?.currentPackage
+                || userWithPkg.currentPackage.slug === 'basic'
+                || Number(userWithPkg.currentPackage.price) === 0;
 
             const newStatus = isBasicFree ? "PENDING" : "ACTIVE";
+            const durationDays = userWithPkg?.currentPackage?.listingDurationDays ?? 30;
 
             const updatedListing = await prisma.vehicleListing.update({
                 where: { id },
@@ -589,7 +612,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     status: newStatus,
                     // ตั้ง expiredAt เฉพาะเมื่อ ACTIVE ทันที (แพ็กเกจที่ไม่ใช่ Basic)
                     ...(newStatus === "ACTIVE" ? {
-                        expiredAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                        expiredAt: getListingExpiryDate(durationDays)
                     } : {})
                 },
                 include: {
@@ -826,15 +849,24 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             return { message: "ไม่พบประกาศนี้" };
         }
 
-        // เพิ่ม view count เฉพาะเมื่อคนดูไม่ใช่เจ้าของประกาศ
-        if (!viewerId || viewerId !== listing.userId) {
+        // เช็คว่าประกาศหมดอายุหรือไม่
+        const isExpired = listing.status === 'EXPIRED'
+            || (listing.expiredAt && new Date(listing.expiredAt) < new Date());
+
+        // ถ้าหมดอายุและไม่ใช่เจ้าของ → return expired flag (ไม่แสดงข้อมูลรถ)
+        if (isExpired && (!viewerId || viewerId !== listing.userId)) {
+            return { listing: null, expired: true, message: "ประกาศนี้หมดอายุแล้ว" };
+        }
+
+        // เพิ่ม view count เฉพาะเมื่อคนดูไม่ใช่เจ้าของประกาศ และยังไม่หมดอายุ
+        if (!isExpired && (!viewerId || viewerId !== listing.userId)) {
             await prisma.vehicleListing.update({
                 where: { id },
                 data: { viewCount: { increment: 1 } }
             });
         }
 
-        return { listing };
+        return { listing, expired: isExpired };
     })
 
     // ดึงประกาศทั้งหมด (พร้อม filter)
@@ -859,7 +891,14 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         console.log('Backend received query:', query);
 
         const where: Record<string, any> = {
-            status: status
+            status: status,
+            // ซ่อนประกาศที่หมดอายุจากการค้นหา (เฉพาะ status ACTIVE)
+            ...(status === "ACTIVE" ? {
+                OR: [
+                    { expiredAt: null },
+                    { expiredAt: { gt: new Date() } }
+                ]
+            } : {})
         };
 
         if (vehicleType) where.vehicleType = vehicleType;
@@ -1099,5 +1138,79 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
     }, {
         body: t.Object({
             userId: t.String()
+        })
+    })
+
+    // ต่ออายุ / รีประกาศ
+    .post("/:id/renew", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, paymentSlip } = body;
+
+        // ตรวจสอบว่าเป็นเจ้าของ + สถานะ EXPIRED
+        const listing = await prisma.vehicleListing.findFirst({
+            where: { id, userId, status: 'EXPIRED' }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศที่หมดอายุ" };
+        }
+
+        const userPkg = await getUserPackage(userId);
+        const isBasicFree = !userPkg.id || userPkg.name === 'Basic (Free)';
+
+        if (isBasicFree) {
+            // Basic user ต้องจ่าย 50 บาท เพื่อต่ออายุ
+            if (!paymentSlip) {
+                set.status = 400;
+                return {
+                    message: "ผู้ใช้แพ็กเกจ Basic ต้องชำระ 50 บาทเพื่อต่ออายุ หรือลบประกาศเดิมแล้วลงใหม่",
+                    renewalPrice: 50,
+                    renewalDays: 30,
+                    requiresPayment: true,
+                };
+            }
+
+            // ตรวจสอบว่ามี pending renewal อยู่แล้วไหม
+            const existingRenewal = await prisma.listingRenewal.findFirst({
+                where: { listingId: id, status: 'PENDING' }
+            });
+            if (existingRenewal) {
+                set.status = 400;
+                return { message: "มีคำขอต่ออายุรออนุมัติอยู่แล้ว" };
+            }
+
+            // สร้าง renewal record → admin ตรวจ → อนุมัติแล้วถึงต่ออายุ
+            await prisma.listingRenewal.create({
+                data: {
+                    listingId: id,
+                    userId,
+                    amount: 50,
+                    slipImage: paymentSlip,
+                    status: 'PENDING',
+                }
+            });
+
+            return {
+                message: "ส่งคำขอต่ออายุประกาศแล้ว รอการตรวจสอบจาก admin",
+                requiresApproval: true,
+            };
+        } else {
+            // Paid package → repost ทันที
+            const newExpiry = getListingExpiryDate(userPkg.listingDurationDays);
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { status: 'ACTIVE', expiredAt: newExpiry }
+            });
+
+            return {
+                message: "รีประกาศสำเร็จ",
+                listing: { status: 'ACTIVE', expiredAt: newExpiry },
+            };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            paymentSlip: t.Optional(t.String()),
         })
     });
