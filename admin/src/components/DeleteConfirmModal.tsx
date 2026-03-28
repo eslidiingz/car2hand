@@ -5,7 +5,6 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -30,27 +29,27 @@ export default function DeleteConfirmModal({
 }: DeleteConfirmModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-md rounded-[32px] p-0 overflow-hidden border-none shadow-2xl">
-                <div className="p-8">
-                    <div className="flex justify-between items-start mb-6">
-                        <div className="h-14 w-14 bg-destructive/10 rounded-2xl flex items-center justify-center text-destructive">
-                            <Trash2 size={28} />
+            <DialogContent className="sm:max-w-md rounded-xl p-0 overflow-hidden border-slate-200 shadow-lg">
+                <div className="p-6">
+                    <div className="mb-5">
+                        <div className="h-11 w-11 bg-destructive/10 rounded-lg flex items-center justify-center text-destructive">
+                            <Trash2 size={22} />
                         </div>
                     </div>
 
-                    <DialogHeader className="text-left space-y-2">
-                        <DialogTitle className="text-xl font-bold text-slate-800">{title}</DialogTitle>
-                        <DialogDescription className="text-slate-500 font-medium leading-relaxed">
+                    <DialogHeader className="text-left space-y-1.5">
+                        <DialogTitle className="text-lg font-semibold text-slate-800">{title}</DialogTitle>
+                        <DialogDescription className="text-slate-500 text-sm leading-relaxed">
                             {description}
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="mt-8 flex items-center gap-3">
+                    <div className="mt-6 flex items-center gap-3">
                         <Button
                             variant="secondary"
                             disabled={isLoading}
                             onClick={onClose}
-                            className="flex-1 h-12 font-bold rounded-xl"
+                            className="flex-1 h-10 font-medium rounded-lg"
                         >
                             ยกเลิก
                         </Button>
@@ -58,11 +57,11 @@ export default function DeleteConfirmModal({
                             variant="destructive"
                             disabled={isLoading}
                             onClick={onConfirm}
-                            className="flex-1 h-12 font-bold rounded-xl flex items-center justify-center gap-2"
+                            className="flex-1 h-10 font-medium rounded-lg flex items-center justify-center gap-2"
                         >
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="animate-spin" size={18} />
+                                    <Loader2 className="animate-spin" size={16} />
                                     กำลังลบ...
                                 </>
                             ) : (
@@ -72,9 +71,9 @@ export default function DeleteConfirmModal({
                     </div>
                 </div>
 
-                <div className="bg-slate-50 px-8 py-4 flex items-center gap-2">
-                    <AlertTriangle size={14} className="text-amber-500" />
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+                <div className="bg-slate-50 px-6 py-3 flex items-center gap-2 border-t border-slate-100">
+                    <AlertTriangle size={13} className="text-amber-500" />
+                    <p className="text-xs text-slate-400">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
                 </div>
             </DialogContent>
         </Dialog>

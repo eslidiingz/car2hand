@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, Eye, EyeOff, ShieldCheck, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiFetch } from "@/lib/api";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -41,26 +41,24 @@ export default function LoginPage() {
         <main className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
             <div className="max-w-md w-full">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+                    <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
                         Car<span className="text-accent">2</span>Hand <span className="font-light text-slate-400 text-xl">Admin</span>
                     </h1>
                     <p className="text-slate-500 mt-2">ลงชื่อเข้าใช้งานสำหรับผู้ดูแลระบบเท่านั้น</p>
                 </div>
 
                 {/* Login Card */}
-                <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 h-24 w-24 bg-primary/5 rounded-full -mr-12 -mt-12"></div>
-
+                <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
                     {error && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-medium flex items-center gap-2">
-                            <div className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse"></div>
+                        <div className="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm font-medium flex items-center gap-2">
+                            <div className="h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0"></div>
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-6 relative">
+                    <form onSubmit={handleLogin} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">อีเมลผู้ใช้งาน</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">อีเมลผู้ใช้งาน</label>
                             <div className="relative group">
                                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                 <input
@@ -69,14 +67,14 @@ export default function LoginPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+                                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-colors text-sm"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <div className="flex justify-between items-center mb-2 ml-1">
-                                <label className="block text-sm font-bold text-slate-700">รหัสผ่าน</label>
+                            <div className="flex justify-between items-center mb-1.5">
+                                <label className="block text-sm font-medium text-slate-700">รหัสผ่าน</label>
                             </div>
                             <div className="relative group">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
@@ -86,7 +84,7 @@ export default function LoginPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-medium"
+                                    className="w-full pl-11 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-colors text-sm"
                                 />
                                 <button
                                     type="button"
@@ -98,7 +96,7 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 mb-2 ml-1">
+                        <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 id="remember"
@@ -109,18 +107,18 @@ export default function LoginPage() {
                             <label htmlFor="remember" className="text-sm text-slate-500 font-medium cursor-pointer">จดจำการใช้งาน</label>
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="btn btn-primary btn-lg w-full"
+                            className="w-full h-11 bg-brand-primary hover:bg-brand-primary/90 text-white font-semibold"
                         >
                             {isSubmitting ? (
                                 <>
-                                    <Loader2 className="animate-spin" size={20} />
+                                    <Loader2 className="animate-spin h-4 w-4" />
                                     กำลังเข้าสู่ระบบ...
                                 </>
                             ) : "เข้าสู่ระบบ"}
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>

@@ -13,6 +13,7 @@ import {
     Tags
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePendingUpgrades, usePendingListings } from "@/hooks/usePendingUpgrades";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -27,51 +28,65 @@ const navigation = [
 export default function Sidebar() {
     const pathname = usePathname();
     const { logout } = useAuth();
+    const { count: pendingUpgradeCount } = usePendingUpgrades();
+    const { count: pendingListingCount } = usePendingListings();
 
     return (
-        <div className="flex h-full w-64 flex-col bg-brand-primary text-white shadow-xl">
+        <div className="flex h-full w-60 flex-col bg-white border-r border-slate-200">
 
-            <div className="flex h-16 items-center px-6">
-                <span className="text-xl font-bold tracking-tight">
-                    Car<span className="text-brand-accent">2</span>Hand <span className="text-xs font-normal opacity-70 ml-1">Admin</span>
+            <div className="flex h-16 items-center px-5 border-b border-slate-100">
+                <span className="text-lg font-semibold tracking-tight text-slate-800">
+                    Car<span className="text-brand-accent">2</span>Hand <span className="text-xs font-normal text-slate-400 ml-1">Admin</span>
                 </span>
             </div>
 
-            <nav className="flex-1 space-y-1 px-3 py-4">
+            <nav className="flex-1 space-y-0.5 px-3 py-4">
                 {navigation.map((item) => {
-                    const isActive = pathname === item.href;
+                    const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'));
+                    const isPackages = item.href === '/packages';
+                    const isListings = item.href === '/listings';
+                    const badgeCount = isPackages ? pendingUpgradeCount : isListings ? pendingListingCount : 0;
+                    const showBadge = badgeCount > 0;
+
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
-                            className={`group flex items-center rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 ${isActive
-                                ? "bg-brand-accent text-white shadow-lg shadow-brand-accent/30 translate-x-1"
-                                : "text-slate-300 hover:bg-white/10 hover:text-white hover:translate-x-1"
-                                }`}
+                            className={cn(
+                                "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                                isActive
+                                    ? "bg-slate-100 text-slate-900 font-semibold"
+                                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                            )}
                         >
                             <item.icon className={cn(
-                                "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                                isActive ? "text-white" : "text-slate-400 group-hover:text-white"
+                                "mr-3 h-[18px] w-[18px] flex-shrink-0",
+                                isActive ? "text-slate-700" : "text-slate-400"
                             )} aria-hidden="true" />
-                            {item.name}
+                            <span className="flex-1">{item.name}</span>
+                            {showBadge && (
+                                <span className="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold bg-orange-500 text-white leading-none">
+                                    {badgeCount > 99 ? '99+' : badgeCount}
+                                </span>
+                            )}
                         </Link>
                     );
                 })}
             </nav>
 
-            <div className="border-t border-white/10 p-4">
+            <div className="border-t border-slate-100 p-3">
                 <Link
                     href="/settings"
-                    className="group flex items-center rounded-xl px-4 py-3 text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-all duration-300"
+                    className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
                 >
-                    <Settings className="mr-3 h-5 w-5 flex-shrink-0" />
+                    <Settings className="mr-3 h-[18px] w-[18px] flex-shrink-0" />
                     ตั้งค่าระบบ
                 </Link>
                 <button
                     onClick={logout}
-                    className="flex items-center w-full px-4 py-3 text-sm font-bold text-rose-300 hover:bg-rose-500/10 hover:text-rose-200 rounded-xl transition-all duration-300 group mt-2"
+                    className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-rose-500 hover:bg-rose-50 hover:text-rose-600 rounded-lg transition-colors mt-0.5"
                 >
-                    <LogOut className="mr-3 h-5 w-5 flex-shrink-0 transition-colors group-hover:text-rose-200" />
+                    <LogOut className="mr-3 h-[18px] w-[18px] flex-shrink-0" />
                     ออกจากระบบ
                 </button>
             </div>

@@ -17,10 +17,9 @@ import {
     Zap,
     Crown,
     Rocket,
-    Plus,
-    Pencil,
     Trash2
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PackageData {
     id: string;
@@ -64,20 +63,20 @@ interface Transaction {
 }
 
 const slugIcons: Record<string, React.ReactNode> = {
-    basic: <Zap className="text-slate-400" size={18} />,
-    standard: <Star className="text-blue-500" size={18} />,
-    professional: <Rocket className="text-orange-500" size={18} />,
-    premium: <Crown className="text-yellow-500" size={18} />,
+    basic: <Zap className="text-slate-400" size={16} />,
+    standard: <Star className="text-blue-500" size={16} />,
+    professional: <Rocket className="text-orange-500" size={16} />,
+    premium: <Crown className="text-yellow-500" size={16} />,
 };
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    PENDING: { label: 'รอตรวจสอบ', color: 'bg-yellow-100 text-yellow-700', icon: <Clock size={14} /> },
-    APPROVED: { label: 'อนุมัติแล้ว', color: 'bg-emerald-100 text-emerald-700', icon: <CheckCircle size={14} /> },
-    REJECTED: { label: 'ถูกปฏิเสธ', color: 'bg-red-100 text-red-700', icon: <XCircle size={14} /> },
+    PENDING: { label: 'รอตรวจสอบ', color: 'bg-amber-50 text-amber-700', icon: <Clock size={13} /> },
+    APPROVED: { label: 'อนุมัติแล้ว', color: 'bg-emerald-50 text-emerald-700', icon: <CheckCircle size={13} /> },
+    REJECTED: { label: 'ถูกปฏิเสธ', color: 'bg-rose-50 text-rose-700', icon: <XCircle size={13} /> },
 };
 
 function getSlugIcon(slug: string) {
-    return slugIcons[slug] || <Package size={18} />;
+    return slugIcons[slug] || <Package size={16} />;
 }
 
 export default function AdminPackagesPage() {
@@ -91,9 +90,9 @@ export default function AdminPackagesPage() {
     const [viewSlip, setViewSlip] = useState<string | null>(null);
     const [rejectId, setRejectId] = useState<string | null>(null);
     const [rejectNote, setRejectNote] = useState('');
+    const [approveId, setApproveId] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-    // --- Fetch Data ---
     const fetchPackages = async () => {
         try {
             const data = await apiFetch('/admin/packages');
@@ -126,12 +125,12 @@ export default function AdminPackagesPage() {
         if (activeTab === 'transactions') fetchTransactions();
     }, [page, filterStatus, activeTab]);
 
-    // --- Transaction Actions ---
-    const handleApprove = async (id: string) => {
-        if (!confirm('ยืนยันการอนุมัติรายการนี้?')) return;
-        setActionLoading(id);
+    const handleApprove = async () => {
+        if (!approveId) return;
+        setActionLoading(approveId);
         try {
-            await apiFetch(`/admin/packages/transactions/${id}/approve`, { method: 'POST' });
+            await apiFetch(`/admin/packages/transactions/${approveId}/approve`, { method: 'POST' });
+            setApproveId(null);
             fetchTransactions();
         } catch (error: any) {
             alert(error.message || 'เกิดข้อผิดพลาด');
@@ -158,7 +157,6 @@ export default function AdminPackagesPage() {
         }
     };
 
-    // --- Package Actions ---
     const handleDeletePackage = async (id: string) => {
         if (!confirm('ยืนยันการลบแพ็กเกจนี้?')) return;
         try {
@@ -174,54 +172,56 @@ export default function AdminPackagesPage() {
 
     return (
         <DashboardLayout>
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
-                        <Package className="text-primary h-8 w-8" /> จัดการแพ็กเกจ
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                        <Package className="text-primary" /> จัดการแพ็กเกจ
                     </h1>
                     <p className="text-slate-500 mt-1 text-sm">จัดการ Master Data แพ็กเกจ และตรวจสอบคำขออัพเกรด</p>
                 </div>
                 {pendingCount > 0 && (
-                    <div className="flex items-center gap-2 bg-yellow-50 text-yellow-700 px-4 py-2 rounded-xl text-sm font-bold border border-yellow-200">
-                        <AlertTriangle size={18} />
+                    <div className="flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-amber-200">
+                        <AlertTriangle size={16} />
                         {pendingCount} รายการรอตรวจสอบ
                     </div>
                 )}
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 mb-6 border-b border-slate-200 pb-3">
+            <div className="flex gap-6 mb-6 border-b border-slate-200">
                 <button
                     onClick={() => setActiveTab('transactions')}
-                    className={`px-5 py-2 rounded-t-xl text-sm font-bold transition ${activeTab === 'transactions' ? 'bg-primary text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+                    className={`pb-3 px-1 text-sm font-medium transition-colors relative ${activeTab === 'transactions' ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                     คำขออัพเกรด
+                    {activeTab === 'transactions' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-800 rounded-t-full"></div>}
                 </button>
                 <button
                     onClick={() => setActiveTab('packages')}
-                    className={`px-5 py-2 rounded-t-xl text-sm font-bold transition ${activeTab === 'packages' ? 'bg-primary text-white' : 'text-slate-500 hover:bg-slate-50'}`}
+                    className={`pb-3 px-1 text-sm font-medium transition-colors relative ${activeTab === 'packages' ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
                 >
                     จัดการแพ็กเกจ
+                    {activeTab === 'packages' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-800 rounded-t-full"></div>}
                 </button>
             </div>
 
             {/* ====== PACKAGES TAB ====== */}
             {activeTab === 'packages' && (
-                <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="divide-y divide-slate-50">
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="divide-y divide-slate-100">
                         {packages.map(pkg => (
                             <div key={pkg.id} className={`p-5 ${!pkg.isActive ? 'opacity-50' : ''}`}>
                                 <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                                     <div className="flex items-center gap-3 min-w-[200px]">
-                                        <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
+                                        <div className="w-9 h-9 bg-slate-50 rounded-lg flex items-center justify-center">
                                             {getSlugIcon(pkg.slug)}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-sm text-slate-800">{pkg.name}</p>
+                                            <p className="font-medium text-sm text-slate-800">{pkg.name}</p>
                                             <p className="text-xs text-slate-400">{pkg.nameTh}</p>
                                         </div>
                                     </div>
-                                    <div className="flex flex-wrap gap-3 text-xs text-slate-600">
+                                    <div className="flex flex-wrap gap-2 text-xs text-slate-600">
                                         <span className="bg-slate-50 px-2 py-1 rounded">฿{Number(pkg.price).toLocaleString()}/เดือน</span>
                                         <span className="bg-slate-50 px-2 py-1 rounded">{pkg.maxListings === -1 ? '∞' : pkg.maxListings} ประกาศ</span>
                                         <span className="bg-slate-50 px-2 py-1 rounded">{pkg.maxPhotosPerListing} รูป</span>
@@ -231,17 +231,18 @@ export default function AdminPackagesPage() {
                                         <span>{pkg._count?.users || 0} ผู้ใช้</span>
                                         <span>{pkg._count?.transactions || 0} รายการ</span>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 items-center">
                                         {!pkg.isActive && (
-                                            <span className="text-xs text-red-500 font-bold">ปิดใช้งาน</span>
+                                            <span className="text-xs text-rose-500 font-medium">ปิดใช้งาน</span>
                                         )}
-                                        <button
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
                                             onClick={() => handleDeletePackage(pkg.id)}
-                                            className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 transition"
-                                            title="ลบ"
+                                            className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50"
                                         >
                                             <Trash2 size={14} />
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -261,57 +262,55 @@ export default function AdminPackagesPage() {
                             { value: 'APPROVED', label: 'อนุมัติแล้ว' },
                             { value: 'REJECTED', label: 'ถูกปฏิเสธ' },
                         ].map(tab => (
-                            <button
+                            <Button
                                 key={tab.value}
+                                variant={filterStatus === tab.value ? "default" : "outline"}
+                                size="sm"
                                 onClick={() => { setFilterStatus(tab.value); setPage(1); }}
-                                className={`px-4 py-2 rounded-xl text-sm font-bold transition ${
-                                    filterStatus === tab.value
-                                        ? 'bg-primary text-white shadow-md'
-                                        : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-200'
-                                }`}
+                                className="font-medium"
                             >
                                 {tab.label}
-                            </button>
+                            </Button>
                         ))}
                     </div>
 
-                    <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         {isLoading ? (
                             <div className="p-12 text-center text-slate-400">
-                                <div className="animate-spin text-3xl mb-3">⏳</div>
-                                <p className="text-sm font-bold">กำลังโหลด...</p>
+                                <Package className="mx-auto mb-3 animate-pulse opacity-30" size={32} />
+                                <p className="text-sm">กำลังโหลด...</p>
                             </div>
                         ) : transactions.length === 0 ? (
                             <div className="p-12 text-center text-slate-400">
-                                <Package className="mx-auto mb-3 opacity-30" size={48} />
-                                <p className="text-sm font-bold">ไม่พบรายการ</p>
+                                <Package className="mx-auto mb-3 opacity-30" size={32} />
+                                <p className="text-sm">ไม่พบรายการ</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-slate-50">
+                            <div className="divide-y divide-slate-100">
                                 {transactions.map(tx => {
                                     const status = statusConfig[tx.status] || statusConfig.PENDING;
                                     return (
-                                        <div key={tx.id} className="p-5 hover:bg-slate-50/50 transition">
+                                        <div key={tx.id} className="p-5 hover:bg-slate-50 transition-colors">
                                             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                                                 {/* User Info */}
                                                 <div className="flex items-center gap-3 min-w-[200px]">
-                                                    <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500">
-                                                        <User size={20} />
+                                                    <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500">
+                                                        <User size={18} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-sm text-slate-800">{tx.user.fullName}</p>
+                                                        <p className="font-medium text-sm text-slate-800">{tx.user.fullName}</p>
                                                         <p className="text-xs text-slate-400">{tx.user.email}</p>
                                                     </div>
                                                 </div>
 
                                                 {/* Package Info */}
                                                 <div className="flex items-center gap-2 min-w-[160px]">
-                                                    <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-500">
+                                                    <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500">
                                                         {getSlugIcon(tx.user.currentPackage?.slug || 'basic')}
                                                         {tx.user.currentPackage?.name || 'Basic'}
                                                     </div>
                                                     <span className="text-slate-300">→</span>
-                                                    <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold text-blue-700">
+                                                    <div className="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-md text-xs font-medium text-blue-700">
                                                         {getSlugIcon(tx.package.slug)}
                                                         {tx.package.name}
                                                     </div>
@@ -319,7 +318,7 @@ export default function AdminPackagesPage() {
 
                                                 {/* Amount */}
                                                 <div className="min-w-[100px]">
-                                                    <p className="text-lg font-bold text-slate-800">฿{Number(tx.amount).toLocaleString()}</p>
+                                                    <p className="text-base font-semibold text-slate-800">฿{Number(tx.amount).toLocaleString()}</p>
                                                 </div>
 
                                                 {/* Date */}
@@ -329,36 +328,40 @@ export default function AdminPackagesPage() {
 
                                                 {/* Status */}
                                                 <div className="min-w-[100px]">
-                                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${status.color}`}>
+                                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${status.color}`}>
                                                         {status.icon} {status.label}
                                                     </span>
                                                 </div>
 
                                                 {/* Actions */}
                                                 <div className="flex gap-2 ml-auto">
-                                                    <button
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
                                                         onClick={() => setViewSlip(tx.slipImage)}
-                                                        className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 transition"
-                                                        title="ดูสลิป"
+                                                        className="h-8 w-8"
                                                     >
-                                                        <Eye size={16} />
-                                                    </button>
+                                                        <Eye size={15} />
+                                                    </Button>
                                                     {tx.status === 'PENDING' && (
                                                         <>
-                                                            <button
-                                                                onClick={() => handleApprove(tx.id)}
+                                                            <Button
+                                                                onClick={() => setApproveId(tx.id)}
                                                                 disabled={actionLoading === tx.id}
-                                                                className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition flex items-center gap-1 disabled:opacity-50"
+                                                                size="sm"
+                                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
                                                             >
                                                                 <Check size={14} /> อนุมัติ
-                                                            </button>
-                                                            <button
+                                                            </Button>
+                                                            <Button
+                                                                variant="destructive"
+                                                                size="sm"
                                                                 onClick={() => setRejectId(tx.id)}
                                                                 disabled={actionLoading === tx.id}
-                                                                className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition flex items-center gap-1 disabled:opacity-50"
+                                                                className="font-medium"
                                                             >
                                                                 <X size={14} /> ปฏิเสธ
-                                                            </button>
+                                                            </Button>
                                                         </>
                                                     )}
                                                 </div>
@@ -366,8 +369,8 @@ export default function AdminPackagesPage() {
                                                 {/* Admin Note */}
                                                 {tx.adminNote && (
                                                     <div className="w-full mt-2">
-                                                        <p className="text-xs text-red-500 bg-red-50 px-3 py-2 rounded-lg">
-                                                            <span className="font-bold">หมายเหตุ:</span> {tx.adminNote}
+                                                        <p className="text-xs text-rose-500 bg-rose-50 px-3 py-2 rounded-lg">
+                                                            <span className="font-medium">หมายเหตุ:</span> {tx.adminNote}
                                                         </p>
                                                     </div>
                                                 )}
@@ -381,17 +384,17 @@ export default function AdminPackagesPage() {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="flex justify-center gap-2 mt-6">
+                        <div className="flex justify-center gap-1.5 mt-6">
                             {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                                <button
+                                <Button
                                     key={p}
+                                    variant={page === p ? "default" : "outline"}
+                                    size="icon"
                                     onClick={() => setPage(p)}
-                                    className={`w-10 h-10 rounded-xl text-sm font-bold transition ${
-                                        page === p ? 'bg-primary text-white' : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-200'
-                                    }`}
+                                    className="h-9 w-9 font-medium"
                                 >
                                     {p}
-                                </button>
+                                </Button>
                             ))}
                         </div>
                     )}
@@ -401,53 +404,126 @@ export default function AdminPackagesPage() {
             {/* Slip Viewer Modal */}
             {viewSlip && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setViewSlip(null)} />
-                    <div className="relative z-10 bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-                        <div className="p-4 border-b flex justify-between items-center">
-                            <h3 className="font-bold text-slate-800">สลิปการโอนเงิน</h3>
-                            <button onClick={() => setViewSlip(null)} className="text-slate-400 hover:text-slate-600">
-                                <X size={20} />
-                            </button>
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewSlip(null)} />
+                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-lg w-full overflow-hidden">
+                        <div className="p-4 border-b border-slate-200 flex justify-between items-center">
+                            <h3 className="font-semibold text-slate-800">สลิปการโอนเงิน</h3>
+                            <Button variant="ghost" size="icon" onClick={() => setViewSlip(null)} className="h-8 w-8">
+                                <X size={18} />
+                            </Button>
                         </div>
                         <div className="p-4">
-                            <img src={viewSlip} alt="Payment Slip" className="w-full rounded-xl" />
+                            <img src={viewSlip} alt="Payment Slip" className="w-full rounded-lg" />
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* Approve Confirmation Modal */}
+            {approveId && (() => {
+                const tx = transactions.find(t => t.id === approveId);
+                if (!tx) return null;
+                return (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setApproveId(null)} />
+                        <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden">
+                            <div className="p-6">
+                                {/* Icon */}
+                                <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                    <CheckCircle className="text-emerald-500" size={24} />
+                                </div>
+                                <h3 className="text-lg font-semibold text-center text-slate-800 mb-1">ยืนยันการอนุมัติ</h3>
+                                <p className="text-sm text-center text-slate-400 mb-5">ตรวจสอบรายละเอียดก่อนอนุมัติ</p>
+
+                                {/* Transaction Detail Card */}
+                                <div className="bg-slate-50 rounded-xl p-4 space-y-3 mb-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 flex-shrink-0">
+                                            <User size={16} />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-semibold text-slate-800">{tx.user.fullName}</p>
+                                            <p className="text-xs text-slate-400">{tx.user.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="border-t border-slate-200 pt-3 flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500">
+                                                {getSlugIcon(tx.user.currentPackage?.slug || 'basic')}
+                                                {tx.user.currentPackage?.name || 'Basic'}
+                                            </div>
+                                            <span className="text-slate-300 text-xs">→</span>
+                                            <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md text-xs font-semibold text-emerald-700">
+                                                {getSlugIcon(tx.package.slug)}
+                                                {tx.package.name}
+                                            </div>
+                                        </div>
+                                        <p className="text-base font-bold text-slate-800">฿{Number(tx.amount).toLocaleString()}</p>
+                                    </div>
+                                </div>
+
+                                <p className="text-xs text-center text-slate-400 mb-5">
+                                    เมื่ออนุมัติแล้ว ผู้ใช้จะได้รับสิทธิ์แพ็กเกจ <span className="font-semibold text-emerald-600">{tx.package.name}</span> ทันที
+                                </p>
+
+                                <div className="flex gap-3">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => setApproveId(null)}
+                                        className="flex-1 font-medium"
+                                        disabled={actionLoading === approveId}
+                                    >
+                                        ยกเลิก
+                                    </Button>
+                                    <Button
+                                        onClick={handleApprove}
+                                        disabled={actionLoading === approveId}
+                                        className="flex-1 font-medium bg-emerald-600 hover:bg-emerald-700 text-white"
+                                    >
+                                        <Check size={15} />
+                                        {actionLoading === approveId ? 'กำลังอนุมัติ...' : 'ยืนยันอนุมัติ'}
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
+
             {/* Reject Modal */}
             {rejectId && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setRejectId(null)} />
-                    <div className="relative z-10 bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setRejectId(null)} />
+                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden">
                         <div className="p-6">
-                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <XCircle className="text-red-500" size={28} />
+                            <div className="w-12 h-12 bg-rose-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                <XCircle className="text-rose-500" size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-center text-slate-800 mb-2">ปฏิเสธรายการนี้?</h3>
-                            <p className="text-sm text-center text-slate-500 mb-6">ระบุเหตุผลในการปฏิเสธ (ไม่บังคับ)</p>
+                            <h3 className="text-lg font-semibold text-center text-slate-800 mb-1.5">ปฏิเสธรายการนี้?</h3>
+                            <p className="text-sm text-center text-slate-500 mb-5">ระบุเหตุผลในการปฏิเสธ (ไม่บังคับ)</p>
                             <textarea
                                 value={rejectNote}
                                 onChange={e => setRejectNote(e.target.value)}
                                 placeholder="เหตุผลในการปฏิเสธ..."
-                                className="w-full p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-200 resize-none"
+                                className="w-full p-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400 resize-none transition-colors"
                                 rows={3}
                             />
                             <div className="flex gap-3 mt-4">
-                                <button
+                                <Button
+                                    variant="secondary"
                                     onClick={() => { setRejectId(null); setRejectNote(''); }}
-                                    className="flex-1 py-3 rounded-xl font-bold text-sm text-slate-600 bg-slate-100 hover:bg-slate-200 transition"
+                                    className="flex-1 font-medium"
                                 >
                                     ยกเลิก
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant="destructive"
                                     onClick={handleReject}
                                     disabled={actionLoading === rejectId}
-                                    className="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-red-500 hover:bg-red-600 transition disabled:opacity-50"
+                                    className="flex-1 font-medium"
                                 >
                                     ยืนยันปฏิเสธ
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>

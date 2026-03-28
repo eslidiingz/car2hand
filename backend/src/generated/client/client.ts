@@ -95,6 +95,11 @@ export type VehicleImage = Prisma.VehicleImageModel
  */
 export type Package = Prisma.PackageModel
 /**
+ * Model SystemSetting
+ * 
+ */
+export type SystemSetting = Prisma.SystemSettingModel
+/**
  * Model PackageTransaction
  * 
  */

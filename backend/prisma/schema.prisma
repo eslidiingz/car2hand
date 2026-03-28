@@ -251,6 +251,7 @@ model VehicleListing {
 
   // สถานะประกาศ
   status     ListingStatus @default(ACTIVE)
+  adminNote  String?       // หมายเหตุจาก admin (เช่น เหตุผลที่ปฏิเสธ)
   isFeatured Boolean       @default(false) // ประกาศแนะนำ
   isPremium  Boolean       @default(false) // ประกาศพรีเมียม
 
@@ -432,6 +433,17 @@ enum PaymentStatus {
   PENDING // รอตรวจสอบ
   APPROVED // อนุมัติแล้ว
   REJECTED // ถูกปฏิเสธ
+}
+
+// =============================================
+// System Settings - ตั้งค่าระบบ (key-value store)
+// =============================================
+model SystemSetting {
+  key       String   @id // e.g. "payment.bankName", "payment.accountNumber"
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
 }
 
 // รายการอัพเกรดแพ็กเกจ

@@ -179,6 +179,20 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
         })
     })
 
+    // ดึงข้อมูลการชำระเงิน (บัญชีธนาคาร, QR Code) สำหรับแสดงให้ผู้ใช้
+    .get("/payment-info", async () => {
+        const settings = await prisma.systemSetting.findMany({
+            where: { key: { startsWith: 'payment.' } }
+        });
+        const result: Record<string, string> = {};
+        for (const s of settings) {
+            // ตัด prefix 'payment.' ออกเพื่อให้ key สั้นลง
+            const shortKey = s.key.replace('payment.', '');
+            result[shortKey] = s.value;
+        }
+        return result;
+    })
+
     // ดึงประวัติการอัพเกรดของ user
     .get("/transactions", async ({ query, set }) => {
         const userId = query.userId;

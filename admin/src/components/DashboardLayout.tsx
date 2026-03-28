@@ -16,7 +16,7 @@ export default function DashboardLayout({
         return (
             <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50">
                 <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
-                <p className="text-slate-500 font-bold animate-pulse">กำลังเตรียมข้อมูล...</p>
+                <p className="text-slate-400 font-medium">กำลังเตรียมข้อมูล...</p>
             </div>
         );
     }
@@ -36,7 +36,7 @@ export default function DashboardLayout({
                 <Navbar />
 
                 {/* Main Content Area */}
-                <main className="flex-1 relative overflow-y-auto focus:outline-none custom-scrollbar p-8">
+                <main className="flex-1 relative overflow-y-auto focus:outline-none custom-scrollbar p-6">
                     <div className="max-w-7xl mx-auto">
                         {children}
                     </div>

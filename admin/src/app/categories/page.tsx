@@ -34,7 +34,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 interface Category {
     id: string;
@@ -49,7 +48,7 @@ export default function CategoriesPage() {
     const [error, setError] = useState<string | null>(null);
 
     // Form state
-    const [isEditing, setIsEditing] = useState<string | null>(null); // category ID being edited
+    const [isEditing, setIsEditing] = useState<string | null>(null);
     const [formData, setFormData] = useState({ name: "", slug: "" });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showNewForm, setShowNewForm] = useState(false);
@@ -151,20 +150,11 @@ export default function CategoriesPage() {
         setFormData({ name: "", slug: "" });
     };
 
-    const autoGenerateSlug = (name: string) => {
-        const slug = name
-            .toLowerCase()
-            .replace(/[^a-z0-9\u0E00-\u0E7F]/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
-        setFormData(prev => ({ ...prev, name, slug }));
-    };
-
     return (
         <DashboardLayout>
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
                         <Tag className="text-primary" /> จัดการหมวดหมู่บทความ
                     </h1>
                     <p className="text-slate-500 mt-1 text-sm">จัดการหัวข้อบทความเพื่อให้ผู้ใช้อ่านข้อมูลได้ตรงตามความสนใจ</p>
@@ -175,73 +165,73 @@ export default function CategoriesPage() {
                             setShowNewForm(true);
                             setFormData({ name: "", slug: "" });
                         }}
-                        className="rounded-xl h-12 px-6 font-bold"
+                        className="bg-brand-primary hover:bg-brand-primary/90 text-white font-medium"
                     >
-                        <Plus className="mr-2 h-5 w-5" /> เพิ่มหมวดหมู่ใหม่
+                        <Plus className="mr-2 h-4 w-4" /> เพิ่มหมวดหมู่ใหม่
                     </Button>
                 )}
             </div>
 
             {error && (
-                <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center gap-3 text-destructive animate-in fade-in slide-in-from-top-4">
-                    <AlertCircle size={20} />
+                <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3 text-destructive">
+                    <AlertCircle size={18} />
                     <p className="text-sm font-medium">{error}</p>
-                    <Button variant="ghost" size="icon" onClick={() => setError(null)} className="ml-auto h-8 w-8 text-destructive/60 hover:text-destructive">
-                        <X size={18} />
+                    <Button variant="ghost" size="icon" onClick={() => setError(null)} className="ml-auto h-7 w-7 text-destructive/60 hover:text-destructive">
+                        <X size={16} />
                     </Button>
                 </div>
             )}
 
             {/* Create / Edit Form */}
             {(showNewForm || isEditing) && (
-                <Card className="rounded-[32px] border-primary/10 mb-8 overflow-hidden animate-in zoom-in-95 duration-200">
+                <Card className="rounded-xl border-slate-200 mb-6">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            {showNewForm ? <Plus className="text-primary" size={20} /> : <Edit className="text-primary" size={20} />}
+                        <CardTitle className="flex items-center gap-2 text-base">
+                            {showNewForm ? <Plus className="text-primary" size={18} /> : <Edit className="text-primary" size={18} />}
                             {showNewForm ? "เพิ่มหมวดหมู่ใหม่" : "แก้ไขหมวดหมู่"}
                         </CardTitle>
                         <CardDescription>กรอกข้อมูลชื่อหมวดหมู่และ Slug สำหรับ URL</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={showNewForm ? handleCreate : (e) => { e.preventDefault(); handleUpdate(isEditing!); }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
+                        <form onSubmit={showNewForm ? handleCreate : (e) => { e.preventDefault(); handleUpdate(isEditing!); }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
                                 <Label htmlFor="category-name">ชื่อหมวดหมู่</Label>
                                 <Input
                                     id="category-name"
                                     value={formData.name}
                                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                                     placeholder="เช่น การซ่อมบำรุง"
-                                    className="h-11 rounded-xl"
+                                    className="h-10 rounded-lg"
                                     required
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1.5">
                                 <Label htmlFor="category-slug">Slug (URL)</Label>
                                 <Input
                                     id="category-slug"
                                     value={formData.slug}
                                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                                     placeholder="เช่น maintenance"
-                                    className="h-11 rounded-xl"
+                                    className="h-10 rounded-lg"
                                     required
                                 />
                             </div>
-                            <div className="md:col-span-2 flex justify-end gap-3 mt-2">
+                            <div className="md:col-span-2 flex justify-end gap-2 mt-1">
                                 <Button
                                     type="button"
                                     variant="secondary"
                                     onClick={showNewForm ? () => setShowNewForm(false) : cancelEdit}
                                     disabled={isSubmitting}
-                                    className="rounded-xl px-6"
+                                    className="rounded-lg"
                                 >
                                     ยกเลิก
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="rounded-xl px-10 font-bold"
+                                    className="rounded-lg bg-brand-primary hover:bg-brand-primary/90 text-white font-medium px-8"
                                 >
-                                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (showNewForm ? "บันทึก" : "อัปเดต")}
+                                    {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : (showNewForm ? "บันทึก" : "อัปเดต")}
                                 </Button>
                             </div>
                         </form>
@@ -250,51 +240,51 @@ export default function CategoriesPage() {
             )}
 
             {/* List */}
-            <Card className="rounded-[32px] border-slate-100 overflow-hidden shadow-sm">
+            <Card className="rounded-xl border-slate-200 overflow-hidden shadow-sm">
                 <Table>
-                    <TableHeader className="bg-slate-50/50">
+                    <TableHeader className="bg-slate-50">
                         <TableRow>
-                            <TableHead className="px-6 py-4 font-bold text-slate-600">ชื่อหมวดหมู่</TableHead>
-                            <TableHead className="px-6 py-4 font-bold text-slate-600">Slug</TableHead>
-                            <TableHead className="px-6 py-4 font-bold text-slate-600 text-right">จัดการ</TableHead>
+                            <TableHead className="px-6 py-3 font-medium text-slate-500 text-xs">ชื่อหมวดหมู่</TableHead>
+                            <TableHead className="px-6 py-3 font-medium text-slate-500 text-xs">Slug</TableHead>
+                            <TableHead className="px-6 py-3 font-medium text-slate-500 text-xs text-right">จัดการ</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={3} className="px-6 py-20 text-center">
-                                    <Loader2 className="h-8 w-8 text-primary animate-spin mx-auto mb-2" />
-                                    <p className="text-slate-400 font-bold">กำลังโหลด...</p>
+                                <TableCell colSpan={3} className="px-6 py-16 text-center">
+                                    <Loader2 className="h-6 w-6 text-primary animate-spin mx-auto mb-2" />
+                                    <p className="text-slate-400 text-sm">กำลังโหลด...</p>
                                 </TableCell>
                             </TableRow>
                         ) : categories.length > 0 ? (
                             categories.map((category) => (
-                                <TableRow key={category.id} className="group hover:bg-slate-50/50 transition-colors">
-                                    <TableCell className="px-6 py-4">
-                                        <span className="font-bold text-slate-800">{category.name}</span>
+                                <TableRow key={category.id} className="group hover:bg-slate-50 transition-colors">
+                                    <TableCell className="px-6 py-3.5">
+                                        <span className="font-medium text-slate-800 text-sm">{category.name}</span>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4">
-                                        <code className="text-[11px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-lg font-mono">
+                                    <TableCell className="px-6 py-3.5">
+                                        <code className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono">
                                             {category.slug}
                                         </code>
                                     </TableCell>
-                                    <TableCell className="px-6 py-4 text-right">
-                                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <TableCell className="px-6 py-3.5 text-right">
+                                        <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => startEdit(category)}
-                                                className="h-9 w-9 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl"
+                                                className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
                                             >
-                                                <Edit size={18} />
+                                                <Edit size={15} />
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => handleDeleteClick(category)}
-                                                className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
+                                                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                                             >
-                                                <Trash2 size={18} />
+                                                <Trash2 size={15} />
                                             </Button>
                                         </div>
                                     </TableCell>
@@ -302,8 +292,8 @@ export default function CategoriesPage() {
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={3} className="px-6 py-20 text-center">
-                                    <p className="text-slate-400 font-bold italic">ยังไม่มีหมวดหมู่บทความ</p>
+                                <TableCell colSpan={3} className="px-6 py-16 text-center">
+                                    <p className="text-slate-400 text-sm">ยังไม่มีหมวดหมู่บทความ</p>
                                 </TableCell>
                             </TableRow>
                         )}
