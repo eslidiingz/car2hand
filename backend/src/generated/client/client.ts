@@ -109,3 +109,13 @@ export type PackageTransaction = Prisma.PackageTransactionModel
  * 
  */
 export type ListingRenewal = Prisma.ListingRenewalModel
+/**
+ * Model NotificationTemplate
+ * 
+ */
+export type NotificationTemplate = Prisma.NotificationTemplateModel
+/**
+ * Model NotificationLog
+ * 
+ */
+export type NotificationLog = Prisma.NotificationLogModel

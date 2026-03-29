@@ -2,6 +2,7 @@
 
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { toast } from "sonner";
 import {
     Users,
     Search,
@@ -64,7 +65,7 @@ export default function UserManagementPage() {
             await apiFetch(`/admin/users/${userId}/toggle-status`, { method: 'PUT' });
             fetchUsers();
         } catch (error: any) {
-            alert(error.message || 'เกิดข้อผิดพลาด');
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
         } finally {
             setTogglingId(null);
         }

@@ -51,7 +51,7 @@ export default function MyListingsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<{ id: string } | null>(null);
-    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'DRAFT' | 'SOLD' | 'INACTIVE'>('ALL');
+    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED'>('ALL');
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -67,9 +67,6 @@ export default function MyListingsPage() {
         { key: 'ACTIVE', label: 'กำลังขาย', count: listings.filter(l => l.status === 'ACTIVE').length },
         { key: 'PENDING', label: 'รอตรวจ', count: listings.filter(l => l.status === 'PENDING').length },
         { key: 'EXPIRED', label: 'หมดอายุ', count: listings.filter(l => l.status === 'EXPIRED').length },
-        { key: 'SOLD', label: 'ขายแล้ว', count: listings.filter(l => l.status === 'SOLD').length },
-        { key: 'DRAFT', label: 'แบบร่าง', count: listings.filter(l => l.status === 'DRAFT').length },
-        { key: 'INACTIVE', label: 'ปิดการขาย', count: listings.filter(l => l.status === 'INACTIVE').length },
     ];
 
     // Check authentication and fetch listings

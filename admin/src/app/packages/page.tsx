@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { toast } from "sonner";
 import {
     Package,
     Check,
@@ -20,6 +21,7 @@ import {
     Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePendingCounts } from "@/contexts/PendingContext";
 
 interface PackageData {
@@ -94,6 +96,7 @@ export default function AdminPackagesPage() {
     const [rejectNote, setRejectNote] = useState('');
     const [approveId, setApproveId] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [deletePackageId, setDeletePackageId] = useState<string | null>(null);
 
     const fetchPackages = async () => {
         try {
@@ -136,7 +139,7 @@ export default function AdminPackagesPage() {
             fetchTransactions();
             refreshUpgradeBadge();
         } catch (error: any) {
-            alert(error.message || 'เกิดข้อผิดพลาด');
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
         } finally {
             setActionLoading(null);
         }
@@ -155,20 +158,21 @@ export default function AdminPackagesPage() {
             fetchTransactions();
             refreshUpgradeBadge();
         } catch (error: any) {
-            alert(error.message || 'เกิดข้อผิดพลาด');
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
         } finally {
             setActionLoading(null);
         }
     };
 
-    const handleDeletePackage = async (id: string) => {
-        if (!confirm('ยืนยันการลบแพ็กเกจนี้?')) return;
+    const handleDeletePackage = async () => {
+        if (!deletePackageId) return;
         try {
-            const result = await apiFetch(`/admin/packages/${id}`, { method: 'DELETE' });
-            alert(result.message);
+            const result = await apiFetch(`/admin/packages/${deletePackageId}`, { method: 'DELETE' });
+            toast.success(result.message || 'ลบแพ็กเกจเรียบร้อยแล้ว');
+            setDeletePackageId(null);
             fetchPackages();
         } catch (error: any) {
-            alert(error.message || 'เกิดข้อผิดพลาด');
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
         }
     };
 
@@ -191,26 +195,17 @@ export default function AdminPackagesPage() {
                 )}
             </div>
 
-            {/* Tabs */}
-            <div className="flex gap-6 mb-6 border-b border-slate-200">
-                <button
-                    onClick={() => setActiveTab('transactions')}
-                    className={`pb-3 px-1 text-sm font-medium transition-colors relative ${activeTab === 'transactions' ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
-                >
-                    คำขออัพเกรด
-                    {activeTab === 'transactions' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-800 rounded-t-full"></div>}
-                </button>
-                <button
-                    onClick={() => setActiveTab('packages')}
-                    className={`pb-3 px-1 text-sm font-medium transition-colors relative ${activeTab === 'packages' ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'}`}
-                >
-                    จัดการแพ็กเกจ
-                    {activeTab === 'packages' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-800 rounded-t-full"></div>}
-                </button>
-            </div>
+            <Tabs defaultValue="transactions" className="space-y-6" onValueChange={(v) => setActiveTab(v as any)}>
+                <TabsList>
+                    <TabsTrigger value="transactions">
+                        <Package size={16} className="mr-1.5" /> คำขออัพเกรด
+                    </TabsTrigger>
+                    <TabsTrigger value="packages">
+                        <Star size={16} className="mr-1.5" /> จัดการแพ็กเกจ
+                    </TabsTrigger>
+                </TabsList>
 
-            {/* ====== PACKAGES TAB ====== */}
-            {activeTab === 'packages' && (
+            <TabsContent value="packages">
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <div className="divide-y divide-slate-100">
                         {packages.map(pkg => (
@@ -242,7 +237,7 @@ export default function AdminPackagesPage() {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            onClick={() => handleDeletePackage(pkg.id)}
+                                            onClick={() => setDeletePackageId(pkg.id)}
                                             className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50"
                                         >
                                             <Trash2 size={14} />
@@ -253,30 +248,18 @@ export default function AdminPackagesPage() {
                         ))}
                     </div>
                 </div>
-            )}
+            </TabsContent>
 
-            {/* ====== TRANSACTIONS TAB ====== */}
-            {activeTab === 'transactions' && (
-                <>
+            <TabsContent value="transactions">
                     {/* Filter Tabs */}
-                    <div className="flex gap-2 mb-6">
-                        {[
-                            { value: '', label: 'ทั้งหมด' },
-                            { value: 'PENDING', label: 'รอตรวจสอบ' },
-                            { value: 'APPROVED', label: 'อนุมัติแล้ว' },
-                            { value: 'REJECTED', label: 'ถูกปฏิเสธ' },
-                        ].map(tab => (
-                            <Button
-                                key={tab.value}
-                                variant={filterStatus === tab.value ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => { setFilterStatus(tab.value); setPage(1); }}
-                                className="font-medium"
-                            >
-                                {tab.label}
-                            </Button>
-                        ))}
-                    </div>
+                    <Tabs defaultValue="" className="space-y-4" onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
+                        <TabsList>
+                            <TabsTrigger value="">ทั้งหมด</TabsTrigger>
+                            <TabsTrigger value="PENDING">รอตรวจสอบ</TabsTrigger>
+                            <TabsTrigger value="APPROVED">อนุมัติแล้ว</TabsTrigger>
+                            <TabsTrigger value="REJECTED">ถูกปฏิเสธ</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
 
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         {isLoading ? (
@@ -402,8 +385,8 @@ export default function AdminPackagesPage() {
                             ))}
                         </div>
                     )}
-                </>
-            )}
+            </TabsContent>
+            </Tabs>
 
             {/* Slip Viewer Modal */}
             {viewSlip && (
@@ -493,6 +476,30 @@ export default function AdminPackagesPage() {
                     </div>
                 );
             })()}
+
+            {/* Delete Package Confirmation Modal */}
+            {deletePackageId && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeletePackageId(null)} />
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
+                        <div className="text-center">
+                            <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Trash2 className="text-rose-500" size={24} />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 mb-1">ยืนยันการลบแพ็กเกจ</h3>
+                            <p className="text-sm text-slate-500 mb-5">คุณต้องการลบแพ็กเกจนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+                            <div className="flex gap-3">
+                                <Button variant="outline" className="flex-1" onClick={() => setDeletePackageId(null)}>
+                                    ยกเลิก
+                                </Button>
+                                <Button variant="destructive" className="flex-1" onClick={() => handleDeletePackage()}>
+                                    ยืนยันลบ
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Reject Modal */}
             {rejectId && (

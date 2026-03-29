@@ -33,6 +33,7 @@ export type UserMinAggregateOutputType = {
   password: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  lineUserId: string | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
 }
@@ -46,6 +47,7 @@ export type UserMaxAggregateOutputType = {
   password: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  lineUserId: string | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
 }
@@ -59,6 +61,7 @@ export type UserCountAggregateOutputType = {
   password: number
   createdAt: number
   updatedAt: number
+  lineUserId: number
   currentPackageId: number
   packageExpiresAt: number
   _all: number
@@ -74,6 +77,7 @@ export type UserMinAggregateInputType = {
   password?: true
   createdAt?: true
   updatedAt?: true
+  lineUserId?: true
   currentPackageId?: true
   packageExpiresAt?: true
 }
@@ -87,6 +91,7 @@ export type UserMaxAggregateInputType = {
   password?: true
   createdAt?: true
   updatedAt?: true
+  lineUserId?: true
   currentPackageId?: true
   packageExpiresAt?: true
 }
@@ -100,6 +105,7 @@ export type UserCountAggregateInputType = {
   password?: true
   createdAt?: true
   updatedAt?: true
+  lineUserId?: true
   currentPackageId?: true
   packageExpiresAt?: true
   _all?: true
@@ -186,6 +192,7 @@ export type UserGroupByOutputType = {
   password: string
   createdAt: Date
   updatedAt: Date
+  lineUserId: string | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
   _count: UserCountAggregateOutputType | null
@@ -220,6 +227,7 @@ export type UserWhereInput = {
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  lineUserId?: Prisma.StringNullableFilter<"User"> | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
@@ -238,6 +246,7 @@ export type UserOrderByWithRelationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lineUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackage?: Prisma.PackageOrderByWithRelationInput
@@ -250,6 +259,7 @@ export type UserOrderByWithRelationInput = {
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  lineUserId?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -266,7 +276,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   wishlists?: Prisma.WishlistListRelationFilter
   packageTransactions?: Prisma.PackageTransactionListRelationFilter
   listingRenewals?: Prisma.ListingRenewalListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "lineUserId">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -277,6 +287,7 @@ export type UserOrderByWithAggregationInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lineUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -296,6 +307,7 @@ export type UserScalarWhereWithAggregatesInput = {
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  lineUserId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   currentPackageId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
@@ -309,6 +321,7 @@ export type UserCreateInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -326,6 +339,7 @@ export type UserUncheckedCreateInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -343,6 +357,7 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -360,6 +375,7 @@ export type UserUncheckedUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -377,6 +393,7 @@ export type UserCreateManyInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
 }
@@ -390,6 +407,7 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -402,6 +420,7 @@ export type UserUncheckedUpdateManyInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -415,6 +434,7 @@ export type UserCountOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lineUserId?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
 }
@@ -428,6 +448,7 @@ export type UserMaxOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lineUserId?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
 }
@@ -441,6 +462,7 @@ export type UserMinOrderByAggregateInput = {
   password?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  lineUserId?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
 }
@@ -472,12 +494,12 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type UserCreateNestedOneWithoutWishlistsInput = {
@@ -587,6 +609,7 @@ export type UserCreateWithoutWishlistsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -603,6 +626,7 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -635,6 +659,7 @@ export type UserUpdateWithoutWishlistsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -651,6 +676,7 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -667,6 +693,7 @@ export type UserCreateWithoutListingsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
@@ -683,6 +710,7 @@ export type UserUncheckedCreateWithoutListingsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
@@ -715,6 +743,7 @@ export type UserUpdateWithoutListingsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
@@ -731,6 +760,7 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
@@ -747,6 +777,7 @@ export type UserCreateWithoutCurrentPackageInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
@@ -763,6 +794,7 @@ export type UserUncheckedCreateWithoutCurrentPackageInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
@@ -808,6 +840,7 @@ export type UserScalarWhereInput = {
   password?: Prisma.StringFilter<"User"> | string
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  lineUserId?: Prisma.StringNullableFilter<"User"> | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
 }
@@ -821,6 +854,7 @@ export type UserCreateWithoutPackageTransactionsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -837,6 +871,7 @@ export type UserUncheckedCreateWithoutPackageTransactionsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -869,6 +904,7 @@ export type UserUpdateWithoutPackageTransactionsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -885,6 +921,7 @@ export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -901,6 +938,7 @@ export type UserCreateWithoutListingRenewalsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -917,6 +955,7 @@ export type UserUncheckedCreateWithoutListingRenewalsInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -949,6 +988,7 @@ export type UserUpdateWithoutListingRenewalsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -965,6 +1005,7 @@ export type UserUncheckedUpdateWithoutListingRenewalsInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -981,6 +1022,7 @@ export type UserCreateManyCurrentPackageInput = {
   password: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  lineUserId?: string | null
   packageExpiresAt?: Date | string | null
 }
 
@@ -993,6 +1035,7 @@ export type UserUpdateWithoutCurrentPackageInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
@@ -1009,6 +1052,7 @@ export type UserUncheckedUpdateWithoutCurrentPackageInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
@@ -1025,6 +1069,7 @@ export type UserUncheckedUpdateManyWithoutCurrentPackageInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -1095,6 +1140,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lineUserId?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
@@ -1114,6 +1160,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lineUserId?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
@@ -1128,6 +1175,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lineUserId?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
@@ -1142,11 +1190,12 @@ export type UserSelectScalar = {
   password?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  lineUserId?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "createdAt" | "updatedAt" | "currentPackageId" | "packageExpiresAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "createdAt" | "updatedAt" | "lineUserId" | "currentPackageId" | "packageExpiresAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
@@ -1180,6 +1229,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     password: string
     createdAt: Date
     updatedAt: Date
+    lineUserId: string | null
     currentPackageId: string | null
     packageExpiresAt: Date | null
   }, ExtArgs["result"]["user"]>
@@ -1618,6 +1668,7 @@ export interface UserFieldRefs {
   readonly password: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly lineUserId: Prisma.FieldRef<"User", 'String'>
   readonly currentPackageId: Prisma.FieldRef<"User", 'String'>
   readonly packageExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
 }

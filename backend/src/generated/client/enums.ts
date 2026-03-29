@@ -131,3 +131,14 @@ export const PaymentStatus = {
 } as const
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const NotificationType = {
+  LISTING_EXPIRED: 'LISTING_EXPIRED',
+  LISTING_APPROVED: 'LISTING_APPROVED',
+  LISTING_REJECTED: 'LISTING_REJECTED',
+  RENEWAL_APPROVED: 'RENEWAL_APPROVED',
+  SYSTEM_ANNOUNCEMENT: 'SYSTEM_ANNOUNCEMENT'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
