@@ -64,7 +64,9 @@ export const ModelName = {
   Package: 'Package',
   SystemSetting: 'SystemSetting',
   PackageTransaction: 'PackageTransaction',
-  ListingRenewal: 'ListingRenewal'
+  ListingRenewal: 'ListingRenewal',
+  NotificationTemplate: 'NotificationTemplate',
+  NotificationLog: 'NotificationLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -92,6 +94,7 @@ export const UserScalarFieldEnum = {
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  lineUserId: 'lineUserId',
   currentPackageId: 'currentPackageId',
   packageExpiresAt: 'packageExpiresAt'
 } as const
@@ -333,6 +336,35 @@ export const ListingRenewalScalarFieldEnum = {
 } as const
 
 export type ListingRenewalScalarFieldEnum = (typeof ListingRenewalScalarFieldEnum)[keyof typeof ListingRenewalScalarFieldEnum]
+
+
+export const NotificationTemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  label: 'label',
+  type: 'type',
+  content: 'content',
+  flexJson: 'flexJson',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationTemplateScalarFieldEnum = (typeof NotificationTemplateScalarFieldEnum)[keyof typeof NotificationTemplateScalarFieldEnum]
+
+
+export const NotificationLogScalarFieldEnum = {
+  id: 'id',
+  recipientType: 'recipientType',
+  recipientFilter: 'recipientFilter',
+  totalSent: 'totalSent',
+  totalFailed: 'totalFailed',
+  sentBy: 'sentBy',
+  createdAt: 'createdAt',
+  templateId: 'templateId'
+} as const
+
+export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
 
 
 export const SortOrder = {

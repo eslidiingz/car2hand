@@ -9,6 +9,7 @@ import { jwtPlugin, generateAccessToken, authGuard } from "./jwt";
 import { adminLoginSchema, validateInput } from "./validation";
 import { authRateLimiter } from "./security";
 import { getUserPackage, getListingExpiryDate } from "./config/packages";
+import { testLineConnection } from "./line";
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
     .use(jwtPlugin())
@@ -1336,6 +1337,13 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             body: t.Object({
                 file: t.File()
             })
+        })
+
+        // ทดสอบ LINE Connection
+        .post("/line/test", async ({ set }) => {
+            const result = await testLineConnection();
+            if (!result.success) { set.status = 400; }
+            return result;
         })
     );
 

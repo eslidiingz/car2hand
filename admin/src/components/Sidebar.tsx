@@ -10,7 +10,8 @@ import {
     Settings,
     LogOut,
     Package,
-    Tags
+    Tags,
+    Bell
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
@@ -23,6 +24,7 @@ const navigation = [
     { name: "จัดการบทความ", href: "/articles", icon: BookOpen },
     { name: "หมวดหมู่บทความ", href: "/categories", icon: Tags },
     { name: "แพ็กเกจ", href: "/packages", icon: Package },
+    { name: "การแจ้งเตือน", href: "/notifications", icon: Bell },
 ];
 
 export default function Sidebar() {

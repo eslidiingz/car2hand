@@ -2,6 +2,7 @@
 
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
+import { toast } from "sonner";
 import {
     Car,
     Search,
@@ -138,7 +139,7 @@ export default function ListingModerationPage() {
             fetchStatusCounts();
             refreshPendingBadge();
         } catch (error: any) {
-            alert(error.message || 'เกิดข้อผิดพลาด');
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
         } finally {
             setActionLoading(null);
         }
@@ -158,7 +159,7 @@ export default function ListingModerationPage() {
             fetchStatusCounts();
             refreshPendingBadge();
         } catch (error: any) {
-            alert(error.message || 'เกิดข้อผิดพลาด');
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
         } finally {
             setActionLoading(null);
         }

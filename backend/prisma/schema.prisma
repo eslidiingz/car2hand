@@ -23,6 +23,9 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // LINE Integration
+  lineUserId String? @unique // LINE userId จาก LINE Login OAuth
+
   // Package
   currentPackageId String?
   currentPackage   Package?  @relation("UserCurrentPackage", fields: [currentPackageId], references: [id])
@@ -35,6 +38,7 @@ model User {
   listingRenewals     ListingRenewal[]
 
   @@index([currentPackageId])
+  @@index([lineUserId])
   @@map("users")
 }
 
@@ -493,5 +497,53 @@ model ListingRenewal {
   @@index([listingId])
   @@index([status])
   @@map("listing_renewals")
+}
+
+// =============================================
+// Notification System - ระบบแจ้งเตือน LINE
+// =============================================
+
+enum NotificationType {
+  LISTING_EXPIRED     // ประกาศหมดอายุ
+  LISTING_APPROVED    // ประกาศได้รับการอนุมัติ
+  LISTING_REJECTED    // ประกาศถูกปฏิเสธ
+  RENEWAL_APPROVED    // ต่ออายุได้รับการอนุมัติ
+  SYSTEM_ANNOUNCEMENT // ประกาศจากระบบ
+}
+
+model NotificationTemplate {
+  id        String           @id @default(cuid())
+  name      String           @unique // e.g. "listing_expired"
+  label     String           // ชื่อแสดงผล e.g. "แจ้งเตือนประกาศหมดอายุ"
+  type      NotificationType
+  content   String           @db.Text // ข้อความ รองรับ {{userName}}, {{listingTitle}} etc.
+  flexJson  String?          @db.Text // Flex Message JSON (optional)
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // Relations
+  logs NotificationLog[]
+
+  @@index([type])
+  @@map("notification_templates")
+}
+
+model NotificationLog {
+  id              String   @id @default(cuid())
+  recipientType   String   // INDIVIDUAL, ALL_USERS, BY_PACKAGE, EXPIRED_LISTINGS
+  recipientFilter String?  @db.Text // JSON: { packageSlug, userId, etc. }
+  totalSent       Int      @default(0)
+  totalFailed     Int      @default(0)
+  sentBy          String   // admin ID
+  createdAt       DateTime @default(now())
+
+  // Relations
+  templateId String
+  template   NotificationTemplate @relation(fields: [templateId], references: [id])
+
+  @@index([templateId])
+  @@index([createdAt])
+  @@map("notification_logs")
 }
 

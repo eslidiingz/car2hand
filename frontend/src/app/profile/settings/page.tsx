@@ -9,6 +9,7 @@ import {
     Bell,
     FloppyDisk
 } from '@phosphor-icons/react';
+import LineConnection from '@/components/settings/LineConnection';
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('profile');
@@ -113,10 +114,7 @@ export default function SettingsPage() {
                 )}
 
                 {activeTab === 'notifications' && (
-                    <div className="text-center py-10 text-gray-500">
-                        <Bell size={48} className="mx-auto mb-4 text-gray-300" />
-                        <p>ส่วนการตั้งค่าการแจ้งเตือน (Mockup)</p>
-                    </div>
+                    <LineConnection />
                 )}
 
                 <div className="mt-8 pt-6 border-t border-gray-100 flex justify-end">

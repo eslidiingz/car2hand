@@ -14,6 +14,9 @@ import { wishlistRoutes } from "./wishlist";
 import { articleRoutes as publicArticleRoutes } from "./articles";
 import { packageRoutes } from "./packages";
 import { securityHeaders, requestLogger, rateLimiter } from "./security";
+import { lineAuthRoutes } from "./line-auth";
+import { lineWebhookRoutes } from "./line-webhook";
+import { notificationRoutes } from "./notifications";
 
 // Allowed origins (update for production)
 const ALLOWED_ORIGINS = [
@@ -64,6 +67,9 @@ const app = new Elysia()
       .use(wishlistRoutes)
       .use(publicArticleRoutes)
       .use(packageRoutes)
+      .use(lineAuthRoutes)
+      .use(lineWebhookRoutes)
+      .use(notificationRoutes)
   )
 
   // Global error handler
