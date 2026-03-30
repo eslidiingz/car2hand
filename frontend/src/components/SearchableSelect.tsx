@@ -24,6 +24,7 @@ interface SearchableSelectProps {
     loading?: boolean;
     emptyMessage?: string;
     className?: string;
+    compact?: boolean; // minimal style — no border, no height, for embedding in containers
     icon?: React.ReactNode;
     allowCustom?: boolean;
     customLabel?: string;
@@ -39,6 +40,7 @@ export default function SearchableSelect({
     loading = false,
     emptyMessage = 'ไม่พบข้อมูล',
     className = '',
+    compact = false,
     icon,
     allowCustom = false,
     customLabel = 'ใช้ค่า "{search}"'
@@ -111,8 +113,8 @@ export default function SearchableSelect({
             {/* Selected Value Trigger */}
             <div
                 onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
-                className={`w-full h-12 pr-4 border rounded-xl outline-none transition text-base text-left flex items-center justify-between gap-2 ${icon ? 'pl-11' : 'pl-4'} ${disabled || loading ? 'bg-gray-200/50 border-gray-100 cursor-not-allowed' : 'bg-white border-gray-200 cursor-pointer hover:border-primary'
-                    } ${isOpen ? 'border-primary ring-1 ring-primary' : ''}`}
+                className={`w-full pr-4 outline-none transition text-base text-left flex items-center justify-between gap-2 ${compact ? 'h-auto bg-transparent' : `h-12 border rounded-xl ${isOpen ? 'border-primary ring-1 ring-primary' : ''}`} ${icon ? 'pl-11' : compact ? 'pl-0' : 'pl-4'} ${disabled || loading ? 'bg-gray-200/50 border-gray-100 cursor-not-allowed' : compact ? 'cursor-pointer' : 'bg-white border-gray-200 cursor-pointer hover:border-primary'
+                    }`}
             >
                 {icon && (
                     <div className={`absolute left-3 top-1/2 -translate-y-1/2 transition-colors ${disabled || loading ? 'text-gray-300' : 'text-gray-400'}`}>
@@ -160,7 +162,7 @@ export default function SearchableSelect({
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                <div className={`absolute z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden ${compact ? '-left-4 -right-4 top-full' : 'w-full'}`}>
                     {/* Search Input */}
                     <div className="p-2 border-b border-gray-100">
                         <div className="relative">

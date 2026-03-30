@@ -16,7 +16,11 @@ import {
     CarProfile,
     WarningCircle,
     Crown,
-    ArrowRight
+    ArrowRight,
+    Upload,
+    Image as ImageIcon,
+    X,
+    Warning,
 } from '@phosphor-icons/react';
 import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
 import Toast from '@/components/Toast';
@@ -65,6 +69,10 @@ export default function MyListingsPage() {
 
     const [renewId, setRenewId] = useState<string | null>(null);
     const [renewLoading, setRenewLoading] = useState(false);
+    const [renewSlipPreview, setRenewSlipPreview] = useState<string | null>(null);
+    const [renewSlipData, setRenewSlipData] = useState<string | null>(null);
+    const [renewError, setRenewError] = useState<string | null>(null);
+    const [pendingRenewalIds, setPendingRenewalIds] = useState<Set<string>>(new Set());
     const [toastMsg, setToastMsg] = useState<{ message: string; type: string } | null>(null);
     const [slotListingId, setSlotListingId] = useState<string | null>(null);
     const [slotSaving, setSlotSaving] = useState(false);
@@ -95,7 +103,19 @@ export default function MyListingsPage() {
         setUser(userData);
         fetchListings(userData.id);
         fetchPackageInfo(userData.id);
+        fetchPendingRenewals(userData.id);
     }, [router]);
+
+    const fetchPendingRenewals = async (userId: string) => {
+        try {
+            const res = await fetch(`${API_BASE}/listings/renewals/pending?userId=${userId}`);
+            if (res.ok) {
+                const data = await res.json();
+                const ids = new Set<string>((data.renewals || []).map((r: { listingId: string }) => r.listingId));
+                setPendingRenewalIds(ids);
+            }
+        } catch { /* silently fail */ }
+    };
 
     const fetchPackageInfo = async (userId: string) => {
         try {
@@ -250,6 +270,9 @@ export default function MyListingsPage() {
             }
         } else {
             // Basic user → แสดง modal ต่ออายุ (จ่าย 50 บาท)
+            setRenewSlipPreview(null);
+            setRenewSlipData(null);
+            setRenewError(null);
             setRenewId(listingId);
             // Fetch payment info
             try {
@@ -272,13 +295,17 @@ export default function MyListingsPage() {
             const data = await response.json();
             if (response.ok) {
                 setRenewId(null);
+                setRenewSlipPreview(null);
+                setRenewSlipData(null);
+                setRenewError(null);
                 showToast('ส่งคำขอต่ออายุแล้ว รอ admin ตรวจสอบ', 'success');
                 fetchListings(user.id);
+                fetchPendingRenewals(user.id);
             } else {
-                showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
+                setRenewError(data.message || 'เกิดข้อผิดพลาด');
             }
         } catch {
-            showToast('เกิดข้อผิดพลาด', 'error');
+            setRenewError('เกิดข้อผิดพลาดในการส่งคำขอ');
         } finally {
             setRenewLoading(false);
         }
@@ -464,6 +491,7 @@ export default function MyListingsPage() {
                                 onToggleMenu={setActiveMenu}
                                 onDelete={setDeleteConfirm}
                                 onRenew={handleRenewClick}
+                                hasPendingRenewal={pendingRenewalIds.has(item.id)}
                                 onBump={handleBump}
                                 onSetSlot={currentSlots.length > 0 ? openSlotModal : undefined}
                                 slotSchedules={currentSlots}
@@ -554,67 +582,126 @@ export default function MyListingsPage() {
 
             {/* Renewal Modal (Basic user — จ่าย 50 บาท) */}
             {renewId && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
                     <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setRenewId(null)}
+                        onClick={() => { if (!renewLoading) { setRenewId(null); setRenewSlipPreview(null); setRenewSlipData(null); } }}
                     ></div>
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4 relative z-10">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <ArrowRight weight="bold" className="text-3xl text-emerald-500 rotate-[-45deg]" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">ต่ออายุประกาศ</h3>
-                            <p className="text-gray-500 text-sm mb-4">
-                                ต่ออายุประกาศ 30 วัน ในราคา <span className="font-bold text-orange-500">50 บาท</span>
-                            </p>
+                    <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md max-h-[90vh] overflow-y-auto relative z-10">
+                        {/* Header */}
+                        <div className="sticky top-0 bg-white border-b border-gray-100 p-5 flex items-center justify-between rounded-t-2xl">
+                            <h3 className="text-lg font-bold text-gray-800">ต่ออายุประกาศ</h3>
+                            <button
+                                onClick={() => { if (!renewLoading) { setRenewId(null); setRenewSlipPreview(null); setRenewSlipData(null); } }}
+                                className="p-1.5 hover:bg-gray-100 rounded-lg transition"
+                            >
+                                <X weight="bold" size={18} />
+                            </button>
+                        </div>
 
+                        <div className="p-5 space-y-4">
+                            {/* Price info */}
+                            <div className="text-center py-3 bg-emerald-50 rounded-xl">
+                                <p className="text-sm text-gray-600">ต่ออายุประกาศ 30 วัน</p>
+                                <p className="text-2xl font-bold text-emerald-600 mt-1">฿50</p>
+                            </div>
+
+                            {/* Payment info */}
                             {paymentInfo && (
-                                <div className="bg-gray-50 rounded-xl p-4 mb-4 text-left text-sm">
+                                <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-1">
                                     <p className="font-bold text-gray-700 mb-2">ข้อมูลการชำระเงิน:</p>
-                                    {paymentInfo.bankName && <p className="text-gray-600">ธนาคาร: {paymentInfo.bankName}</p>}
-                                    {paymentInfo.accountName && <p className="text-gray-600">ชื่อบัญชี: {paymentInfo.accountName}</p>}
-                                    {paymentInfo.accountNumber && <p className="text-gray-600">เลขบัญชี: {paymentInfo.accountNumber}</p>}
+                                    {paymentInfo.bankName && <p className="text-gray-600">ธนาคาร: <span className="font-bold">{paymentInfo.bankName}</span></p>}
+                                    {paymentInfo.accountName && <p className="text-gray-600">ชื่อบัญชี: <span className="font-bold">{paymentInfo.accountName}</span></p>}
+                                    {paymentInfo.accountNumber && <p className="text-gray-600">เลขบัญชี: <span className="font-bold font-mono">{paymentInfo.accountNumber}</span></p>}
+                                    <p className="text-gray-600">จำนวน: <span className="font-bold text-lg">฿50</span></p>
                                 </div>
                             )}
 
-                            <label className="block mb-4">
-                                <span className="block text-sm font-bold text-gray-700 mb-2 text-left">อัพโหลดสลิปการโอนเงิน</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-emerald-50 file:text-emerald-600 hover:file:bg-emerald-100"
-                                    onChange={async (e) => {
-                                        const file = e.target.files?.[0];
-                                        if (!file) return;
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => {
-                                            handleBasicRenew(reader.result as string);
-                                        };
-                                        reader.readAsDataURL(file);
-                                    }}
-                                    disabled={renewLoading}
-                                />
-                            </label>
-
-                            {renewLoading && (
-                                <div className="flex items-center justify-center gap-2 text-emerald-600 font-medium mb-4">
-                                    <CircleNotch weight="bold" className="animate-spin" />
-                                    กำลังส่งคำขอ...
+                            {paymentInfo?.qrCodeImage && (
+                                <div className="text-center">
+                                    <p className="text-xs text-gray-500 mb-2 font-bold">สแกน QR Code เพื่อชำระเงิน</p>
+                                    <img src={paymentInfo.qrCodeImage} alt="QR Code" className="w-48 h-48 mx-auto rounded-xl border border-gray-200" />
                                 </div>
                             )}
 
-                            <div className="flex gap-3 mt-2">
-                                <button
-                                    onClick={() => setRenewId(null)}
-                                    disabled={renewLoading}
-                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
-                                >
-                                    ยกเลิก
-                                </button>
+                            {/* Slip Upload */}
+                            <div>
+                                <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
+                                    <Upload weight="bold" className="text-emerald-600" /> แนบหลักฐานการโอนเงิน
+                                </h4>
+                                {renewSlipPreview ? (
+                                    <div className="relative">
+                                        <img src={renewSlipPreview} alt="Slip" className="w-full rounded-xl border border-gray-200 max-h-64 object-contain bg-gray-50" />
+                                        <button
+                                            onClick={() => { setRenewSlipPreview(null); setRenewSlipData(null); }}
+                                            className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition"
+                                        >
+                                            <X weight="bold" size={14} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="flex flex-col items-center gap-3 p-6 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition group">
+                                        <ImageIcon weight="thin" size={40} className="text-gray-300 group-hover:text-emerald-500 transition" />
+                                        <span className="text-sm text-gray-500 group-hover:text-emerald-600 font-bold">คลิกเพื่ออัพโหลดสลิปการโอนเงิน</span>
+                                        <span className="text-xs text-gray-400">รองรับไฟล์ JPG, PNG, WebP</span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                const reader = new FileReader();
+                                                reader.onload = () => {
+                                                    setRenewSlipPreview(reader.result as string);
+                                                    setRenewSlipData(reader.result as string);
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }}
+                                        />
+                                    </label>
+                                )}
                             </div>
 
-                            <p className="text-xs text-gray-400 mt-4">
+                            {/* Warning */}
+                            <div className="flex items-start gap-3 bg-yellow-50 rounded-xl p-3">
+                                <Warning weight="fill" className="text-yellow-500 flex-shrink-0 mt-0.5" size={18} />
+                                <p className="text-xs text-yellow-700">
+                                    หลังจากส่งหลักฐาน ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง
+                                </p>
+                            </div>
+
+                            {/* Error */}
+                            {renewError && (
+                                <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
+                                    <Warning weight="fill" className="text-red-500 flex-shrink-0" size={18} />
+                                    <p className="text-sm text-red-700 font-medium">{renewError}</p>
+                                </div>
+                            )}
+
+                            {/* Submit */}
+                            <button
+                                onClick={() => { setRenewError(null); if (renewSlipData) handleBasicRenew(renewSlipData); }}
+                                disabled={!renewSlipData || renewLoading}
+                                className={`w-full py-3.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 ${
+                                    renewSlipData && !renewLoading
+                                        ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg'
+                                        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                }`}
+                            >
+                                {renewLoading ? (
+                                    <>
+                                        <CircleNotch weight="bold" className="animate-spin" size={16} />
+                                        กำลังส่งคำขอ...
+                                    </>
+                                ) : (
+                                    <>
+                                        ส่งคำขอต่ออายุ <ArrowRight weight="bold" size={14} />
+                                    </>
+                                )}
+                            </button>
+
+                            <p className="text-xs text-gray-400 text-center">
                                 หรือลบประกาศเดิมแล้วลงประกาศใหม่ได้ฟรี
                             </p>
                         </div>

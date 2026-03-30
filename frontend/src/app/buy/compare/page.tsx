@@ -5,22 +5,20 @@ import Link from 'next/link';
 import {
     Scales,
     Trash,
-    Heart,
     Plus,
-    ArrowsLeftRight,
     CalendarBlank,
     Gauge,
     GasPump,
     MapPin,
     Image as ImageIcon,
     ArrowLeft,
-    Warning,
     Lightning,
-    Users
+    Users,
+    GearFine,
+    X,
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 
-// Extended listing data for comparison
 interface CompareItem extends WishlistItem {
     mileage?: number | null;
     fuelType?: string;
@@ -31,18 +29,43 @@ interface CompareItem extends WishlistItem {
     vehicleType?: 'CAR' | 'MOTORCYCLE';
 }
 
+const formatPrice = (price: number) => price.toLocaleString('th-TH');
+
+const getFuelTypeLabel = (fuelType?: string) => {
+    const labels: Record<string, string> = {
+        'PETROL': 'เบนซิน', 'DIESEL': 'ดีเซล', 'HYBRID': 'Hybrid',
+        'PLUGIN_HYBRID': 'Plug-in', 'EV': 'ไฟฟ้า (EV)', 'LPG': 'LPG', 'NGV': 'NGV'
+    };
+    return fuelType ? labels[fuelType] || fuelType : '-';
+};
+
+const getTransmissionLabel = (t?: string | null) => {
+    const labels: Record<string, string> = { 'AUTOMATIC': 'ออโต้', 'MANUAL': 'ธรรมดา', 'CVT': 'CVT', 'DCT': 'DCT' };
+    return t ? labels[t] || t : '-';
+};
+
+// Spec row definition
+const specRows = [
+    { label: 'ราคา', icon: <span className="text-accent font-bold text-sm">฿</span>, getValue: (item: CompareItem) => `฿${formatPrice(item.price)}`, highlight: true },
+    { label: 'ปี', icon: <CalendarBlank size={16} className="text-primary" />, getValue: (item: CompareItem) => String(item.year || '-') },
+    { label: 'เลขไมล์', icon: <Gauge size={16} className="text-primary" />, getValue: (item: CompareItem) => item.mileage ? `${item.mileage.toLocaleString()} กม.` : '-' },
+    { label: 'เชื้อเพลิง', icon: <GasPump size={16} className="text-primary" />, getValue: (item: CompareItem) => getFuelTypeLabel(item.fuelType) },
+    { label: 'เกียร์', icon: <GearFine size={16} className="text-primary" />, getValue: (item: CompareItem) => getTransmissionLabel(item.transmission) },
+    { label: 'เครื่องยนต์', icon: <Lightning size={16} className="text-primary" />, getValue: (item: CompareItem) => item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-' },
+    { label: 'ที่นั่ง', icon: <Users size={16} className="text-primary" />, getValue: (item: CompareItem) => item.seats ? `${item.seats} ที่นั่ง` : '-' },
+    { label: 'จังหวัด', icon: <MapPin size={16} className="text-primary" />, getValue: (item: CompareItem) => item.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : item.province || '-' },
+];
+
 export default function ComparePage() {
     const { compareList, removeFromCompare, maxCompareItems, clearCompare, isLoggedIn } = useWishlist();
     const [compareItems, setCompareItems] = useState<CompareItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
-    // Get items for comparison based on login status
     useEffect(() => {
         const fetchCompareData = async () => {
             setLoading(true);
-
             const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-            // Fetch full data for each item
             const enrichedItems: CompareItem[] = await Promise.all(
                 compareList.map(async (item) => {
                     try {
@@ -52,82 +75,34 @@ export default function ComparePage() {
                             const listing = data.listing;
                             return {
                                 ...item,
-                                mileage: listing.mileage,
-                                fuelType: listing.fuelType,
-                                transmission: listing.transmission,
-                                engineSize: listing.engineSize,
-                                seats: listing.seats,
-                                province: listing.province,
+                                mileage: listing.mileage, fuelType: listing.fuelType,
+                                transmission: listing.transmission, engineSize: listing.engineSize,
+                                seats: listing.seats, province: listing.province,
                                 vehicleType: listing.vehicleType
                             };
                         }
-                    } catch (error) {
-                        console.error('Error fetching listing:', error);
-                    }
+                    } catch (error) { console.error('Error fetching listing:', error); }
                     return item;
                 })
             );
-
             setCompareItems(enrichedItems);
             setLoading(false);
         };
-
         fetchCompareData();
     }, [compareList]);
-
-    // Format price
-    const formatPrice = (price: number) => {
-        return price.toLocaleString('th-TH');
-    };
-
-    // Get fuel type label
-    const getFuelTypeLabel = (fuelType?: string) => {
-        const labels: Record<string, string> = {
-            'PETROL': 'Petrol (เบนซิน)',
-            'DIESEL': 'Diesel (ดีเซล)',
-            'HYBRID': 'Hybrid (ไฮบริด)',
-            'PLUGIN_HYBRID': 'Plug-in Hybrid (ปลั๊กอินไฮบริด)',
-            'EV': 'EV (ไฟฟ้า)',
-            'LPG': 'LPG (แก๊ส)',
-            'NGV': 'NGV (แก๊ส)'
-        };
-        return fuelType ? labels[fuelType] || fuelType : '-';
-    };
-
-    // Get transmission label
-    const getTransmissionLabel = (transmission?: string | null) => {
-        const labels: Record<string, string> = {
-            'AUTOMATIC': 'ออโต้',
-            'MANUAL': 'ธรรมดา',
-            'CVT': 'CVT',
-            'DCT': 'DCT'
-        };
-        return transmission ? labels[transmission] || transmission : '-';
-    };
-
-    // Remove item from comparison
-    const handleRemove = (id: string) => {
-        removeFromCompare(id);
-    };
 
     // Empty state
     if (!loading && compareItems.length === 0) {
         return (
-            <div className="bg-surface text-gray-800 min-h-screen">
-                <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-                    <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Scales size={48} weight="thin" className="text-gray-300" />
+            <div className="bg-surface min-h-screen flex items-center justify-center px-4">
+                <div className="text-center max-w-sm">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <Scales size={40} weight="thin" className="text-gray-300" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-700 mb-3">ยังไม่มีรายการเปรียบเทียบ</h1>
-                    <p className="text-gray-500 mb-8">
-                        กดปุ่ม ⚖️ บนรายการรถที่สนใจเพื่อเพิ่มในรายการเปรียบเทียบ
-                    </p>
-                    <Link
-                        href="/buy"
-                        className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition"
-                    >
-                        <ArrowLeft size={20} />
-                        ไปหน้าซื้อรถ
+                    <h1 className="text-xl font-bold text-gray-700 mb-2">ยังไม่มีรายการเปรียบเทียบ</h1>
+                    <p className="text-gray-500 text-sm mb-6">กดปุ่ม ⚖️ บนรายการรถที่สนใจเพื่อเพิ่มในรายการเปรียบเทียบ</p>
+                    <Link href="/buy" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition text-sm">
+                        <ArrowLeft size={18} /> ไปหน้าซื้อรถ
                     </Link>
                 </div>
             </div>
@@ -135,258 +110,182 @@ export default function ComparePage() {
     }
 
     return (
-        <div className="bg-surface text-gray-800 min-h-screen">
+        <div className="bg-surface min-h-screen">
             {/* Header */}
-            <div className="pt-8 pb-4 bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                            <Scales weight="fill" className="text-accent" /> เปรียบเทียบรถ
-                        </h1>
-                        <p className="text-sm text-gray-500">
-                            เปรียบเทียบรถ {compareItems.length} คัน
-                            {!isLoggedIn && compareList.length >= 3 && (
-                                <span className="text-amber-600 ml-2">
-                                    (เข้าสู่ระบบเพื่อเปรียบเทียบได้สูงสุด 5 คัน)
-                                </span>
-                            )}
-                        </p>
-                    </div>
-
+            <div className="sticky top-0 z-20 bg-white border-b border-gray-100 shadow-sm">
+                <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        {/* Limit Info */}
-                        <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg">
-                            {compareItems.length}/{maxCompareItems} รายการ
+                        <Link href="/buy" className="p-2 hover:bg-gray-100 rounded-lg transition">
+                            <ArrowLeft size={20} />
+                        </Link>
+                        <div>
+                            <h1 className="text-lg font-bold text-gray-800">เปรียบเทียบรถ</h1>
+                            <p className="text-xs text-gray-500">{compareItems.length}/{maxCompareItems} คัน</p>
                         </div>
-
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Link href="/buy" className="text-xs font-bold text-primary bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
+                            <Plus size={14} weight="bold" /> เพิ่ม
+                        </Link>
                         {compareItems.length > 0 && (
-                            <button
-                                onClick={clearCompare}
-                                className="text-sm text-red-500 hover:text-red-600 flex items-center gap-1"
-                            >
+                            <button onClick={() => setShowClearConfirm(true)} className="text-xs text-red-500 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition">
                                 <Trash size={16} />
-                                ล้างทั้งหมด
                             </button>
                         )}
                     </div>
                 </div>
             </div>
 
-            {/* Login Prompt for non-logged in users */}
-            {!isLoggedIn && compareList.length >= 3 && (
-                <div className="bg-amber-50 border-b border-amber-200">
-                    <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-                        <Warning weight="fill" className="text-amber-500" size={20} />
-                        <span className="text-sm text-amber-700">
-                            กำลังเปรียบเทียบ {compareList.length} รายการ (สูงสุด {maxCompareItems})
-                        </span>
-                        <Link href="/buy" className="text-sm text-primary font-bold hover:underline ml-auto">
-                            เข้าสู่ระบบเพื่อเปรียบเทียบเพิ่ม
-                        </Link>
+            {/* Clear Confirm Modal */}
+            {showClearConfirm && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowClearConfirm(false)}>
+                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 text-center">
+                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Trash size={28} className="text-red-500" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-2">ล้างรายการเปรียบเทียบ?</h3>
+                            <p className="text-sm text-gray-500">รายการเปรียบเทียบทั้งหมดจะถูกลบ</p>
+                        </div>
+                        <div className="flex border-t border-gray-100">
+                            <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 transition rounded-bl-2xl">ยกเลิก</button>
+                            <button onClick={() => { clearCompare(); setShowClearConfirm(false); }} className="flex-1 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50 transition border-l border-gray-100 rounded-br-2xl">ล้างทั้งหมด</button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Loading State */}
             {loading ? (
-                <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-                    <div className="animate-pulse">
-                        <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4"></div>
-                        <div className="h-6 bg-gray-200 rounded w-48 mx-auto"></div>
-                    </div>
+                <div className="flex items-center justify-center py-20">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
                 </div>
             ) : (
-                <div className="max-w-7xl mx-auto px-4 py-8 overflow-x-auto">
-                    {/* Compare Grid */}
-                    <div className={`grid gap-4 ${compareItems.length === 0 ? 'grid-cols-1 max-w-md mx-auto' :
-                        compareItems.length === 1 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
-                            compareItems.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
-                                compareItems.length === 2 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-3' :
-                                    compareItems.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto' :
-                                        compareItems.length === 3 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
-                                            compareItems.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
-                                                compareItems.length === 4 && compareItems.length < maxCompareItems ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-5' :
-                                                    compareItems.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
-                                                        'grid-cols-1 md:grid-cols-2 lg:grid-cols-5'
-                        }`}>
-                        {compareItems.map((item, index) => (
-                            <div key={item.id} className="flex flex-col gap-4">
-                                {/* Car Header Card */}
-                                <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-200 relative h-[360px] flex flex-col">
+                <div className="max-w-5xl mx-auto px-4 py-6">
 
-                                    {/* Image */}
-                                    <div className="relative mb-3">
-                                        {item.imageUrl ? (
-                                            <img
-                                                src={item.imageUrl}
-                                                className="w-full h-40 object-cover rounded-xl"
-                                                alt={item.title}
-                                            />
-                                        ) : (
-                                            <div className="w-full h-40 bg-gray-100 rounded-xl flex items-center justify-center">
-                                                <ImageIcon size={48} weight="thin" className="text-gray-300" />
-                                            </div>
+                    {/* === MOBILE: Single scroll table === */}
+                    <div className="lg:hidden">
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                            <table className="w-full" style={{ minWidth: `${Math.max(compareItems.length * 130 + 80, 320)}px` }}>
+                                {/* Sticky car header */}
+                                <thead>
+                                    <tr className="border-b border-gray-100">
+                                        <th className="w-16 p-2 bg-white sticky top-0 z-10"></th>
+                                        {compareItems.map((item) => (
+                                            <th key={item.id} className="p-2 text-center bg-white sticky top-0 z-10 min-w-[110px]">
+                                                <div className="relative">
+                                                    <div className="aspect-4/3 rounded-lg overflow-hidden bg-gray-100">
+                                                        {item.imageUrl ? (
+                                                            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center">
+                                                                <ImageIcon size={20} weight="thin" className="text-gray-300" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <button onClick={() => removeFromCompare(item.id)} className="absolute -top-1 -right-1 bg-red-500 text-white p-0.5 rounded-full">
+                                                        <X size={10} weight="bold" />
+                                                    </button>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-gray-700 mt-1 line-clamp-2 leading-tight">{item.title}</p>
+                                                <Link href={`/buy/${item.id}`} className="text-[10px] text-primary font-bold">ดูเพิ่ม →</Link>
+                                            </th>
+                                        ))}
+                                        {compareItems.length < maxCompareItems && (
+                                            <th className="p-2 min-w-[80px] bg-white sticky top-0 z-10">
+                                                <Link href="/buy" className="flex flex-col items-center justify-center h-16 border-2 border-dashed border-gray-200 rounded-lg hover:border-primary transition">
+                                                    <Plus size={16} weight="bold" className="text-gray-300" />
+                                                    <span className="text-[9px] font-bold text-gray-400 mt-0.5">เพิ่ม</span>
+                                                </Link>
+                                            </th>
                                         )}
-                                        <button
-                                            onClick={() => handleRemove(item.id)}
-                                            className="absolute top-2 right-2 bg-white/80 p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-white transition"
-                                        >
-                                            <Trash weight="bold" size={16} />
-                                        </button>
-                                    </div>
+                                    </tr>
+                                </thead>
+                                {/* Spec rows */}
+                                <tbody>
+                                    {specRows.map((spec, idx) => (
+                                        <tr key={spec.label} className={idx % 2 === 0 ? 'bg-gray-50/50' : ''}>
+                                            <td className="px-2 py-2.5 text-center">
+                                                <div className="flex flex-col items-center gap-0.5">
+                                                    <span className="w-5 h-5 flex items-center justify-center">{spec.icon}</span>
+                                                    <span className="text-[9px] text-gray-400 font-medium leading-tight">{spec.label}</span>
+                                                </div>
+                                            </td>
+                                            {compareItems.map((item) => (
+                                                <td key={item.id} className={`px-2 py-2.5 text-center text-xs font-bold ${spec.highlight ? 'text-accent' : 'text-gray-800'}`}>
+                                                    {spec.getValue(item)}
+                                                </td>
+                                            ))}
+                                            {compareItems.length < maxCompareItems && <td></td>}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                                    {/* Title - Fixed height */}
-                                    <h3 className="font-bold text-gray-800 text-base leading-snug mb-2 line-clamp-2 h-[48px]">
-                                        {item.title}
-                                    </h3>
-
-                                    {/* Price - Fixed height */}
-                                    <div className="text-xl font-bold text-accent mb-3 h-[28px] flex items-center">
-                                        ฿{formatPrice(item.price)}
-                                    </div>
-
-                                    {/* View Button - at bottom */}
-                                    <Link
-                                        href={`/buy/${item.id}`}
-                                        className="block w-full py-2.5 rounded-xl font-bold text-sm text-center transition mt-auto bg-primary text-white hover:bg-opacity-90"
-                                    >
-                                        ดูรายละเอียด
-                                    </Link>
-                                </div>
-
-                                {/* Specs */}
-                                <div className="space-y-3">
-                                    {/* Year */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <CalendarBlank size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">ปี</div>
-                                            <div className="font-bold text-gray-800">{item.year}</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Mileage */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <Gauge size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">เลขไมล์</div>
-                                            <div className="font-bold text-gray-800">
-                                                {item.mileage
-                                                    ? `${item.mileage.toLocaleString()} กม.`
-                                                    : '-'
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Fuel Type */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <GasPump size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">เชื้อเพลิง</div>
-                                            <div className="font-bold text-gray-800">
-                                                {getFuelTypeLabel(item.fuelType)}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Transmission */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <span className="text-primary font-bold text-sm">A</span>
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">เกียร์</div>
-                                            <div className="font-bold text-gray-800">
-                                                {getTransmissionLabel(item.transmission)}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Province */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <MapPin size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">จังหวัด</div>
-                                            <div className="font-bold text-gray-800">
-                                                {item.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : item.province || '-'}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Engine Size */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <Lightning size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">ขนาดเครื่องยนต์</div>
-                                            <div className="font-bold text-gray-800">
-                                                {item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-'}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Seats */}
-                                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3 h-[64px]">
-                                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <Users size={18} className="text-primary" />
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-gray-400 uppercase tracking-wide">จำนวนที่นั่ง</div>
-                                            <div className="font-bold text-gray-800">
-                                                {item.seats ? `${item.seats} ที่นั่ง` : '-'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-
-                        {/* Add More Card */}
-                        {compareItems.length < maxCompareItems && (
-                            <Link
-                                href="/buy"
-                                className="flex flex-col gap-4"
-                            >
-                                <div className="bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-300 h-[360px] flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary hover:bg-blue-50 transition group">
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition">
-                                        <Plus weight="bold" className="text-2xl text-primary" />
-                                    </div>
-                                    <h3 className="font-bold text-gray-600 group-hover:text-primary">เพิ่มรถอีกคัน</h3>
-                                    <p className="text-xs text-gray-400 mt-2">
-                                        เหลืออีก {maxCompareItems - compareItems.length} รายการ
-                                    </p>
-                                </div>
-
-                                {/* Placeholder specs */}
-                                <div className="space-y-3 opacity-30 pointer-events-none">
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                    <div className="bg-gray-200 rounded-xl h-[64px]"></div>
-                                </div>
-                            </Link>
-                        )}
+                    {/* === DESKTOP: Table layout === */}
+                    <div className="hidden lg:block">
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+                            <table className="w-full" style={{ minWidth: `${Math.max(compareItems.length * 180 + 140, 600)}px` }}>
+                                {/* Header row with car images */}
+                                <thead>
+                                    <tr className="border-b border-gray-100">
+                                        <th className="w-36 p-4 text-left text-sm font-bold text-gray-500 bg-gray-50 sticky left-0 z-10 align-bottom">รายการ</th>
+                                        {compareItems.map((item) => (
+                                            <th key={item.id} className="p-4 text-center min-w-[180px] align-top">
+                                                <div className="relative">
+                                                    <div className="aspect-4/3 rounded-xl overflow-hidden bg-gray-100">
+                                                        {item.imageUrl ? (
+                                                            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center">
+                                                                <ImageIcon size={40} weight="thin" className="text-gray-300" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <button onClick={() => removeFromCompare(item.id)} className="absolute top-1 right-1 bg-white/80 p-1 rounded-full text-gray-400 hover:text-red-500 transition">
+                                                        <Trash size={14} weight="bold" />
+                                                    </button>
+                                                </div>
+                                                <p className="text-sm font-bold text-gray-800 mt-2 line-clamp-2 h-[40px]">{item.title}</p>
+                                                <Link href={`/buy/${item.id}`} className="text-xs text-primary font-bold hover:underline inline-block">
+                                                    ดูรายละเอียด →
+                                                </Link>
+                                            </th>
+                                        ))}
+                                        {compareItems.length < maxCompareItems && (
+                                            <th className="p-4 text-center min-w-[180px] align-top">
+                                                <Link href="/buy" className="flex flex-col items-center justify-center aspect-4/3 border-2 border-dashed border-gray-200 rounded-xl hover:border-primary hover:bg-blue-50 transition group">
+                                                    <Plus size={24} weight="bold" className="text-gray-300 group-hover:text-primary" />
+                                                    <span className="text-xs font-bold text-gray-400 group-hover:text-primary mt-2">เพิ่มรถอีกคัน</span>
+                                                </Link>
+                                            </th>
+                                        )}
+                                    </tr>
+                                </thead>
+                                {/* Spec rows */}
+                                <tbody>
+                                    {specRows.map((spec, idx) => (
+                                        <tr key={spec.label} className={idx % 2 === 0 ? 'bg-gray-50/50' : ''}>
+                                            <td className="px-4 py-3 text-sm text-gray-500 font-medium sticky left-0 bg-white z-10">
+                                                <span className="flex items-center gap-2 whitespace-nowrap">
+                                                    {spec.icon} {spec.label}
+                                                </span>
+                                            </td>
+                                            {compareItems.map((item) => (
+                                                <td key={item.id} className={`px-4 py-3 text-center text-sm font-bold ${spec.highlight ? 'text-accent text-base' : 'text-gray-800'}`}>
+                                                    {spec.getValue(item)}
+                                                </td>
+                                            ))}
+                                            {compareItems.length < maxCompareItems && <td></td>}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
-
-            {/* Mobile Hint */}
-            <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900/80 text-white px-4 py-2 rounded-full text-xs backdrop-blur-sm pointer-events-none z-50 flex items-center gap-2">
-                <ArrowsLeftRight weight="bold" /> ปัดซ้ายขวาเพื่อดูข้อมูล
-            </div>
         </div>
     );
 }

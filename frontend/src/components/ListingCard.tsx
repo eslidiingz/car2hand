@@ -11,7 +11,10 @@ import {
     CalendarBlank,
     Image as ImageIcon,
     Trash,
-    Scales
+    Scales,
+    Crown,
+    Fire,
+    SealCheck,
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import Toast from '@/components/Toast';
@@ -36,7 +39,17 @@ export interface VehicleListing {
         fullName: string;
     };
     createdAt: string;
+    badge?: string | null;
+    isFeatured?: boolean;
+    isPremium?: boolean;
 }
+
+// Badge config
+const BADGE_CONFIG: Record<string, { bg: string; icon: React.ReactNode; label: string }> = {
+    'Premium Choice': { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} weight="fill" />, label: 'Premium Choice' },
+    'Hot Deal': { bg: 'bg-orange-500', icon: <Fire size={10} weight="fill" />, label: 'Hot Deal' },
+    'Verified Seller': { bg: 'bg-blue-500', icon: <SealCheck size={10} weight="fill" />, label: 'Verified Seller' },
+};
 
 interface ListingCardProps {
     listing: VehicleListing;
@@ -130,7 +143,12 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
         <>
             <Link
                 href={`/buy/${listing.id}`}
-                className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer relative flex flex-col h-full"
+                className={`bg-white rounded-3xl shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer relative flex flex-col h-full ${
+                    listing.badge === 'Premium Choice' ? 'border-2 border-yellow-400 shadow-lg shadow-yellow-100' :
+                    listing.badge === 'Hot Deal' ? 'border border-orange-300' :
+                    listing.badge === 'Verified Seller' ? 'border border-blue-200' :
+                    'border border-gray-100'
+                }`}
             >
                 {/* Image */}
                 <div className="relative aspect-3/2 overflow-hidden">
@@ -138,7 +156,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         <img
                             src={listing.images[0].url}
                             alt={listing.title}
-                            className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
+                            className="w-full h-full object-cover"
                         />
                     ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
@@ -150,6 +168,14 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                     {listing.vehicleType === 'MOTORCYCLE' && (
                         <div className="absolute top-3 left-3 bg-primary text-white p-1.5 rounded-full">
                             <Motorcycle weight="bold" size={14} />
+                        </div>
+                    )}
+
+                    {/* Package Badge */}
+                    {listing.badge && BADGE_CONFIG[listing.badge] && (
+                        <div className={`absolute ${listing.vehicleType === 'MOTORCYCLE' ? 'top-12' : 'top-3'} left-3 ${BADGE_CONFIG[listing.badge].bg} text-white px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-md`}>
+                            {BADGE_CONFIG[listing.badge].icon}
+                            {BADGE_CONFIG[listing.badge].label}
                         </div>
                     )}
 

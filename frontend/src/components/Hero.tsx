@@ -3,15 +3,24 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { MagnifyingGlass, CaretDown } from '@phosphor-icons/react';
+import SearchableSelect, { SelectOption } from './SearchableSelect';
 import QuickCategories from './QuickCategories';
+
+interface Brand {
+    id: string;
+    name: string;
+    nameTh?: string | null;
+    logo?: string | null;
+    isPopular?: boolean;
+}
 
 export default function Hero() {
     const router = useRouter();
     const [keyword, setKeyword] = useState('');
     const [brand, setBrand] = useState('');
     const [budget, setBudget] = useState('all');
-    const [type, setType] = useState('all');
-    const [brands, setBrands] = useState<{ id: string, name: string }[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [brandOptions, setBrandOptions] = useState<SelectOption[]>([]);
 
     useEffect(() => {
         const fetchBrands = async () => {
@@ -20,7 +29,18 @@ export default function Hero() {
                 const response = await fetch(`${API_URL}/master-data/brands?vehicleType=CAR`);
                 if (response.ok) {
                     const data = await response.json();
-                    setBrands(data.brands || []);
+                    const fetched: Brand[] = data.brands || [];
+                    setBrands(fetched);
+
+                    // Map to SearchableSelect options with logos
+                    const options: SelectOption[] = fetched.map((b) => ({
+                        id: b.name,
+                        label: b.name,
+                        subLabel: b.nameTh || undefined,
+                        image: b.logo || `/brands/cars/${b.name}-300x300.png`,
+                        isPopular: b.isPopular || false,
+                    }));
+                    setBrandOptions(options);
                 }
             } catch (error) {
                 console.error('Error fetching brands:', error);
@@ -47,19 +67,6 @@ export default function Hero() {
             params.append('minPrice', '2000000');
         }
 
-        if (type === 'sedan') {
-            params.append('vehicleType', 'CAR');
-            params.append('bodyType', 'SEDAN');
-        } else if (type === 'suv') {
-            params.append('vehicleType', 'CAR');
-            params.append('bodyType', 'SUV');
-        } else if (type === 'pickup') {
-            params.append('vehicleType', 'CAR');
-            params.append('bodyType', 'PICKUP');
-        } else if (type === 'motorcycle') {
-            params.append('vehicleType', 'MOTORCYCLE');
-        }
-
         router.push(`/buy?${params.toString()}`);
     };
 
@@ -72,8 +79,9 @@ export default function Hero() {
                 Car2Hand แพลตฟอร์มซื้อขายรถมือสองคุณภาพที่คุณวางใจได้ พร้อมระบบการประเมินราคาที่ดีที่สุด
             </p>
 
-            <div className="bg-white p-6 rounded-3xl shadow-2xl max-w-4xl mx-auto flex flex-col gap-4 relative z-10 border border-slate-100">
+            <div className="bg-white p-6 rounded-3xl shadow-2xl max-w-4xl mx-auto flex flex-col gap-4 relative z-30 border border-slate-100">
                 <div className="flex flex-col md:flex-row gap-4">
+                    {/* Keyword search */}
                     <div className="flex-1 px-4 py-3 rounded-xl border border-gray-200 group focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all duration-300 bg-white">
                         <label className="text-sm font-semibold text-gray-700 block text-left mb-1">ค้นหารถ</label>
                         <div className="flex items-center gap-2">
@@ -82,26 +90,26 @@ export default function Hero() {
                                 placeholder="เช่น civic, toyota..."
                                 value={keyword}
                                 onChange={(e) => setKeyword(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
                                 className="w-full outline-none font-bold text-slate-700 bg-transparent text-base placeholder:text-slate-300"
                             />
                         </div>
                     </div>
-                    <div className="flex-1 px-4 py-3 rounded-xl border border-gray-200 group focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all duration-300 bg-white relative">
+
+                    {/* Brand search with logo */}
+                    <div className="flex-1 px-4 py-3 rounded-xl border border-gray-200 group focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all duration-300 bg-white">
                         <label className="text-sm font-semibold text-gray-700 block text-left mb-1">ยี่ห้อ / รุ่น</label>
-                        <div className="relative flex items-center">
-                            <select
-                                value={brand}
-                                onChange={(e) => setBrand(e.target.value)}
-                                className="w-full outline-none font-bold text-slate-700 bg-transparent cursor-pointer text-base appearance-none relative z-10 pr-8"
-                            >
-                                <option value="">ทุกยี่ห้อ</option>
-                                {brands.map((b) => (
-                                    <option key={b.id} value={b.name}>{b.name}</option>
-                                ))}
-                            </select>
-                            <CaretDown size={16} weight="bold" className="absolute right-0 text-slate-400 pointer-events-none group-focus-within:text-primary transition-colors" />
-                        </div>
+                        <SearchableSelect
+                            options={brandOptions}
+                            value={brand}
+                            onChange={(val) => setBrand(val)}
+                            placeholder="ทุกยี่ห้อ"
+                            searchPlaceholder="ค้นหายี่ห้อ..."
+                            compact
+                        />
                     </div>
+
+                    {/* Budget */}
                     <div className="flex-1 px-4 py-3 rounded-xl border border-gray-200 group focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all duration-300 bg-white relative">
                         <label className="text-sm font-semibold text-gray-700 block text-left mb-1">งบประมาณ</label>
                         <div className="relative flex items-center">
@@ -120,7 +128,7 @@ export default function Hero() {
                         </div>
                     </div>
                 </div>
-                
+
                 <button
                     onClick={handleSearch}
                     className="bg-[#ED6B33] text-white rounded-2xl py-5 font-black text-xl hover:bg-[#D45A28] transition w-full shadow-lg shadow-orange-100 flex items-center justify-center gap-3 cursor-pointer active:scale-[0.98]"

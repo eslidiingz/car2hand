@@ -900,6 +900,61 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         })
     })
 
+    // ดึงประกาศแนะนำ (Featured / Premium / Paid Package users)
+    .get("/featured", async () => {
+        const now = new Date();
+        const listings = await prisma.vehicleListing.findMany({
+            where: {
+                status: 'ACTIVE',
+                OR: [
+                    { isFeatured: true },
+                    { isPremium: true },
+                    // ประกาศจาก user แพ็กเกจ Pro (searchPriority=top) หรือ Premium (searchPriority=priority)
+                    {
+                        user: {
+                            OR: [
+                                { packageExpiresAt: null, currentPackage: { searchPriority: { in: ['top', 'priority'] } } },
+                                { packageExpiresAt: { gt: now }, currentPackage: { searchPriority: { in: ['top', 'priority'] } } }
+                            ]
+                        }
+                    }
+                ]
+            },
+            take: 8,
+            orderBy: [
+                { isFeatured: 'desc' },
+                { bumpedAt: { sort: 'desc', nulls: 'last' } },
+                { createdAt: 'desc' }
+            ],
+            include: {
+                images: { where: { isPrimary: true }, take: 1 },
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        packageExpiresAt: true,
+                        currentPackage: {
+                            select: { badge: true, searchPriority: true }
+                        }
+                    }
+                }
+            }
+        });
+
+        const enriched = listings.map(l => {
+            const pkgActive = l.user.currentPackage ? (l.user.packageExpiresAt ? new Date(l.user.packageExpiresAt) > now : true) : false;
+            return {
+                ...l,
+                badge: pkgActive ? (l.user.currentPackage?.badge || null) : null,
+                isFeatured: l.isFeatured,
+                isPremium: l.isPremium,
+                user: { id: l.user.id, fullName: l.user.fullName }
+            };
+        });
+
+        return { listings: enriched };
+    })
+
     // ดึงประกาศตาม ID
     .get("/:id", async ({ params, query, set }) => {
         const { id } = params;
@@ -916,6 +971,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                         id: true,
                         fullName: true,
                         phoneNumber: true,
+                        packageExpiresAt: true,
+                        currentPackage: {
+                            select: { badge: true }
+                        }
                     }
                 }
             }
@@ -943,7 +1002,20 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             });
         }
 
-        return { listing, expired: isExpired };
+        // Enrich with badge (check package expiry)
+        const now = new Date();
+        const pkgActive = listing.user.currentPackage ? (listing.user.packageExpiresAt ? new Date(listing.user.packageExpiresAt) > now : true) : false;
+        const enrichedListing = {
+            ...listing,
+            badge: pkgActive ? (listing.user.currentPackage?.badge || null) : null,
+            user: {
+                id: listing.user.id,
+                fullName: listing.user.fullName,
+                phoneNumber: listing.user.phoneNumber,
+            }
+        };
+
+        return { listing: enrichedListing, expired: isExpired };
     })
 
     // ดึงประกาศทั้งหมด (พร้อม filter)
@@ -1097,7 +1169,15 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         const brandWhere = { ...where };
         delete brandWhere.brand;
 
-        const [listings, total, brandStats] = await Promise.all([
+        const PRIORITY_WEIGHT: Record<string, number> = { priority: 4, top: 3, higher: 2, normal: 1 };
+        const BUCKET_HOURS = 6;
+        const now = new Date();
+
+        // Fetch more than needed for interleaving, then slice for pagination
+        const fetchLimit = parseInt(limit) * 3; // fetch extra for re-sorting within buckets
+        const fetchSkip = Math.max(0, skip - parseInt(limit)); // start earlier to account for reorder
+
+        const [rawListings, total, brandStats] = await Promise.all([
             prisma.vehicleListing.findMany({
                 where,
                 include: {
@@ -1109,15 +1189,20 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                         select: {
                             id: true,
                             fullName: true,
+                            packageExpiresAt: true,
+                            currentPackage: {
+                                select: { badge: true, searchPriority: true }
+                            }
                         }
                     }
                 },
                 orderBy: [
+                    { isFeatured: 'desc' },
                     { bumpedAt: { sort: 'desc', nulls: 'last' } },
                     { createdAt: 'desc' }
                 ],
-                skip,
-                take: parseInt(limit)
+                skip: fetchSkip,
+                take: fetchLimit
             }),
             prisma.vehicleListing.count({ where }),
             prisma.vehicleListing.groupBy({
@@ -1128,6 +1213,49 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 }
             })
         ]);
+
+        // Interleave by search priority within time buckets
+        const featured = rawListings.filter(l => l.isFeatured);
+        const nonFeatured = rawListings.filter(l => !l.isFeatured);
+
+        // Group non-featured into time buckets
+        const buckets = new Map<number, typeof nonFeatured>();
+        for (const listing of nonFeatured) {
+            const sortTime = listing.bumpedAt || listing.createdAt;
+            const bucketKey = Math.floor((now.getTime() - new Date(sortTime).getTime()) / (BUCKET_HOURS * 3600000));
+            if (!buckets.has(bucketKey)) buckets.set(bucketKey, []);
+            buckets.get(bucketKey)!.push(listing);
+        }
+
+        // Sort within each bucket by searchPriority
+        const interleaved: typeof rawListings = [...featured]; // featured first
+        const sortedBucketKeys = [...buckets.keys()].sort((a, b) => a - b);
+        for (const key of sortedBucketKeys) {
+            const bucket = buckets.get(key)!;
+            bucket.sort((a, b) => {
+                const aPriority = PRIORITY_WEIGHT[a.user?.currentPackage?.searchPriority || 'normal'] || 1;
+                const bPriority = PRIORITY_WEIGHT[b.user?.currentPackage?.searchPriority || 'normal'] || 1;
+                if (aPriority !== bPriority) return bPriority - aPriority;
+                const aTime = new Date(a.bumpedAt || a.createdAt).getTime();
+                const bTime = new Date(b.bumpedAt || b.createdAt).getTime();
+                return bTime - aTime;
+            });
+            interleaved.push(...bucket);
+        }
+
+        // Apply correct pagination offset within the interleaved results
+        const adjustedSkip = skip - fetchSkip;
+        const pageListings = interleaved.slice(adjustedSkip, adjustedSkip + parseInt(limit));
+
+        // Enrich with badge (check package expiry)
+        const listings = pageListings.map(l => {
+            const pkgActive = l.user.currentPackage ? (l.user.packageExpiresAt ? new Date(l.user.packageExpiresAt) > now : true) : false;
+            return {
+                ...l,
+                badge: pkgActive ? (l.user.currentPackage?.badge || null) : null,
+                user: { id: l.user.id, fullName: l.user.fullName }
+            };
+        });
 
         return {
             listings,
@@ -1219,6 +1347,17 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         body: t.Object({
             userId: t.String()
         })
+    })
+
+    // ดึง pending renewals ของ user
+    .get("/renewals/pending", async ({ query }) => {
+        const { userId } = query;
+        if (!userId) return { renewals: [] };
+        const renewals = await prisma.listingRenewal.findMany({
+            where: { userId: userId as string, status: 'PENDING' },
+            select: { id: true, listingId: true, createdAt: true, amount: true }
+        });
+        return { renewals };
     })
 
     // ต่ออายุ / รีประกาศ

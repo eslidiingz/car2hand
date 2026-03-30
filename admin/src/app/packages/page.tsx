@@ -66,6 +66,10 @@ interface Transaction {
     amount: string;
     slipImage: string;
     status: string;
+    transactionType: string;
+    proratedCredit: string | null;
+    fromPackageName: string | null;
+    fromPackageSlug: string | null;
     adminNote: string | null;
     reviewedAt: string | null;
     createdAt: string;
@@ -345,16 +349,19 @@ export default function AdminPackagesPage() {
                                                 </div>
 
                                                 {/* Package Info */}
-                                                <div className="flex items-center gap-2 min-w-[160px]">
+                                                <div className="flex items-center gap-2 min-w-[200px]">
                                                     <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500">
-                                                        {getSlugIcon(tx.user.currentPackage?.slug || 'basic')}
-                                                        {tx.user.currentPackage?.name || 'Basic'}
+                                                        {getSlugIcon(tx.fromPackageSlug || tx.user.currentPackage?.slug || 'basic')}
+                                                        {tx.fromPackageName || tx.user.currentPackage?.name || 'Basic'}
                                                     </div>
-                                                    <span className="text-slate-300">→</span>
-                                                    <div className="flex items-center gap-1.5 bg-blue-50 px-2.5 py-1 rounded-md text-xs font-medium text-blue-700">
+                                                    <span className="text-slate-300 text-xs">{tx.transactionType === 'RENEWAL' ? '🔄' : '→'}</span>
+                                                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${tx.transactionType === 'RENEWAL' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
                                                         {getSlugIcon(tx.package.slug)}
                                                         {tx.package.name}
                                                     </div>
+                                                    {tx.transactionType === 'RENEWAL' && (
+                                                        <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded font-medium">ต่ออายุ</span>
+                                                    )}
                                                 </div>
 
                                                 {/* Amount */}

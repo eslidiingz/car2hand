@@ -59,6 +59,7 @@ interface ProfileListingCardProps {
     onBump?: (id: string) => void;
     onSetSlot?: (id: string) => void;
     slotSchedules?: string[]; // เวลาของแต่ละ slot เช่น ['08:30', '12:30', '21:00']
+    hasPendingRenewal?: boolean;
     formatPrice: (price: string | number) => string;
     formatDate: (dateStr: string) => string;
     getDaysLeft: (expiredAt: string | null) => number | null;
@@ -74,6 +75,7 @@ export default function ProfileListingCard({
     onBump,
     onSetSlot,
     slotSchedules,
+    hasPendingRenewal,
     formatPrice,
     formatDate,
     getDaysLeft,
@@ -236,6 +238,12 @@ export default function ProfileListingCard({
                         }
                     </span>
                 </div>
+                {hasPendingRenewal && listing.status === 'EXPIRED' && (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-lg border border-amber-100">
+                        <Clock weight="fill" size={14} className="text-amber-500" />
+                        <span className="text-xs font-bold text-amber-700">คำขอต่ออายุกำลังรอตรวจสอบ</span>
+                    </div>
+                )}
                 {listing.status === 'ACTIVE' && slotSchedules && slotSchedules.length > 0 && (
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 bg-purple-50 text-purple-600 w-fit">
                         <Lightning weight="fill" size={12} />

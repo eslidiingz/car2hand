@@ -25,7 +25,10 @@ import {
     AddressBook,
     Lightning,
     Users,
-    Phone
+    Phone,
+    Crown,
+    Fire,
+    SealCheck,
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
@@ -79,6 +82,7 @@ export interface VehicleListing {
         fullName: string;
         phoneNumber?: string;
     };
+    badge?: string | null;
 }
 
 interface ListingDetailClientProps {
@@ -495,7 +499,21 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     {listing.user.fullName.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <p className="font-bold text-gray-800">{listing.user.fullName}</p>
+                                    <div className="flex items-center gap-2">
+                                        <p className="font-bold text-gray-800">{listing.user.fullName}</p>
+                                        {listing.badge && (
+                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${
+                                                listing.badge === 'Premium Choice' ? 'bg-gradient-to-r from-yellow-500 to-amber-600' :
+                                                listing.badge === 'Hot Deal' ? 'bg-orange-500' :
+                                                'bg-blue-500'
+                                            }`}>
+                                                {listing.badge === 'Premium Choice' && <Crown size={10} weight="fill" />}
+                                                {listing.badge === 'Hot Deal' && <Fire size={10} weight="fill" />}
+                                                {listing.badge === 'Verified Seller' && <SealCheck size={10} weight="fill" />}
+                                                {listing.badge}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-sm text-gray-500 flex items-center gap-1">
                                         <MapPin size={12} />
                                         {listing.province}

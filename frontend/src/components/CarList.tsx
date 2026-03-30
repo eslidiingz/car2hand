@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { CircleNotch, CaretRight } from '@phosphor-icons/react';
 import ListingCard, { VehicleListing } from './ListingCard';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
 export default function CarList() {
     const [listings, setListings] = useState<VehicleListing[]>([]);
     const [loading, setLoading] = useState(true);
@@ -12,10 +14,19 @@ export default function CarList() {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-                const response = await fetch(`${API_URL}/listings?status=ACTIVE&limit=8`);
-                const data = await response.json();
-                setListings(data.listings || []);
+                // Fetch both featured and all listings, then exclude featured from the general list
+                const [featuredRes, listingsRes] = await Promise.all([
+                    fetch(`${API_URL}/listings/featured`),
+                    fetch(`${API_URL}/listings?status=ACTIVE&limit=20`),
+                ]);
+
+                const featuredData = await featuredRes.json();
+                const listingsData = await listingsRes.json();
+
+                const featuredIds = new Set((featuredData.listings || []).map((l: VehicleListing) => l.id));
+                const filtered = (listingsData.listings || []).filter((l: VehicleListing) => !featuredIds.has(l.id));
+
+                setListings(filtered.slice(0, 8));
             } catch (error) {
                 console.error('Error fetching listings:', error);
                 setListings([]);
@@ -28,7 +39,7 @@ export default function CarList() {
     }, []);
 
     return (
-        <section className="max-w-7xl mx-auto px-4 pb-20 mt-12">
+        <section className="max-w-7xl mx-auto px-4 pb-16">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
                     รถแนะนำสำหรับคุณ

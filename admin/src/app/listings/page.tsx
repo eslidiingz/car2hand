@@ -22,12 +22,16 @@ import {
     ImageOff,
     ExternalLink,
     ImagePlus,
-    Heart
+    Heart,
+    Star,
+    Crown,
+    Sparkles
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { usePendingCounts } from "@/contexts/PendingContext";
+import { RefreshCw, CreditCard, ArrowRight } from "lucide-react";
 
 interface ListingImage {
     id: string;
@@ -67,6 +71,8 @@ interface Listing {
     adminNote: string | null;
     viewCount: number;
     favoriteCount: number;
+    isFeatured: boolean;
+    isPremium: boolean;
     createdAt: string;
     publishedAt: string | null;
     expiredAt: string | null;
@@ -95,8 +101,20 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
     EXPIRED: { label: 'หมดอายุ', color: 'bg-slate-50 text-slate-500', icon: <Clock size={13} /> },
 };
 
+interface Renewal {
+    id: string;
+    amount: string;
+    slipImage: string;
+    status: string;
+    adminNote: string | null;
+    createdAt: string;
+    user: { id: string; fullName: string; email: string };
+    listing: { id: string; title: string; brand: string; model: string; year: number };
+}
+
 export default function ListingModerationPage() {
     const { refreshListings: refreshPendingBadge } = usePendingCounts();
+    const [mainTab, setMainTab] = useState<'listings' | 'renewals'>('listings');
     const [filterStatus, setFilterStatus] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [listings, setListings] = useState<Listing[]>([]);
@@ -111,6 +129,15 @@ export default function ListingModerationPage() {
     const [rejectNote, setRejectNote] = useState("");
     const [viewSlip, setViewSlip] = useState<Listing | null>(null);
     const [carouselIdx, setCarouselIdx] = useState(0);
+
+    // Renewal state
+    const [renewals, setRenewals] = useState<Renewal[]>([]);
+    const [renewalLoading, setRenewalLoading] = useState(false);
+    const [renewalCount, setRenewalCount] = useState(0);
+    const [viewRenewalSlip, setViewRenewalSlip] = useState<string | null>(null);
+    const [renewalApproveId, setRenewalApproveId] = useState<string | null>(null);
+    const [renewalRejectId, setRenewalRejectId] = useState<string | null>(null);
+    const [renewalRejectNote, setRenewalRejectNote] = useState('');
 
     const fetchListings = useCallback(async () => {
         setIsLoading(true);
@@ -159,6 +186,10 @@ export default function ListingModerationPage() {
 
     useEffect(() => {
         fetchStatusCounts();
+        // Also fetch renewal count for the tab badge
+        apiFetch('/admin/listings/renewals?status=PENDING&limit=1')
+            .then(data => setRenewalCount(data.pagination?.total || 0))
+            .catch(() => {});
     }, [fetchStatusCounts]);
 
     const handleApprove = async () => {
@@ -176,6 +207,67 @@ export default function ListingModerationPage() {
             setActionLoading(null);
         }
     };
+
+    const handleToggleFeatured = async (id: string) => {
+        try {
+            await apiFetch(`/admin/listings/${id}/featured`, { method: 'PUT' });
+            fetchListings();
+            if (viewSlip?.id === id) {
+                setViewSlip(prev => prev ? { ...prev, isFeatured: !prev.isFeatured } : null);
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
+        }
+    };
+
+    const handleTogglePremium = async (id: string) => {
+        try {
+            await apiFetch(`/admin/listings/${id}/premium`, { method: 'PUT' });
+            fetchListings();
+            if (viewSlip?.id === id) {
+                setViewSlip(prev => prev ? { ...prev, isPremium: !prev.isPremium } : null);
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
+        }
+    };
+
+    // === Renewal functions ===
+    const fetchRenewals = useCallback(async () => {
+        setRenewalLoading(true);
+        try {
+            const data = await apiFetch('/admin/listings/renewals?status=PENDING&limit=50');
+            setRenewals(data.renewals || []);
+            setRenewalCount(data.pagination?.total || 0);
+        } catch (e) { console.error(e); }
+        finally { setRenewalLoading(false); }
+    }, []);
+
+    const handleApproveRenewal = async (id: string) => {
+        try {
+            await apiFetch(`/admin/listings/renewals/${id}/approve`, { method: 'POST' });
+            toast.success('อนุมัติต่ออายุเรียบร้อย');
+            fetchRenewals();
+        } catch (e: any) { toast.error(e.message || 'เกิดข้อผิดพลาด'); }
+    };
+
+    const handleRejectRenewal = async () => {
+        if (!renewalRejectId) return;
+        try {
+            await apiFetch(`/admin/listings/renewals/${renewalRejectId}/reject`, {
+                method: 'POST',
+                body: JSON.stringify({ reason: renewalRejectNote }),
+            });
+            toast.success('ปฏิเสธคำขอต่ออายุเรียบร้อย');
+            setRenewalRejectId(null);
+            setRenewalRejectNote('');
+            fetchRenewals();
+        } catch (e: any) { toast.error(e.message || 'เกิดข้อผิดพลาด'); }
+    };
+
+    useEffect(() => {
+        if (mainTab === 'renewals') fetchRenewals();
+    }, [mainTab, fetchRenewals]);
 
     const handleReject = async () => {
         if (!rejectId) return;
@@ -208,13 +300,137 @@ export default function ListingModerationPage() {
                     </h1>
                     <p className="text-slate-500 mt-1 text-sm">ตรวจสอบและอนุมัติประกาศขายรถยนต์และจักรยานยนต์</p>
                 </div>
-                {pendingCount > 0 && (
-                    <div className="flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-amber-200">
-                        <AlertTriangle size={16} />
-                        {pendingCount} รายการรอตรวจสอบ
+            </div>
+
+            {/* Main Tabs: ประกาศ / คำขอต่ออายุ */}
+            <Tabs defaultValue="listings" className="mb-6" onValueChange={(v) => setMainTab(v as 'listings' | 'renewals')}>
+                <TabsList>
+                    <TabsTrigger value="listings">
+                        <Car size={16} className="mr-1.5" /> ประกาศขาย
+                        {pendingCount > 0 && <span className="ml-1.5 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{pendingCount}</span>}
+                    </TabsTrigger>
+                    <TabsTrigger value="renewals">
+                        <RefreshCw size={16} className="mr-1.5" /> คำขอต่ออายุ
+                        {renewalCount > 0 && <span className="ml-1.5 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{renewalCount}</span>}
+                    </TabsTrigger>
+                </TabsList>
+
+            {/* ===== Tab: Renewals ===== */}
+            <TabsContent value="renewals">
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    {renewalLoading ? (
+                        <div className="p-12 text-center text-slate-400">
+                            <RefreshCw className="mx-auto mb-3 animate-spin opacity-30" size={32} />
+                            <p className="text-sm">กำลังโหลด...</p>
+                        </div>
+                    ) : renewals.length === 0 ? (
+                        <div className="p-12 text-center text-slate-400">
+                            <CheckCircle className="mx-auto mb-3 opacity-30" size={32} />
+                            <p className="text-sm font-medium">ไม่มีคำขอต่ออายุที่รอตรวจสอบ</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-slate-100">
+                            {renewals.map(r => (
+                                <div key={r.id} className="p-5 hover:bg-slate-50 transition-colors">
+                                    <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                                        {/* User */}
+                                        <div className="flex items-center gap-3 min-w-[180px]">
+                                            <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500">
+                                                <User size={18} />
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-sm text-slate-800">{r.user.fullName}</p>
+                                                <p className="text-xs text-slate-400">{r.user.email}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Listing */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-slate-700 truncate">{r.listing.title}</p>
+                                            <p className="text-xs text-slate-400">{r.listing.brand} {r.listing.model} ({r.listing.year})</p>
+                                        </div>
+
+                                        {/* Amount */}
+                                        <div className="flex items-center gap-1.5 min-w-[80px]">
+                                            <CreditCard size={14} className="text-slate-400" />
+                                            <span className="text-sm font-semibold text-slate-800">฿{Number(r.amount).toLocaleString()}</span>
+                                        </div>
+
+                                        {/* Date */}
+                                        <div className="text-xs text-slate-400 min-w-[100px]">
+                                            {new Date(r.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex gap-2 flex-shrink-0">
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={() => setViewRenewalSlip(r.slipImage)}
+                                                className="h-8 w-8"
+                                            >
+                                                <Eye size={15} />
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleApproveRenewal(r.id)}
+                                                size="sm"
+                                                className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                                            >
+                                                <Check size={14} /> อนุมัติ
+                                            </Button>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => { setRenewalRejectId(r.id); setRenewalRejectNote(''); }}
+                                                className="font-medium"
+                                            >
+                                                <X size={14} /> ปฏิเสธ
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Renewal Slip Modal */}
+                {viewRenewalSlip && (
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setViewRenewalSlip(null)}>
+                        <div className="bg-white rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-4" onClick={e => e.stopPropagation()}>
+                            <div className="flex justify-between items-center mb-3">
+                                <h3 className="font-semibold text-slate-800">สลิปการโอนเงิน</h3>
+                                <Button variant="ghost" size="icon" onClick={() => setViewRenewalSlip(null)}><X size={18} /></Button>
+                            </div>
+                            <img src={viewRenewalSlip} alt="Slip" className="w-full rounded-lg" />
+                        </div>
                     </div>
                 )}
-            </div>
+
+                {/* Renewal Reject Modal */}
+                {renewalRejectId && (
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setRenewalRejectId(null)}>
+                        <div className="bg-white rounded-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
+                            <h3 className="font-semibold text-slate-800 mb-4">ปฏิเสธคำขอต่ออายุ</h3>
+                            <textarea
+                                value={renewalRejectNote}
+                                onChange={e => setRenewalRejectNote(e.target.value)}
+                                placeholder="เหตุผลในการปฏิเสธ (ไม่บังคับ)"
+                                className="w-full border border-slate-200 rounded-lg p-3 text-sm min-h-[80px] mb-4 outline-none focus:border-slate-400"
+                            />
+                            <div className="flex gap-3">
+                                <Button variant="outline" className="flex-1" onClick={() => setRenewalRejectId(null)}>ยกเลิก</Button>
+                                <Button variant="destructive" className="flex-1" onClick={handleRejectRenewal}>
+                                    <XCircle size={16} /> ปฏิเสธ
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </TabsContent>
+
+            {/* ===== Tab: Listings ===== */}
+            <TabsContent value="listings">
 
             {/* Search */}
             <div className="mb-4 max-w-sm">
@@ -306,6 +522,18 @@ export default function ListingModerationPage() {
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${status.color}`}>
                                                 {status.icon} {status.label}
                                             </span>
+                                            <div className="flex gap-1 mt-1 justify-end">
+                                                {listing.isFeatured && (
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700">
+                                                        <Star size={10} /> แนะนำ
+                                                    </span>
+                                                )}
+                                                {listing.isPremium && (
+                                                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-50 text-purple-700">
+                                                        <Crown size={10} /> พรีเมียม
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
@@ -327,7 +555,27 @@ export default function ListingModerationPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2 flex-shrink-0">
+                                        <div className="flex gap-2 flex-shrink-0 flex-wrap">
+                                            {listing.status === 'ACTIVE' && (
+                                                <>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleToggleFeatured(listing.id)}
+                                                        className={`font-medium ${listing.isFeatured ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : ''}`}
+                                                    >
+                                                        <Star size={14} className={listing.isFeatured ? 'fill-amber-500' : ''} /> {listing.isFeatured ? 'แนะนำ' : 'ตั้งแนะนำ'}
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleTogglePremium(listing.id)}
+                                                        className={`font-medium ${listing.isPremium ? 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100' : ''}`}
+                                                    >
+                                                        <Crown size={14} className={listing.isPremium ? 'fill-purple-500' : ''} /> {listing.isPremium ? 'พรีเมียม' : 'ตั้งพรีเมียม'}
+                                                    </Button>
+                                                </>
+                                            )}
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -408,6 +656,9 @@ export default function ListingModerationPage() {
                     </Button>
                 </div>
             )}
+
+            </TabsContent>
+            </Tabs>
 
             {/* Approve Confirmation Modal */}
             {approveId && (() => {
