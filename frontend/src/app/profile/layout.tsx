@@ -14,7 +14,8 @@ import {
     User,
     CaretRight,
     CircleNotch,
-    Package
+    Package,
+    Bell
 } from '@phosphor-icons/react';
 import ProfileSidebar from '@/components/ProfileSidebar';
 
@@ -113,6 +114,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart weight={pathname === '/profile/wishlist' ? 'fill' : 'bold'} /> },
         // { name: 'กล่องข้อความ', href: '/profile/messages', icon: <ChatCircleDots weight={pathname === '/profile/messages' ? 'fill' : 'bold'} />, badge: 3 },
         { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package weight={pathname === '/profile/packages' ? 'fill' : 'bold'} /> },
+        { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell weight={pathname === '/profile/notifications' ? 'fill' : 'bold'} /> },
         { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Gear weight={pathname === '/profile/settings' ? 'fill' : 'bold'} /> },
     ];
 
@@ -132,11 +134,23 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         <div className="bg-surface min-h-screen pt-8 pb-12">
             <div className="max-w-7xl mx-auto px-4">
 
-                {/* Breadcrumb (Optional) */}
-                <div className="hidden lg:flex items-center gap-2 text-sm text-gray-500 mb-4">
+                {/* Breadcrumb */}
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                     <Link href="/" className="hover:text-primary">หน้าแรก</Link>
                     <CaretRight weight="bold" className="text-xs" />
-                    <span className="text-gray-800">บัญชีของฉัน</span>
+                    {(() => {
+                        const currentPage = menuItems.find(item => pathname === item.href || pathname.startsWith(item.href + '/'));
+                        if (currentPage) {
+                            return (
+                                <>
+                                    <Link href="/profile/dashboard" className="hover:text-primary">บัญชีของฉัน</Link>
+                                    <CaretRight weight="bold" className="text-xs" />
+                                    <span className="text-gray-800">{currentPage.name}</span>
+                                </>
+                            );
+                        }
+                        return <span className="text-gray-800">บัญชีของฉัน</span>;
+                    })()}
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">

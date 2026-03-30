@@ -99,7 +99,7 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
         // ตรวจสอบ user
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { id: true, currentPackageId: true, currentPackage: true }
+            select: { id: true, currentPackageId: true, packageExpiresAt: true, currentPackage: { select: { id: true, name: true, nameTh: true, slug: true, price: true, sortOrder: true, maxListings: true, maxPhotosPerListing: true, listingDurationDays: true, isActive: true } } }
         });
         if (!user) {
             set.status = 401;
@@ -115,11 +115,25 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
             return { message: "แพ็กเกจที่เลือกไม่ถูกต้องหรือไม่พร้อมใช้งาน" };
         }
 
-        // ห้ามเลือกแพ็กเกจที่ลำดับเท่ากับหรือต่ำกว่าปัจจุบัน
-        if (user.currentPackage && targetPackage.sortOrder <= user.currentPackage.sortOrder) {
+        // ตรวจสอบประเภทการทำรายการ
+        const isUpgrade = !user.currentPackage || targetPackage.sortOrder > user.currentPackage.sortOrder;
+        const isRenewal = user.currentPackage && targetPackage.sortOrder === user.currentPackage.sortOrder;
+        const isDowngrade = user.currentPackage && targetPackage.sortOrder < user.currentPackage.sortOrder;
+
+        if (isDowngrade) {
             set.status = 400;
-            return { message: "ไม่สามารถเลือกแพ็กเกจที่ต่ำกว่าหรือเท่ากับแพ็กเกจปัจจุบันได้" };
+            return { message: "ไม่สามารถเลือกแพ็กเกจที่ต่ำกว่าแพ็กเกจปัจจุบันได้" };
         }
+
+        if (isRenewal) {
+            // ต่ออายุได้เฉพาะก่อนหมดอายุ
+            if (!user.packageExpiresAt || new Date() > user.packageExpiresAt) {
+                set.status = 400;
+                return { message: "แพ็กเกจหมดอายุแล้ว กรุณาอัพเกรดแทน" };
+            }
+        }
+
+        const transactionType = isRenewal ? 'RENEWAL' : 'UPGRADE';
 
         // ตรวจสอบว่ามีรายการคำขอที่รอตรวจสอบอยู่หรือไม่
         const pendingTransaction = await prisma.packageTransaction.findFirst({
@@ -142,12 +156,25 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
             const objectPath = `${userId}/slips/${webpFilename}`;
             const slipUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
 
+            // Calculate prorate for upgrades
+            let finalAmount = Number(targetPackage.price);
+            let proratedCredit = null;
+
+            if (transactionType === 'UPGRADE' && user.currentPackage && user.packageExpiresAt && new Date() < user.packageExpiresAt) {
+                const currentPrice = Number(user.currentPackage.price);
+                const daysRemaining = Math.ceil((user.packageExpiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+                proratedCredit = Math.round((currentPrice / 30) * daysRemaining * 100) / 100;
+                finalAmount = Math.max(0, Number(targetPackage.price) - proratedCredit);
+            }
+
             // สร้าง transaction
             const transaction = await prisma.packageTransaction.create({
                 data: {
                     userId,
                     packageId: targetPackage.id,
-                    amount: targetPackage.price,
+                    amount: finalAmount,
+                    transactionType,
+                    proratedCredit,
                     slipImage: slipUrl,
                     status: 'PENDING'
                 },
@@ -177,6 +204,39 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
                 mimetype: t.String()
             })
         })
+    })
+
+    // คำนวณราคาอัพเกรดพร้อม prorate
+    .get("/upgrade-price", async ({ query, set }) => {
+        const { userId, targetPackageId } = query;
+        if (!userId || !targetPackageId) { set.status = 400; return { message: "Missing params" }; }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId as string },
+            select: { currentPackageId: true, packageExpiresAt: true, currentPackage: { select: { price: true, sortOrder: true } } }
+        });
+
+        const targetPackage = await prisma.package.findUnique({ where: { id: targetPackageId as string } });
+        if (!targetPackage) { set.status = 404; return { message: "ไม่พบแพ็กเกจ" }; }
+
+        const targetPrice = Number(targetPackage.price);
+        let proratedCredit = 0;
+        let daysRemaining = 0;
+
+        if (user?.currentPackage && user.packageExpiresAt && new Date() < user.packageExpiresAt) {
+            const currentPrice = Number(user.currentPackage.price);
+            daysRemaining = Math.ceil((user.packageExpiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+            proratedCredit = Math.round((currentPrice / 30) * daysRemaining * 100) / 100;
+        }
+
+        const finalPrice = Math.max(0, targetPrice - proratedCredit);
+
+        return {
+            originalPrice: targetPrice,
+            proratedCredit: Math.round(proratedCredit * 100) / 100,
+            daysRemaining,
+            finalPrice: Math.round(finalPrice * 100) / 100,
+        };
     })
 
     // ดึงข้อมูลการชำระเงิน (บัญชีธนาคาร, QR Code) สำหรับแสดงให้ผู้ใช้

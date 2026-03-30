@@ -28,10 +28,12 @@ export type AggregatePackageTransaction = {
 
 export type PackageTransactionAvgAggregateOutputType = {
   amount: runtime.Decimal | null
+  proratedCredit: runtime.Decimal | null
 }
 
 export type PackageTransactionSumAggregateOutputType = {
   amount: runtime.Decimal | null
+  proratedCredit: runtime.Decimal | null
 }
 
 export type PackageTransactionMinAggregateOutputType = {
@@ -39,6 +41,8 @@ export type PackageTransactionMinAggregateOutputType = {
   amount: runtime.Decimal | null
   slipImage: string | null
   status: $Enums.PaymentStatus | null
+  transactionType: string | null
+  proratedCredit: runtime.Decimal | null
   adminNote: string | null
   reviewedAt: Date | null
   createdAt: Date | null
@@ -52,6 +56,8 @@ export type PackageTransactionMaxAggregateOutputType = {
   amount: runtime.Decimal | null
   slipImage: string | null
   status: $Enums.PaymentStatus | null
+  transactionType: string | null
+  proratedCredit: runtime.Decimal | null
   adminNote: string | null
   reviewedAt: Date | null
   createdAt: Date | null
@@ -65,6 +71,8 @@ export type PackageTransactionCountAggregateOutputType = {
   amount: number
   slipImage: number
   status: number
+  transactionType: number
+  proratedCredit: number
   adminNote: number
   reviewedAt: number
   createdAt: number
@@ -77,10 +85,12 @@ export type PackageTransactionCountAggregateOutputType = {
 
 export type PackageTransactionAvgAggregateInputType = {
   amount?: true
+  proratedCredit?: true
 }
 
 export type PackageTransactionSumAggregateInputType = {
   amount?: true
+  proratedCredit?: true
 }
 
 export type PackageTransactionMinAggregateInputType = {
@@ -88,6 +98,8 @@ export type PackageTransactionMinAggregateInputType = {
   amount?: true
   slipImage?: true
   status?: true
+  transactionType?: true
+  proratedCredit?: true
   adminNote?: true
   reviewedAt?: true
   createdAt?: true
@@ -101,6 +113,8 @@ export type PackageTransactionMaxAggregateInputType = {
   amount?: true
   slipImage?: true
   status?: true
+  transactionType?: true
+  proratedCredit?: true
   adminNote?: true
   reviewedAt?: true
   createdAt?: true
@@ -114,6 +128,8 @@ export type PackageTransactionCountAggregateInputType = {
   amount?: true
   slipImage?: true
   status?: true
+  transactionType?: true
+  proratedCredit?: true
   adminNote?: true
   reviewedAt?: true
   createdAt?: true
@@ -214,6 +230,8 @@ export type PackageTransactionGroupByOutputType = {
   amount: runtime.Decimal
   slipImage: string
   status: $Enums.PaymentStatus
+  transactionType: string
+  proratedCredit: runtime.Decimal | null
   adminNote: string | null
   reviewedAt: Date | null
   createdAt: Date
@@ -250,6 +268,8 @@ export type PackageTransactionWhereInput = {
   amount?: Prisma.DecimalFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFilter<"PackageTransaction"> | string
   status?: Prisma.EnumPaymentStatusFilter<"PackageTransaction"> | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFilter<"PackageTransaction"> | string
+  proratedCredit?: Prisma.DecimalNullableFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.StringNullableFilter<"PackageTransaction"> | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"PackageTransaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PackageTransaction"> | Date | string
@@ -265,6 +285,8 @@ export type PackageTransactionOrderByWithRelationInput = {
   amount?: Prisma.SortOrder
   slipImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  transactionType?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -283,6 +305,8 @@ export type PackageTransactionWhereUniqueInput = Prisma.AtLeast<{
   amount?: Prisma.DecimalFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFilter<"PackageTransaction"> | string
   status?: Prisma.EnumPaymentStatusFilter<"PackageTransaction"> | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFilter<"PackageTransaction"> | string
+  proratedCredit?: Prisma.DecimalNullableFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.StringNullableFilter<"PackageTransaction"> | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"PackageTransaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PackageTransaction"> | Date | string
@@ -298,6 +322,8 @@ export type PackageTransactionOrderByWithAggregationInput = {
   amount?: Prisma.SortOrder
   slipImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  transactionType?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrderInput | Prisma.SortOrder
   adminNote?: Prisma.SortOrderInput | Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -319,6 +345,8 @@ export type PackageTransactionScalarWhereWithAggregatesInput = {
   amount?: Prisma.DecimalWithAggregatesFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringWithAggregatesFilter<"PackageTransaction"> | string
   status?: Prisma.EnumPaymentStatusWithAggregatesFilter<"PackageTransaction"> | $Enums.PaymentStatus
+  transactionType?: Prisma.StringWithAggregatesFilter<"PackageTransaction"> | string
+  proratedCredit?: Prisma.DecimalNullableWithAggregatesFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.StringNullableWithAggregatesFilter<"PackageTransaction"> | string | null
   reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PackageTransaction"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PackageTransaction"> | Date | string
@@ -332,6 +360,8 @@ export type PackageTransactionCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -345,6 +375,8 @@ export type PackageTransactionUncheckedCreateInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -358,6 +390,8 @@ export type PackageTransactionUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -371,6 +405,8 @@ export type PackageTransactionUncheckedUpdateInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -384,6 +420,8 @@ export type PackageTransactionCreateManyInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -397,6 +435,8 @@ export type PackageTransactionUpdateManyMutationInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -408,6 +448,8 @@ export type PackageTransactionUncheckedUpdateManyInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -431,6 +473,8 @@ export type PackageTransactionCountOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   slipImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  transactionType?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -441,6 +485,7 @@ export type PackageTransactionCountOrderByAggregateInput = {
 
 export type PackageTransactionAvgOrderByAggregateInput = {
   amount?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrder
 }
 
 export type PackageTransactionMaxOrderByAggregateInput = {
@@ -448,6 +493,8 @@ export type PackageTransactionMaxOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   slipImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  transactionType?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -461,6 +508,8 @@ export type PackageTransactionMinOrderByAggregateInput = {
   amount?: Prisma.SortOrder
   slipImage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  transactionType?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrder
   adminNote?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -471,6 +520,7 @@ export type PackageTransactionMinOrderByAggregateInput = {
 
 export type PackageTransactionSumOrderByAggregateInput = {
   amount?: Prisma.SortOrder
+  proratedCredit?: Prisma.SortOrder
 }
 
 export type PackageTransactionCreateNestedManyWithoutUserInput = {
@@ -561,11 +611,21 @@ export type EnumPaymentStatusFieldUpdateOperationsInput = {
   set?: $Enums.PaymentStatus
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type PackageTransactionCreateWithoutUserInput = {
   id?: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -578,6 +638,8 @@ export type PackageTransactionUncheckedCreateWithoutUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -619,6 +681,8 @@ export type PackageTransactionScalarWhereInput = {
   amount?: Prisma.DecimalFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFilter<"PackageTransaction"> | string
   status?: Prisma.EnumPaymentStatusFilter<"PackageTransaction"> | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFilter<"PackageTransaction"> | string
+  proratedCredit?: Prisma.DecimalNullableFilter<"PackageTransaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.StringNullableFilter<"PackageTransaction"> | string | null
   reviewedAt?: Prisma.DateTimeNullableFilter<"PackageTransaction"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PackageTransaction"> | Date | string
@@ -632,6 +696,8 @@ export type PackageTransactionCreateWithoutPackageInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -644,6 +710,8 @@ export type PackageTransactionUncheckedCreateWithoutPackageInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -682,6 +750,8 @@ export type PackageTransactionCreateManyUserInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -694,6 +764,8 @@ export type PackageTransactionUpdateWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -706,6 +778,8 @@ export type PackageTransactionUncheckedUpdateWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -718,6 +792,8 @@ export type PackageTransactionUncheckedUpdateManyWithoutUserInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -730,6 +806,8 @@ export type PackageTransactionCreateManyPackageInput = {
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage: string
   status?: $Enums.PaymentStatus
+  transactionType?: string
+  proratedCredit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: string | null
   reviewedAt?: Date | string | null
   createdAt?: Date | string
@@ -742,6 +820,8 @@ export type PackageTransactionUpdateWithoutPackageInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -754,6 +834,8 @@ export type PackageTransactionUncheckedUpdateWithoutPackageInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -766,6 +848,8 @@ export type PackageTransactionUncheckedUpdateManyWithoutPackageInput = {
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   slipImage?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  transactionType?: Prisma.StringFieldUpdateOperationsInput | string
+  proratedCredit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   adminNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -780,6 +864,8 @@ export type PackageTransactionSelect<ExtArgs extends runtime.Types.Extensions.In
   amount?: boolean
   slipImage?: boolean
   status?: boolean
+  transactionType?: boolean
+  proratedCredit?: boolean
   adminNote?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
@@ -795,6 +881,8 @@ export type PackageTransactionSelectCreateManyAndReturn<ExtArgs extends runtime.
   amount?: boolean
   slipImage?: boolean
   status?: boolean
+  transactionType?: boolean
+  proratedCredit?: boolean
   adminNote?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
@@ -810,6 +898,8 @@ export type PackageTransactionSelectUpdateManyAndReturn<ExtArgs extends runtime.
   amount?: boolean
   slipImage?: boolean
   status?: boolean
+  transactionType?: boolean
+  proratedCredit?: boolean
   adminNote?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
@@ -825,6 +915,8 @@ export type PackageTransactionSelectScalar = {
   amount?: boolean
   slipImage?: boolean
   status?: boolean
+  transactionType?: boolean
+  proratedCredit?: boolean
   adminNote?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
@@ -833,7 +925,7 @@ export type PackageTransactionSelectScalar = {
   packageId?: boolean
 }
 
-export type PackageTransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "amount" | "slipImage" | "status" | "adminNote" | "reviewedAt" | "createdAt" | "updatedAt" | "userId" | "packageId", ExtArgs["result"]["packageTransaction"]>
+export type PackageTransactionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "amount" | "slipImage" | "status" | "transactionType" | "proratedCredit" | "adminNote" | "reviewedAt" | "createdAt" | "updatedAt" | "userId" | "packageId", ExtArgs["result"]["packageTransaction"]>
 export type PackageTransactionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   package?: boolean | Prisma.PackageDefaultArgs<ExtArgs>
@@ -858,6 +950,8 @@ export type $PackageTransactionPayload<ExtArgs extends runtime.Types.Extensions.
     amount: runtime.Decimal
     slipImage: string
     status: $Enums.PaymentStatus
+    transactionType: string
+    proratedCredit: runtime.Decimal | null
     adminNote: string | null
     reviewedAt: Date | null
     createdAt: Date
@@ -1293,6 +1387,8 @@ export interface PackageTransactionFieldRefs {
   readonly amount: Prisma.FieldRef<"PackageTransaction", 'Decimal'>
   readonly slipImage: Prisma.FieldRef<"PackageTransaction", 'String'>
   readonly status: Prisma.FieldRef<"PackageTransaction", 'PaymentStatus'>
+  readonly transactionType: Prisma.FieldRef<"PackageTransaction", 'String'>
+  readonly proratedCredit: Prisma.FieldRef<"PackageTransaction", 'Decimal'>
   readonly adminNote: Prisma.FieldRef<"PackageTransaction", 'String'>
   readonly reviewedAt: Prisma.FieldRef<"PackageTransaction", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"PackageTransaction", 'DateTime'>

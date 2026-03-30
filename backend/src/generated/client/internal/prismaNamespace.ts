@@ -398,6 +398,11 @@ export const ModelName = {
   SystemSetting: 'SystemSetting',
   PackageTransaction: 'PackageTransaction',
   ListingRenewal: 'ListingRenewal',
+  GarageVehicle: 'GarageVehicle',
+  ServiceRecord: 'ServiceRecord',
+  MaintenanceReminder: 'MaintenanceReminder',
+  UserNotification: 'UserNotification',
+  ListingBumpLog: 'ListingBumpLog',
   NotificationTemplate: 'NotificationTemplate',
   NotificationLog: 'NotificationLog'
 } as const
@@ -415,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction" | "listingRenewal" | "notificationTemplate" | "notificationLog"
+    modelProps: "user" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "listingBumpLog" | "notificationTemplate" | "notificationLog"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1455,6 +1460,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GarageVehicle: {
+      payload: Prisma.$GarageVehiclePayload<ExtArgs>
+      fields: Prisma.GarageVehicleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GarageVehicleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GarageVehicleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>
+        }
+        findFirst: {
+          args: Prisma.GarageVehicleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GarageVehicleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>
+        }
+        findMany: {
+          args: Prisma.GarageVehicleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>[]
+        }
+        create: {
+          args: Prisma.GarageVehicleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>
+        }
+        createMany: {
+          args: Prisma.GarageVehicleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GarageVehicleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>[]
+        }
+        delete: {
+          args: Prisma.GarageVehicleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>
+        }
+        update: {
+          args: Prisma.GarageVehicleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>
+        }
+        deleteMany: {
+          args: Prisma.GarageVehicleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GarageVehicleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GarageVehicleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>[]
+        }
+        upsert: {
+          args: Prisma.GarageVehicleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GarageVehiclePayload>
+        }
+        aggregate: {
+          args: Prisma.GarageVehicleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGarageVehicle>
+        }
+        groupBy: {
+          args: Prisma.GarageVehicleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GarageVehicleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GarageVehicleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GarageVehicleCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceRecord: {
+      payload: Prisma.$ServiceRecordPayload<ExtArgs>
+      fields: Prisma.ServiceRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>
+        }
+        update: {
+          args: Prisma.ServiceRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceRecord>
+        }
+        groupBy: {
+          args: Prisma.ServiceRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceRecordCountAggregateOutputType> | number
+        }
+      }
+    }
+    MaintenanceReminder: {
+      payload: Prisma.$MaintenanceReminderPayload<ExtArgs>
+      fields: Prisma.MaintenanceReminderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MaintenanceReminderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MaintenanceReminderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>
+        }
+        findFirst: {
+          args: Prisma.MaintenanceReminderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MaintenanceReminderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>
+        }
+        findMany: {
+          args: Prisma.MaintenanceReminderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>[]
+        }
+        create: {
+          args: Prisma.MaintenanceReminderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>
+        }
+        createMany: {
+          args: Prisma.MaintenanceReminderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MaintenanceReminderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>[]
+        }
+        delete: {
+          args: Prisma.MaintenanceReminderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>
+        }
+        update: {
+          args: Prisma.MaintenanceReminderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>
+        }
+        deleteMany: {
+          args: Prisma.MaintenanceReminderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MaintenanceReminderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MaintenanceReminderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>[]
+        }
+        upsert: {
+          args: Prisma.MaintenanceReminderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaintenanceReminderPayload>
+        }
+        aggregate: {
+          args: Prisma.MaintenanceReminderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMaintenanceReminder>
+        }
+        groupBy: {
+          args: Prisma.MaintenanceReminderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaintenanceReminderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MaintenanceReminderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaintenanceReminderCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserNotification: {
+      payload: Prisma.$UserNotificationPayload<ExtArgs>
+      fields: Prisma.UserNotificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserNotificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserNotificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>
+        }
+        findFirst: {
+          args: Prisma.UserNotificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserNotificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>
+        }
+        findMany: {
+          args: Prisma.UserNotificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>[]
+        }
+        create: {
+          args: Prisma.UserNotificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>
+        }
+        createMany: {
+          args: Prisma.UserNotificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserNotificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>[]
+        }
+        delete: {
+          args: Prisma.UserNotificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>
+        }
+        update: {
+          args: Prisma.UserNotificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserNotificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserNotificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserNotificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserNotificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserNotificationPayload>
+        }
+        aggregate: {
+          args: Prisma.UserNotificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserNotification>
+        }
+        groupBy: {
+          args: Prisma.UserNotificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserNotificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserNotificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserNotificationCountAggregateOutputType> | number
+        }
+      }
+    }
+    ListingBumpLog: {
+      payload: Prisma.$ListingBumpLogPayload<ExtArgs>
+      fields: Prisma.ListingBumpLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ListingBumpLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ListingBumpLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>
+        }
+        findFirst: {
+          args: Prisma.ListingBumpLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ListingBumpLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>
+        }
+        findMany: {
+          args: Prisma.ListingBumpLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>[]
+        }
+        create: {
+          args: Prisma.ListingBumpLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>
+        }
+        createMany: {
+          args: Prisma.ListingBumpLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ListingBumpLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>[]
+        }
+        delete: {
+          args: Prisma.ListingBumpLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>
+        }
+        update: {
+          args: Prisma.ListingBumpLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.ListingBumpLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ListingBumpLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ListingBumpLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.ListingBumpLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ListingBumpLogPayload>
+        }
+        aggregate: {
+          args: Prisma.ListingBumpLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateListingBumpLog>
+        }
+        groupBy: {
+          args: Prisma.ListingBumpLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListingBumpLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ListingBumpLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ListingBumpLogCountAggregateOutputType> | number
+        }
+      }
+    }
     NotificationTemplate: {
       payload: Prisma.$NotificationTemplatePayload<ExtArgs>
       fields: Prisma.NotificationTemplateFieldRefs
@@ -1783,7 +2158,6 @@ export const VehicleListingScalarFieldEnum = {
   plateProvince: 'plateProvince',
   registrationType: 'registrationType',
   condition: 'condition',
-  ownerCount: 'ownerCount',
   hasAccident: 'hasAccident',
   hasModified: 'hasModified',
   hasWarranty: 'hasWarranty',
@@ -1810,7 +2184,10 @@ export const VehicleListingScalarFieldEnum = {
   favoriteCount: 'favoriteCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  publishedAt: 'publishedAt',
   expiredAt: 'expiredAt',
+  bumpedAt: 'bumpedAt',
+  autoBumpSlot: 'autoBumpSlot',
   userId: 'userId'
 } as const
 
@@ -1842,6 +2219,7 @@ export const PackageScalarFieldEnum = {
   maxPhotosPerListing: 'maxPhotosPerListing',
   listingDurationDays: 'listingDurationDays',
   autoBumpPerDay: 'autoBumpPerDay',
+  manualBumpPerDay: 'manualBumpPerDay',
   badge: 'badge',
   searchPriority: 'searchPriority',
   features: 'features',
@@ -1868,6 +2246,8 @@ export const PackageTransactionScalarFieldEnum = {
   amount: 'amount',
   slipImage: 'slipImage',
   status: 'status',
+  transactionType: 'transactionType',
+  proratedCredit: 'proratedCredit',
   adminNote: 'adminNote',
   reviewedAt: 'reviewedAt',
   createdAt: 'createdAt',
@@ -1893,6 +2273,77 @@ export const ListingRenewalScalarFieldEnum = {
 } as const
 
 export type ListingRenewalScalarFieldEnum = (typeof ListingRenewalScalarFieldEnum)[keyof typeof ListingRenewalScalarFieldEnum]
+
+
+export const GarageVehicleScalarFieldEnum = {
+  id: 'id',
+  nickname: 'nickname',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  color: 'color',
+  licensePlate: 'licensePlate',
+  currentMileage: 'currentMileage',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type GarageVehicleScalarFieldEnum = (typeof GarageVehicleScalarFieldEnum)[keyof typeof GarageVehicleScalarFieldEnum]
+
+
+export const ServiceRecordScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  mileage: 'mileage',
+  cost: 'cost',
+  serviceDate: 'serviceDate',
+  shopName: 'shopName',
+  createdAt: 'createdAt',
+  vehicleId: 'vehicleId'
+} as const
+
+export type ServiceRecordScalarFieldEnum = (typeof ServiceRecordScalarFieldEnum)[keyof typeof ServiceRecordScalarFieldEnum]
+
+
+export const MaintenanceReminderScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  type: 'type',
+  dueDate: 'dueDate',
+  dueMileage: 'dueMileage',
+  isCompleted: 'isCompleted',
+  createdAt: 'createdAt',
+  vehicleId: 'vehicleId'
+} as const
+
+export type MaintenanceReminderScalarFieldEnum = (typeof MaintenanceReminderScalarFieldEnum)[keyof typeof MaintenanceReminderScalarFieldEnum]
+
+
+export const UserNotificationScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  userId: 'userId'
+} as const
+
+export type UserNotificationScalarFieldEnum = (typeof UserNotificationScalarFieldEnum)[keyof typeof UserNotificationScalarFieldEnum]
+
+
+export const ListingBumpLogScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  createdAt: 'createdAt',
+  listingId: 'listingId',
+  userId: 'userId'
+} as const
+
+export type ListingBumpLogScalarFieldEnum = (typeof ListingBumpLogScalarFieldEnum)[keyof typeof ListingBumpLogScalarFieldEnum]
 
 
 export const NotificationTemplateScalarFieldEnum = {
@@ -2337,6 +2788,11 @@ export type GlobalOmitConfig = {
   systemSetting?: Prisma.SystemSettingOmit
   packageTransaction?: Prisma.PackageTransactionOmit
   listingRenewal?: Prisma.ListingRenewalOmit
+  garageVehicle?: Prisma.GarageVehicleOmit
+  serviceRecord?: Prisma.ServiceRecordOmit
+  maintenanceReminder?: Prisma.MaintenanceReminderOmit
+  userNotification?: Prisma.UserNotificationOmit
+  listingBumpLog?: Prisma.ListingBumpLogOmit
   notificationTemplate?: Prisma.NotificationTemplateOmit
   notificationLog?: Prisma.NotificationLogOmit
 }

@@ -110,6 +110,31 @@ export type PackageTransaction = Prisma.PackageTransactionModel
  */
 export type ListingRenewal = Prisma.ListingRenewalModel
 /**
+ * Model GarageVehicle
+ * 
+ */
+export type GarageVehicle = Prisma.GarageVehicleModel
+/**
+ * Model ServiceRecord
+ * 
+ */
+export type ServiceRecord = Prisma.ServiceRecordModel
+/**
+ * Model MaintenanceReminder
+ * 
+ */
+export type MaintenanceReminder = Prisma.MaintenanceReminderModel
+/**
+ * Model UserNotification
+ * 
+ */
+export type UserNotification = Prisma.UserNotificationModel
+/**
+ * Model ListingBumpLog
+ * 
+ */
+export type ListingBumpLog = Prisma.ListingBumpLogModel
+/**
  * Model NotificationTemplate
  * 
  */

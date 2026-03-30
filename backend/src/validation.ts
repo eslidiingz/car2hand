@@ -140,11 +140,6 @@ export const vehicleListingSchema = z.object({
         message: 'สภาพรถไม่ถูกต้อง'
     }).optional().nullable(),
 
-    ownerCount: z.number()
-        .int()
-        .min(1, 'จำนวนเจ้าของต้องอย่างน้อย 1')
-        .max(99, 'จำนวนเจ้าของมากเกินไป')
-        .default(1),
 
     hasAccident: z.boolean().default(false),
     hasModified: z.boolean().default(false),

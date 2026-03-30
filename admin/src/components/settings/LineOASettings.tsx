@@ -88,19 +88,9 @@ export default function LineOASettings() {
             const result = await apiFetch("/admin/settings/line/test", {
                 method: "POST",
             });
-            toast.success(
-                <div className="flex items-center gap-2">
-                    <CheckCircle size={16} className="text-emerald-500" />
-                    <span>เชื่อมต่อสำเร็จ! Bot: {result.botName || result.displayName || "OK"}</span>
-                </div>
-            );
+            toast.success(`เชื่อมต่อสำเร็จ! Bot: ${result.botName || result.displayName || "OK"}`);
         } catch (error: any) {
-            toast.error(
-                <div className="flex items-center gap-2">
-                    <AlertCircle size={16} className="text-rose-500" />
-                    <span>{error.message || "ไม่สามารถเชื่อมต่อ LINE OA ได้"}</span>
-                </div>
-            );
+            toast.error(error.message || "ไม่สามารถเชื่อมต่อ LINE OA ได้");
         } finally {
             setIsTesting(false);
         }

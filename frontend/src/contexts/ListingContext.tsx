@@ -20,7 +20,6 @@ export interface ListingFormData {
 
     // Step 1.5: Condition
     condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
-    ownerCount: number;
     hasAccident: boolean;
     hasModified: boolean;
     hasWarranty: boolean;
@@ -82,7 +81,6 @@ const defaultFormData: ListingFormData = {
     engineSize: undefined,
     seats: undefined,
     condition: 'GOOD',
-    ownerCount: 1,
     hasAccident: false,
     hasModified: false,
     hasWarranty: false,
@@ -190,7 +188,6 @@ export async function createListing(userId: string, data: ListingFormData): Prom
             plateProvince: data.plateProvince,
             registrationType: data.registrationType,
             condition: data.condition,
-            ownerCount: data.ownerCount,
             hasAccident: data.hasAccident,
             hasModified: data.hasModified,
             hasWarranty: data.hasWarranty,

@@ -130,21 +130,16 @@ export default function DashboardPage() {
                                         หมดอายุเมื่อ {listing.expiredAt ? new Date(listing.expiredAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}
                                     </p>
                                 </div>
-                                <Link
-                                    href="/profile/listings"
-                                    className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition flex-shrink-0"
-                                >
-                                    <ArrowClockwise weight="bold" size={14} />
-                                    ต่ออายุ
-                                </Link>
                             </div>
                         ))}
                     </div>
-                    {expiredListings.length > 5 && (
-                        <Link href="/profile/listings" className="block text-center text-sm font-bold text-orange-600 mt-3 hover:underline">
-                            ดูทั้งหมด ({expiredListings.length} รายการ)
-                        </Link>
-                    )}
+                    <Link
+                        href="/profile/listings?status=EXPIRED"
+                        className="flex items-center justify-center gap-2 mt-4 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition"
+                    >
+                        <ClockCountdown weight="bold" size={18} />
+                        ดูรายการที่หมดอายุ ({expiredListings.length} รายการ)
+                    </Link>
                 </div>
             )}
 

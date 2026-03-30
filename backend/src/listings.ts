@@ -28,6 +28,86 @@ async function expireListings() {
 expireListings();
 setInterval(expireListings, 60 * 60 * 1000);
 
+// Auto-bump: ดันโพสอัตโนมัติ ทยอยดันทีละคัน + สุ่มเวลา
+const AUTO_BUMP_SCHEDULES: Record<string, string[]> = {
+    standard: ['20:00'],
+    professional: ['08:30', '12:30', '21:00'],
+    premium: ['08:00', '11:30', '15:00', '19:00', '22:00'],
+};
+
+const processedBumpSlots = new Set<string>(); // ป้องกันดันซ้ำ "slug:slotIndex:date"
+
+async function autoBumpListings() {
+    const now = new Date();
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const today = now.toISOString().slice(0, 10); // YYYY-MM-DD
+
+    for (const [slug, times] of Object.entries(AUTO_BUMP_SCHEDULES)) {
+        if (!times.includes(currentTime)) continue;
+
+        const slotIndex = times.indexOf(currentTime);
+        const totalSlots = times.length;
+        const slotKey = `${slug}:${slotIndex}:${today}`;
+
+        // ป้องกันรันซ้ำ slot เดิมในวันเดียวกัน
+        if (processedBumpSlots.has(slotKey)) continue;
+        processedBumpSlots.add(slotKey);
+
+        try {
+            // หา ACTIVE listings ของ users ที่มี package นี้
+            const listings = await prisma.vehicleListing.findMany({
+                where: {
+                    status: 'ACTIVE',
+                    user: { currentPackage: { slug } },
+                    OR: [
+                        { expiredAt: null },
+                        { expiredAt: { gt: new Date() } }
+                    ]
+                },
+                select: { id: true, userId: true, autoBumpSlot: true },
+                orderBy: { createdAt: 'asc' }
+            });
+
+            if (listings.length === 0) continue;
+
+            // แบ่ง listings ตาม slot
+            const slotListings = listings.filter((l, idx) => {
+                if (l.autoBumpSlot !== null) return l.autoBumpSlot === slotIndex;
+                // ถ้าไม่ได้กำหนด → กระจายตาม index
+                return idx % totalSlots === slotIndex;
+            });
+
+            if (slotListings.length === 0) continue;
+
+            // ทยอยดันทีละคัน สุ่ม delay 0-10 นาที (600,000 ms)
+            for (const listing of slotListings) {
+                const delayMs = Math.floor(Math.random() * 10 * 60 * 1000);
+                setTimeout(async () => {
+                    try {
+                        const bumpTime = new Date();
+                        await prisma.vehicleListing.update({
+                            where: { id: listing.id },
+                            data: { bumpedAt: bumpTime }
+                        });
+                        await prisma.listingBumpLog.create({
+                            data: { listingId: listing.id, userId: listing.userId, type: 'AUTO' }
+                        });
+                    } catch (err) {
+                        console.error(`[Auto-Bump] Error bumping ${listing.id}:`, err);
+                    }
+                }, delayMs);
+            }
+
+            console.log(`[Auto-Bump] จัดคิว ${slotListings.length}/${listings.length} ประกาศ (${slug} slot ${slotIndex + 1}/${totalSlots}) เวลา ${currentTime}`);
+        } catch (error) {
+            console.error(`[Auto-Bump] Error (${slug}):`, error);
+        }
+    }
+}
+
+// เรียกทุก 1 นาที
+setInterval(autoBumpListings, 60 * 1000);
+
 export const listingRoutes = new Elysia({ prefix: "/listings" })
     // สร้างประกาศขายใหม่
     .post("/", async ({ body, set }) => {
@@ -82,7 +162,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     plateProvince: listingData.plateProvince,
                     registrationType: listingData.registrationType ?? "PERSONAL",
                     condition: listingData.condition,
-                    ownerCount: listingData.ownerCount ?? 1,
                     hasAccident: listingData.hasAccident ?? false,
                     hasModified: listingData.hasModified ?? false,
                     hasWarranty: listingData.hasWarranty ?? false,
@@ -190,7 +269,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("FAIR"),
                 t.Literal("POOR")
             ]),
-            ownerCount: t.Optional(t.Number()),
             hasAccident: t.Optional(t.Boolean()),
             hasModified: t.Optional(t.Boolean()),
             hasWarranty: t.Optional(t.Boolean()),
@@ -610,8 +688,9 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 data: {
                     price,
                     status: newStatus,
-                    // ตั้ง expiredAt เฉพาะเมื่อ ACTIVE ทันที (แพ็กเกจที่ไม่ใช่ Basic)
+                    // ตั้ง publishedAt + expiredAt เฉพาะเมื่อ ACTIVE ทันที (แพ็กเกจที่ไม่ใช่ Basic)
                     ...(newStatus === "ACTIVE" ? {
+                        publishedAt: new Date(),
                         expiredAt: getListingExpiryDate(durationDays)
                     } : {})
                 },
@@ -688,7 +767,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     plateProvince: updateData.plateProvince,
                     registrationType: updateData.registrationType ?? "PERSONAL",
                     condition: updateData.condition,
-                    ownerCount: updateData.ownerCount ?? 1,
                     hasAccident: updateData.hasAccident ?? false,
                     hasModified: updateData.hasModified ?? false,
                     hasWarranty: updateData.hasWarranty ?? false,
@@ -795,7 +873,6 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("FAIR"),
                 t.Literal("POOR")
             ])),
-            ownerCount: t.Optional(t.Number()),
             hasAccident: t.Optional(t.Boolean()),
             hasModified: t.Optional(t.Boolean()),
             hasWarranty: t.Optional(t.Boolean()),
@@ -1035,7 +1112,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                         }
                     }
                 },
-                orderBy: { createdAt: 'desc' },
+                orderBy: [
+                    { bumpedAt: { sort: 'desc', nulls: 'last' } },
+                    { createdAt: 'desc' }
+                ],
                 skip,
                 take: parseInt(limit)
             }),
@@ -1200,7 +1280,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             const newExpiry = getListingExpiryDate(userPkg.listingDurationDays);
             await prisma.vehicleListing.update({
                 where: { id },
-                data: { status: 'ACTIVE', expiredAt: newExpiry }
+                data: { status: 'ACTIVE', publishedAt: new Date(), expiredAt: newExpiry }
             });
 
             return {
@@ -1212,5 +1292,188 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         body: t.Object({
             userId: t.String(),
             paymentSlip: t.Optional(t.String()),
+        })
+    })
+
+    // ดันโพส (manual bump)
+    .post("/:id/bump", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findFirst({
+            where: { id, userId, status: 'ACTIVE' }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศที่กำลังขาย" };
+        }
+
+        // ดึง user package → manualBumpPerDay
+        const userPkg = await getUserPackage(userId);
+        const manualLimit = (userPkg as any).manualBumpPerDay ?? 0;
+
+        if (manualLimit <= 0) {
+            set.status = 400;
+            return { message: "แพ็กเกจของคุณไม่รองรับการดันโพส" };
+        }
+
+        // นับ manual bumps วันนี้ ต่อคัน (per-listing)
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todayBumps = await prisma.listingBumpLog.count({
+            where: {
+                listingId: id,
+                type: 'MANUAL',
+                createdAt: { gte: todayStart }
+            }
+        });
+
+        if (todayBumps >= manualLimit) {
+            set.status = 400;
+            return {
+                message: `ประกาศนี้ถูกดันโพสต์ครบ ${manualLimit} ครั้งแล้ววันนี้`,
+                used: todayBumps,
+                limit: manualLimit,
+            };
+        }
+
+        // ดันโพส
+        const now = new Date();
+        await prisma.$transaction([
+            prisma.vehicleListing.update({
+                where: { id },
+                data: { bumpedAt: now }
+            }),
+            prisma.listingBumpLog.create({
+                data: { listingId: id, userId, type: 'MANUAL' }
+            })
+        ]);
+
+        return {
+            message: "ดันโพสสำเร็จ",
+            bumpedAt: now,
+            remaining: manualLimit - todayBumps - 1,
+        };
+    }, {
+        body: t.Object({
+            userId: t.String(),
+        })
+    })
+
+    // กำหนด slot ดันโพสอัตโนมัติ
+    // ดึงข้อมูล slots ของ user (จำนวนต่อ slot + ความจุ)
+    .get("/bump-slots", async ({ query }) => {
+        const { userId } = query;
+        if (!userId) return { slots: [] };
+
+        const userPkg = await getUserPackage(userId as string);
+        const autoBump = (userPkg as any).autoBumpPerDay ?? 0;
+        const maxListings = userPkg.maxListings;
+
+        if (autoBump <= 0) return { slots: [], maxPerSlot: 0, autoBump: 0 };
+
+        const maxPerSlot = Math.ceil(maxListings / autoBump);
+
+        // ดึง package slug เพื่อหาตาราง slots
+        const pkg = await prisma.package.findFirst({ where: { id: userPkg.id }, select: { slug: true } });
+        const schedules = AUTO_BUMP_SCHEDULES[pkg?.slug || ''] || [];
+
+        // นับ listing ในแต่ละ slot
+        const slots = await Promise.all(
+            schedules.map(async (time, idx) => {
+                const count = await prisma.vehicleListing.count({
+                    where: { userId: userId as string, autoBumpSlot: idx, status: 'ACTIVE' }
+                });
+                return { index: idx, time, count, maxPerSlot };
+            })
+        );
+
+        // นับ listing ที่ไม่ได้กำหนด slot (null = ระบบจัดให้)
+        const unassigned = await prisma.vehicleListing.count({
+            where: { userId: userId as string, autoBumpSlot: null, status: 'ACTIVE' }
+        });
+
+        return { slots, maxPerSlot, autoBump, unassigned };
+    })
+
+    .put("/:id/bump-slot", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, slot } = body as any;
+
+        const listing = await prisma.vehicleListing.findFirst({
+            where: { id, userId }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศ" };
+        }
+
+        // ดึง package เพื่อเช็คจำนวน slots และ maxListings
+        const userPkg = await getUserPackage(userId);
+        const autoBump = (userPkg as any).autoBumpPerDay ?? 0;
+        const maxListings = userPkg.maxListings;
+
+        if (autoBump <= 0) {
+            set.status = 400;
+            return { message: "แพ็กเกจของคุณไม่มีระบบดันโพสอัตโนมัติ" };
+        }
+
+        // ตรวจสอบว่า slot อยู่ในช่วงที่ถูกต้อง
+        if (slot !== null && (slot < 0 || slot >= autoBump)) {
+            set.status = 400;
+            return { message: `slot ต้องอยู่ระหว่าง 0 ถึง ${autoBump - 1} หรือ null (ให้ระบบจัดให้)` };
+        }
+
+        // ตรวจสอบ slot capacity — จำกัดจำนวน listing ต่อ slot
+        if (slot !== null) {
+            const maxPerSlot = Math.ceil(maxListings / autoBump);
+
+            // นับ listings ที่กำหนด slot นี้แล้ว (ไม่รวมตัวเอง)
+            const currentSlotCount = await prisma.vehicleListing.count({
+                where: {
+                    userId,
+                    autoBumpSlot: slot,
+                    status: 'ACTIVE',
+                    id: { not: id },
+                }
+            });
+
+            if (currentSlotCount >= maxPerSlot) {
+                const pkg = await prisma.package.findFirst({ where: { id: userPkg.id }, select: { slug: true } });
+                const schedules = AUTO_BUMP_SCHEDULES[pkg?.slug || ''] || [];
+                set.status = 400;
+                return {
+                    message: `Slot ${slot + 1} (${schedules[slot] || ''}) เต็มแล้ว (สูงสุด ${maxPerSlot} คัน/slot)`,
+                    maxPerSlot,
+                    currentCount: currentSlotCount,
+                };
+            }
+        }
+
+        await prisma.vehicleListing.update({
+            where: { id },
+            data: { autoBumpSlot: slot }
+        });
+
+        // หาเวลาของ slot + slot info
+        const pkg = await prisma.package.findFirst({ where: { id: userPkg.id }, select: { slug: true } });
+        const schedules = AUTO_BUMP_SCHEDULES[pkg?.slug || ''] || [];
+        const slotTime = slot !== null && schedules[slot] ? schedules[slot] : 'ระบบจัดให้อัตโนมัติ';
+        const maxPerSlot = Math.ceil(maxListings / autoBump);
+
+        return {
+            message: "กำหนด slot สำเร็จ",
+            slot,
+            scheduledTime: slotTime,
+            maxPerSlot,
+        };
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            slot: t.Union([t.Number(), t.Null()]),
         })
     });
