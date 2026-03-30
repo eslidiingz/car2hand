@@ -2248,6 +2248,8 @@ export const PackageTransactionScalarFieldEnum = {
   status: 'status',
   transactionType: 'transactionType',
   proratedCredit: 'proratedCredit',
+  fromPackageName: 'fromPackageName',
+  fromPackageSlug: 'fromPackageSlug',
   adminNote: 'adminNote',
   reviewedAt: 'reviewedAt',
   createdAt: 'createdAt',

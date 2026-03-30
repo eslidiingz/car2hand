@@ -468,6 +468,8 @@ model PackageTransaction {
   status          PaymentStatus @default(PENDING)
   transactionType String        @default("UPGRADE") // "UPGRADE" | "RENEWAL"
   proratedCredit  Decimal?      @db.Decimal(10, 2) // เครดิตจากวันเหลือ (เฉพาะ UPGRADE)
+  fromPackageName String? // ชื่อแพ็กเกจเดิม (snapshot ตอนสร้าง transaction)
+  fromPackageSlug String? // slug แพ็กเกจเดิม
   adminNote       String? // หมายเหตุจาก admin (เหตุผลกรณีปฏิเสธ)
   reviewedAt      DateTime? // วันที่ตรวจสอบ
   createdAt       DateTime      @default(now())

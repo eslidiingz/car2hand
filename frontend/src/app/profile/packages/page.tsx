@@ -56,9 +56,9 @@ interface Transaction {
 }
 
 interface ProrateInfo {
-    newPackagePrice: number;
+    originalPrice: number;
     proratedCredit: number;
-    remainingDays: number;
+    daysRemaining: number;
     finalPrice: number;
 }
 
@@ -106,6 +106,7 @@ export default function PackagesPage() {
     const [slipPreview, setSlipPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
     const [paymentInfo, setPaymentInfo] = useState<Record<string, string>>({});
     const [isRenewal, setIsRenewal] = useState(false);
     const [prorateInfo, setProrateInfo] = useState<ProrateInfo | null>(null);
@@ -147,7 +148,15 @@ export default function PackagesPage() {
         }
     };
 
+    const hasPendingTransaction = transactions.some(tx => tx.status === 'PENDING');
+
     const openUpgradeModal = (pkg: PackageData, renewal: boolean) => {
+        if (hasPendingTransaction) {
+            setErrorMsg('คุณมีรายการรอตรวจสอบอยู่แล้ว กรุณารอผลการตรวจสอบ');
+            setTimeout(() => setErrorMsg(''), 5000);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
         setSelectedPackage(pkg);
         setIsRenewal(renewal);
         setProrateInfo(null);
@@ -234,15 +243,18 @@ export default function PackagesPage() {
                 setSlipFile(null);
                 setSlipPreview(null);
                 setSelectedPackage(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 const txRes = await fetch(`${API_URL}/packages/transactions?userId=${userId}`);
                 const txData = await txRes.json();
                 setTransactions(txData.transactions || []);
             } else {
-                alert(data.message || 'เกิดข้อผิดพลาด');
+                setErrorMsg(data.message || 'เกิดข้อผิดพลาด');
+                setTimeout(() => setErrorMsg(''), 5000);
             }
         } catch (err) {
             console.error(err);
-            alert('เกิดข้อผิดพลาดในการส่งคำขอ');
+            setErrorMsg('เกิดข้อผิดพลาดในการส่งคำขอ');
+            setTimeout(() => setErrorMsg(''), 5000);
         } finally {
             setIsSubmitting(false);
         }
@@ -270,6 +282,26 @@ export default function PackagesPage() {
                     <Check weight="bold" className="text-green-600 text-xl flex-shrink-0" />
                     <p className="text-green-800 font-bold text-sm">{successMsg}</p>
                     <button onClick={() => setSuccessMsg('')} className="ml-auto text-green-500 hover:text-green-700"><X weight="bold" /></button>
+                </div>
+            )}
+
+            {/* Error Banner */}
+            {errorMsg && (
+                <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3">
+                    <Warning weight="bold" className="text-red-600 text-xl flex-shrink-0" />
+                    <p className="text-red-800 font-bold text-sm">{errorMsg}</p>
+                    <button onClick={() => setErrorMsg('')} className="ml-auto text-red-500 hover:text-red-700"><X weight="bold" /></button>
+                </div>
+            )}
+
+            {/* Pending Transaction Banner */}
+            {hasPendingTransaction && !successMsg && (
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
+                    <Clock weight="fill" className="text-amber-500 text-xl flex-shrink-0" />
+                    <div>
+                        <p className="text-amber-800 font-bold text-sm">มีคำขออัพเกรดรอตรวจสอบ</p>
+                        <p className="text-amber-600 text-xs mt-0.5">ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง</p>
+                    </div>
                 </div>
             )}
 
@@ -491,11 +523,11 @@ export default function PackagesPage() {
                                         <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
                                             <div className="flex justify-between text-gray-700">
                                                 <span>ราคาแพ็กเกจใหม่</span>
-                                                <span>฿{Number(prorateInfo.newPackagePrice).toLocaleString()}</span>
+                                                <span>฿{Number(prorateInfo.originalPrice).toLocaleString()}</span>
                                             </div>
                                             {prorateInfo.proratedCredit > 0 && (
                                                 <div className="flex justify-between text-green-600">
-                                                    <span>เครดิตวันเหลือ ({prorateInfo.remainingDays} วัน)</span>
+                                                    <span>เครดิตวันเหลือ ({prorateInfo.daysRemaining} วัน)</span>
                                                     <span>-฿{Number(prorateInfo.proratedCredit).toLocaleString()}</span>
                                                 </div>
                                             )}

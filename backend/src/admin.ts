@@ -787,6 +787,38 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 return { error: 'Server Error', message: 'ไม่สามารถปฏิเสธได้' };
             }
         })
+
+        // Toggle featured
+        .put("/:id/featured", async ({ params: { id }, set }) => {
+            try {
+                const listing = await prisma.vehicleListing.findUnique({ where: { id } });
+                if (!listing) { set.status = 404; return { error: 'ไม่พบประกาศ' }; }
+                const updated = await prisma.vehicleListing.update({
+                    where: { id },
+                    data: { isFeatured: !listing.isFeatured }
+                });
+                return { message: updated.isFeatured ? 'ตั้งเป็นประกาศแนะนำแล้ว' : 'ยกเลิกประกาศแนะนำแล้ว', listing: updated };
+            } catch (error) {
+                set.status = 500;
+                return { error: 'Server Error' };
+            }
+        })
+
+        // Toggle premium
+        .put("/:id/premium", async ({ params: { id }, set }) => {
+            try {
+                const listing = await prisma.vehicleListing.findUnique({ where: { id } });
+                if (!listing) { set.status = 404; return { error: 'ไม่พบประกาศ' }; }
+                const updated = await prisma.vehicleListing.update({
+                    where: { id },
+                    data: { isPremium: !listing.isPremium }
+                });
+                return { message: updated.isPremium ? 'ตั้งเป็นประกาศพรีเมียมแล้ว' : 'ยกเลิกประกาศพรีเมียมแล้ว', listing: updated };
+            } catch (error) {
+                set.status = 500;
+                return { error: 'Server Error' };
+            }
+        })
     )
 
     // User Management

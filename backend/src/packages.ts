@@ -167,7 +167,7 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
                 finalAmount = Math.max(0, Number(targetPackage.price) - proratedCredit);
             }
 
-            // สร้าง transaction
+            // สร้าง transaction (เก็บ fromPackage snapshot)
             const transaction = await prisma.packageTransaction.create({
                 data: {
                     userId,
@@ -175,6 +175,8 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
                     amount: finalAmount,
                     transactionType,
                     proratedCredit,
+                    fromPackageName: user.currentPackage?.name || 'Basic (Free)',
+                    fromPackageSlug: user.currentPackage?.slug || 'basic',
                     slipImage: slipUrl,
                     status: 'PENDING'
                 },

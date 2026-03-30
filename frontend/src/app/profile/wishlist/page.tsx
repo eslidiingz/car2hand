@@ -6,7 +6,9 @@ import {
     Heart,
     Check,
     Warning,
-    ArrowClockwise
+    ArrowClockwise,
+    Trash,
+    X,
 } from '@phosphor-icons/react';
 import Toast from '@/components/Toast';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -17,6 +19,7 @@ export default function WishlistPage() {
     const [toastMessage, setToastMessage] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [hasOldData, setHasOldData] = useState(false);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     // Check if wishlist has items with missing data (old format)
     useEffect(() => {
@@ -34,12 +37,15 @@ export default function WishlistPage() {
     };
 
     const handleClearAll = () => {
-        if (confirm('คุณต้องการลบรายการทั้งหมดหรือไม่? หลังจากลบแล้วสามารถเพิ่มใหม่เพื่อให้แสดงข้อมูลครบถ้วน')) {
-            clearWishlist();
-            setToastMessage('ลบรายการทั้งหมดแล้ว');
-            setShowToast(true);
-            setTimeout(() => setShowToast(false), 2000);
-        }
+        setShowClearConfirm(true);
+    };
+
+    const confirmClearAll = () => {
+        clearWishlist();
+        setShowClearConfirm(false);
+        setToastMessage('ลบรายการทั้งหมดแล้ว');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 2000);
     };
 
     // Convert WishlistItem to VehicleListing format
@@ -67,6 +73,29 @@ export default function WishlistPage() {
                 <h1 className="text-2xl font-bold text-gray-800">รายการที่บันทึกไว้</h1>
                 <span className="text-sm text-gray-500">{wishlist.length} รายการ</span>
             </div>
+
+            {/* Clear All Confirmation Modal */}
+            {showClearConfirm && (
+                <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={() => setShowClearConfirm(false)}>
+                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 text-center">
+                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Trash size={28} className="text-red-500" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-2">ลบรายการโปรดทั้งหมด?</h3>
+                            <p className="text-sm text-gray-500">หลังจากลบแล้วสามารถเพิ่มใหม่เพื่อให้แสดงข้อมูลครบถ้วน</p>
+                        </div>
+                        <div className="flex border-t border-gray-100">
+                            <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 transition rounded-bl-2xl">
+                                ยกเลิก
+                            </button>
+                            <button onClick={confirmClearAll} className="flex-1 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50 transition border-l border-gray-100 rounded-br-2xl">
+                                ลบทั้งหมด
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Warning for old data */}
             {hasOldData && (

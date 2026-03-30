@@ -30,7 +30,7 @@ const navigation = [
 export default function Sidebar() {
     const pathname = usePathname();
     const { logout } = useAuth();
-    const { pendingUpgradeCount, pendingListingCount } = usePendingCounts();
+    const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount } = usePendingCounts();
 
     return (
         <div className="flex h-full w-60 flex-col bg-white border-r border-slate-200">
@@ -46,7 +46,7 @@ export default function Sidebar() {
                     const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'));
                     const isPackages = item.href === '/packages';
                     const isListings = item.href === '/listings';
-                    const badgeCount = isPackages ? pendingUpgradeCount : isListings ? pendingListingCount : 0;
+                    const badgeCount = isPackages ? pendingUpgradeCount : isListings ? (pendingListingCount + pendingRenewalCount) : 0;
                     const showBadge = badgeCount > 0;
 
                     return (
