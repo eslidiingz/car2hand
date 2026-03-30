@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
+import NotificationBell from './NotificationBell';
 import { User, CaretDown, SignOut, Garage, CarProfile, Heart, Gear, Scales, List, X, Package } from '@phosphor-icons/react';
 import { useWishlist } from '@/contexts/WishlistContext';
 
@@ -202,6 +203,8 @@ export default function Navbar() {
 
                             {user ? (
                                 /* Logged In State */
+                                <>
+                                <NotificationBell />
                                 <div className="relative">
                                     <button
                                         onClick={() => {
@@ -320,6 +323,7 @@ export default function Navbar() {
                                         </div>
                                     )}
                                 </div>
+                                </>
                             ) : (
                                 <button
                                     onClick={() => setIsLoginModalOpen(true)}

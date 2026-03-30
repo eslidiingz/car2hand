@@ -590,7 +590,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                                 currentPackage: { select: { name: true, slug: true } }
                             }
                         },
-                        images: { take: 1, orderBy: { order: 'asc' } },
+                        images: { orderBy: { order: 'asc' } },
                     }
                 }),
                 prisma.vehicleListing.count({ where })
@@ -632,6 +632,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     where: { id },
                     data: {
                         status: 'ACTIVE',
+                        publishedAt: new Date(),
                         expiredAt
                     }
                 });
@@ -741,7 +742,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     }),
                     prisma.vehicleListing.update({
                         where: { id: renewal.listingId },
-                        data: { status: 'ACTIVE', expiredAt: newExpiry }
+                        data: { status: 'ACTIVE', publishedAt: new Date(), expiredAt: newExpiry }
                     })
                 ]);
 
@@ -1014,6 +1015,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         maxPhotosPerListing: body.maxPhotosPerListing,
                         listingDurationDays: body.listingDurationDays,
                         autoBumpPerDay: body.autoBumpPerDay,
+                        manualBumpPerDay: body.manualBumpPerDay,
                         badge: body.badge,
                         searchPriority: body.searchPriority,
                         features: body.features,
@@ -1043,6 +1045,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 maxPhotosPerListing: t.Optional(t.Number()),
                 listingDurationDays: t.Optional(t.Number()),
                 autoBumpPerDay: t.Optional(t.Number()),
+                manualBumpPerDay: t.Optional(t.Number()),
                 badge: t.Optional(t.Nullable(t.String())),
                 searchPriority: t.Optional(t.String()),
                 features: t.Optional(t.Array(t.String())),
@@ -1150,11 +1153,24 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Bad Request', message: 'รายการนี้ถูกตรวจสอบแล้ว' };
                 }
 
+                // ดึงข้อมูล user ปัจจุบัน
+                const currentUser = await prisma.user.findUnique({
+                    where: { id: transaction.userId },
+                    select: { packageExpiresAt: true, lineUserId: true }
+                });
+
                 // คำนวณ packageExpiresAt จากระยะเวลาของ package
                 const durationDays = transaction.package.listingDurationDays;
-                const packageExpiresAt = durationDays === -1
-                    ? null // ไม่มีหมดอายุ
-                    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // ใช้ 30 วันเป็นรอบสมาชิก
+                let packageExpiresAt: Date | null = null;
+                if (durationDays !== -1) {
+                    if ((transaction as any).transactionType === 'RENEWAL' && currentUser?.packageExpiresAt) {
+                        // ต่ออายุ: เพิ่ม 30 วันจากวันหมดอายุเดิม
+                        packageExpiresAt = new Date(currentUser.packageExpiresAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+                    } else {
+                        // อัพเกรด: เริ่มนับ 30 วันใหม่
+                        packageExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                    }
+                }
 
                 // อัพเดท transaction + user package พร้อมกัน
                 const [updatedTransaction] = await prisma.$transaction([
@@ -1173,6 +1189,24 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         }
                     })
                 ]);
+
+                // สร้าง notification แจ้งผู้ใช้
+                await prisma.userNotification.create({
+                    data: {
+                        userId: transaction.userId,
+                        title: 'แพ็กเกจได้รับการอนุมัติ',
+                        message: `แพ็กเกจ ${transaction.package.name} ของคุณได้รับการอนุมัติแล้ว`,
+                        type: 'PACKAGE_APPROVED',
+                    }
+                });
+
+                // ส่ง LINE push notification
+                if (currentUser?.lineUserId) {
+                    try {
+                        const { pushMessage, buildTextMessage } = await import("./line");
+                        await pushMessage(currentUser.lineUserId, buildTextMessage(`แพ็กเกจ ${transaction.package.name} ของคุณได้รับการอนุมัติแล้ว`));
+                    } catch {} // silent fail
+                }
 
                 return {
                     message: 'อนุมัติรายการสำเร็จ',
@@ -1202,6 +1236,12 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Bad Request', message: 'รายการนี้ถูกตรวจสอบแล้ว' };
                 }
 
+                // ดึงข้อมูล package name สำหรับ notification
+                const transactionWithPackage = await prisma.packageTransaction.findUnique({
+                    where: { id },
+                    include: { package: { select: { name: true } } }
+                });
+
                 const updatedTransaction = await prisma.packageTransaction.update({
                     where: { id },
                     data: {
@@ -1210,6 +1250,28 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         reviewedAt: new Date()
                     }
                 });
+
+                // สร้าง notification แจ้งผู้ใช้
+                await prisma.userNotification.create({
+                    data: {
+                        userId: transaction.userId,
+                        title: 'แพ็กเกจถูกปฏิเสธ',
+                        message: `คำขอแพ็กเกจ ${transactionWithPackage?.package.name} ถูกปฏิเสธ${(body as any).adminNote ? ': ' + (body as any).adminNote : ''}`,
+                        type: 'PACKAGE_REJECTED',
+                    }
+                });
+
+                // ส่ง LINE push notification
+                const rejectedUser = await prisma.user.findUnique({
+                    where: { id: transaction.userId },
+                    select: { lineUserId: true }
+                });
+                if (rejectedUser?.lineUserId) {
+                    try {
+                        const { pushMessage, buildTextMessage } = await import("./line");
+                        await pushMessage(rejectedUser.lineUserId, buildTextMessage(`คำขอแพ็กเกจ ${transactionWithPackage?.package.name} ถูกปฏิเสธ${(body as any).adminNote ? ': ' + (body as any).adminNote : ''}`));
+                    } catch {} // silent fail
+                }
 
                 return {
                     message: 'ปฏิเสธรายการเรียบร้อย',

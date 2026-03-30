@@ -234,6 +234,98 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
 
 // Users routes
 export const usersRoutes = new Elysia({ prefix: "/users" })
+
+    // Get own profile (must be before /:id to avoid param matching)
+    .get("/me", async ({ query, set }) => {
+        const userId = query.userId as string | undefined;
+        if (!userId) {
+            set.status = 400;
+            return { error: 'Missing userId' };
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phoneNumber: true,
+                isActive: true,
+                lineUserId: true,
+                createdAt: true,
+                currentPackage: { select: { name: true, slug: true } },
+                packageExpiresAt: true,
+            }
+        });
+
+        if (!user) {
+            set.status = 404;
+            return { error: 'Not Found' };
+        }
+        return { user };
+    })
+
+    // Update own profile
+    .put("/me", async ({ body, set }) => {
+        const { userId, fullName, phoneNumber } = body as any;
+        if (!userId) {
+            set.status = 400;
+            return { error: 'Missing userId' };
+        }
+
+        try {
+            const updated = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    ...(fullName && { fullName }),
+                    ...(phoneNumber && { phoneNumber }),
+                },
+                select: { id: true, fullName: true, email: true, phoneNumber: true }
+            });
+            return { message: 'อัปเดตโปรไฟล์สำเร็จ', user: updated };
+        } catch {
+            set.status = 500;
+            return { error: 'ไม่สามารถอัปเดตได้' };
+        }
+    })
+
+    // Change password
+    .put("/me/password", async ({ body, set }) => {
+        const { userId, currentPassword, newPassword } = body as any;
+        if (!userId || !currentPassword || !newPassword) {
+            set.status = 400;
+            return { error: 'กรุณากรอกข้อมูลให้ครบ' };
+        }
+
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            set.status = 404;
+            return { error: 'ไม่พบผู้ใช้' };
+        }
+
+        // Verify current password using Bun.password (same as login)
+        const isValid = await Bun.password.verify(currentPassword, user.password);
+        if (!isValid) {
+            set.status = 400;
+            return { error: 'รหัสผ่านปัจจุบันไม่ถูกต้อง' };
+        }
+
+        // Hash new password with same settings as registration
+        const hashed = await Bun.password.hash(newPassword, {
+            algorithm: 'argon2id',
+            memoryCost: 65536,
+            timeCost: 3
+        });
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashed }
+        });
+
+        return { message: 'เปลี่ยนรหัสผ่านสำเร็จ' };
+    })
+
+    // Get user by ID (public, limited data)
     .get("/:id", async ({ params, set }) => {
         const { id } = params;
 

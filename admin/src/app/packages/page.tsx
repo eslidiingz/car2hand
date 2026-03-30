@@ -18,7 +18,15 @@ import {
     Zap,
     Crown,
     Rocket,
-    Trash2
+    Trash2,
+    CreditCard,
+    Car,
+    ImagePlus,
+    Search,
+    Award,
+    Users,
+    FileText,
+    Pencil
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -97,6 +105,9 @@ export default function AdminPackagesPage() {
     const [approveId, setApproveId] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [deletePackageId, setDeletePackageId] = useState<string | null>(null);
+    const [editingPkg, setEditingPkg] = useState<PackageData | null>(null);
+    const [editForm, setEditForm] = useState<any>({});
+    const [editSaving, setEditSaving] = useState(false);
 
     const fetchPackages = async () => {
         try {
@@ -164,6 +175,45 @@ export default function AdminPackagesPage() {
         }
     };
 
+    const openEditModal = (pkg: PackageData) => {
+        setEditingPkg(pkg);
+        setEditForm({
+            name: pkg.name,
+            nameTh: pkg.nameTh,
+            slug: pkg.slug,
+            description: pkg.description || '',
+            targetAudience: pkg.targetAudience || '',
+            price: Number(pkg.price),
+            maxListings: pkg.maxListings,
+            maxPhotosPerListing: pkg.maxPhotosPerListing,
+            listingDurationDays: pkg.listingDurationDays,
+            autoBumpPerDay: pkg.autoBumpPerDay,
+            manualBumpPerDay: pkg.manualBumpPerDay || 0,
+            badge: pkg.badge || '',
+            searchPriority: pkg.searchPriority,
+            sortOrder: pkg.sortOrder,
+            isActive: pkg.isActive,
+        });
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editingPkg) return;
+        setEditSaving(true);
+        try {
+            await apiFetch(`/admin/packages/${editingPkg.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(editForm),
+            });
+            toast.success('อัพเดทแพ็กเกจสำเร็จ');
+            setEditingPkg(null);
+            fetchPackages();
+        } catch (error: any) {
+            toast.error(error.message || 'ไม่สามารถอัพเดทแพ็กเกจได้');
+        } finally {
+            setEditSaving(false);
+        }
+    };
+
     const handleDeletePackage = async () => {
         if (!deletePackageId) return;
         try {
@@ -221,26 +271,30 @@ export default function AdminPackagesPage() {
                                         </div>
                                     </div>
                                     <div className="flex flex-wrap gap-2 text-xs text-slate-600">
-                                        <span className="bg-slate-50 px-2 py-1 rounded">฿{Number(pkg.price).toLocaleString()}/เดือน</span>
-                                        <span className="bg-slate-50 px-2 py-1 rounded">{pkg.maxListings === -1 ? '∞' : pkg.maxListings} ประกาศ</span>
-                                        <span className="bg-slate-50 px-2 py-1 rounded">{pkg.maxPhotosPerListing} รูป</span>
-                                        <span className="bg-slate-50 px-2 py-1 rounded">{pkg.listingDurationDays === -1 ? 'ไม่หมดอายุ' : `${pkg.listingDurationDays} วัน`}</span>
+                                        <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded font-medium flex items-center gap-1"><CreditCard size={12} /> ฿{Number(pkg.price).toLocaleString()}{Number(pkg.price) > 0 ? '/เดือน' : ' ฟรี'}</span>
+                                        <span className="bg-slate-50 px-2 py-1 rounded flex items-center gap-1"><Car size={12} className="text-slate-400" /> {pkg.maxListings === -1 ? '∞' : pkg.maxListings} ประกาศ</span>
+                                        <span className="bg-slate-50 px-2 py-1 rounded flex items-center gap-1"><ImagePlus size={12} className="text-slate-400" /> {pkg.maxPhotosPerListing} รูป</span>
+                                        <span className="bg-slate-50 px-2 py-1 rounded flex items-center gap-1"><Clock size={12} className="text-slate-400" /> {pkg.listingDurationDays === -1 ? 'ไม่หมดอายุ' : `${pkg.listingDurationDays} วัน`}</span>
+                                        <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded flex items-center gap-1"><Zap size={12} /> ดันอัตโนมัติ {pkg.autoBumpPerDay || 0}/วัน</span>
+                                        <span className="bg-sky-50 text-sky-700 px-2 py-1 rounded flex items-center gap-1"><Zap size={12} /> ดันเอง {pkg.manualBumpPerDay || 0}/คัน/วัน</span>
+                                        <span className="bg-amber-50 text-amber-700 px-2 py-1 rounded flex items-center gap-1"><Search size={12} /> {pkg.searchPriority === 'priority' ? 'บนสุด' : pkg.searchPriority === 'top' ? 'ลำดับต้น' : pkg.searchPriority === 'higher' ? 'ดีกว่าปกติ' : 'ปกติ'}</span>
+                                        {pkg.badge && <span className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded flex items-center gap-1"><Award size={12} /> {pkg.badge}</span>}
                                     </div>
-                                    <div className="flex gap-3 ml-auto text-xs text-slate-400">
+                                    <div className="flex gap-3 ml-auto text-xs text-slate-400 flex-shrink-0">
                                         <span>{pkg._count?.users || 0} ผู้ใช้</span>
                                         <span>{pkg._count?.transactions || 0} รายการ</span>
                                     </div>
-                                    <div className="flex gap-2 items-center">
+                                    <div className="flex gap-2 items-center flex-shrink-0">
                                         {!pkg.isActive && (
                                             <span className="text-xs text-rose-500 font-medium">ปิดใช้งาน</span>
                                         )}
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            onClick={() => setDeletePackageId(pkg.id)}
-                                            className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50"
+                                            onClick={() => openEditModal(pkg)}
+                                            className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50"
                                         >
-                                            <Trash2 size={14} />
+                                            <Pencil size={14} />
                                         </Button>
                                     </div>
                                 </div>
@@ -476,6 +530,99 @@ export default function AdminPackagesPage() {
                     </div>
                 );
             })()}
+
+            {/* Edit Package Modal */}
+            {editingPkg && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEditingPkg(null)} />
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 relative z-10 max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-slate-100">
+                            <h3 className="text-lg font-bold text-slate-800">แก้ไขแพ็กเกจ: {editingPkg.name}</h3>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ชื่อ (EN)</label>
+                                    <input className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.name || ''} onChange={e => setEditForm({...editForm, name: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ชื่อ (TH)</label>
+                                    <input className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.nameTh || ''} onChange={e => setEditForm({...editForm, nameTh: e.target.value})} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">Slug</label>
+                                    <input className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50" value={editForm.slug || ''} onChange={e => setEditForm({...editForm, slug: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ราคา (บาท/เดือน)</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.price ?? 0} onChange={e => setEditForm({...editForm, price: Number(e.target.value)})} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">จำนวนประกาศ</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.maxListings ?? 0} onChange={e => setEditForm({...editForm, maxListings: Number(e.target.value)})} />
+                                    <p className="text-[10px] text-slate-400 mt-0.5">-1 = ไม่จำกัด</p>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">รูป/ประกาศ</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.maxPhotosPerListing ?? 0} onChange={e => setEditForm({...editForm, maxPhotosPerListing: Number(e.target.value)})} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ระยะเวลา (วัน)</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.listingDurationDays ?? 0} onChange={e => setEditForm({...editForm, listingDurationDays: Number(e.target.value)})} />
+                                    <p className="text-[10px] text-slate-400 mt-0.5">-1 = ไม่หมดอายุ</p>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ดันอัตโนมัติ (ครั้ง/วัน)</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.autoBumpPerDay ?? 0} onChange={e => setEditForm({...editForm, autoBumpPerDay: Number(e.target.value)})} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ดันเอง (ครั้ง/คัน/วัน)</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.manualBumpPerDay ?? 0} onChange={e => setEditForm({...editForm, manualBumpPerDay: Number(e.target.value)})} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ลำดับการค้นหา</label>
+                                    <select className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.searchPriority || 'normal'} onChange={e => setEditForm({...editForm, searchPriority: e.target.value})}>
+                                        <option value="normal">ปกติ</option>
+                                        <option value="higher">ดีกว่าปกติ</option>
+                                        <option value="top">ลำดับต้น</option>
+                                        <option value="priority">บนสุด</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">Badge</label>
+                                    <input className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.badge || ''} onChange={e => setEditForm({...editForm, badge: e.target.value || null})} placeholder="เช่น Verified Seller" />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-500 mb-1">ลำดับแสดง</label>
+                                    <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.sortOrder ?? 0} onChange={e => setEditForm({...editForm, sortOrder: Number(e.target.value)})} />
+                                </div>
+                                <div className="flex items-end pb-1">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="checkbox" checked={editForm.isActive ?? true} onChange={e => setEditForm({...editForm, isActive: e.target.checked})} className="rounded" />
+                                        <span className="text-sm text-slate-700">เปิดใช้งาน</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="p-6 border-t border-slate-100 flex gap-3">
+                            <Button variant="outline" className="flex-1" onClick={() => setEditingPkg(null)}>ยกเลิก</Button>
+                            <Button className="flex-1 bg-brand-primary hover:bg-brand-primary/90 text-white" onClick={handleSaveEdit} disabled={editSaving}>
+                                {editSaving ? 'กำลังบันทึก...' : 'บันทึก'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Delete Package Confirmation Modal */}
             {deletePackageId && (

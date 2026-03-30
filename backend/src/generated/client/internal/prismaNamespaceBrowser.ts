@@ -65,6 +65,11 @@ export const ModelName = {
   SystemSetting: 'SystemSetting',
   PackageTransaction: 'PackageTransaction',
   ListingRenewal: 'ListingRenewal',
+  GarageVehicle: 'GarageVehicle',
+  ServiceRecord: 'ServiceRecord',
+  MaintenanceReminder: 'MaintenanceReminder',
+  UserNotification: 'UserNotification',
+  ListingBumpLog: 'ListingBumpLog',
   NotificationTemplate: 'NotificationTemplate',
   NotificationLog: 'NotificationLog'
 } as const
@@ -226,7 +231,6 @@ export const VehicleListingScalarFieldEnum = {
   plateProvince: 'plateProvince',
   registrationType: 'registrationType',
   condition: 'condition',
-  ownerCount: 'ownerCount',
   hasAccident: 'hasAccident',
   hasModified: 'hasModified',
   hasWarranty: 'hasWarranty',
@@ -253,7 +257,10 @@ export const VehicleListingScalarFieldEnum = {
   favoriteCount: 'favoriteCount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  publishedAt: 'publishedAt',
   expiredAt: 'expiredAt',
+  bumpedAt: 'bumpedAt',
+  autoBumpSlot: 'autoBumpSlot',
   userId: 'userId'
 } as const
 
@@ -285,6 +292,7 @@ export const PackageScalarFieldEnum = {
   maxPhotosPerListing: 'maxPhotosPerListing',
   listingDurationDays: 'listingDurationDays',
   autoBumpPerDay: 'autoBumpPerDay',
+  manualBumpPerDay: 'manualBumpPerDay',
   badge: 'badge',
   searchPriority: 'searchPriority',
   features: 'features',
@@ -311,6 +319,8 @@ export const PackageTransactionScalarFieldEnum = {
   amount: 'amount',
   slipImage: 'slipImage',
   status: 'status',
+  transactionType: 'transactionType',
+  proratedCredit: 'proratedCredit',
   adminNote: 'adminNote',
   reviewedAt: 'reviewedAt',
   createdAt: 'createdAt',
@@ -336,6 +346,77 @@ export const ListingRenewalScalarFieldEnum = {
 } as const
 
 export type ListingRenewalScalarFieldEnum = (typeof ListingRenewalScalarFieldEnum)[keyof typeof ListingRenewalScalarFieldEnum]
+
+
+export const GarageVehicleScalarFieldEnum = {
+  id: 'id',
+  nickname: 'nickname',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  color: 'color',
+  licensePlate: 'licensePlate',
+  currentMileage: 'currentMileage',
+  imageUrl: 'imageUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type GarageVehicleScalarFieldEnum = (typeof GarageVehicleScalarFieldEnum)[keyof typeof GarageVehicleScalarFieldEnum]
+
+
+export const ServiceRecordScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  mileage: 'mileage',
+  cost: 'cost',
+  serviceDate: 'serviceDate',
+  shopName: 'shopName',
+  createdAt: 'createdAt',
+  vehicleId: 'vehicleId'
+} as const
+
+export type ServiceRecordScalarFieldEnum = (typeof ServiceRecordScalarFieldEnum)[keyof typeof ServiceRecordScalarFieldEnum]
+
+
+export const MaintenanceReminderScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  type: 'type',
+  dueDate: 'dueDate',
+  dueMileage: 'dueMileage',
+  isCompleted: 'isCompleted',
+  createdAt: 'createdAt',
+  vehicleId: 'vehicleId'
+} as const
+
+export type MaintenanceReminderScalarFieldEnum = (typeof MaintenanceReminderScalarFieldEnum)[keyof typeof MaintenanceReminderScalarFieldEnum]
+
+
+export const UserNotificationScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  isRead: 'isRead',
+  createdAt: 'createdAt',
+  userId: 'userId'
+} as const
+
+export type UserNotificationScalarFieldEnum = (typeof UserNotificationScalarFieldEnum)[keyof typeof UserNotificationScalarFieldEnum]
+
+
+export const ListingBumpLogScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  createdAt: 'createdAt',
+  listingId: 'listingId',
+  userId: 'userId'
+} as const
+
+export type ListingBumpLogScalarFieldEnum = (typeof ListingBumpLogScalarFieldEnum)[keyof typeof ListingBumpLogScalarFieldEnum]
 
 
 export const NotificationTemplateScalarFieldEnum = {

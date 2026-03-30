@@ -61,7 +61,6 @@ export interface VehicleListing {
     plateProvince: string | null;
     registrationType: string | null;
     condition: string | null;
-    ownerCount: number;
     hasAccident: boolean;
     hasModified: boolean;
     hasWarranty: boolean;

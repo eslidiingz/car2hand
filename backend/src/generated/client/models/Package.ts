@@ -32,6 +32,7 @@ export type PackageAvgAggregateOutputType = {
   maxPhotosPerListing: number | null
   listingDurationDays: number | null
   autoBumpPerDay: number | null
+  manualBumpPerDay: number | null
   sortOrder: number | null
 }
 
@@ -41,6 +42,7 @@ export type PackageSumAggregateOutputType = {
   maxPhotosPerListing: number | null
   listingDurationDays: number | null
   autoBumpPerDay: number | null
+  manualBumpPerDay: number | null
   sortOrder: number | null
 }
 
@@ -56,6 +58,7 @@ export type PackageMinAggregateOutputType = {
   maxPhotosPerListing: number | null
   listingDurationDays: number | null
   autoBumpPerDay: number | null
+  manualBumpPerDay: number | null
   badge: string | null
   searchPriority: string | null
   sortOrder: number | null
@@ -76,6 +79,7 @@ export type PackageMaxAggregateOutputType = {
   maxPhotosPerListing: number | null
   listingDurationDays: number | null
   autoBumpPerDay: number | null
+  manualBumpPerDay: number | null
   badge: string | null
   searchPriority: string | null
   sortOrder: number | null
@@ -96,6 +100,7 @@ export type PackageCountAggregateOutputType = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay: number
+  manualBumpPerDay: number
   badge: number
   searchPriority: number
   features: number
@@ -113,6 +118,7 @@ export type PackageAvgAggregateInputType = {
   maxPhotosPerListing?: true
   listingDurationDays?: true
   autoBumpPerDay?: true
+  manualBumpPerDay?: true
   sortOrder?: true
 }
 
@@ -122,6 +128,7 @@ export type PackageSumAggregateInputType = {
   maxPhotosPerListing?: true
   listingDurationDays?: true
   autoBumpPerDay?: true
+  manualBumpPerDay?: true
   sortOrder?: true
 }
 
@@ -137,6 +144,7 @@ export type PackageMinAggregateInputType = {
   maxPhotosPerListing?: true
   listingDurationDays?: true
   autoBumpPerDay?: true
+  manualBumpPerDay?: true
   badge?: true
   searchPriority?: true
   sortOrder?: true
@@ -157,6 +165,7 @@ export type PackageMaxAggregateInputType = {
   maxPhotosPerListing?: true
   listingDurationDays?: true
   autoBumpPerDay?: true
+  manualBumpPerDay?: true
   badge?: true
   searchPriority?: true
   sortOrder?: true
@@ -177,6 +186,7 @@ export type PackageCountAggregateInputType = {
   maxPhotosPerListing?: true
   listingDurationDays?: true
   autoBumpPerDay?: true
+  manualBumpPerDay?: true
   badge?: true
   searchPriority?: true
   features?: true
@@ -285,6 +295,7 @@ export type PackageGroupByOutputType = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay: number
+  manualBumpPerDay: number
   badge: string | null
   searchPriority: string
   features: runtime.JsonValue
@@ -329,6 +340,7 @@ export type PackageWhereInput = {
   maxPhotosPerListing?: Prisma.IntFilter<"Package"> | number
   listingDurationDays?: Prisma.IntFilter<"Package"> | number
   autoBumpPerDay?: Prisma.IntFilter<"Package"> | number
+  manualBumpPerDay?: Prisma.IntFilter<"Package"> | number
   badge?: Prisma.StringNullableFilter<"Package"> | string | null
   searchPriority?: Prisma.StringFilter<"Package"> | string
   features?: Prisma.JsonFilter<"Package">
@@ -352,6 +364,7 @@ export type PackageOrderByWithRelationInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   badge?: Prisma.SortOrderInput | Prisma.SortOrder
   searchPriority?: Prisma.SortOrder
   features?: Prisma.SortOrder
@@ -378,6 +391,7 @@ export type PackageWhereUniqueInput = Prisma.AtLeast<{
   maxPhotosPerListing?: Prisma.IntFilter<"Package"> | number
   listingDurationDays?: Prisma.IntFilter<"Package"> | number
   autoBumpPerDay?: Prisma.IntFilter<"Package"> | number
+  manualBumpPerDay?: Prisma.IntFilter<"Package"> | number
   badge?: Prisma.StringNullableFilter<"Package"> | string | null
   searchPriority?: Prisma.StringFilter<"Package"> | string
   features?: Prisma.JsonFilter<"Package">
@@ -401,6 +415,7 @@ export type PackageOrderByWithAggregationInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   badge?: Prisma.SortOrderInput | Prisma.SortOrder
   searchPriority?: Prisma.SortOrder
   features?: Prisma.SortOrder
@@ -430,6 +445,7 @@ export type PackageScalarWhereWithAggregatesInput = {
   maxPhotosPerListing?: Prisma.IntWithAggregatesFilter<"Package"> | number
   listingDurationDays?: Prisma.IntWithAggregatesFilter<"Package"> | number
   autoBumpPerDay?: Prisma.IntWithAggregatesFilter<"Package"> | number
+  manualBumpPerDay?: Prisma.IntWithAggregatesFilter<"Package"> | number
   badge?: Prisma.StringNullableWithAggregatesFilter<"Package"> | string | null
   searchPriority?: Prisma.StringWithAggregatesFilter<"Package"> | string
   features?: Prisma.JsonWithAggregatesFilter<"Package">
@@ -451,6 +467,7 @@ export type PackageCreateInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -474,6 +491,7 @@ export type PackageUncheckedCreateInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -497,6 +515,7 @@ export type PackageUpdateInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -520,6 +539,7 @@ export type PackageUncheckedUpdateInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -543,6 +563,7 @@ export type PackageCreateManyInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -564,6 +585,7 @@ export type PackageUpdateManyMutationInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -585,6 +607,7 @@ export type PackageUncheckedUpdateManyInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -611,6 +634,7 @@ export type PackageCountOrderByAggregateInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   badge?: Prisma.SortOrder
   searchPriority?: Prisma.SortOrder
   features?: Prisma.SortOrder
@@ -626,6 +650,7 @@ export type PackageAvgOrderByAggregateInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -641,6 +666,7 @@ export type PackageMaxOrderByAggregateInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   badge?: Prisma.SortOrder
   searchPriority?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -661,6 +687,7 @@ export type PackageMinOrderByAggregateInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   badge?: Prisma.SortOrder
   searchPriority?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
@@ -675,6 +702,7 @@ export type PackageSumOrderByAggregateInput = {
   maxPhotosPerListing?: Prisma.SortOrder
   listingDurationDays?: Prisma.SortOrder
   autoBumpPerDay?: Prisma.SortOrder
+  manualBumpPerDay?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -725,6 +753,7 @@ export type PackageCreateWithoutUsersInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -747,6 +776,7 @@ export type PackageUncheckedCreateWithoutUsersInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -785,6 +815,7 @@ export type PackageUpdateWithoutUsersInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -807,6 +838,7 @@ export type PackageUncheckedUpdateWithoutUsersInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -829,6 +861,7 @@ export type PackageCreateWithoutTransactionsInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -851,6 +884,7 @@ export type PackageUncheckedCreateWithoutTransactionsInput = {
   maxPhotosPerListing: number
   listingDurationDays: number
   autoBumpPerDay?: number
+  manualBumpPerDay?: number
   badge?: string | null
   searchPriority?: string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -889,6 +923,7 @@ export type PackageUpdateWithoutTransactionsInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -911,6 +946,7 @@ export type PackageUncheckedUpdateWithoutTransactionsInput = {
   maxPhotosPerListing?: Prisma.IntFieldUpdateOperationsInput | number
   listingDurationDays?: Prisma.IntFieldUpdateOperationsInput | number
   autoBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
+  manualBumpPerDay?: Prisma.IntFieldUpdateOperationsInput | number
   badge?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   searchPriority?: Prisma.StringFieldUpdateOperationsInput | string
   features?: Prisma.JsonNullValueInput | runtime.InputJsonValue
@@ -973,6 +1009,7 @@ export type PackageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   maxPhotosPerListing?: boolean
   listingDurationDays?: boolean
   autoBumpPerDay?: boolean
+  manualBumpPerDay?: boolean
   badge?: boolean
   searchPriority?: boolean
   features?: boolean
@@ -997,6 +1034,7 @@ export type PackageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   maxPhotosPerListing?: boolean
   listingDurationDays?: boolean
   autoBumpPerDay?: boolean
+  manualBumpPerDay?: boolean
   badge?: boolean
   searchPriority?: boolean
   features?: boolean
@@ -1018,6 +1056,7 @@ export type PackageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   maxPhotosPerListing?: boolean
   listingDurationDays?: boolean
   autoBumpPerDay?: boolean
+  manualBumpPerDay?: boolean
   badge?: boolean
   searchPriority?: boolean
   features?: boolean
@@ -1039,6 +1078,7 @@ export type PackageSelectScalar = {
   maxPhotosPerListing?: boolean
   listingDurationDays?: boolean
   autoBumpPerDay?: boolean
+  manualBumpPerDay?: boolean
   badge?: boolean
   searchPriority?: boolean
   features?: boolean
@@ -1048,7 +1088,7 @@ export type PackageSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "nameTh" | "slug" | "description" | "targetAudience" | "price" | "maxListings" | "maxPhotosPerListing" | "listingDurationDays" | "autoBumpPerDay" | "badge" | "searchPriority" | "features" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["package"]>
+export type PackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "nameTh" | "slug" | "description" | "targetAudience" | "price" | "maxListings" | "maxPhotosPerListing" | "listingDurationDays" | "autoBumpPerDay" | "manualBumpPerDay" | "badge" | "searchPriority" | "features" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["package"]>
 export type PackageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | Prisma.Package$usersArgs<ExtArgs>
   transactions?: boolean | Prisma.Package$transactionsArgs<ExtArgs>
@@ -1075,6 +1115,7 @@ export type $PackagePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     maxPhotosPerListing: number
     listingDurationDays: number
     autoBumpPerDay: number
+    manualBumpPerDay: number
     badge: string | null
     searchPriority: string
     features: runtime.JsonValue
@@ -1518,6 +1559,7 @@ export interface PackageFieldRefs {
   readonly maxPhotosPerListing: Prisma.FieldRef<"Package", 'Int'>
   readonly listingDurationDays: Prisma.FieldRef<"Package", 'Int'>
   readonly autoBumpPerDay: Prisma.FieldRef<"Package", 'Int'>
+  readonly manualBumpPerDay: Prisma.FieldRef<"Package", 'Int'>
   readonly badge: Prisma.FieldRef<"Package", 'String'>
   readonly searchPriority: Prisma.FieldRef<"Package", 'String'>
   readonly features: Prisma.FieldRef<"Package", 'Json'>

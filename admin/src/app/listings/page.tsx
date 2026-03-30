@@ -19,10 +19,14 @@ import {
     Check,
     X,
     Package,
-    ImageOff
+    ImageOff,
+    ExternalLink,
+    ImagePlus,
+    Heart
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePendingCounts } from "@/contexts/PendingContext";
 
 interface ListingImage {
@@ -34,20 +38,43 @@ interface ListingImage {
 interface Listing {
     id: string;
     title: string;
+    description: string | null;
     vehicleType: string;
     brand: string;
     model: string;
+    subModel: string | null;
     year: number;
     price: number;
+    color: string;
+    fuelType: string;
+    transmission: string | null;
+    engineSize: number | null;
+    seats: number | null;
+    mileage: number;
+    bodyType: string;
     province: string;
+    district: string | null;
+    contactName: string | null;
+    contactPhone: string | null;
+    lineId: string | null;
+    condition: string;
+    hasAccident: boolean;
+    hasModified: boolean;
+    registrationBookStatus: string;
+    gasType: string;
+    hasSpareKey: boolean;
     status: string;
     adminNote: string | null;
     viewCount: number;
+    favoriteCount: number;
     createdAt: string;
+    publishedAt: string | null;
+    expiredAt: string | null;
     user: {
         id: string;
         fullName: string;
         email: string;
+        phoneNumber?: string;
         currentPackage: { name: string; slug: string } | null;
     };
     images: ListingImage[];
@@ -70,7 +97,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
 
 export default function ListingModerationPage() {
     const { refreshListings: refreshPendingBadge } = usePendingCounts();
-    const [filterStatus, setFilterStatus] = useState("PENDING");
+    const [filterStatus, setFilterStatus] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [listings, setListings] = useState<Listing[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -83,6 +110,7 @@ export default function ListingModerationPage() {
     const [rejectId, setRejectId] = useState<string | null>(null);
     const [rejectNote, setRejectNote] = useState("");
     const [viewSlip, setViewSlip] = useState<Listing | null>(null);
+    const [carouselIdx, setCarouselIdx] = useState(0);
 
     const fetchListings = useCallback(async () => {
         setIsLoading(true);
@@ -115,7 +143,11 @@ export default function ListingModerationPage() {
                     };
                 })
             );
-            setStatusCounts(counts);
+            const totalCount = counts.reduce((sum, c) => sum + c.count, 0);
+            setStatusCounts([
+                { status: '', label: 'ทั้งหมด', count: totalCount },
+                ...counts
+            ]);
         } catch (error) {
             console.error(error);
         }
@@ -199,21 +231,15 @@ export default function ListingModerationPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-200 mb-6 gap-6">
-                {statusCounts.map((tab) => (
-                    <button
-                        key={tab.status}
-                        onClick={() => { setFilterStatus(tab.status); setPage(1); }}
-                        className={`pb-3 px-1 text-sm font-medium transition-colors relative ${filterStatus === tab.status ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
-                    >
-                        {tab.label}
-                        <span className={`ml-2 px-1.5 py-0.5 rounded-md text-xs ${filterStatus === tab.status ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-500"}`}>
-                            {tab.count}
-                        </span>
-                        {filterStatus === tab.status && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-slate-800 rounded-t-full" />}
-                    </button>
-                ))}
-            </div>
+            <Tabs defaultValue="" className="mb-6" onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
+                <TabsList>
+                    {statusCounts.map((tab) => (
+                        <TabsTrigger key={tab.status} value={tab.status}>
+                            {tab.label} <span className="ml-1.5 text-xs opacity-70">{tab.count}</span>
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </Tabs>
 
             {/* Listings */}
             {isLoading ? (
@@ -246,6 +272,11 @@ export default function ListingModerationPage() {
                                         <span className="bg-black/50 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-xs font-medium flex items-center gap-1">
                                             {listing.vehicleType === "CAR" ? <Car size={12} /> : <Bike size={12} />}
                                             {listing.vehicleType === "CAR" ? "รถยนต์" : "จักรยานยนต์"}
+                                        </span>
+                                    </div>
+                                    <div className="absolute bottom-3 right-3">
+                                        <span className="bg-black/50 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-xs font-medium flex items-center gap-1">
+                                            <ImagePlus size={12} /> {listing.images.length}
                                         </span>
                                     </div>
                                 </div>
@@ -296,14 +327,25 @@ export default function ListingModerationPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => setViewSlip(listing)}
-                                            className="font-medium"
-                                        >
-                                            <Eye size={14} /> ดูรายละเอียด
-                                        </Button>
+                                        <div className="flex gap-2 flex-shrink-0">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => { setCarouselIdx(0); setViewSlip(listing); }}
+                                                className="font-medium"
+                                            >
+                                                <Eye size={14} /> ดูรายละเอียด
+                                            </Button>
+                                            <a
+                                                href={`${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/buy/${listing.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <Button variant="outline" size="sm" className="font-medium">
+                                                    <ExternalLink size={14} /> เปิดประกาศ
+                                                </Button>
+                                            </a>
+                                        </div>
                                     </div>
 
                                     {/* Admin Note */}
@@ -466,59 +508,112 @@ export default function ListingModerationPage() {
             {viewSlip && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewSlip(null)} />
-                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-2xl w-full overflow-hidden max-h-[90vh] overflow-y-auto">
+                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-3xl w-full overflow-hidden max-h-[90vh] overflow-y-auto">
                         <div className="p-4 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white z-10">
                             <h3 className="font-semibold text-slate-800">รายละเอียดประกาศ</h3>
                             <Button variant="ghost" size="icon" onClick={() => setViewSlip(null)} className="h-8 w-8">
                                 <X size={18} />
                             </Button>
                         </div>
-                        <div className="p-5 space-y-4">
-                            {/* Images */}
+                        <div className="p-5 space-y-5">
+                            {/* Image Carousel */}
                             {viewSlip.images.length > 0 ? (
-                                <div className="grid grid-cols-2 gap-2">
-                                    {viewSlip.images.map((img, i) => (
-                                        <img key={img.id || i} src={img.url} alt={`รูปที่ ${i + 1}`} className="w-full rounded-lg object-cover aspect-video" />
-                                    ))}
+                                <div className="space-y-2">
+                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100">
+                                        <img src={viewSlip.images[carouselIdx]?.url} alt="" className="w-full h-full object-cover" />
+                                        {viewSlip.images.length > 1 && (
+                                            <>
+                                                <button onClick={() => setCarouselIdx(i => i > 0 ? i - 1 : viewSlip.images.length - 1)} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
+                                                    <ChevronLeft size={18} />
+                                                </button>
+                                                <button onClick={() => setCarouselIdx(i => i < viewSlip.images.length - 1 ? i + 1 : 0)} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-1.5 transition">
+                                                    <ChevronRight size={18} />
+                                                </button>
+                                                <span className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-md">{carouselIdx + 1}/{viewSlip.images.length}</span>
+                                            </>
+                                        )}
+                                    </div>
+                                    {viewSlip.images.length > 1 && (
+                                        <div className="flex gap-1.5 overflow-x-auto pb-1">
+                                            {viewSlip.images.map((img, i) => (
+                                                <button key={img.id || i} onClick={() => setCarouselIdx(i)} className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition ${carouselIdx === i ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'}`}>
+                                                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
-                                <div className="h-48 bg-slate-100 rounded-lg flex items-center justify-center">
+                                <div className="h-48 bg-slate-100 rounded-xl flex items-center justify-center">
                                     <ImageOff className="text-slate-300" size={32} />
                                 </div>
                             )}
 
-                            {/* Info */}
-                            <div className="space-y-2">
-                                <h2 className="text-lg font-semibold text-slate-800">{viewSlip.title}</h2>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <div className="bg-slate-50 p-3 rounded-lg">
-                                        <p className="text-xs text-slate-400">ยี่ห้อ/รุ่น</p>
-                                        <p className="font-medium text-slate-700">{viewSlip.brand} {viewSlip.model}</p>
+                            {/* Title & Price */}
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-800">{viewSlip.title}</h2>
+                                    <p className="text-sm text-slate-400">{viewSlip.brand} {viewSlip.model}{viewSlip.subModel ? ` ${viewSlip.subModel}` : ''}</p>
+                                </div>
+                                <p className="text-xl font-bold text-primary whitespace-nowrap">฿{Number(viewSlip.price).toLocaleString()}</p>
+                            </div>
+
+                            {/* Vehicle Info Grid */}
+                            <div className="grid grid-cols-3 md:grid-cols-4 gap-2 text-sm">
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">ปี</p><p className="font-medium text-slate-700">{viewSlip.year}</p></div>
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">สี</p><p className="font-medium text-slate-700">{viewSlip.color || '-'}</p></div>
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เชื้อเพลิง</p><p className="font-medium text-slate-700">{viewSlip.fuelType || '-'}</p></div>
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เกียร์</p><p className="font-medium text-slate-700">{viewSlip.transmission || '-'}</p></div>
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เลขไมล์</p><p className="font-medium text-slate-700">{viewSlip.mileage?.toLocaleString() || '-'} กม.</p></div>
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">ประเภท</p><p className="font-medium text-slate-700">{viewSlip.bodyType || '-'}</p></div>
+                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">จังหวัด</p><p className="font-medium text-slate-700">{viewSlip.province || '-'}</p></div>
+                                {viewSlip.engineSize && <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เครื่องยนต์</p><p className="font-medium text-slate-700">{viewSlip.engineSize} cc</p></div>}
+                            </div>
+
+                            {/* Condition Info */}
+                            <div className="flex flex-wrap gap-2 text-xs">
+                                <span className={`px-2 py-1 rounded ${viewSlip.registrationBookStatus === 'READY' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                                    {viewSlip.registrationBookStatus === 'READY' ? '✅ พร้อมโอน' : '🏦 ติดไฟแนนซ์'}
+                                </span>
+                                {viewSlip.hasAccident && <span className="bg-rose-50 text-rose-600 px-2 py-1 rounded">เคยมีอุบัติเหตุ</span>}
+                                {viewSlip.hasModified && <span className="bg-amber-50 text-amber-700 px-2 py-1 rounded">มีการโมดิฟาย</span>}
+                                {viewSlip.hasSpareKey && <span className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded">มีกุญแจสำรอง</span>}
+                                {viewSlip.gasType && viewSlip.gasType !== 'NONE' && <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">ติดแก๊ส {viewSlip.gasType}</span>}
+                            </div>
+
+                            {/* Description */}
+                            {viewSlip.description && (
+                                <div>
+                                    <p className="text-xs font-medium text-slate-400 mb-1">รายละเอียด</p>
+                                    <p className="text-sm text-slate-600 whitespace-pre-line bg-slate-50 p-3 rounded-lg max-h-40 overflow-y-auto">{viewSlip.description}</p>
+                                </div>
+                            )}
+
+                            {/* Contact & Seller */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="p-3 bg-slate-50 rounded-lg">
+                                    <p className="text-[10px] text-slate-400 mb-1.5">ข้อมูลผู้ขาย</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-9 w-9 bg-white rounded-lg flex items-center justify-center border border-slate-200 text-slate-600"><User size={16} /></div>
+                                        <div>
+                                            <p className="text-sm font-medium text-slate-700">{viewSlip.user.fullName}</p>
+                                            <p className="text-xs text-slate-400">{viewSlip.user.email} · {viewSlip.user.currentPackage?.name || 'Basic (Free)'}</p>
+                                        </div>
                                     </div>
-                                    <div className="bg-slate-50 p-3 rounded-lg">
-                                        <p className="text-xs text-slate-400">ปี</p>
-                                        <p className="font-medium text-slate-700">{viewSlip.year}</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-3 rounded-lg">
-                                        <p className="text-xs text-slate-400">ราคา</p>
-                                        <p className="font-semibold text-primary">฿{Number(viewSlip.price).toLocaleString()}</p>
-                                    </div>
-                                    <div className="bg-slate-50 p-3 rounded-lg">
-                                        <p className="text-xs text-slate-400">จังหวัด</p>
-                                        <p className="font-medium text-slate-700">{viewSlip.province || '-'}</p>
-                                    </div>
+                                </div>
+                                <div className="p-3 bg-slate-50 rounded-lg">
+                                    <p className="text-[10px] text-slate-400 mb-1.5">ข้อมูลติดต่อ</p>
+                                    <p className="text-sm text-slate-700">{viewSlip.contactName || viewSlip.user.fullName}</p>
+                                    <p className="text-xs text-slate-500">{viewSlip.contactPhone || '-'}{viewSlip.lineId ? ` · LINE: ${viewSlip.lineId}` : ''}</p>
                                 </div>
                             </div>
 
-                            {/* Seller */}
-                            <div className="p-3 bg-slate-50 rounded-lg flex items-center gap-3">
-                                <div className="h-9 w-9 bg-white rounded-lg flex items-center justify-center border border-slate-200 text-slate-600">
-                                    <User size={16} />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium text-slate-700">{viewSlip.user.fullName}</p>
-                                    <p className="text-xs text-slate-400">{viewSlip.user.email} · {viewSlip.user.currentPackage?.name || 'Basic (Free)'}</p>
-                                </div>
+                            {/* Stats */}
+                            <div className="flex gap-4 text-xs text-slate-400">
+                                <span className="flex items-center gap-1"><Eye size={13} className="text-blue-500" /> {viewSlip.viewCount} วิว</span>
+                                <span className="flex items-center gap-1"><Heart size={13} className="text-red-400" /> {viewSlip.favoriteCount || 0} ถูกใจ</span>
+                                <span>ลงเมื่อ {new Date(viewSlip.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                {viewSlip.expiredAt && <span>หมดอายุ {new Date(viewSlip.expiredAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}
                             </div>
 
                             {/* Admin Note */}
@@ -531,17 +626,10 @@ export default function ListingModerationPage() {
                             {/* Actions */}
                             {viewSlip.status === 'PENDING' && (
                                 <div className="flex gap-3 pt-2">
-                                    <Button
-                                        onClick={() => { setViewSlip(null); setApproveId(viewSlip.id); }}
-                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
-                                    >
+                                    <Button onClick={() => { setViewSlip(null); setApproveId(viewSlip.id); }} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium">
                                         <CheckCircle size={16} /> อนุมัติประกาศ
                                     </Button>
-                                    <Button
-                                        variant="destructive"
-                                        onClick={() => { setViewSlip(null); setRejectId(viewSlip.id); }}
-                                        className="flex-1 font-medium"
-                                    >
+                                    <Button variant="destructive" onClick={() => { setViewSlip(null); setRejectId(viewSlip.id); }} className="flex-1 font-medium">
                                         <XCircle size={16} /> ไม่อนุมัติ
                                     </Button>
                                 </div>

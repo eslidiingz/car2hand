@@ -17,6 +17,9 @@ import { securityHeaders, requestLogger, rateLimiter } from "./security";
 import { lineAuthRoutes } from "./line-auth";
 import { lineWebhookRoutes } from "./line-webhook";
 import { notificationRoutes } from "./notifications";
+import { userNotificationRoutes } from "./user-notifications";
+import { garageRoutes } from "./garage";
+import { startPackageExpiryCrons } from "./crons/package-expiry";
 
 // Allowed origins (update for production)
 const ALLOWED_ORIGINS = [
@@ -70,6 +73,8 @@ const app = new Elysia()
       .use(lineAuthRoutes)
       .use(lineWebhookRoutes)
       .use(notificationRoutes)
+      .use(userNotificationRoutes)
+      .use(garageRoutes)
   )
 
   // Global error handler
@@ -110,6 +115,9 @@ const app = new Elysia()
   })
 
   .listen(8000);
+
+// Start cron jobs
+startPackageExpiryCrons();
 
 console.log(`
 🦊 Car2Hand API Server

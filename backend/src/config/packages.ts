@@ -26,6 +26,8 @@ const DEFAULT_LIMITS = {
     maxListings: 1,
     maxPhotosPerListing: 10,
     listingDurationDays: 30,
+    manualBumpPerDay: 1,
+    autoBumpPerDay: 0,
     name: 'Basic (Free)',
     nameTh: 'แพ็กเกจพื้นฐาน',
 };
@@ -60,6 +62,8 @@ export async function getUserPackage(userId: string) {
         maxListings: pkg.maxListings,
         maxPhotosPerListing: pkg.maxPhotosPerListing,
         listingDurationDays: pkg.listingDurationDays,
+        manualBumpPerDay: pkg.manualBumpPerDay,
+        autoBumpPerDay: pkg.autoBumpPerDay,
         packageExpiresAt: user.packageExpiresAt,
     };
 }

@@ -14,6 +14,8 @@ import {
     Warning,
     X,
     Image as ImageIcon,
+    ArrowsClockwise,
+    ArrowUp,
 } from '@phosphor-icons/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -43,12 +45,21 @@ interface Transaction {
     status: string;
     adminNote: string | null;
     createdAt: string;
+    type?: string;
+    proratedCredit?: number;
     package: {
         id: string;
         name: string;
         nameTh: string;
         slug: string;
     };
+}
+
+interface ProrateInfo {
+    newPackagePrice: number;
+    proratedCredit: number;
+    remainingDays: number;
+    finalPrice: number;
 }
 
 interface CurrentPackage {
@@ -59,6 +70,7 @@ interface CurrentPackage {
     maxListings: number;
     maxPhotosPerListing: number;
     listingDurationDays: number;
+    expiresAt?: string;
 }
 
 // Icon/color maps by slug
@@ -95,6 +107,10 @@ export default function PackagesPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
     const [paymentInfo, setPaymentInfo] = useState<Record<string, string>>({});
+    const [isRenewal, setIsRenewal] = useState(false);
+    const [prorateInfo, setProrateInfo] = useState<ProrateInfo | null>(null);
+    const [prorateLoading, setProrateLoading] = useState(false);
+    const [showAllTx, setShowAllTx] = useState(false);
 
     const getUserId = () => {
         const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -102,6 +118,45 @@ export default function PackagesPage() {
             try { return JSON.parse(stored).id; } catch { return null; }
         }
         return null;
+    };
+
+    const getDaysRemaining = (expiresAt?: string) => {
+        if (!expiresAt) return null;
+        const now = new Date();
+        const exp = new Date(expiresAt);
+        const diff = exp.getTime() - now.getTime();
+        return Math.ceil(diff / 86400000);
+    };
+
+    const fetchProrateInfo = async (targetPackageId: string) => {
+        const userId = getUserId();
+        if (!userId) return;
+        setProrateLoading(true);
+        try {
+            const res = await fetch(`${API_URL}/packages/upgrade-price?userId=${userId}&targetPackageId=${targetPackageId}`);
+            if (res.ok) {
+                const data = await res.json();
+                setProrateInfo(data);
+            } else {
+                setProrateInfo(null);
+            }
+        } catch {
+            setProrateInfo(null);
+        } finally {
+            setProrateLoading(false);
+        }
+    };
+
+    const openUpgradeModal = (pkg: PackageData, renewal: boolean) => {
+        setSelectedPackage(pkg);
+        setIsRenewal(renewal);
+        setProrateInfo(null);
+        setSlipFile(null);
+        setSlipPreview(null);
+        setShowUpgradeModal(true);
+        if (!renewal) {
+            fetchProrateInfo(pkg.id);
+        }
     };
 
     useEffect(() => {
@@ -218,157 +273,189 @@ export default function PackagesPage() {
                 </div>
             )}
 
+            <h1 className="text-2xl font-bold text-gray-800">แพ็กเกจของฉัน</h1>
+
             {/* Current Package Status */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">แพ็กเกจของฉัน</h1>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <div className={`p-4 rounded-2xl ${getColor(currentPkg?.slug || 'basic').bg}`}>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className={`p-3 rounded-xl ${getColor(currentPkg?.slug || 'basic').bg}`}>
                         {getIcon(currentPkg?.slug || 'basic')}
                     </div>
-                    <div className="flex-1">
-                        <h2 className="text-lg font-bold text-gray-800">
+                    <div className="flex-1 min-w-0">
+                        <h2 className="text-base font-bold text-gray-800 truncate">
                             {currentPkg?.name || 'Basic (Free)'}
                         </h2>
                         <p className="text-sm text-gray-500">
                             {!currentPkg ? 'แพ็กเกจฟรี' : `฿${Number(packages.find(p => p.id === currentPkg.id)?.price || 0).toLocaleString()}/เดือน`}
                         </p>
                     </div>
-                    <div className="bg-gray-50 px-4 py-2 rounded-xl">
-                        <p className="text-xs text-gray-500">ประกาศที่ใช้งาน</p>
+                </div>
+                {/* Stats row */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-gray-50 px-3 py-2.5 rounded-xl">
+                        <p className="text-[10px] text-gray-400">ประกาศที่ใช้งาน</p>
                         <p className="text-lg font-bold text-gray-800">
                             {usage.activeListings}/{usage.maxListings === -1 ? '∞' : usage.maxListings}
                         </p>
                     </div>
+                    {currentPkg && currentPkg.expiresAt && (() => {
+                        const daysLeft = getDaysRemaining(currentPkg.expiresAt);
+                        const expDate = new Date(currentPkg.expiresAt);
+                        const expFormatted = expDate.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
+                        return (
+                            <div className="bg-gray-50 px-3 py-2.5 rounded-xl">
+                                <p className="text-[10px] text-gray-400">หมดอายุ {expFormatted}</p>
+                                {daysLeft !== null && daysLeft > 0 ? (
+                                    <p className={`text-lg font-bold ${daysLeft <= 3 ? 'text-red-500' : daysLeft <= 7 ? 'text-yellow-600' : 'text-gray-700'}`}>
+                                        เหลือ {daysLeft} วัน
+                                    </p>
+                                ) : (
+                                    <p className="text-lg font-bold text-red-500">หมดอายุแล้ว</p>
+                                )}
+                            </div>
+                        );
+                    })()}
                 </div>
-            </div>
+                {/* Renewal button */}
+                {currentPkg && currentPkg.slug !== 'basic' && (() => {
+                    const currentFullPkg = packages.find(p => p.id === currentPkg.id || p.slug === currentPkg.slug);
+                    const daysLeft = getDaysRemaining(currentPkg.expiresAt);
+                    if (!currentFullPkg || (daysLeft !== null && daysLeft <= 0)) return null;
+                    return (
+                        <button
+                            onClick={() => openUpgradeModal(currentFullPkg, true)}
+                            className="w-full flex items-center justify-center gap-2 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-bold transition shadow-sm"
+                        >
+                            <ArrowsClockwise weight="bold" size={16} />
+                            ต่ออายุแพ็กเกจ
+                        </button>
+                    );
+                })()}
 
-            {/* Package Comparison Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                    <h2 className="text-lg font-bold text-gray-800">เปรียบเทียบแพ็กเกจ</h2>
-                    <p className="text-sm text-gray-500">เลือกแพ็กเกจที่เหมาะกับธุรกิจของคุณ</p>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-100">
-                                <th className="text-left p-4 text-sm font-bold text-gray-500 w-44">ฟีเจอร์ / ระดับ</th>
-                                {packages.map(pkg => (
-                                    <th key={pkg.id} className="p-4 text-center min-w-[160px]">
-                                        <div className="flex flex-col items-center gap-2">
-                                            <div className={`p-2.5 rounded-xl ${getColor(pkg.slug).bg}`}>
-                                                {getIcon(pkg.slug)}
-                                            </div>
-                                            <span className="font-bold text-sm text-gray-800">{pkg.name}</span>
-                                            {(currentPkg
-                                                ? (currentPkg.id === pkg.id || currentPkg.slug === pkg.slug)
-                                                : (pkg.slug === 'basic' || pkg.price === 0)) && (
-                                                <span className="text-[10px] font-bold bg-primary text-white px-2 py-0.5 rounded-full">ปัจจุบัน</span>
-                                            )}
+                {/* Latest Transaction inside current package card */}
+                {transactions.length > 0 && (() => {
+                    const latest = transactions[0];
+                    return (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-xs font-bold text-gray-500">ประวัติล่าสุด</p>
+                                {transactions.length > 1 && (
+                                    <button
+                                        onClick={() => setShowAllTx(!showAllTx)}
+                                        className="text-xs font-bold text-primary hover:underline"
+                                    >
+                                        {showAllTx ? 'ซ่อน' : `ดูทั้งหมด (${transactions.length})`}
+                                    </button>
+                                )}
+                            </div>
+                            {(showAllTx ? transactions : [latest]).map(tx => (
+                                <div key={tx.id} className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 mb-2 last:mb-0">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <div className={`p-1 rounded-md ${getColor(tx.package.slug).bg}`}>
+                                            {React.cloneElement(getIcon(tx.package.slug) as React.ReactElement, { size: 16 })}
                                         </div>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {featureRows.map((row, i) => (
-                                <tr key={row.key} className={i % 2 === 0 ? 'bg-gray-50/50' : ''}>
-                                    <td className="p-4 text-sm font-bold text-gray-600">{row.label}</td>
-                                    {packages.map(pkg => {
-                                        const val = (pkg as any)[row.key];
-                                        return (
-                                            <td key={pkg.id} className="p-4 text-center text-sm text-gray-700 font-medium">
-                                                {row.format ? row.format(val) : val}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                            {/* Price Row */}
-                            <tr className="border-t-2 border-gray-100 bg-gray-50">
-                                <td className="p-4 text-sm font-bold text-gray-600">ค่าบริการ</td>
-                                {packages.map(pkg => (
-                                    <td key={pkg.id} className="p-4 text-center">
-                                        <span className="text-xl font-bold text-gray-800">
-                                            {Number(pkg.price) === 0 ? 'ฟรี' : `฿${Number(pkg.price).toLocaleString()}`}
-                                        </span>
-                                        {Number(pkg.price) > 0 && <span className="text-xs text-gray-500 block">/ เดือน</span>}
-                                    </td>
-                                ))}
-                            </tr>
-                            {/* Action Row */}
-                            <tr>
-                                <td className="p-4"></td>
-                                {packages.map(pkg => {
-                                    const isCurrent = currentPkg
-                                        ? (currentPkg.id === pkg.id || currentPkg.slug === pkg.slug)
-                                        : (pkg.slug === 'basic' || pkg.price === 0);
-                                    const isLower = pkg.sortOrder <= currentSortOrder;
-
-                                    return (
-                                        <td key={pkg.id} className="p-4 text-center">
-                                            {isCurrent ? (
-                                                <span className="inline-block px-4 py-2 text-sm font-bold text-gray-500 bg-gray-100 rounded-xl">
-                                                    แพ็กเกจปัจจุบัน
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-bold text-gray-700 truncate flex items-center gap-1.5">
+                                                {tx.package.name}
+                                                <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${tx.type === 'RENEWAL' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                                                    {tx.type === 'RENEWAL' ? 'ต่ออายุ' : 'อัพเกรด'}
                                                 </span>
-                                            ) : isLower ? (
-                                                <span className="inline-block px-4 py-2 text-sm text-gray-400">—</span>
-                                            ) : (
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedPackage(pkg);
-                                                        setShowUpgradeModal(true);
-                                                    }}
-                                                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-sm ${getColor(pkg.slug).btn}`}
-                                                >
-                                                    อัพเกรด <ArrowRight weight="bold" size={14} />
-                                                </button>
-                                            )}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                            </p>
+                                            <p className="text-[10px] text-gray-400">
+                                                {new Date(tx.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        <span className="text-xs font-medium text-gray-600">฿{Number(tx.amount).toLocaleString()}</span>
+                                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
+                                            tx.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                                            tx.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                                            'bg-red-100 text-red-700'
+                                        }`}>
+                                            {tx.status === 'PENDING' ? 'รอ' : tx.status === 'APPROVED' ? '✓' : '✗'}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    );
+                })()}
             </div>
 
-            {/* Transaction History */}
-            {transactions.length > 0 && (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <Clock weight="bold" className="text-primary" /> ประวัติการอัพเกรด
-                    </h2>
-                    <div className="space-y-3">
-                        {transactions.map(tx => (
-                            <div key={tx.id} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                                <div className={`p-2 rounded-lg ${getColor(tx.package.slug).bg}`}>
-                                    {getIcon(tx.package.slug)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-bold text-sm text-gray-800">
-                                        อัพเกรดเป็น {tx.package.name}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        {new Date(tx.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                                    </p>
-                                    {tx.adminNote && (
-                                        <p className="text-xs text-red-500 mt-1">หมายเหตุ: {tx.adminNote}</p>
+            {/* Package Cards — Mobile First */}
+            <div>
+                <h2 className="text-lg font-bold text-gray-800 mb-1">เปรียบเทียบแพ็กเกจ</h2>
+                <p className="text-sm text-gray-500 mb-4">เลือกแพ็กเกจที่เหมาะกับธุรกิจของคุณ</p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {packages.map(pkg => {
+                        const isCurrent = currentPkg
+                            ? (currentPkg.id === pkg.id || currentPkg.slug === pkg.slug)
+                            : (pkg.slug === 'basic' || pkg.price === 0);
+                        const isLower = pkg.sortOrder <= currentSortOrder;
+                        const color = getColor(pkg.slug);
+
+                        return (
+                            <div key={pkg.id} className={`bg-white rounded-2xl border-2 shadow-sm overflow-hidden ${isCurrent ? 'border-primary' : 'border-gray-100'}`}>
+                                {/* Card Header */}
+                                <div className={`p-4 ${color.bg} flex items-center justify-between`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-xl bg-white/80 shadow-sm">{getIcon(pkg.slug)}</div>
+                                        <div>
+                                            <p className="font-bold text-gray-800 text-sm">{pkg.name}</p>
+                                            <p className="text-xs text-gray-500">{pkg.nameTh}</p>
+                                        </div>
+                                    </div>
+                                    {isCurrent && (
+                                        <span className="text-[10px] font-bold bg-primary text-white px-2.5 py-1 rounded-full">ปัจจุบัน</span>
                                     )}
                                 </div>
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                    tx.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                                    tx.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-                                    'bg-red-100 text-red-700'
-                                }`}>
-                                    {tx.status === 'PENDING' ? 'รอตรวจสอบ' : tx.status === 'APPROVED' ? 'อนุมัติแล้ว' : 'ถูกปฏิเสธ'}
-                                </span>
+
+                                {/* Price */}
+                                <div className="px-4 pt-4 pb-2">
+                                    <span className="text-2xl font-bold text-gray-800">
+                                        {Number(pkg.price) === 0 ? 'ฟรี' : `฿${Number(pkg.price).toLocaleString()}`}
+                                    </span>
+                                    {Number(pkg.price) > 0 && <span className="text-sm text-gray-400"> /เดือน</span>}
+                                </div>
+
+                                {/* Features List */}
+                                <div className="px-4 pb-4 space-y-2">
+                                    {featureRows.map(row => {
+                                        const val = (pkg as any)[row.key];
+                                        return (
+                                            <div key={row.key} className="flex items-center justify-between text-xs">
+                                                <span className="text-gray-500">{row.label}</span>
+                                                <span className="font-medium text-gray-700">{row.format ? row.format(val) : val}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Action */}
+                                <div className="px-4 pb-4">
+                                    {isCurrent ? (
+                                        <div className="w-full py-2.5 text-center text-sm font-bold text-gray-400 bg-gray-100 rounded-xl">
+                                            แพ็กเกจปัจจุบัน
+                                        </div>
+                                    ) : isLower ? (
+                                        <div className="w-full py-2.5 text-center text-sm text-gray-300 rounded-xl">—</div>
+                                    ) : (
+                                        <button
+                                            onClick={() => openUpgradeModal(pkg, false)}
+                                            className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition shadow-sm ${color.btn}`}
+                                        >
+                                            อัพเกรด <ArrowRight weight="bold" size={14} />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
-            )}
+            </div>
+
 
             {/* Upgrade Modal */}
             {showUpgradeModal && selectedPackage && (
@@ -385,13 +472,62 @@ export default function PackagesPage() {
                                     {getIcon(selectedPackage.slug)}
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-800">อัพเกรดเป็น {selectedPackage.name}</h3>
+                                    <h3 className="text-xl font-bold text-gray-800">
+                                        {isRenewal ? `ต่ออายุ ${selectedPackage.name}` : `อัพเกรดเป็น ${selectedPackage.name}`}
+                                    </h3>
                                     <p className="text-sm text-gray-500">฿{Number(selectedPackage.price).toLocaleString()}/เดือน</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="p-6 space-y-6">
+                            {/* Prorate Breakdown (upgrade only) */}
+                            {!isRenewal && (
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-3">สรุปค่าใช้จ่าย</h4>
+                                    {prorateLoading ? (
+                                        <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-500 text-center">กำลังคำนวณ...</div>
+                                    ) : prorateInfo ? (
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
+                                            <div className="flex justify-between text-gray-700">
+                                                <span>ราคาแพ็กเกจใหม่</span>
+                                                <span>฿{Number(prorateInfo.newPackagePrice).toLocaleString()}</span>
+                                            </div>
+                                            {prorateInfo.proratedCredit > 0 && (
+                                                <div className="flex justify-between text-green-600">
+                                                    <span>เครดิตวันเหลือ ({prorateInfo.remainingDays} วัน)</span>
+                                                    <span>-฿{Number(prorateInfo.proratedCredit).toLocaleString()}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex justify-between font-bold text-gray-800 border-t border-gray-200 pt-2">
+                                                <span>ยอดชำระสุทธิ</span>
+                                                <span className="text-lg">฿{Number(prorateInfo.finalPrice).toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="bg-gray-50 rounded-xl p-4 text-sm">
+                                            <div className="flex justify-between font-bold text-gray-800">
+                                                <span>ยอดชำระ</span>
+                                                <span className="text-lg">฿{Number(selectedPackage.price).toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Renewal summary */}
+                            {isRenewal && (
+                                <div>
+                                    <h4 className="font-bold text-gray-800 mb-3">สรุปค่าใช้จ่าย</h4>
+                                    <div className="bg-gray-50 rounded-xl p-4 text-sm">
+                                        <div className="flex justify-between font-bold text-gray-800">
+                                            <span>ค่าต่ออายุ {selectedPackage.name}</span>
+                                            <span className="text-lg">฿{Number(selectedPackage.price).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Payment Info */}
                             <div>
                                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
@@ -412,7 +548,7 @@ export default function PackagesPage() {
                                         {paymentInfo.promptPayNumber && (
                                             <p>พร้อมเพย์: <span className="font-bold font-mono">{paymentInfo.promptPayNumber}</span></p>
                                         )}
-                                        <p>จำนวน: <span className="font-bold text-lg">฿{Number(selectedPackage.price).toLocaleString()}</span></p>
+                                        <p>จำนวน: <span className="font-bold text-lg">฿{(!isRenewal && prorateInfo ? Number(prorateInfo.finalPrice) : Number(selectedPackage.price)).toLocaleString()}</span></p>
                                     </div>
                                     {paymentInfo.note && (
                                         <p className="text-xs text-blue-600 border-t border-blue-100 pt-2">{paymentInfo.note}</p>
@@ -485,7 +621,7 @@ export default function PackagesPage() {
                                     </>
                                 ) : (
                                     <>
-                                        ส่งคำขออัพเกรด <ArrowRight weight="bold" />
+                                        {isRenewal ? 'ส่งคำขอต่ออายุ' : 'ส่งคำขออัพเกรด'} <ArrowRight weight="bold" />
                                     </>
                                 )}
                             </button>

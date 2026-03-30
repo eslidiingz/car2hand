@@ -8,6 +8,7 @@ import {
     Warning,
     ArrowClockwise
 } from '@phosphor-icons/react';
+import Toast from '@/components/Toast';
 import { useWishlist } from '@/contexts/WishlistContext';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 
@@ -63,7 +64,7 @@ export default function WishlistPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800">รายการที่บันทึกไว้ (Wishlist)</h1>
+                <h1 className="text-2xl font-bold text-gray-800">รายการที่บันทึกไว้</h1>
                 <span className="text-sm text-gray-500">{wishlist.length} รายการ</span>
             </div>
 
@@ -112,10 +113,7 @@ export default function WishlistPage() {
 
             {/* Toast Notification */}
             {showToast && (
-                <div className="fixed bottom-24 inset-x-0 w-fit mx-auto px-4 py-2 rounded-lg shadow-lg z-50 animate-fade-in flex items-center gap-2 bg-green-500 text-white">
-                    <Check size={16} weight="bold" />
-                    <span className="text-sm font-medium">{toastMessage}</span>
-                </div>
+                <Toast message={toastMessage} type="success" />
             )}
         </div>
     );

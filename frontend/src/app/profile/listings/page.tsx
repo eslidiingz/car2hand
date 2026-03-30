@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Eye,
     Heart,
@@ -19,6 +19,7 @@ import {
     ArrowRight
 } from '@phosphor-icons/react';
 import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
+import Toast from '@/components/Toast';
 
 interface ApiResponse {
     listings: VehicleListing[];
@@ -47,11 +48,15 @@ interface PackageInfo {
 
 export default function MyListingsPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialStatus = (['ALL', 'ACTIVE', 'PENDING', 'EXPIRED'] as const).includes(searchParams.get('status') as any)
+        ? (searchParams.get('status') as 'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED')
+        : 'ALL';
     const [listings, setListings] = useState<VehicleListing[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<{ id: string } | null>(null);
-    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED'>('ALL');
+    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED'>(initialStatus);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -60,13 +65,22 @@ export default function MyListingsPage() {
 
     const [renewId, setRenewId] = useState<string | null>(null);
     const [renewLoading, setRenewLoading] = useState(false);
+    const [toastMsg, setToastMsg] = useState<{ message: string; type: string } | null>(null);
+    const [slotListingId, setSlotListingId] = useState<string | null>(null);
+    const [slotSaving, setSlotSaving] = useState(false);
+    const [slotInfo, setSlotInfo] = useState<{ slots: Array<{ index: number; time: string; count: number; maxPerSlot: number }>; unassigned: number } | null>(null);
+
+    const showToast = (message: string, type: 'success' | 'error') => {
+        setToastMsg({ message, type });
+        setTimeout(() => setToastMsg(null), 3000);
+    };
     const [paymentInfo, setPaymentInfo] = useState<any>(null);
 
     const statuses = [
         { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
         { key: 'ACTIVE', label: 'กำลังขาย', count: listings.filter(l => l.status === 'ACTIVE').length },
-        { key: 'PENDING', label: 'รอตรวจ', count: listings.filter(l => l.status === 'PENDING').length },
         { key: 'EXPIRED', label: 'หมดอายุ', count: listings.filter(l => l.status === 'EXPIRED').length },
+        { key: 'PENDING', label: 'รอตรวจ', count: listings.filter(l => l.status === 'PENDING').length },
     ];
 
     // Check authentication and fetch listings
@@ -140,6 +154,72 @@ export default function MyListingsPage() {
     };
 
     // ต่ออายุ / รีประกาศ
+    const openSlotModal = async (listingId: string) => {
+        if (!user) return;
+        setSlotListingId(listingId);
+        try {
+            const res = await fetch(`${API_BASE}/listings/bump-slots?userId=${user.id}`);
+            const data = await res.json();
+            setSlotInfo(data);
+        } catch {
+            setSlotInfo(null);
+        }
+    };
+
+    const SLOT_SCHEDULES: Record<string, string[]> = {
+        standard: ['20:00'],
+        professional: ['08:30', '12:30', '21:00'],
+        premium: ['08:00', '11:30', '15:00', '19:00', '22:00'],
+    };
+
+    const currentSlots = packageInfo?.currentPackage?.slug
+        ? SLOT_SCHEDULES[packageInfo.currentPackage.slug] || []
+        : [];
+
+    const handleSetSlot = async (listingId: string, slot: number | null) => {
+        if (!user) return;
+        setSlotSaving(true);
+        try {
+            const response = await fetch(`${API_BASE}/listings/${listingId}/bump-slot`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, slot })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showToast(`ตั้งเวลาดันอัตโนมัติสำเร็จ: ${data.scheduledTime}`, 'success');
+                setSlotListingId(null);
+                fetchListings(user.id);
+            } else {
+                showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
+            }
+        } catch {
+            showToast('เกิดข้อผิดพลาด', 'error');
+        } finally {
+            setSlotSaving(false);
+        }
+    };
+
+    const handleBump = async (listingId: string) => {
+        if (!user) return;
+        try {
+            const response = await fetch(`${API_BASE}/listings/${listingId}/bump`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                showToast(`ดันโพสสำเร็จ เหลือสิทธิ์อีก ${data.remaining} ครั้ง/คัน วันนี้`, 'success');
+                fetchListings(user.id);
+            } else {
+                showToast(data.message || 'ไม่สามารถดันโพสได้', 'error');
+            }
+        } catch {
+            showToast('เกิดข้อผิดพลาดในการดันโพส', 'error');
+        }
+    };
+
     const handleRenewClick = async (listingId: string) => {
         if (!user) return;
 
@@ -157,14 +237,14 @@ export default function MyListingsPage() {
                 });
                 const data = await response.json();
                 if (response.ok) {
-                    // Refresh listings
+                    showToast('รีประกาศสำเร็จ ประกาศของคุณกลับมาแสดงบนเว็บไซต์แล้ว', 'success');
                     fetchListings(user.id);
                     fetchPackageInfo(user.id);
                 } else {
-                    alert(data.message || 'เกิดข้อผิดพลาด');
+                    showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
                 }
             } catch {
-                alert('เกิดข้อผิดพลาดในการรีประกาศ');
+                showToast('เกิดข้อผิดพลาดในการรีประกาศ', 'error');
             } finally {
                 setRenewLoading(false);
             }
@@ -192,13 +272,13 @@ export default function MyListingsPage() {
             const data = await response.json();
             if (response.ok) {
                 setRenewId(null);
-                alert('ส่งคำขอต่ออายุแล้ว รอ admin ตรวจสอบ');
+                showToast('ส่งคำขอต่ออายุแล้ว รอ admin ตรวจสอบ', 'success');
                 fetchListings(user.id);
             } else {
-                alert(data.message || 'เกิดข้อผิดพลาด');
+                showToast(data.message || 'เกิดข้อผิดพลาด', 'error');
             }
         } catch {
-            alert('เกิดข้อผิดพลาด');
+            showToast('เกิดข้อผิดพลาด', 'error');
         } finally {
             setRenewLoading(false);
         }
@@ -384,6 +464,9 @@ export default function MyListingsPage() {
                                 onToggleMenu={setActiveMenu}
                                 onDelete={setDeleteConfirm}
                                 onRenew={handleRenewClick}
+                                onBump={handleBump}
+                                onSetSlot={currentSlots.length > 0 ? openSlotModal : undefined}
+                                slotSchedules={currentSlots}
                                 formatPrice={formatPrice}
                                 formatDate={formatDate}
                                 getDaysLeft={getDaysLeft}
@@ -538,6 +621,60 @@ export default function MyListingsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Slot Selection Modal */}
+            {slotListingId && currentSlots.length > 0 && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSlotListingId(null)} />
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
+                        <div className="text-center mb-5">
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">ตั้งเวลาดันอัตโนมัติ</h3>
+                            <p className="text-sm text-gray-500">เลือกช่วงเวลาที่ต้องการให้ระบบดันโพสอัตโนมัติ</p>
+                        </div>
+                        <div className="space-y-2 mb-4">
+                            {(slotInfo?.slots || currentSlots.map((t, i) => ({ index: i, time: t, count: 0, maxPerSlot: 99 }))).map((s: any) => {
+                                const isFull = s.count >= s.maxPerSlot;
+                                return (
+                                    <button
+                                        key={s.index}
+                                        onClick={() => !isFull && handleSetSlot(slotListingId, s.index)}
+                                        disabled={slotSaving || isFull}
+                                        className={`w-full flex items-center justify-between p-3 rounded-xl border transition text-left ${
+                                            isFull
+                                                ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed'
+                                                : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50'
+                                        }`}
+                                    >
+                                        <div>
+                                            <span className="font-medium text-gray-800">Slot {s.index + 1}: {s.time} น.</span>
+                                            <span className="text-[11px] text-gray-400 ml-2">+สุ่ม 0-10 นาที</span>
+                                        </div>
+                                        <span className={`text-xs font-bold ${isFull ? 'text-red-400' : 'text-gray-400'}`}>
+                                            {s.count}/{s.maxPerSlot} คัน
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                            <button
+                                onClick={() => handleSetSlot(slotListingId, null)}
+                                disabled={slotSaving}
+                                className="w-full flex items-center justify-between p-3 rounded-xl border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition text-gray-500 text-sm font-medium"
+                            >
+                                <span>ให้ระบบจัดให้อัตโนมัติ</span>
+                                {slotInfo && <span className="text-xs text-gray-400">{slotInfo.unassigned} คัน</span>}
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => { setSlotListingId(null); setSlotInfo(null); }}
+                            className="w-full py-2.5 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
+                        >
+                            ยกเลิก
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {toastMsg && <Toast message={toastMsg.message} type={toastMsg.type} />}
         </div>
     );
 }

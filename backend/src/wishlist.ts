@@ -32,7 +32,7 @@ interface WishlistWithListing {
 }
 
 export const wishlistRoutes = new Elysia({ prefix: '/wishlists' })
-    .use(jwtPlugin)
+    .use(jwtPlugin())
 
     // Get user's wishlist
     .get('/', async ({ jwt, request, set }) => {
@@ -129,6 +129,12 @@ export const wishlistRoutes = new Elysia({ prefix: '/wishlists' })
 
         if (!listing) {
             return { success: false, message: 'ไม่พบรายการนี้' };
+        }
+
+        // ห้ามถูกใจรถของตนเอง
+        if (listing.userId === payload.userId) {
+            set.status = 400;
+            return { success: false, message: 'ไม่สามารถบันทึกรายการของตัวเองได้' };
         }
 
         // Check if already in wishlist

@@ -36,6 +36,9 @@ model User {
   wishlists           Wishlist[]
   packageTransactions PackageTransaction[]
   listingRenewals     ListingRenewal[]
+  bumpLogs            ListingBumpLog[]
+  notifications       UserNotification[]
+  garageVehicles      GarageVehicle[]
 
   @@index([currentPackageId])
   @@index([lineUserId])
@@ -229,7 +232,6 @@ model VehicleListing {
 
   // สภาพยานพาหนะ
   condition   Condition // สภาพโดยรวม
-  ownerCount  Int       @default(1) // จำนวนเจ้าของ (มือที่เท่าไหร่)
   hasAccident Boolean   @default(false) // เคยมีอุบัติเหตุหรือไม่
   hasModified Boolean   @default(false) // มีการตกแต่ง/โมดิฟายหรือไม่
   hasWarranty Boolean   @default(false) // มีประกัน/warranty เหลือ
@@ -266,9 +268,12 @@ model VehicleListing {
   favoriteCount Int @default(0) // จำนวนคนบันทึก
 
   // วันที่
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  expiredAt DateTime? // วันหมดอายุประกาศ
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  publishedAt  DateTime? // วันที่เผยแพร่ (ACTIVE จริง)
+  expiredAt    DateTime? // วันหมดอายุประกาศ
+  bumpedAt     DateTime? // วันที่ดันโพสล่าสุด (ใช้เรียงลำดับ)
+  autoBumpSlot Int?      // slot ดันโพสอัตโนมัติ (0-based) ถ้า null = ระบบจัดให้
 
   // Relations
   userId    String
@@ -276,6 +281,7 @@ model VehicleListing {
   images    VehicleImage[]
   wishlists Wishlist[]
   renewals  ListingRenewal[]
+  bumpLogs  ListingBumpLog[]
 
   @@index([vehicleType])
   @@index([brand, model])
@@ -283,6 +289,7 @@ model VehicleListing {
   @@index([province])
   @@index([status])
   @@index([createdAt])
+  @@index([bumpedAt])
   @@map("vehicle_listings")
 }
 
@@ -418,6 +425,7 @@ model Package {
   maxPhotosPerListing Int // จำนวนรูปสูงสุด/ประกาศ
   listingDurationDays Int // ระยะเวลาประกาศ (วัน), -1 = จนกว่าจะขายได้
   autoBumpPerDay      Int      @default(0) // จำนวนดันโพสต์อัตโนมัติ/วัน
+  manualBumpPerDay    Int      @default(0) // จำนวนดันโพสต์ด้วยตัวเอง/วัน
   badge               String? // ป้ายพิเศษ เช่น Verified Seller, Hot Deal
   searchPriority      String   @default("normal") // normal, higher, top, priority
   features            Json     @default("[]") // Array ของฟีเจอร์เพิ่มเติม
@@ -452,16 +460,18 @@ model SystemSetting {
   @@map("system_settings")
 }
 
-// รายการอัพเกรดแพ็กเกจ
+// รายการอัพเกรด/ต่ออายุแพ็กเกจ
 model PackageTransaction {
-  id         String        @id @default(cuid())
-  amount     Decimal       @db.Decimal(10, 2) // จำนวนเงิน
-  slipImage  String // URL รูปสลิปการโอนเงิน
-  status     PaymentStatus @default(PENDING)
-  adminNote  String? // หมายเหตุจาก admin (เหตุผลกรณีปฏิเสธ)
-  reviewedAt DateTime? // วันที่ตรวจสอบ
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  amount          Decimal       @db.Decimal(10, 2) // จำนวนเงินที่ต้องจ่าย
+  slipImage       String // URL รูปสลิปการโอนเงิน
+  status          PaymentStatus @default(PENDING)
+  transactionType String        @default("UPGRADE") // "UPGRADE" | "RENEWAL"
+  proratedCredit  Decimal?      @db.Decimal(10, 2) // เครดิตจากวันเหลือ (เฉพาะ UPGRADE)
+  adminNote       String? // หมายเหตุจาก admin (เหตุผลกรณีปฏิเสธ)
+  reviewedAt      DateTime? // วันที่ตรวจสอบ
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   // Relations
   userId    String
@@ -497,6 +507,106 @@ model ListingRenewal {
   @@index([listingId])
   @@index([status])
   @@map("listing_renewals")
+}
+
+// =============================================
+// =============================================
+// Garage System - โรงรถของฉัน
+// =============================================
+
+model GarageVehicle {
+  id             String   @id @default(cuid())
+  nickname       String   // ชื่อเรียกรถ
+  brand          String
+  model          String
+  year           Int?
+  color          String?
+  licensePlate   String?
+  currentMileage Int      @default(0)
+  imageUrl       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId         String
+  user           User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceRecords ServiceRecord[]
+  reminders      MaintenanceReminder[]
+
+  @@index([userId])
+  @@map("garage_vehicles")
+}
+
+model ServiceRecord {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  mileage     Int?
+  cost        Decimal? @db.Decimal(10, 2)
+  serviceDate DateTime
+  shopName    String?
+  createdAt   DateTime @default(now())
+
+  vehicleId String
+  vehicle   GarageVehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId, serviceDate])
+  @@map("service_records")
+}
+
+model MaintenanceReminder {
+  id          String    @id @default(cuid())
+  title       String
+  type        String    // DATE | MILEAGE
+  dueDate     DateTime?
+  dueMileage  Int?
+  isCompleted Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  vehicleId String
+  vehicle   GarageVehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@map("maintenance_reminders")
+}
+
+// =============================================
+// In-App Notification - แจ้งเตือนในระบบ
+// =============================================
+
+model UserNotification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  type      String   // PACKAGE_EXPIRING, PACKAGE_EXPIRED, PACKAGE_APPROVED, PACKAGE_REJECTED, LISTING_EXPIRED, SYSTEM
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@map("user_notifications")
+}
+
+// Bump/Boost System - ระบบดันโพส
+// =============================================
+
+model ListingBumpLog {
+  id        String   @id @default(cuid())
+  type      String   // "MANUAL" | "AUTO"
+  createdAt DateTime @default(now())
+
+  // Relations
+  listingId String
+  listing   VehicleListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([listingId, createdAt])
+  @@index([userId, createdAt])
+  @@map("listing_bump_logs")
 }
 
 // =============================================

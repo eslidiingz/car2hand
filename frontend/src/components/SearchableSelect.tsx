@@ -8,6 +8,8 @@ export interface SelectOption {
     label: string;
     subLabel?: string;
     image?: string;
+    color?: string; // hex color สำหรับแสดงวงกลมสี
+    colorBorder?: boolean; // ขอบสีเทาสำหรับสีอ่อน (ขาว)
     group?: string;
     isPopular?: boolean;
 }
@@ -120,6 +122,12 @@ export default function SearchableSelect({
                 <span className={selectedOption ? 'text-gray-800' : 'text-gray-400 truncate'}>
                     {loading ? 'กำลังโหลด...' : selectedOption ? (
                         <span className="flex items-center gap-2">
+                            {selectedOption.color && (
+                                <span
+                                    className={`w-5 h-5 rounded-full flex-shrink-0 ${selectedOption.colorBorder ? 'border border-gray-300' : ''}`}
+                                    style={{ background: selectedOption.color }}
+                                />
+                            )}
                             {selectedOption.image && (
                                 <img
                                     src={selectedOption.image}
@@ -209,6 +217,12 @@ export default function SearchableSelect({
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3">
+                                                {option.color && (
+                                                    <span
+                                                        className={`w-6 h-6 rounded-full flex-shrink-0 ${option.colorBorder ? 'border border-gray-300' : ''}`}
+                                                        style={{ background: option.color }}
+                                                    />
+                                                )}
                                                 {option.image && (
                                                     <img
                                                         src={option.image}

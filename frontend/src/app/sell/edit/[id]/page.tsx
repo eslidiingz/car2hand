@@ -68,7 +68,6 @@ interface VehicleListing {
     plateProvince: string | null;
     registrationType: string | null;
     condition: string | null;
-    ownerCount: number;
     hasAccident: boolean;
     hasModified: boolean;
     hasWarranty: boolean;
@@ -99,7 +98,6 @@ interface FormData {
     seats: number;
     bodyType: string;
     condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR';
-    ownerCount: number;
     hasAccident: boolean;
     hasModified: boolean;
     hasWarranty: boolean;
@@ -122,7 +120,24 @@ interface FormData {
 }
 
 // Constants
-const COLORS = ['ดำ', 'ขาว', 'เงิน', 'เทา', 'แดง', 'น้ำเงิน', 'เขียว', 'ทอง', 'ส้ม', 'ม่วง', 'น้ำตาล', 'ชมพู', 'เหลือง', 'อื่นๆ'];
+const COLORS: Array<{ name: string; hex: string; border?: boolean }> = [
+    { name: 'ขาว', hex: '#FFFFFF', border: true },
+    { name: 'ดำ', hex: '#1A1A1A' },
+    { name: 'เงิน', hex: '#C0C0C0' },
+    { name: 'เทา', hex: '#808080' },
+    { name: 'แดง', hex: '#DC2626' },
+    { name: 'น้ำเงิน', hex: '#1D4ED8' },
+    { name: 'เขียว', hex: '#16A34A' },
+    { name: 'ส้ม', hex: '#EA580C' },
+    { name: 'น้ำตาล', hex: '#78350F' },
+    { name: 'ทอง', hex: '#CA8A04' },
+    { name: 'ชมพู', hex: '#EC4899' },
+    { name: 'ม่วง', hex: '#7C3AED' },
+    { name: 'เหลือง', hex: '#EAB308' },
+    { name: 'ฟ้า', hex: '#38BDF8' },
+    { name: 'เบจ/ครีม', hex: '#D2B48C' },
+    { name: 'อื่นๆ', hex: 'linear-gradient(135deg, #f00, #0f0, #00f)', border: true },
+];
 const CAR_BRANDS = ['Toyota', 'Honda', 'Mazda', 'Nissan', 'Mitsubishi', 'Isuzu', 'Ford', 'Chevrolet', 'MG', 'BMW', 'Mercedes-Benz', 'Audi', 'Lexus', 'Hyundai', 'Kia', 'Suzuki', 'Subaru', 'Volvo', 'Porsche', 'Mini', 'Jaguar', 'Land Rover', 'Tesla', 'BYD', 'Haval', 'Changan', 'Neta', 'ORA', 'อื่นๆ'];
 const MOTORCYCLE_BRANDS = ['Honda', 'Yamaha', 'Kawasaki', 'Suzuki', 'BMW', 'Ducati', 'Triumph', 'KTM', 'Harley-Davidson', 'Royal Enfield', 'Vespa', 'GPX', 'Benelli', 'CF Moto', 'Zontes', 'อื่นๆ'];
 const PROVINCES = ['กรุงเทพมหานคร', 'กระบี่', 'กาญจนบุรี', 'กาฬสินธุ์', 'กำแพงเพชร', 'ขอนแก่น', 'จันทบุรี', 'ฉะเชิงเทรา', 'ชลบุรี', 'ชัยนาท', 'ชัยภูมิ', 'ชุมพร', 'เชียงราย', 'เชียงใหม่', 'ตรัง', 'ตราด', 'ตาก', 'นครนายก', 'นครปฐม', 'นครพนม', 'นครราชสีมา', 'นครศรีธรรมราช', 'นครสวรรค์', 'นนทบุรี', 'นราธิวาส', 'น่าน', 'บึงกาฬ', 'บุรีรัมย์', 'ปทุมธานี', 'ประจวบคีรีขันธ์', 'ปราจีนบุรี', 'ปัตตานี', 'พระนครศรีอยุธยา', 'พังงา', 'พัทลุง', 'พิจิตร', 'พิษณุโลก', 'เพชรบุรี', 'เพชรบูรณ์', 'แพร่', 'ภูเก็ต', 'มหาสารคาม', 'มุกดาหาร', 'แม่ฮ่องสอน', 'ยโสธร', 'ยะลา', 'ร้อยเอ็ด', 'ระนอง', 'ระยอง', 'ราชบุรี', 'ลพบุรี', 'ลำปาง', 'ลำพูน', 'เลย', 'ศรีสะเกษ', 'สกลนคร', 'สงขลา', 'สตูล', 'สมุทรปราการ', 'สมุทรสงคราม', 'สมุทรสาคร', 'สระแก้ว', 'สระบุรี', 'สิงห์บุรี', 'สุโขทัย', 'สุพรรณบุรี', 'สุราษฎร์ธานี', 'สุรินทร์', 'หนองคาย', 'หนองบัวลำภู', 'อ่างทอง', 'อำนาจเจริญ', 'อุดรธานี', 'อุตรดิตถ์', 'อุทัยธานี', 'อุบลราชธานี'];
@@ -184,7 +199,6 @@ export default function EditListingPage() {
         seats: 0,
         bodyType: 'SEDAN',
         condition: 'GOOD',
-        ownerCount: 1,
         hasAccident: false,
         hasModified: false,
         hasWarranty: false,
@@ -389,7 +403,6 @@ export default function EditListingPage() {
                     seats: (listingData as any).seats || 0,
                     bodyType: listingData.bodyType || 'SEDAN',
                     condition: (listingData.condition as FormData['condition']) || 'GOOD',
-                    ownerCount: listingData.ownerCount,
                     hasAccident: listingData.hasAccident,
                     hasModified: listingData.hasModified,
                     hasWarranty: listingData.hasWarranty,
@@ -909,7 +922,7 @@ export default function EditListingPage() {
                             {/* Year, Brand, Model */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                 <div className="md:col-span-2" ref={brandRef}>
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.brand ? 'text-red-600' : 'text-gray-700'}`}>ยี่ห้อ *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.brand ? 'text-red-600' : 'text-gray-700'}`}>ยี่ห้อ <span className="text-red-500">*</span></label>
                                     <div className={fieldErrors.brand ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                         <SearchableSelect
                                             options={brandsList.map(b => ({
@@ -947,7 +960,7 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.model ? 'text-red-600' : 'text-gray-700'}`}>รุ่น *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.model ? 'text-red-600' : 'text-gray-700'}`}>รุ่น <span className="text-red-500">*</span></label>
                                     <div className={fieldErrors.model ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                         {modelsList.length > 0 || loadingModels ? (
                                             <SearchableSelect
@@ -1016,7 +1029,7 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div className="md:col-span-1">
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.bodyType ? 'text-red-600' : 'text-gray-700'}`}>รูปแบบรถ *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.bodyType ? 'text-red-600' : 'text-gray-700'}`}>รูปแบบรถ <span className="text-red-500">*</span></label>
                                     <div className={fieldErrors.bodyType ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                         <SearchableSelect
                                             options={(formData.vehicleType === 'CAR' ? bodyStyleOptions : motorcycleBodyOptions).map((style) => ({
@@ -1037,10 +1050,10 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div className="md:col-span-1">
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.color ? 'text-red-600' : 'text-gray-700'}`}>สี *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.color ? 'text-red-600' : 'text-gray-700'}`}>สี <span className="text-red-500">*</span></label>
                                     <div className={fieldErrors.color ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                         <SearchableSelect
-                                            options={COLORS.map(c => ({ id: c, label: c }))}
+                                            options={COLORS.map(c => ({ id: c.name, label: c.name, color: c.hex, colorBorder: c.border }))}
                                             value={formData.color}
                                             onChange={(value) => {
                                                 setFieldErrors(prev => ({ ...prev, color: false }));
@@ -1055,7 +1068,7 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div ref={fuelTypeRef}>
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.fuelType ? 'text-red-600' : 'text-gray-700'}`}>เชื้อเพลิง *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.fuelType ? 'text-red-600' : 'text-gray-700'}`}>เชื้อเพลิง <span className="text-red-500">*</span></label>
                                     <div className={fieldErrors.fuelType ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                         <SearchableSelect
                                             options={[
@@ -1081,21 +1094,21 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต *</label>
-                                    <div className={fieldErrors.year ? 'ring-2 ring-red-500 rounded-xl' : ''}>
-                                        <SearchableSelect
-                                            options={years.map(y => ({ id: y.toString(), label: y.toString() }))}
-                                            value={formData.year.toString()}
-                                            onChange={(value) => {
-                                                setFieldErrors(prev => ({ ...prev, year: false }));
-                                                updateFormData({ year: parseInt(value) });
-                                            }}
-                                            placeholder="เลือกปีที่ผลิต"
-                                            searchPlaceholder="ค้นหาปี..."
-                                            emptyMessage="ไม่พบปีที่ผลิต"
-                                        />
-                                    </div>
-                                    {fieldErrors.year && <p className="text-red-500 text-xs mt-1">กรุณาเลือกปีที่ผลิต</p>}
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ปีที่ผลิต <span className="text-red-500">*</span></label>
+                                    <input
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength={4}
+                                        placeholder="เช่น 2020"
+                                        className={`form-input ${fieldErrors.year ? 'border-red-500 ring-2 ring-red-500' : ''}`}
+                                        value={formData.year || ''}
+                                        onChange={(e) => {
+                                            setFieldErrors(prev => ({ ...prev, year: false }));
+                                            const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+                                            updateFormData({ year: parseInt(value) || 0 });
+                                        }}
+                                    />
+                                    {fieldErrors.year && <p className="text-red-500 text-xs mt-1">กรุณากรอกปีที่ผลิต</p>}
                                 </div>
                             </div>
 
@@ -1122,7 +1135,7 @@ export default function EditListingPage() {
 
                             {/* Mileage */}
                             <div className="mb-8" ref={mileageRef}>
-                                <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) *</label>
+                                <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) <span className="text-red-500">*</span></label>
                                 <div className="relative">
                                     <input
                                         type="text"
@@ -1208,7 +1221,7 @@ export default function EditListingPage() {
 
                             {/* Price */}
                             <div className="mb-6" ref={priceRef}>
-                                <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.price ? 'text-red-600' : 'text-gray-700'}`}>ราคา (บาท) *</label>
+                                <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.price ? 'text-red-600' : 'text-gray-700'}`}>ราคา (บาท) <span className="text-red-500">*</span></label>
                                 <div className="relative">
                                     <input
                                         type="text"
@@ -1232,7 +1245,7 @@ export default function EditListingPage() {
                             {/* Location */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">จังหวัด *</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">จังหวัด <span className="text-red-500">*</span></label>
                                     <SearchableSelect
                                         options={PROVINCES.map(p => ({ id: p, label: p }))}
                                         value={formData.province}
@@ -1263,7 +1276,7 @@ export default function EditListingPage() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div ref={contactNameRef}>
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.contactName ? 'text-red-600' : 'text-gray-700'}`}>ชื่อผู้ติดต่อ *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.contactName ? 'text-red-600' : 'text-gray-700'}`}>ชื่อผู้ติดต่อ <span className="text-red-500">*</span></label>
                                     <input
                                         type="text"
                                         placeholder="ชื่อ-นามสกุล หรือชื่อเล่น"
@@ -1277,7 +1290,7 @@ export default function EditListingPage() {
                                     {fieldErrors.contactName && <p className="text-red-500 text-xs mt-1">กรุณากรอกชื่อผู้ติดต่อ</p>}
                                 </div>
                                 <div ref={contactPhoneRef}>
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.contactPhone ? 'text-red-600' : 'text-gray-700'}`}>เบอร์โทรติดต่อ *</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.contactPhone ? 'text-red-600' : 'text-gray-700'}`}>เบอร์โทรติดต่อ <span className="text-red-500">*</span></label>
                                     <input
                                         type="tel"
                                         placeholder="08xxxxxxxx"
