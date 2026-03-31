@@ -21,6 +21,7 @@ import { userNotificationRoutes } from "./user-notifications";
 import { garageRoutes } from "./garage";
 import { serviceRoutes } from "./services";
 import { adminServiceRoutes } from "./admin-services";
+import { forumRoutes } from "./forum";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 
 // Allowed origins (update for production)
@@ -79,6 +80,7 @@ const app = new Elysia()
       .use(garageRoutes)
       .use(serviceRoutes)
       .use(adminServiceRoutes)
+      .use(forumRoutes)
   )
 
   // Global error handler
