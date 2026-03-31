@@ -109,6 +109,115 @@ async function main() {
         console.log(`  ✓ ${pkg.name}`);
     }
 
+    // =============================================
+    // Seed Inspection Packages
+    // =============================================
+    console.log('🔍 Seeding inspection packages...');
+
+    await prisma.inspectionPackage.deleteMany();
+
+    const inspectionPackages = [
+        {
+            name: 'Standard Check',
+            nameEn: 'Standard Check',
+            price: 1500,
+            description: 'ตรวจสภาพพื้นฐานครอบคลุม 4 จุดสำคัญ',
+            features: [
+                'ตรวจโครงสร้างตัวถัง (ชนหนัก/ตัดต่อ)',
+                'ตรวจสภาพสีรอบคัน',
+                'ตรวจห้องเครื่อง & ของเหลว',
+                'ตรวจภายในห้องโดยสาร',
+            ],
+            isRecommended: false,
+            order: 0,
+        },
+        {
+            name: 'Premium Full Option',
+            nameEn: 'Premium Full Option',
+            price: 2500,
+            description: 'ตรวจสภาพแบบครบวงจร รวมทุกรายการ + สแกนคอมพิวเตอร์ + ทดลองขับ',
+            features: [
+                'รวมทุกอย่างใน Standard',
+                'ตรวจใต้ท้องรถ (ช่วงล่าง/สนิม)',
+                'สแกนระบบไฟด้วยคอมพิวเตอร์ (OBD2)',
+                'ทดลองขับจริง (Test Drive)',
+            ],
+            isRecommended: true,
+            order: 1,
+        },
+    ];
+
+    for (const pkg of inspectionPackages) {
+        await prisma.inspectionPackage.create({ data: pkg });
+        console.log(`  ✓ ${pkg.name}`);
+    }
+
+    // =============================================
+    // Seed Service Partners
+    // =============================================
+    console.log('🏦 Seeding service partners...');
+
+    await prisma.servicePartner.deleteMany();
+
+    const servicePartners = [
+        // Banks
+        {
+            name: 'SCB',
+            type: 'BANK' as const,
+            highlight: 'อนุมัติไว 1 วัน',
+            description: 'ธนาคารไทยพาณิชย์',
+            order: 0,
+        },
+        {
+            name: 'Kasikorn (KBank)',
+            type: 'BANK' as const,
+            highlight: 'ดอกเบี้ยพิเศษ',
+            description: 'ธนาคารกสิกรไทย',
+            order: 1,
+        },
+        {
+            name: 'Thanachart',
+            type: 'BANK' as const,
+            highlight: 'รับทุกอาชีพ',
+            description: 'ธนาคารธนชาต',
+            order: 2,
+        },
+        {
+            name: 'Krungsri',
+            type: 'BANK' as const,
+            highlight: 'ผ่อนนาน 84 งวด',
+            description: 'ธนาคารกรุงศรีอยุธยา',
+            order: 3,
+        },
+        // Insurance
+        {
+            name: 'วิริยะประกันภัย',
+            type: 'INSURANCE' as const,
+            highlight: 'เบี้ยต่ำ คุ้มครองสูง',
+            description: 'Viriyah Insurance',
+            order: 0,
+        },
+        {
+            name: 'เมืองไทยประกันภัย',
+            type: 'INSURANCE' as const,
+            highlight: 'เคลมง่าย รวดเร็ว',
+            description: 'Muang Thai Insurance',
+            order: 1,
+        },
+        {
+            name: 'กรุงเทพประกันภัย',
+            type: 'INSURANCE' as const,
+            highlight: 'ประกันชั้น 1 ราคาพิเศษ',
+            description: 'Bangkok Insurance',
+            order: 2,
+        },
+    ];
+
+    for (const partner of servicePartners) {
+        await prisma.servicePartner.create({ data: partner });
+        console.log(`  ✓ ${partner.name}`);
+    }
+
     console.log('✅ Seeding complete!');
 }
 
