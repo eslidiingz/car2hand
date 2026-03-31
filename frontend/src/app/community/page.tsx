@@ -1,9 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
-    Bell,
     PencilSimple,
     ChatsCircle,
     Wrench,
@@ -11,6 +10,10 @@ import {
     Lightning,
     ShoppingCart,
     ShieldCheck,
+    Tag,
+    FileText,
+    Motorcycle,
+    MapPin,
     CaretUp,
     CaretDown,
     Check,
@@ -19,62 +22,275 @@ import {
     SealCheck,
     Trophy,
     Medal,
-    UsersThree
+    UsersThree,
+    MagnifyingGlass,
+    SpinnerGap,
 } from '@phosphor-icons/react';
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface Category {
+    id: string;
+    name: string;
+    slug: string;
+    icon: string;
+    color: string;
+    _count: { posts: number };
+}
+
+interface Post {
+    id: string;
+    title: string;
+    content: string;
+    imageUrl?: string;
+    isPinned: boolean;
+    isSolved: boolean;
+    viewCount: number;
+    createdAt: string;
+    score: number;
+    commentCount: number;
+    tags: string[];
+    author: { id: string; fullName: string };
+    category: { id: string; name: string; slug: string; color: string; icon: string };
+}
+
+interface GuruEntry {
+    rank: number;
+    userId: string;
+    fullName: string;
+    points: number;
+    totalAnswers: number;
+}
+
+interface Stats {
+    memberCount: number;
+    postsToday: number;
+    totalPosts: number;
+}
+
+interface TagEntry {
+    name: string;
+    count: number;
+}
+
+// ─── Icon map ─────────────────────────────────────────────────────────────────
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+    ChatsCircle: <ChatsCircle weight="fill" className="text-2xl" />,
+    Wrench: <Wrench weight="fill" className="text-2xl" />,
+    Star: <Star weight="fill" className="text-2xl" />,
+    Lightning: <Lightning weight="fill" className="text-2xl" />,
+    ShoppingCart: <ShoppingCart weight="fill" className="text-2xl" />,
+    ShieldCheck: <ShieldCheck weight="fill" className="text-2xl" />,
+    Tag: <Tag weight="fill" className="text-2xl" />,
+    FileText: <FileText weight="fill" className="text-2xl" />,
+    Motorcycle: <Motorcycle weight="fill" className="text-2xl" />,
+    MapPin: <MapPin weight="fill" className="text-2xl" />,
+};
+
+const COLOR_MAP: Record<string, { bg: string; hover: string; border: string; text: string }> = {
+    blue:   { bg: 'bg-blue-50',   hover: 'hover:bg-blue-100',   border: 'border-blue-100',   text: 'text-primary' },
+    orange: { bg: 'bg-orange-50', hover: 'hover:bg-orange-100', border: 'border-orange-100', text: 'text-accent' },
+    green:  { bg: 'bg-green-50',  hover: 'hover:bg-green-100',  border: 'border-green-100',  text: 'text-green-600' },
+    yellow: { bg: 'bg-yellow-50', hover: 'hover:bg-yellow-100', border: 'border-yellow-100', text: 'text-yellow-500' },
+    purple: { bg: 'bg-purple-50', hover: 'hover:bg-purple-100', border: 'border-purple-100', text: 'text-purple-500' },
+    red:    { bg: 'bg-red-50',    hover: 'hover:bg-red-100',    border: 'border-red-100',    text: 'text-red-500' },
+    teal:   { bg: 'bg-teal-50',   hover: 'hover:bg-teal-100',   border: 'border-teal-100',   text: 'text-teal-600' },
+    indigo: { bg: 'bg-indigo-50', hover: 'hover:bg-indigo-100', border: 'border-indigo-100', text: 'text-indigo-600' },
+    gray:   { bg: 'bg-gray-50',   hover: 'hover:bg-gray-100',   border: 'border-gray-200',   text: 'text-gray-600' },
+    pink:   { bg: 'bg-pink-50',   hover: 'hover:bg-pink-100',   border: 'border-pink-100',   text: 'text-pink-500' },
+};
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function PostCard({ post }: { post: Post }) {
+    const colors = COLOR_MAP[post.category.color] ?? COLOR_MAP.gray;
+    return (
+        <Link href={`/community/topic/${post.id}`}>
+            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
+                <div className="flex items-start gap-4">
+                    <div className="flex flex-col items-center gap-1 min-w-[40px]">
+                        <CaretUp weight="bold" className="text-xl text-gray-300" />
+                        <span className={`font-bold ${post.score > 0 ? 'text-primary' : 'text-gray-500'}`}>
+                            {post.score}
+                        </span>
+                        <CaretDown weight="bold" className="text-xl text-gray-300" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                            <span className={`${colors.bg} ${colors.text} text-[10px] font-bold px-2 py-0.5 rounded-full border ${colors.border}`}>
+                                {post.category.name}
+                            </span>
+                            {post.isSolved && (
+                                <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <Check weight="bold" /> แก้ไขแล้ว
+                                </span>
+                            )}
+                            {post.isPinned && (
+                                <span className="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    ปักหมุด
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-primary transition line-clamp-2">
+                                    {post.title}
+                                </h3>
+                                <p className="text-sm text-gray-500 line-clamp-2 mb-3">{post.content}</p>
+                            </div>
+                            {post.imageUrl && (
+                                <div className="w-24 h-24 rounded-lg bg-gray-200 overflow-hidden hidden sm:block flex-shrink-0">
+                                    <img src={post.imageUrl} className="w-full h-full object-cover" alt="" />
+                                </div>
+                            )}
+                        </div>
+                        {post.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-2">
+                                {post.tags.slice(0, 4).map((tag) => (
+                                    <span key={tag} className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                                        #{tag}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
+                            <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[8px] font-bold flex-shrink-0">
+                                    {post.author.fullName.charAt(0).toUpperCase()}
+                                </div>
+                                <span className="text-gray-600 truncate max-w-[120px]">{post.author.fullName}</span>
+                                <span>• {new Date(post.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                            </div>
+                            <div className="flex items-center gap-4 flex-shrink-0">
+                                <span className="flex items-center gap-1"><ChatCircle weight="bold" /> {post.commentCount}</span>
+                                <span className="flex items-center gap-1"><Eye weight="bold" /> {post.viewCount >= 1000 ? `${(post.viewCount / 1000).toFixed(1)}k` : post.viewCount}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Link>
+    );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function CommunityPage() {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [gurus, setGurus] = useState<GuruEntry[]>([]);
+    const [stats, setStats] = useState<Stats | null>(null);
+    const [popularTags, setPopularTags] = useState<TagEntry[]>([]);
+
+    const [activeTab, setActiveTab] = useState<'trending' | 'latest' | 'unanswered'>('trending');
+    const [activeCategory, setActiveCategory] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loading, setLoading] = useState(true);
+
+    // fetch sidebar data once
+    useEffect(() => {
+        Promise.all([
+            fetch(`${API_BASE}/forum/categories`).then((r) => r.json()),
+            fetch(`${API_BASE}/forum/leaderboard?limit=5`).then((r) => r.json()),
+            fetch(`${API_BASE}/forum/stats`).then((r) => r.json()),
+            fetch(`${API_BASE}/forum/tags/popular?limit=10`).then((r) => r.json()),
+        ]).then(([catData, guruData, statsData, tagsData]) => {
+            setCategories(catData.categories ?? []);
+            setGurus(guruData.leaderboard ?? []);
+            setStats(statsData);
+            setPopularTags(tagsData.tags ?? []);
+        });
+    }, []);
+
+    const fetchPosts = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams({
+                tab: activeTab,
+                page: String(page),
+                limit: '10',
+            });
+            if (activeCategory) params.set('category', activeCategory);
+
+            const res = await fetch(`${API_BASE}/forum/posts?${params}`);
+            const data = await res.json();
+            setPosts(data.posts ?? []);
+            setTotalPages(data.pagination?.totalPages ?? 1);
+        } finally {
+            setLoading(false);
+        }
+    }, [activeTab, activeCategory, page]);
+
+    useEffect(() => {
+        fetchPosts();
+    }, [fetchPosts]);
+
+    // reset page when tab/category changes
+    const handleTabChange = (tab: typeof activeTab) => {
+        setActiveTab(tab);
+        setPage(1);
+    };
+
+    const handleCategoryClick = (slug: string) => {
+        setActiveCategory(activeCategory === slug ? null : slug);
+        setPage(1);
+    };
+
+    // local search filter (client-side on loaded posts)
+    const filtered = search.trim()
+        ? posts.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()) || p.content.toLowerCase().includes(search.toLowerCase()))
+        : posts;
+
     return (
         <div className="bg-surface text-gray-800 min-h-screen">
-            {/* Navbar is handled by Global Layout (frontend/src/app/layout.tsx). 
-          However, the design shows extra user profile/notification icons in the navbar.
-          For this task, we'll focus on the page content primarily, as modifying global navbar for specific page might require state/context.
-          We will assume the logged-in state simulation in the global navbar or just render the content below the standard navbar. 
-          The provided HTML has a "fixed" navbar with specific user icons. 
-          The Global Navbar in Layout is also fixed. 
-          I will implement the content part starting from where the body content starts below the navbar.
-      */}
-
-            {/* Header / Welcome Section */}
+            {/* Header */}
             <div className="bg-white pt-8 pb-8 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">👋 สวัสดีครับ, คุณมีเรื่องอะไรให้ช่วยไหม?</h1>
+                            <h1 className="text-2xl md:text-3xl font-bold text-primary mb-1">ชุมชน Car2Hand</h1>
                             <p className="text-gray-500">พื้นที่แลกเปลี่ยนประสบการณ์ ปรึกษาปัญหาเรื่องรถ และรีวิวจากผู้ใช้จริง</p>
                         </div>
                         <div className="flex gap-3 w-full md:w-auto">
-                            <button className="flex-1 md:flex-none bg-accent text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-95">
-                                <PencilSimple weight="bold" size={20} /> ตั้งกระทู้ใหม่
-                            </button>
+                            <div className="relative flex-1 md:w-64">
+                                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="ค้นหากระทู้..."
+                                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
+                                />
+                            </div>
+                            <Link
+                                href="/community/create"
+                                className="bg-accent text-white px-5 py-2.5 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-100 flex items-center gap-2 whitespace-nowrap"
+                            >
+                                <PencilSimple weight="bold" size={18} /> ตั้งกระทู้
+                            </Link>
                         </div>
                     </div>
 
-                    {/* Categories Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-8">
-                        <div className="bg-blue-50 hover:bg-blue-100 border border-blue-100 p-4 rounded-xl cursor-pointer transition flex flex-col items-center gap-2 text-center group">
-                            <ChatsCircle weight="fill" className="text-2xl text-primary group-hover:scale-110 transition" />
-                            <span className="text-sm font-bold text-gray-700">พูดคุยทั่วไป</span>
-                        </div>
-                        <div className="bg-orange-50 hover:bg-orange-100 border border-orange-100 p-4 rounded-xl cursor-pointer transition flex flex-col items-center gap-2 text-center group">
-                            <Wrench weight="fill" className="text-2xl text-accent group-hover:scale-110 transition" />
-                            <span className="text-sm font-bold text-gray-700">ปัญหาช่าง & ซ่อม</span>
-                        </div>
-                        <div className="bg-green-50 hover:bg-green-100 border border-green-100 p-4 rounded-xl cursor-pointer transition flex flex-col items-center gap-2 text-center group">
-                            <Star weight="fill" className="text-2xl text-green-600 group-hover:scale-110 transition" />
-                            <span className="text-sm font-bold text-gray-700">User Reviews</span>
-                        </div>
-                        <div className="bg-white hover:bg-gray-50 border border-gray-200 p-4 rounded-xl cursor-pointer transition flex flex-col items-center gap-2 text-center group">
-                            <Lightning weight="fill" className="text-2xl text-yellow-500 group-hover:scale-110 transition" />
-                            <span className="text-sm font-bold text-gray-700">โซนรถ EV</span>
-                        </div>
-                        <div className="bg-white hover:bg-gray-50 border border-gray-200 p-4 rounded-xl cursor-pointer transition flex flex-col items-center gap-2 text-center group">
-                            <ShoppingCart weight="fill" className="text-2xl text-purple-500 group-hover:scale-110 transition" />
-                            <span className="text-sm font-bold text-gray-700">ชี้เป้าของแต่ง</span>
-                        </div>
-                        <div className="bg-white hover:bg-gray-50 border border-gray-200 p-4 rounded-xl cursor-pointer transition flex flex-col items-center gap-2 text-center group">
-                            <ShieldCheck weight="fill" className="text-2xl text-blue-400 group-hover:scale-110 transition" />
-                            <span className="text-sm font-bold text-gray-700">เตือนภัย/Blacklist</span>
-                        </div>
+                    {/* Category Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-2 mt-6">
+                        {categories.map((cat) => {
+                            const colors = COLOR_MAP[cat.color] ?? COLOR_MAP.gray;
+                            const isActive = activeCategory === cat.slug;
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => handleCategoryClick(cat.slug)}
+                                    className={`${isActive ? `${colors.bg} ring-2 ring-primary` : `bg-white ${colors.hover}`} border ${colors.border} p-3 rounded-xl cursor-pointer transition flex flex-col items-center gap-1.5 text-center group`}
+                                >
+                                    <span className={colors.text}>{CATEGORY_ICONS[cat.icon] ?? <ChatsCircle weight="fill" className="text-2xl" />}</span>
+                                    <span className="text-[11px] font-bold text-gray-700 leading-tight">{cat.name}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -83,125 +299,64 @@ export default function CommunityPage() {
 
                 {/* Main Feed */}
                 <div className="lg:col-span-3">
-
                     {/* Tabs */}
                     <div className="flex items-center gap-6 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar">
-                        <button className="pb-3 border-b-2 border-primary text-primary font-bold whitespace-nowrap">🔥 กำลังเป็นกระแส</button>
-                        <button className="pb-3 text-gray-500 hover:text-primary transition whitespace-nowrap">มาใหม่ล่าสุด</button>
-                        <button className="pb-3 text-gray-500 hover:text-primary transition whitespace-nowrap">รอคำตอบ</button>
+                        {([
+                            { key: 'trending', label: '🔥 กำลังเป็นกระแส' },
+                            { key: 'latest',   label: 'มาใหม่ล่าสุด' },
+                            { key: 'unanswered', label: 'รอคำตอบ' },
+                        ] as const).map(({ key, label }) => (
+                            <button
+                                key={key}
+                                onClick={() => handleTabChange(key)}
+                                className={`pb-3 border-b-2 whitespace-nowrap transition ${
+                                    activeTab === key
+                                        ? 'border-primary text-primary font-bold'
+                                        : 'border-transparent text-gray-500 hover:text-primary'
+                                }`}
+                            >
+                                {label}
+                            </button>
+                        ))}
                     </div>
 
-                    <div className="space-y-4">
-
-                        {/* Post 1 */}
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
-                            <div className="flex items-start gap-4">
-                                <div className="flex flex-col items-center gap-1 min-w-[40px]">
-                                    <button className="text-gray-400 hover:text-accent"><CaretUp weight="bold" className="text-xl" /></button>
-                                    <span className="font-bold text-primary">128</span>
-                                    <button className="text-gray-400 hover:text-accent"><CaretDown weight="bold" className="text-xl" /></button>
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded-full">ปัญหาช่าง</span>
-                                        <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><Check weight="bold" /> แก้ไขแล้ว</span>
-                                    </div>
-                                    <h3 className="font-bold text-lg text-gray-800 mb-2 group-hover:text-primary transition">รถ City Hatchback มีเสียงกึกๆ เวลาเลี้ยวสุด เกิดจากอะไรครับ?</h3>
-                                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">เพิ่งออกรถมาได้ 3 เดือนครับ เวลาเลี้ยวพวงมาลัยสุดตอนถอยจอด จะมีเสียงดัง กึก! บริเวณล้อหน้าซ้าย เข้าศูนย์แล้วช่างบอกปกติ แต่ผมไม่สบายใจ...</p>
-
-                                    <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1">
-                                                <img src="https://i.pravatar.cc/150?img=12" className="w-5 h-5 rounded-full" alt="User" />
-                                                <span className="text-gray-600">Boy_CityZone</span>
-                                            </div>
-                                            <span>• 2 ชม. ที่แล้ว</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="flex items-center gap-1"><ChatCircle weight="bold" /> 24 ความเห็น</span>
-                                            <span className="flex items-center gap-1"><Eye weight="bold" /> 1.2k</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    {/* Posts */}
+                    {loading ? (
+                        <div className="flex justify-center py-16">
+                            <SpinnerGap weight="bold" className="animate-spin text-primary text-4xl" />
                         </div>
-
-                        {/* Post 2 */}
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
-                            <div className="flex items-start gap-4">
-                                <div className="flex flex-col items-center gap-1 min-w-[40px]">
-                                    <button className="text-gray-400 hover:text-accent"><CaretUp weight="bold" className="text-xl" /></button>
-                                    <span className="font-bold text-gray-600">56</span>
-                                    <button className="text-gray-400 hover:text-accent"><CaretDown weight="bold" className="text-xl" /></button>
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">User Review</span>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-lg text-gray-800 mb-2 group-hover:text-primary transition">รีวิว Civic FE (e:HEV) หลังใช้ครบ 1 ปี ประหยัดจริงไหม?</h3>
-                                            <p className="text-sm text-gray-500 line-clamp-2 mb-3">สวัสดีครับ วันนี้มารีวิวเจ้า Civic FE ไฮบริด หลังจากใช้งานมาครบ 1 ปี วิ่งไป 30,000 โล ข้อดีที่ชอบคือ...</p>
-                                        </div>
-                                        <div className="w-24 h-24 rounded-lg bg-gray-200 overflow-hidden hidden sm:block">
-                                            <img src="https://images.unsplash.com/photo-1605218427368-35b820a40234?auto=format&fit=crop&q=80&w=200" className="w-full h-full object-cover" alt="Car" />
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1">
-                                                <img src="https://i.pravatar.cc/150?img=3" className="w-5 h-5 rounded-full" alt="Guru" />
-                                                <span className="text-gray-600 font-bold">Guru_Keng</span>
-                                                <SealCheck weight="fill" className="text-blue-500 text-sm" />
-                                            </div>
-                                            <span>• 5 ชม. ที่แล้ว</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="flex items-center gap-1"><ChatCircle weight="bold" /> 45 ความเห็น</span>
-                                            <span className="flex items-center gap-1"><Eye weight="bold" /> 3.5k</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    ) : filtered.length === 0 ? (
+                        <div className="text-center py-16 text-gray-400">
+                            <ChatsCircle size={48} className="mx-auto mb-3 opacity-30" />
+                            <p className="font-medium">ยังไม่มีกระทู้ในหมวดนี้</p>
+                            <p className="text-sm">เป็นคนแรกที่ตั้งกระทู้!</p>
                         </div>
-
-                        {/* Post 3 */}
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
-                            <div className="flex items-start gap-4">
-                                <div className="flex flex-col items-center gap-1 min-w-[40px]">
-                                    <button className="text-gray-400 hover:text-accent"><CaretUp weight="bold" className="text-xl" /></button>
-                                    <span className="font-bold text-gray-600">12</span>
-                                    <button className="text-gray-400 hover:text-accent"><CaretDown weight="bold" className="text-xl" /></button>
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        <span className="bg-gray-100 text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded-full">พูดคุยทั่วไป</span>
-                                    </div>
-                                    <h3 className="font-bold text-lg text-gray-800 mb-2 group-hover:text-primary transition">งบ 4 แสน เล่น Mazda 2 หรือ Yaris ดีครับ?</h3>
-                                    <p className="text-sm text-gray-500 line-clamp-2 mb-3">เน้นขับในเมืองเป็นหลักครับ ไม่ค่อยมีความรู้เรื่องรถ อยากได้ที่ซ่อมง่ายๆ ไม่จุกจิก...</p>
-
-                                    <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1">
-                                                <div className="w-5 h-5 rounded-full bg-pink-500 text-white flex items-center justify-center text-[8px]">N</div>
-                                                <span className="text-gray-600">NewUser001</span>
-                                            </div>
-                                            <span>• 10 นาทีที่แล้ว</span>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <span className="flex items-center gap-1"><ChatCircle weight="bold" /> 3 ความเห็น</span>
-                                            <span className="flex items-center gap-1"><Eye weight="bold" /> 50</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {filtered.map((post) => <PostCard key={post.id} post={post} />)}
                         </div>
+                    )}
 
-                    </div>
-
-                    <button className="w-full py-3 mt-6 text-sm text-gray-500 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
-                        โหลดเพิ่มเติม...
-                    </button>
+                    {/* Pagination */}
+                    {totalPages > 1 && !loading && (
+                        <div className="flex items-center justify-center gap-2 mt-6">
+                            <button
+                                disabled={page === 1}
+                                onClick={() => setPage((p) => p - 1)}
+                                className="px-4 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-40 transition"
+                            >
+                                ← ก่อนหน้า
+                            </button>
+                            <span className="text-sm text-gray-500">{page} / {totalPages}</span>
+                            <button
+                                disabled={page === totalPages}
+                                onClick={() => setPage((p) => p + 1)}
+                                className="px-4 py-2 text-sm border border-gray-200 rounded-xl hover:bg-gray-50 disabled:opacity-40 transition"
+                            >
+                                ถัดไป →
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Sidebar */}
@@ -213,36 +368,32 @@ export default function CommunityPage() {
                             <h3 className="font-bold text-primary flex items-center gap-2">
                                 <Trophy weight="fill" className="text-yellow-500 text-xl" /> Top Gurus
                             </h3>
-                            <Link href="#" className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
+                            <Link href="/community/leaderboard" className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
                         </div>
-
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <span className="font-bold text-yellow-500 w-4 text-center">1</span>
-                                <img src="https://i.pravatar.cc/150?img=3" className="w-10 h-10 rounded-full border-2 border-yellow-400 p-[1px]" alt="Guru 1" />
-                                <div className="flex-1">
-                                    <h4 className="text-sm font-bold text-gray-800 flex items-center gap-1">Guru_Keng <SealCheck weight="fill" className="text-blue-500 text-xs" /></h4>
-                                    <span className="text-[10px] text-gray-500">1,540 คะแนน</span>
-                                </div>
-                                <Medal weight="fill" className="text-yellow-400 text-xl" />
+                        {gurus.length === 0 ? (
+                            <p className="text-xs text-gray-400 text-center py-4">ยังไม่มีข้อมูล</p>
+                        ) : (
+                            <div className="space-y-3">
+                                {gurus.map((g) => (
+                                    <div key={g.userId} className="flex items-center gap-3">
+                                        <span className={`font-bold w-4 text-center text-sm ${g.rank === 1 ? 'text-yellow-500' : g.rank === 2 ? 'text-gray-400' : g.rank === 3 ? 'text-orange-700' : 'text-gray-400'}`}>
+                                            {g.rank}
+                                        </span>
+                                        <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                            {g.fullName.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="text-sm font-bold text-gray-800 truncate flex items-center gap-1">
+                                                {g.fullName}
+                                                {g.rank <= 3 && <SealCheck weight="fill" className="text-blue-500 text-xs flex-shrink-0" />}
+                                            </h4>
+                                            <span className="text-[10px] text-gray-500">{g.points.toLocaleString()} คะแนน</span>
+                                        </div>
+                                        {g.rank === 1 && <Medal weight="fill" className="text-yellow-400 text-lg flex-shrink-0" />}
+                                    </div>
+                                ))}
                             </div>
-                            <div className="flex items-center gap-3">
-                                <span className="font-bold text-gray-400 w-4 text-center">2</span>
-                                <img src="https://i.pravatar.cc/150?img=59" className="w-10 h-10 rounded-full" alt="Guru 2" />
-                                <div className="flex-1">
-                                    <h4 className="text-sm font-bold text-gray-800">พี่ช่างแมว</h4>
-                                    <span className="text-[10px] text-gray-500">1,200 คะแนน</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <span className="font-bold text-orange-700 w-4 text-center">3</span>
-                                <img src="https://i.pravatar.cc/150?img=11" className="w-10 h-10 rounded-full" alt="Guru 3" />
-                                <div className="flex-1">
-                                    <h4 className="text-sm font-bold text-gray-800">Jojo_Garage</h4>
-                                    <span className="text-[10px] text-gray-500">980 คะแนน</span>
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Stats */}
@@ -253,32 +404,48 @@ export default function CommunityPage() {
                         <h3 className="font-bold text-lg mb-4 relative z-10">สถิติชุมชน</h3>
                         <div className="grid grid-cols-2 gap-4 relative z-10">
                             <div>
-                                <span className="text-2xl font-bold block text-accent">15k+</span>
+                                <span className="text-2xl font-bold block text-accent">
+                                    {stats ? (stats.memberCount >= 1000 ? `${(stats.memberCount / 1000).toFixed(1)}k` : stats.memberCount) : '—'}
+                                </span>
                                 <span className="text-xs text-blue-200">สมาชิก</span>
                             </div>
                             <div>
-                                <span className="text-2xl font-bold block text-accent">500+</span>
-                                <span className="text-xs text-blue-200">กระทู้ใหม่วันนี้</span>
+                                <span className="text-2xl font-bold block text-accent">
+                                    {stats ? stats.postsToday : '—'}
+                                </span>
+                                <span className="text-xs text-blue-200">กระทู้วันนี้</span>
+                            </div>
+                            <div className="col-span-2">
+                                <span className="text-2xl font-bold block text-accent">
+                                    {stats ? stats.totalPosts.toLocaleString() : '—'}
+                                </span>
+                                <span className="text-xs text-blue-200">กระทู้ทั้งหมด</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Popular Tags */}
-                    <div>
-                        <h3 className="font-bold text-gray-800 mb-3 text-sm">Tags ยอดนิยม</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['#HRV2023', '#อู่ซ่อมสี', '#BYD', '#โอนลอย', '#Civic2024'].map((tag) => (
-                                <span key={tag} className="bg-white border border-gray-200 px-3 py-1 rounded-full text-xs text-gray-600 hover:border-primary hover:text-primary cursor-pointer transition shadow-sm">
-                                    {tag}
-                                </span>
-                            ))}
+                    {popularTags.length > 0 && (
+                        <div>
+                            <h3 className="font-bold text-gray-800 mb-3 text-sm">Tags ยอดนิยม</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {popularTags.map((tag) => (
+                                    <button
+                                        key={tag.name}
+                                        onClick={() => {
+                                            setSearch(`#${tag.name}`);
+                                        }}
+                                        className="bg-white border border-gray-200 px-3 py-1 rounded-full text-xs text-gray-600 hover:border-primary hover:text-primary cursor-pointer transition shadow-sm"
+                                    >
+                                        #{tag.name} <span className="text-gray-400">({tag.count})</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                 </aside>
-
             </div>
-
         </div>
     );
 }

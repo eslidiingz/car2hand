@@ -42,6 +42,13 @@ model User {
   inspectionBookings  InspectionBooking[]
   serviceInquiries    ServiceInquiry[]
 
+  // Forum relations
+  forumPosts          ForumPost[]
+  forumComments       ForumComment[]
+  forumVotes          ForumVote[]
+  forumCommentVotes   ForumCommentVote[]
+  reputation          UserReputation?
+
   @@index([currentPackageId])
   @@index([lineUserId])
   @@map("users")
@@ -285,6 +292,7 @@ model VehicleListing {
   wishlists Wishlist[]
   renewals  ListingRenewal[]
   bumpLogs  ListingBumpLog[]
+  forumPosts ForumPost[]
 
   @@index([vehicleType])
   @@index([brand, model])
@@ -793,3 +801,150 @@ model ServiceInquiry {
   @@map("service_inquiries")
 }
 
+// =============================================
+// Forum / Community System - ระบบชุมชน
+// =============================================
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+enum ForumPostStatus {
+  PUBLISHED
+  DRAFT
+  REMOVED
+}
+
+// หมวดหมู่กระทู้
+model ForumCategory {
+  id       String  @id @default(cuid())
+  name     String  @unique // เช่น "พูดคุยทั่วไป"
+  slug     String  @unique // เช่น "general"
+  icon     String? // phosphor icon name เช่น "ChatsCircle"
+  color    String? // tailwind color เช่น "blue"
+  order    Int     @default(0)
+  isActive Boolean @default(true)
+
+  posts ForumPost[]
+
+  @@index([isActive, order])
+  @@map("forum_categories")
+}
+
+// กระทู้
+model ForumPost {
+  id        String          @id @default(cuid())
+  title     String
+  content   String          @db.Text
+  imageUrl  String?
+  status    ForumPostStatus @default(PUBLISHED)
+  isPinned  Boolean         @default(false)
+  isSolved  Boolean         @default(false)
+  viewCount Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  authorId   String
+  author     User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categoryId String
+  category   ForumCategory   @relation(fields: [categoryId], references: [id])
+  listingId  String?
+  listing    VehicleListing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  comments ForumComment[]
+  votes    ForumVote[]
+  tags     ForumPostTag[]
+
+  @@index([categoryId, createdAt])
+  @@index([authorId])
+  @@index([status, createdAt])
+  @@index([listingId])
+  @@map("forum_posts")
+}
+
+// ความเห็น / ตอบกระทู้
+model ForumComment {
+  id           String   @id @default(cuid())
+  content      String   @db.Text
+  isBestAnswer Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  postId   String
+  post     ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId String
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parentId String?
+  parent   ForumComment?  @relation("Replies", fields: [parentId], references: [id])
+  replies  ForumComment[] @relation("Replies")
+
+  votes ForumCommentVote[]
+
+  @@index([postId, createdAt])
+  @@index([authorId])
+  @@map("forum_comments")
+}
+
+// โหวตกระทู้
+model ForumVote {
+  id     String    @id @default(cuid())
+  type   VoteType
+  postId String
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@map("forum_votes")
+}
+
+// โหวตความเห็น
+model ForumCommentVote {
+  id        String       @id @default(cuid())
+  type      VoteType
+  commentId String
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@map("forum_comment_votes")
+}
+
+// แท็ก
+model ForumTag {
+  id    String       @id @default(cuid())
+  name  String       @unique
+  posts ForumPostTag[]
+
+  @@map("forum_tags")
+}
+
+// many-to-many: post ↔ tag
+model ForumPostTag {
+  postId String
+  tagId  String
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    ForumTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("forum_post_tags")
+}
+
+// คะแนนชื่อเสียง สำหรับ Guru leaderboard
+model UserReputation {
+  id           String   @id @default(cuid())
+  points       Int      @default(0)
+  totalPosts   Int      @default(0)
+  totalAnswers Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([points])
+  @@map("user_reputations")
+}
