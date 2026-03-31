@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -26,12 +26,12 @@ export default function LoginPage() {
         try {
             const data = await apiFetch('/admin/login', {
                 method: 'POST',
-                body: JSON.stringify({ email, password, rememberMe }),
+                body: JSON.stringify({ username, password, rememberMe }),
             });
 
             login(data.accessToken, data.admin, rememberMe);
         } catch (err: any) {
-            setError(err.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+            setError(err.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         } finally {
             setIsSubmitting(false);
         }
@@ -58,15 +58,15 @@ export default function LoginPage() {
 
                     <form onSubmit={handleLogin} className="space-y-5">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-1.5">อีเมลผู้ใช้งาน</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">ชื่อผู้ใช้</label>
                             <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
                                 <input
-                                    type="email"
-                                    placeholder="admin@car2hand.com"
+                                    type="text"
+                                    placeholder="username"
                                     required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-slate-400 focus:ring-2 focus:ring-slate-200 transition-colors text-sm"
                                 />
                             </div>
@@ -125,4 +125,3 @@ export default function LoginPage() {
         </main>
     );
 }
-

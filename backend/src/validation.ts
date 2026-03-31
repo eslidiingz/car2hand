@@ -51,8 +51,8 @@ export const loginSchema = z.object({
  * Admin Login Schema
  */
 export const adminLoginSchema = z.object({
-    email: z.string()
-        .email('รูปแบบอีเมลไม่ถูกต้อง'),
+    username: z.string()
+        .min(1, 'กรุณากรอกชื่อผู้ใช้'),
 
     password: z.string()
         .min(1, 'กรุณากรอกรหัสผ่าน'),

@@ -160,8 +160,8 @@ export default function InspectionPage() {
             try {
                 const res = await fetch(`${API_URL}/master-data/brands?vehicleType=CAR`);
                 if (!res.ok) throw new Error('Failed to fetch brands');
-                const data: Brand[] = await res.json();
-                setBrands(data);
+                const data = await res.json();
+                setBrands(Array.isArray(data) ? data : data.brands || []);
             } catch {
                 setBrands([]);
             } finally {
@@ -183,9 +183,9 @@ export default function InspectionPage() {
             try {
                 const res = await fetch(`${API_URL}/master-data/brands/${brandId}/models`);
                 if (!res.ok) throw new Error('Failed to fetch models');
-                const data: VehicleModel[] = await res.json();
+                const data = await res.json();
                 if (!cancelled) {
-                    setModels(data);
+                    setModels(Array.isArray(data) ? data : data.models || []);
                     setModelId('');
                 }
             } catch {
