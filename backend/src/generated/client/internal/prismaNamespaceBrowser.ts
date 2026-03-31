@@ -75,7 +75,15 @@ export const ModelName = {
   ServicePartner: 'ServicePartner',
   InspectionPackage: 'InspectionPackage',
   InspectionBooking: 'InspectionBooking',
-  ServiceInquiry: 'ServiceInquiry'
+  ServiceInquiry: 'ServiceInquiry',
+  ForumCategory: 'ForumCategory',
+  ForumPost: 'ForumPost',
+  ForumComment: 'ForumComment',
+  ForumVote: 'ForumVote',
+  ForumCommentVote: 'ForumCommentVote',
+  ForumTag: 'ForumTag',
+  ForumPostTag: 'ForumPostTag',
+  UserReputation: 'UserReputation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -114,7 +122,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const AdminScalarFieldEnum = {
   id: 'id',
   fullName: 'fullName',
-  username: 'username',
+  email: 'email',
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -528,6 +536,100 @@ export const ServiceInquiryScalarFieldEnum = {
 } as const
 
 export type ServiceInquiryScalarFieldEnum = (typeof ServiceInquiryScalarFieldEnum)[keyof typeof ServiceInquiryScalarFieldEnum]
+
+
+export const ForumCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  icon: 'icon',
+  color: 'color',
+  order: 'order',
+  isActive: 'isActive'
+} as const
+
+export type ForumCategoryScalarFieldEnum = (typeof ForumCategoryScalarFieldEnum)[keyof typeof ForumCategoryScalarFieldEnum]
+
+
+export const ForumPostScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  content: 'content',
+  imageUrl: 'imageUrl',
+  status: 'status',
+  isPinned: 'isPinned',
+  isSolved: 'isSolved',
+  viewCount: 'viewCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  authorId: 'authorId',
+  categoryId: 'categoryId',
+  listingId: 'listingId'
+} as const
+
+export type ForumPostScalarFieldEnum = (typeof ForumPostScalarFieldEnum)[keyof typeof ForumPostScalarFieldEnum]
+
+
+export const ForumCommentScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  isBestAnswer: 'isBestAnswer',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  postId: 'postId',
+  authorId: 'authorId',
+  parentId: 'parentId'
+} as const
+
+export type ForumCommentScalarFieldEnum = (typeof ForumCommentScalarFieldEnum)[keyof typeof ForumCommentScalarFieldEnum]
+
+
+export const ForumVoteScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  postId: 'postId',
+  userId: 'userId'
+} as const
+
+export type ForumVoteScalarFieldEnum = (typeof ForumVoteScalarFieldEnum)[keyof typeof ForumVoteScalarFieldEnum]
+
+
+export const ForumCommentVoteScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  commentId: 'commentId',
+  userId: 'userId'
+} as const
+
+export type ForumCommentVoteScalarFieldEnum = (typeof ForumCommentVoteScalarFieldEnum)[keyof typeof ForumCommentVoteScalarFieldEnum]
+
+
+export const ForumTagScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type ForumTagScalarFieldEnum = (typeof ForumTagScalarFieldEnum)[keyof typeof ForumTagScalarFieldEnum]
+
+
+export const ForumPostTagScalarFieldEnum = {
+  postId: 'postId',
+  tagId: 'tagId'
+} as const
+
+export type ForumPostTagScalarFieldEnum = (typeof ForumPostTagScalarFieldEnum)[keyof typeof ForumPostTagScalarFieldEnum]
+
+
+export const UserReputationScalarFieldEnum = {
+  id: 'id',
+  points: 'points',
+  totalPosts: 'totalPosts',
+  totalAnswers: 'totalAnswers',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type UserReputationScalarFieldEnum = (typeof UserReputationScalarFieldEnum)[keyof typeof UserReputationScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -12,7 +12,9 @@ import {
     Loader2,
     Upload,
     X,
-    AlertCircle
+    AlertCircle,
+    Star,
+    Hash
 } from "lucide-react";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
@@ -41,6 +43,9 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     const [error, setError] = useState<string | null>(null);
 
     const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+    const [tags, setTags] = useState<string[]>([]);
+    const [tagInput, setTagInput] = useState("");
+    const [isFeatured, setIsFeatured] = useState(false);
     const [formData, setFormData] = useState({
         title: "",
         content: "",
@@ -72,6 +77,8 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                         featuredImage: article.featuredImage || "",
                         status: article.status
                     });
+                    setTags(article.tags || []);
+                    setIsFeatured(article.isFeatured || false);
                 }
             } catch (err: any) {
                 console.error("Fetch article error:", err);
@@ -110,6 +117,9 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         payload.append('excerpt', formData.excerpt);
         payload.append('categoryId', formData.categoryId);
         payload.append('status', finalStatus);
+
+        payload.append('tags', JSON.stringify(tags));
+        payload.append('isFeatured', String(isFeatured));
 
         if (imageFile) {
             payload.append('imageFile', imageFile);
@@ -262,6 +272,70 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                                         onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                                         className="p-4 bg-slate-50 border-slate-200 rounded-lg focus:bg-white transition-colors text-sm resize-none"
                                     />
+                                </CardContent>
+                            </Card>
+
+                            {/* Tags */}
+                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                                <CardContent className="p-6">
+                                    <Label className="text-sm font-medium text-slate-700 mb-2 block flex items-center gap-2">
+                                        <Hash size={14} className="text-primary" /> แท็ก (Tags)
+                                    </Label>
+                                    <div className="flex gap-2 mb-3">
+                                        <Input
+                                            placeholder="พิมพ์แท็กแล้วกด Enter หรือ ,"
+                                            value={tagInput}
+                                            onChange={(e) => setTagInput(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ',') {
+                                                    e.preventDefault();
+                                                    const val = tagInput.trim().replace(/,$/,'');
+                                                    if (val && !tags.includes(val)) {
+                                                        setTags([...tags, val]);
+                                                    }
+                                                    setTagInput('');
+                                                }
+                                            }}
+                                            className="h-9 rounded-lg bg-slate-50 border-slate-200 text-sm flex-1"
+                                        />
+                                    </div>
+                                    {tags.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {tags.map((tag, idx) => (
+                                                <span key={idx} className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full">
+                                                    #{tag}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setTags(tags.filter((_, i) => i !== idx))}
+                                                        className="hover:text-red-500 transition-colors"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            {/* isFeatured Toggle */}
+                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                                <CardContent className="p-6">
+                                    <label className="flex items-center justify-between cursor-pointer">
+                                        <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                            <Star size={14} className="text-primary" /> บทความแนะนำ
+                                        </span>
+                                        <div className="relative">
+                                            <input
+                                                type="checkbox"
+                                                checked={isFeatured}
+                                                onChange={(e) => setIsFeatured(e.target.checked)}
+                                                className="sr-only peer"
+                                            />
+                                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </div>
+                                    </label>
+                                    <p className="text-xs text-slate-400 mt-2">แสดงบทความนี้ในส่วน &quot;บทความแนะนำ&quot; บนหน้าแรก</p>
                                 </CardContent>
                             </Card>
 

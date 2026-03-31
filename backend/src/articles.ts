@@ -1,96 +1,141 @@
-/**
- * Public Articles Routes
- */
-
 import { Elysia, t } from 'elysia';
 import prisma from './db';
 
 export const articleRoutes = new Elysia({ prefix: '/articles' })
-    // GET /articles - List all articles with pagination
+
+    // GET /articles - List with search, filter, sort, pagination
     .get('/', async ({ query }) => {
-        const { page = '1', limit = '12', category } = query;
-        const skip = (parseInt(page) - 1) * parseInt(limit);
-        const take = parseInt(limit);
+        const page = parseInt(query.page || '1');
+        const limit = parseInt(query.limit || '12');
+        const skip = (page - 1) * limit;
+        const { category, search, tag, sort, featured } = query;
+
+        const where: any = { status: 'PUBLISHED' };
+
+        if (category) where.category = { slug: category };
+        if (tag) where.tags = { has: tag };
+        if (featured === 'true') where.isFeatured = true;
+        if (search) {
+            where.OR = [
+                { title: { contains: search, mode: 'insensitive' } },
+                { content: { contains: search, mode: 'insensitive' } },
+                { excerpt: { contains: search, mode: 'insensitive' } },
+            ];
+        }
+
+        let orderBy: any = { createdAt: 'desc' };
+        if (sort === 'popular') orderBy = { viewCount: 'desc' };
+        if (sort === 'oldest') orderBy = { createdAt: 'asc' };
 
         const [articles, total] = await Promise.all([
             prisma.article.findMany({
-                where: {
-                    status: 'PUBLISHED',
-                    ...(category && {
-                        category: {
-                            slug: category
-                        }
-                    })
-                },
-                skip,
-                take,
-                orderBy: { createdAt: 'desc' },
+                where, skip, take: limit, orderBy,
                 include: {
-                    category: {
-                        select: { name: true, slug: true }
-                    },
-                    author: {
-                        select: { fullName: true }
-                    }
+                    category: { select: { name: true, slug: true } },
+                    author: { select: { fullName: true } }
                 }
             }),
-            prisma.article.count({
-                where: {
-                    status: 'PUBLISHED',
-                    ...(category && {
-                        category: {
-                            slug: category
-                        }
-                    })
-                }
-            })
+            prisma.article.count({ where })
         ]);
 
         return {
             success: true,
             articles,
-            pagination: {
-                total,
-                page: parseInt(page),
-                limit: take,
-                totalPages: Math.ceil(total / take)
-            }
+            pagination: { total, page, limit, totalPages: Math.ceil(total / limit) }
         };
-    }, {
-        query: t.Object({
-            page: t.Optional(t.String()),
-            limit: t.Optional(t.String()),
-            category: t.Optional(t.String())
-        })
     })
 
-    // GET /articles/:slug - Get single article by slug
+    // GET /articles/categories - All categories with article count
+    .get('/categories', async () => {
+        const categories = await prisma.articleCategory.findMany({
+            orderBy: { name: 'asc' },
+            include: { _count: { select: { articles: { where: { status: 'PUBLISHED' } } } } }
+        });
+        return { success: true, categories };
+    })
+
+    // GET /articles/popular - Top articles by viewCount
+    .get('/popular', async ({ query }) => {
+        const limit = parseInt(query.limit || '6');
+        const articles = await prisma.article.findMany({
+            where: { status: 'PUBLISHED' },
+            orderBy: { viewCount: 'desc' },
+            take: limit,
+            include: {
+                category: { select: { name: true, slug: true } },
+                author: { select: { fullName: true } }
+            }
+        });
+        return { success: true, articles };
+    })
+
+    // GET /articles/featured - Featured articles
+    .get('/featured', async ({ query }) => {
+        const limit = parseInt(query.limit || '3');
+        const articles = await prisma.article.findMany({
+            where: { status: 'PUBLISHED', isFeatured: true },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+            include: {
+                category: { select: { name: true, slug: true } },
+                author: { select: { fullName: true } }
+            }
+        });
+        return { success: true, articles };
+    })
+
+    // GET /articles/:slug - Single article (MUST be after static routes!)
     .get('/:slug', async ({ params: { slug }, set }) => {
         const article = await prisma.article.findUnique({
             where: { slug },
             include: {
-                category: {
-                    select: { name: true, slug: true }
-                },
-                author: {
-                    select: { fullName: true }
-                }
+                category: { select: { id: true, name: true, slug: true } },
+                author: { select: { fullName: true } }
             }
         });
 
         if (!article) {
             set.status = 404;
-            return { success: false, message: 'ไม่พบข่าวสาร/บทความ' };
+            return { success: false, message: 'ไม่พบบทความ' };
         }
 
-        // Increment view count (async)
+        // Increment view count async
         prisma.article.update({
             where: { id: article.id },
             data: { viewCount: { increment: 1 } }
         }).catch(err => console.error('Failed to increment view count:', err));
 
-        return {
-            success: true,
-            article
+        return { success: true, article };
+    })
+
+    // GET /articles/:slug/related - Related articles (same category)
+    .get('/:slug/related', async ({ params: { slug }, query }) => {
+        const limit = parseInt(query.limit || '5');
+        const article = await prisma.article.findUnique({
+            where: { slug },
+            select: { id: true, categoryId: true, tags: true }
+        });
+
+        if (!article) return { success: true, articles: [] };
+
+        const where: any = {
+            status: 'PUBLISHED',
+            id: { not: article.id },
         };
+
+        if (article.categoryId) {
+            where.categoryId = article.categoryId;
+        }
+
+        const articles = await prisma.article.findMany({
+            where,
+            orderBy: { viewCount: 'desc' },
+            take: limit,
+            include: {
+                category: { select: { name: true, slug: true } },
+                author: { select: { fullName: true } }
+            }
+        });
+
+        return { success: true, articles };
     });

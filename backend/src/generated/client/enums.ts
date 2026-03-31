@@ -184,3 +184,20 @@ export const InquiryStatus = {
 } as const
 
 export type InquiryStatus = (typeof InquiryStatus)[keyof typeof InquiryStatus]
+
+
+export const VoteType = {
+  UP: 'UP',
+  DOWN: 'DOWN'
+} as const
+
+export type VoteType = (typeof VoteType)[keyof typeof VoteType]
+
+
+export const ForumPostStatus = {
+  PUBLISHED: 'PUBLISHED',
+  DRAFT: 'DRAFT',
+  REMOVED: 'REMOVED'
+} as const
+
+export type ForumPostStatus = (typeof ForumPostStatus)[keyof typeof ForumPostStatus]
