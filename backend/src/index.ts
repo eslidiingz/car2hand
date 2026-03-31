@@ -19,6 +19,8 @@ import { lineWebhookRoutes } from "./line-webhook";
 import { notificationRoutes } from "./notifications";
 import { userNotificationRoutes } from "./user-notifications";
 import { garageRoutes } from "./garage";
+import { serviceRoutes } from "./services";
+import { adminServiceRoutes } from "./admin-services";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 
 // Allowed origins (update for production)
@@ -75,6 +77,8 @@ const app = new Elysia()
       .use(notificationRoutes)
       .use(userNotificationRoutes)
       .use(garageRoutes)
+      .use(serviceRoutes)
+      .use(adminServiceRoutes)
   )
 
   // Global error handler

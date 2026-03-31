@@ -177,7 +177,7 @@ export default function ServicesPage() {
                         <div>
                             <h3 className="font-bold text-gray-800 text-lg">บริการรถสไลด์/ส่งมอบ</h3>
                             <p className="text-sm text-gray-500 mb-2">ส่งรถถึงหน้าบ้านทั่วไทย ปลอดภัย 100%</p>
-                            <Link href="#" className="text-purple-600 text-sm font-bold hover:underline">เช็คค่าส่ง &gt;</Link>
+                            <Link href="/services/delivery" className="text-purple-600 text-sm font-bold hover:underline">เช็คค่าส่ง &gt;</Link>
                         </div>
                     </div>
                     <div className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-6 hover:shadow-md transition">
@@ -187,7 +187,7 @@ export default function ServicesPage() {
                         <div>
                             <h3 className="font-bold text-gray-800 text-lg">บริการโอนเล่มทะเบียน</h3>
                             <p className="text-sm text-gray-500 mb-2">ไม่ต้องไปขนส่งเอง เราดำเนินการให้จบ</p>
-                            <Link href="#" className="text-gray-600 text-sm font-bold hover:underline">ดูเอกสารที่ต้องใช้ &gt;</Link>
+                            <Link href="/services/transfer" className="text-gray-600 text-sm font-bold hover:underline">ดูเอกสารที่ต้องใช้ &gt;</Link>
                         </div>
                     </div>
                 </div>

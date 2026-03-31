@@ -11,7 +11,8 @@ import {
     LogOut,
     Package,
     Tags,
-    Bell
+    Bell,
+    Wrench
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
@@ -21,6 +22,7 @@ const navigation = [
     { name: "สรุปภาพรวม", href: "/", icon: LayoutDashboard },
     { name: "ผู้ใช้งาน", href: "/users", icon: Users },
     { name: "ประกาศขาย", href: "/listings", icon: Car },
+    { name: "จัดการบริการ", href: "/services", icon: Wrench },
     { name: "จัดการบทความ", href: "/articles", icon: BookOpen },
     { name: "หมวดหมู่บทความ", href: "/categories", icon: Tags },
     { name: "แพ็กเกจ", href: "/packages", icon: Package },
