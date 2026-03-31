@@ -32,7 +32,7 @@ import {
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
-import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, publishListing, UpgradeRequiredError } from '@/contexts/ListingContext';
+import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError } from '@/contexts/ListingContext';
 
 // Thai provinces list
 const PROVINCES = [
@@ -136,6 +136,7 @@ export default function CreateListingPage() {
     const [bodyStyleOptions, setBodyStyleOptions] = useState<{ value: string; label: string }[]>([]);
     const [motorcycleBodyOptions, setMotorcycleBodyOptions] = useState<{ value: string; label: string }[]>([]);
     const [maxPhotos, setMaxPhotos] = useState(10);
+    const [isBasicPackage, setIsBasicPackage] = useState(true);
 
     // Check if user is logged in
     useEffect(() => {
@@ -161,6 +162,7 @@ export default function CreateListingPage() {
             .then(r => r.json())
             .then(data => {
                 setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 10);
+                setIsBasicPackage(!data.currentPackage || data.currentPackage.slug === 'basic');
             })
             .catch(() => {});
     }, [router]);
@@ -427,6 +429,11 @@ export default function CreateListingPage() {
             missingFields.push('เบอร์โทรติดต่อ');
         }
 
+        if (isBasicPackage && !formData.registrationBookFile) {
+            errors.registrationBook = true;
+            missingFields.push('สำเนาเล่มทะเบียนรถ');
+        }
+
         if (Object.keys(errors).length > 0) {
             setFieldErrors(errors);
             setError(`กรุณากรอกข้อมูลให้ครบ: ${missingFields.join(', ')}`);
@@ -462,6 +469,11 @@ export default function CreateListingPage() {
             // Step 2.5: Upload service history image (if any)
             if (formData.serviceHistoryFile) {
                 await uploadServiceHistoryImage(user.id, newListingId, formData.serviceHistoryFile);
+            }
+
+            // Step 2.6: Upload registration book image (if any)
+            if (formData.registrationBookFile) {
+                await uploadRegistrationBookImage(user.id, newListingId, formData.registrationBookFile);
             }
 
             // Step 3: Publish
@@ -937,6 +949,63 @@ export default function CreateListingPage() {
                                                     </button>
                                                 ))}
                                             </div>
+                                        </div>
+
+                                        {/* Registration Book Image Upload */}
+                                        <div className="p-4 bg-gray-50 rounded-xl">
+                                            <p className="font-medium text-gray-800 mb-1">
+                                                สำเนาเล่มทะเบียนรถ (หน้าที่มีชื่อเจ้าของ)
+                                                {isBasicPackage && <span className="text-red-500 ml-1">*</span>}
+                                            </p>
+                                            <p className="text-xs text-gray-500 mb-3">
+                                                {isBasicPackage
+                                                    ? 'จำเป็นสำหรับแพ็กเกจ Basic เพื่อยืนยันความเป็นเจ้าของ'
+                                                    : 'ไม่บังคับ แต่แนะนำเพื่อเพิ่มความน่าเชื่อถือ'}
+                                            </p>
+                                            {formData.registrationBookPreview ? (
+                                                <div className="relative inline-block">
+                                                    <img
+                                                        src={formData.registrationBookPreview}
+                                                        alt="สำเนาเล่มทะเบียน"
+                                                        className="w-48 h-36 object-cover rounded-lg border border-gray-200"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (formData.registrationBookPreview) {
+                                                                URL.revokeObjectURL(formData.registrationBookPreview);
+                                                            }
+                                                            updateFormData({
+                                                                registrationBookFile: undefined,
+                                                                registrationBookPreview: ''
+                                                            });
+                                                        }}
+                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <label className="flex items-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition text-sm text-gray-500">
+                                                    <span>📄</span>
+                                                    <span>เลือกรูปสำเนาเล่มทะเบียน</span>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const preview = URL.createObjectURL(file);
+                                                                updateFormData({
+                                                                    registrationBookFile: file,
+                                                                    registrationBookPreview: preview
+                                                                });
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                            )}
                                         </div>
 
                                         {/* Gas Type - ย้ายมาอยู่ต่อจากสถานะเล่มทะเบียน */}
