@@ -122,3 +122,63 @@ export type NotificationTemplate = Prisma.NotificationTemplateModel
  * 
  */
 export type NotificationLog = Prisma.NotificationLogModel
+/**
+ * Model ServicePartner
+ * 
+ */
+export type ServicePartner = Prisma.ServicePartnerModel
+/**
+ * Model InspectionPackage
+ * 
+ */
+export type InspectionPackage = Prisma.InspectionPackageModel
+/**
+ * Model InspectionBooking
+ * 
+ */
+export type InspectionBooking = Prisma.InspectionBookingModel
+/**
+ * Model ServiceInquiry
+ * 
+ */
+export type ServiceInquiry = Prisma.ServiceInquiryModel
+/**
+ * Model ForumCategory
+ * 
+ */
+export type ForumCategory = Prisma.ForumCategoryModel
+/**
+ * Model ForumPost
+ * 
+ */
+export type ForumPost = Prisma.ForumPostModel
+/**
+ * Model ForumComment
+ * 
+ */
+export type ForumComment = Prisma.ForumCommentModel
+/**
+ * Model ForumVote
+ * 
+ */
+export type ForumVote = Prisma.ForumVoteModel
+/**
+ * Model ForumCommentVote
+ * 
+ */
+export type ForumCommentVote = Prisma.ForumCommentVoteModel
+/**
+ * Model ForumTag
+ * 
+ */
+export type ForumTag = Prisma.ForumTagModel
+/**
+ * Model ForumPostTag
+ * 
+ */
+export type ForumPostTag = Prisma.ForumPostTagModel
+/**
+ * Model UserReputation
+ * 
+ */
+export type UserReputation = Prisma.UserReputationModel

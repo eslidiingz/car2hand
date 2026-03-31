@@ -3,8 +3,8 @@ import prisma from '../src/db';
 async function seedAdmin() {
     console.log('🌱 Seeding admin user...');
 
-    const email = 'eslidiingz@gmail.com';
-    const password = '@AdminNick1234';
+    const username = 'admin';
+    const password = 'adminPassword';
 
     // Hash password with secure settings matching the auth logic
     const hashedPassword = await Bun.password.hash(password, {
@@ -15,18 +15,18 @@ async function seedAdmin() {
 
     try {
         const admin = await prisma.admin.upsert({
-            where: { email },
+            where: { username },
             update: {
                 password: hashedPassword
             },
             create: {
-                email,
+                username,
                 password: hashedPassword,
-                fullName: 'Admin Nick'
+                fullName: 'Administrator'
             }
         });
 
-        console.log(`✅ Admin user seeded: ${admin.email}`);
+        console.log(`✅ Admin user seeded: ${admin.username}`);
     } catch (error) {
         console.error('❌ Error seeding admin:', error);
     }

@@ -1,33 +1,31 @@
 import prisma from '../src/db';
 
 async function seedCategories() {
-    console.log('🧹 Clearing old article categories...');
-    // We should be careful if there are articles linked to these categories.
-    // However, since this is an explicit request to delete old categories and seed new ones:
-    try {
-        await prisma.articleCategory.deleteMany({});
-        console.log('✅ Old categories cleared');
-    } catch (error) {
-        console.error('❌ Error clearing old categories:', error);
-    }
-
-    console.log('🌱 Seeding new article categories...');
+    console.log('📚 Seeding article categories...');
 
     const categories = [
-        { name: 'ทั่วไป', slug: 'general' },
-        { name: 'ดูแลรักษาซ่อมบำรุง', slug: 'maintenance' },
-        { name: 'กฎหมายและประกันภัย', slug: 'law-and-insurance' },
-        { name: 'การเงินเกี่ยวกับรถ', slug: 'finance' },
-        { name: 'เทคนิคการขับขี่', slug: 'driving-techniques' }
+        { name: 'คู่มือซื้อรถมือสอง', slug: 'buying-guide' },
+        { name: 'ดูแลรักษา & ซ่อมบำรุง', slug: 'maintenance' },
+        { name: 'ไฟแนนซ์ & สินเชื่อ', slug: 'finance' },
+        { name: 'ประกันภัย', slug: 'insurance' },
+        { name: 'กฎหมาย & เอกสาร', slug: 'legal' },
+        { name: 'เทคนิคขับขี่', slug: 'driving-tips' },
+        { name: 'รีวิว & เปรียบเทียบรถ', slug: 'reviews' },
+        { name: 'รถ EV & ไฮบริด', slug: 'ev-hybrid' },
+        { name: 'ข่าวยานยนต์', slug: 'automotive-news' },
+        { name: 'เคล็ดลับขายรถ', slug: 'selling-tips' },
     ];
 
     for (const cat of categories) {
-        await prisma.articleCategory.create({
-            data: { name: cat.name, slug: cat.slug }
+        await prisma.articleCategory.upsert({
+            where: { slug: cat.slug },
+            update: { name: cat.name },
+            create: cat,
         });
+        console.log(`  ✓ ${cat.name}`);
     }
 
-    console.log('✅ Article categories seeded successfully');
+    console.log('✅ Article categories seeded!');
 }
 
 seedCategories()

@@ -2,38 +2,49 @@
 
 import React from 'react';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
-    MagnifyingGlass,
-    BookOpen,
-    Wrench,
     BookmarkSimple,
     FacebookLogo,
-    ShareNetwork,
     Clock,
     SealCheck,
     Eye,
-    Lightbulb,
-    CarProfile,
-    ArrowRight,
-    ThumbsUp,
     CaretRight,
-    User,
-    Chats, // Replaced LineLogo with Chats as fallback
+    Chats,
     Link as LinkIcon
 } from '@phosphor-icons/react';
 
 import { useState, useEffect, use as useReact } from 'react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+interface Article {
+    id: string;
+    title: string;
+    slug: string;
+    content: string;
+    excerpt: string;
+    featuredImage: string;
+    viewCount: number;
+    isFeatured: boolean;
+    tags: string[];
+    createdAt: string;
+    updatedAt?: string;
+    category: { id: string; name: string; slug: string };
+    author: { fullName: string };
+}
+
 export default function ArticlePage({ params }: { params: Promise<{ articleId: string }> }) {
     const { articleId: slug } = useReact(params);
-    const [article, setArticle] = useState<any>(null);
+    const [article, setArticle] = useState<Article | null>(null);
+    const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
                 const response = await fetch(`${API_URL}/articles/${slug}`);
                 const data = await response.json();
 
@@ -50,7 +61,20 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
             }
         };
 
+        const fetchRelated = async () => {
+            try {
+                const response = await fetch(`${API_URL}/articles/${slug}/related?limit=5`);
+                const data = await response.json();
+                if (data.success) {
+                    setRelatedArticles(data.articles || []);
+                }
+            } catch (err) {
+                console.error('Fetch related articles error:', err);
+            }
+        };
+
         fetchArticle();
+        fetchRelated();
     }, [slug]);
 
     if (isLoading) {
@@ -76,6 +100,10 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
         );
     }
 
+    const readTime = Math.ceil((article.content?.length || 0) / 500) || 1;
+    const categoryName = article.category?.name || 'ทั่วไป';
+    const tags = article.tags && article.tags.length > 0 ? article.tags : [categoryName];
+
     return (
         <div className="bg-surface text-gray-800 min-h-screen">
             <div className="pt-24 pb-12 max-w-7xl mx-auto px-4">
@@ -86,6 +114,12 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                     <CaretRight weight="bold" className="text-xs" />
                     <Link href="/articles" className="hover:text-primary">คลังความรู้</Link>
                     <CaretRight weight="bold" className="text-xs" />
+                    {article.category?.slug && (
+                        <>
+                            <Link href={`/articles?category=${article.category.slug}`} className="hover:text-primary">{categoryName}</Link>
+                            <CaretRight weight="bold" className="text-xs" />
+                        </>
+                    )}
                     <span className="text-gray-400 line-clamp-1">{article.title}</span>
                 </div>
 
@@ -107,8 +141,8 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
 
                         <header className="mb-8">
                             <div className="flex gap-2 mb-4">
-                                <span className="bg-blue-50 text-primary text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">{article.category}</span>
-                                <span className="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"><Clock weight="bold" /> {Math.ceil(article.content.length / 500) || 1} นาทีอ่าน</span>
+                                <span className="bg-blue-50 text-primary text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">{categoryName}</span>
+                                <span className="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"><Clock weight="bold" /> {readTime} นาทีอ่าน</span>
                             </div>
                             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
                                 {article.title}
@@ -121,7 +155,7 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                                     </div>
                                     <div>
                                         <div className="font-bold text-gray-800 text-sm flex items-center gap-1">{article.author?.fullName || 'ทีมงาน Car2Hand'} <SealCheck weight="fill" className="text-blue-500" /></div>
-                                        <div className="text-xs text-gray-500">Guru ช่างยนต์ • {new Date(article.updatedAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                                        <div className="text-xs text-gray-500">Guru ช่างยนต์ &bull; {new Date(article.updatedAt || article.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 text-gray-400 text-sm">
@@ -137,16 +171,22 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                             </div>
                         )}
 
-                        <article className="prose prose-lg text-gray-700 max-w-none whitespace-pre-wrap font-medium leading-relaxed">
-                            {article.content}
+                        {/* Article Content with Markdown */}
+                        <article className="prose prose-lg max-w-none">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
                         </article>
 
+                        {/* Tags */}
                         <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t border-gray-100">
                             <span className="text-gray-500 text-sm font-bold mr-2">Tags:</span>
-                            <Link href="#" className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm transition">#{article.category}</Link>
-                            <Link href="#" className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm transition">#บทความรถมือสอง</Link>
+                            {tags.map((tag, idx) => (
+                                <Link key={idx} href={`/articles?tag=${encodeURIComponent(tag)}`} className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm transition">
+                                    #{tag}
+                                </Link>
+                            ))}
                         </div>
 
+                        {/* Author Bio */}
                         <div className="bg-blue-50 rounded-2xl p-6 mt-10 flex flex-col md:flex-row gap-6 items-center md:items-start">
                             <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center text-primary text-2xl font-bold border-4 border-white">
                                 {article.author?.fullName?.charAt(0) || 'A'}
@@ -162,12 +202,48 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
 
                     </main>
 
-                    {/* Sidebar */}
+                    {/* Sidebar - Related Articles */}
                     <aside className="lg:col-span-3 space-y-6">
-                        {/* Sidebar content stays mostly same but could be made dynamic too later */}
                         <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
                             <h3 className="font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">แนะนำสำหรับคุณ</h3>
-                            <p className="text-sm text-gray-500">บทความที่เกี่ยวข้องจะปรากฏที่นี่</p>
+                            {relatedArticles.length > 0 ? (
+                                <div className="space-y-4">
+                                    {relatedArticles.map((related) => (
+                                        <Link
+                                            key={related.id}
+                                            href={`/articles/${related.slug}`}
+                                            className="flex gap-3 group"
+                                        >
+                                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                                                {related.featuredImage ? (
+                                                    <img
+                                                        src={related.featuredImage}
+                                                        alt={related.title}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">No img</div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                                                    {related.title}
+                                                </h4>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className="text-xs bg-blue-50 text-primary px-1.5 py-0.5 rounded-full font-medium">
+                                                        {related.category?.name || 'ทั่วไป'}
+                                                    </span>
+                                                    <span className="text-xs text-gray-400 flex items-center gap-0.5">
+                                                        <Eye weight="fill" size={10} /> {related.viewCount?.toLocaleString() || 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-sm text-gray-500">ยังไม่มีบทความที่เกี่ยวข้อง</p>
+                            )}
                         </div>
                     </aside>
                 </div>

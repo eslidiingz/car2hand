@@ -20,11 +20,11 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         try {
             // Validate input
             const validatedData = validateInput(adminLoginSchema, body);
-            const { email, password, rememberMe } = validatedData;
+            const { username, password, rememberMe } = validatedData;
 
-            // Find admin by email
+            // Find admin by username
             const admin = await prisma.admin.findUnique({
-                where: { email }
+                where: { username }
             });
 
             // timing attack prevention
@@ -37,18 +37,18 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 set.status = 401;
                 return {
                     error: 'Authentication Failed',
-                    message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
+                    message: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"
                 };
             }
 
-            // Generate JWT token (Same mechanism but we can add role: admin to payload if needed)
-            const accessToken = await generateAccessToken(jwt.sign, admin.id, admin.email);
+            // Generate JWT token
+            const accessToken = await generateAccessToken(jwt.sign, admin.id, admin.username);
 
             return {
                 message: "เข้าสู่ระบบ Admin สำเร็จ",
                 admin: {
                     id: admin.id,
-                    email: admin.email,
+                    username: admin.username,
                     fullName: admin.fullName,
                     createdAt: admin.createdAt
                 },
@@ -70,7 +70,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         }
     }, {
         body: t.Object({
-            email: t.String(),
+            username: t.String(),
             password: t.String(),
             rememberMe: t.Optional(t.Boolean())
         })
@@ -271,6 +271,14 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 const imageFile = b.imageFile;
 
                 // Handle file upload if present
+                if (b.tags !== undefined) {
+                    // tags comes as JSON string from FormData
+                    postData.tags = typeof b.tags === 'string' ? JSON.parse(b.tags) : (b.tags || []);
+                }
+                if (b.isFeatured !== undefined) {
+                    postData.isFeatured = b.isFeatured === 'true' || b.isFeatured === true;
+                }
+
                 if (imageFile instanceof File) {
                     if (!isValidImageType(imageFile.type) || !isValidFileSize(imageFile.size)) {
                         set.status = 400;
@@ -331,7 +339,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 excerpt: t.Optional(t.String()),
                 status: t.Optional(t.String()),
                 featuredImage: t.Optional(t.String()),
-                imageFile: t.Optional(t.File())
+                imageFile: t.Optional(t.File()),
+                tags: t.Optional(t.Any()),
+                isFeatured: t.Optional(t.Any()),
             })
         })
 
@@ -416,6 +426,8 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 if (b.status !== undefined) postData.status = b.status;
                 if (b.excerpt !== undefined) postData.excerpt = b.excerpt === "" ? null : b.excerpt;
                 if (b.featuredImage !== undefined) postData.featuredImage = b.featuredImage === "" ? null : b.featuredImage;
+                if (b.tags !== undefined) postData.tags = typeof b.tags === 'string' ? JSON.parse(b.tags) : (b.tags || []);
+                if (b.isFeatured !== undefined) postData.isFeatured = b.isFeatured === 'true' || b.isFeatured === true;
 
                 const imageFile = b.imageFile;
 
@@ -482,7 +494,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 excerpt: t.Optional(t.String()),
                 status: t.Optional(t.String()),
                 featuredImage: t.Optional(t.String()),
-                imageFile: t.Optional(t.File())
+                imageFile: t.Optional(t.File()),
+                tags: t.Optional(t.Any()),
+                isFeatured: t.Optional(t.Any()),
             })
         })
 

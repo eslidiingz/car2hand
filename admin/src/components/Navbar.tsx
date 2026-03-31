@@ -122,7 +122,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-2.5 pl-1">
                     <div className="text-right hidden sm:block">
                         <p className="text-sm font-medium text-slate-700 leading-tight">{admin?.fullName || 'Admin'}</p>
-                        <p className="text-xs text-slate-400">{admin?.email || 'Administrator'}</p>
+                        <p className="text-xs text-slate-400">@{admin?.username || 'admin'}</p>
                     </div>
                     <div className="h-8 w-8 bg-slate-200 rounded-lg flex items-center justify-center text-slate-600">
                         <User className="h-4 w-4" />
