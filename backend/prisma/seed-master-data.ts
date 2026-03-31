@@ -1130,6 +1130,1490 @@ const carSubModels: Record<string, { name: string; engineSize?: number; fuelType
         { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
         { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
     ],
+    // === Batch 1: Toyota / Honda / Isuzu / Mazda / Mitsubishi / Nissan ===
+    'Hilux Revo Rocco': [
+        { name: '2.4 Rocco', engineSize: 2400, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.8 Rocco 4x4', engineSize: 2800, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Sienta': [
+        { name: '1.5 E', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 G', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 HV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: '1.5 HV Premium', engineSize: 1500, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'GR86': [
+        { name: '2.4 MT', engineSize: 2400, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '2.4 AT', engineSize: 2400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.4 GR Sport MT', engineSize: 2400, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    'Supra': [
+        { name: '2.0 GR Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.0 GR Sport', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.0 GR Sport Premium', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'A90 Final Edition', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Civic Hatchback': [
+        { name: '1.5 Turbo', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 Turbo RS', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 e:HEV RS', engineSize: 2000, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'Jazz': [
+        { name: '1.5 S', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 SV', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 RS', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 RS Hybrid', engineSize: 1500, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'e:N1': [
+        { name: 'e:N1', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'D-Max Hi-Lander': [
+        { name: '1.9 Hi-Lander', engineSize: 1900, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '3.0 Hi-Lander 4x4', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'D-Max V-Cross': [
+        { name: '3.0 V-Cross 4x4 MT', engineSize: 3000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '3.0 V-Cross 4x4 AT', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '3.0 V-Cross 4WD', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Mazda2 Sedan': [
+        { name: '1.3 C', engineSize: 1300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.3 S', engineSize: 1300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.3 SP', engineSize: 1300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Mazda3 Sedan': [
+        { name: '2.0 C', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 SP', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 SP Sports', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'CX-3': [
+        { name: '2.0 C', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 SP', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'CX-8': [
+        { name: '2.5 C', engineSize: 2500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.5 S', engineSize: 2500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.5 SP', engineSize: 2500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.2 XDL Diesel', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'CX-60': [
+        { name: 'e-Skyactiv D 3.3', engineSize: 3300, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'e-Skyactiv PHEV', engineSize: 2500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'MX-5': [
+        { name: '2.0 Roadster', engineSize: 2000, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '2.0 Roadster AT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 RF', engineSize: 2000, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    'Attrage': [
+        { name: '1.2 GLX', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 GLS', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 GT Premium', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Mirage': [
+        { name: '1.2 GLX', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 GLS', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 GT Premium', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Outlander PHEV': [
+        { name: '2.4 PHEV GT', engineSize: 2400, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: '2.4 PHEV GT Premium', engineSize: 2400, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Note': [
+        { name: '1.2 S', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 V', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 e-Power', engineSize: 1200, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'X-Trail': [
+        { name: '2.0 S 2WD', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 V 4WD', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 e-Power', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+        { name: '1.5 e-Power 4WD', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 2: Nissan remaining + BMW ===
+    'Terra': [
+        { name: '2.3 V 4WD', engineSize: 2300, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.3 VL 4WD', engineSize: 2300, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Leaf': [
+        { name: 'Leaf 40 kWh', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Leaf e+ 62 kWh', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'GT-R': [
+        { name: 'Premium', engineSize: 3800, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Track Edition', engineSize: 3800, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'NISMO', engineSize: 3800, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Series 1': [
+        { name: '118i M Sport', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '120i M Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '120d M Sport', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Series 2': [
+        { name: '218i M Sport', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '220i M Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M235i xDrive', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Series 4': [
+        { name: '420i M Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '420d M Sport', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '430i M Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M440i xDrive', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Series 6': [
+        { name: '630i M Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '640d M Sport', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'M6 Gran Coupe', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Series 7': [
+        { name: '730Ld M Sport', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '740Le xDrive', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: '750Li M Sport', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Series 8': [
+        { name: '840i M Sport', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '840d M Sport', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'M850i xDrive', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'X2': [
+        { name: 'sDrive18i M Sport', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'xDrive20d M Sport', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'M35i', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'X4': [
+        { name: 'xDrive20d M Sport', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'xDrive30d M Sport', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'M40i', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'X6': [
+        { name: 'xDrive30d M Sport', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'xDrive40i M Sport', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M60i', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'X7': [
+        { name: 'xDrive30d M Sport', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'xDrive40i M Sport', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M60i', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'XM': [
+        { name: 'XM', engineSize: 4400, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'XM Label Red', engineSize: 4400, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'iX': [
+        { name: 'iX xDrive40', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'iX xDrive50', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'iX M60', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'iX1': [
+        { name: 'xDrive30e M Sport', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'eDrive20 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'iX2': [
+        { name: 'eDrive20 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'xDrive30e M Sport', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'iX3': [
+        { name: 'iX3 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'iX3 Impressive', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'i4': [
+        { name: 'eDrive40 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'xDrive40 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'M50', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'i5': [
+        { name: 'eDrive40 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'xDrive40 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'M60 xDrive', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'i7': [
+        { name: 'xDrive60 M Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'M70 xDrive', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'M2': [
+        { name: 'M2', engineSize: 3000, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: 'M2 Competition', engineSize: 3000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'M3': [
+        { name: 'M3', engineSize: 3000, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: 'M3 Competition', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M3 CS', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'M4': [
+        { name: 'M4 Competition', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M4 CS', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M4 CSL', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'M5': [
+        { name: 'M5', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M5 Competition', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M5 CS', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'M8': [
+        { name: 'M8 Competition Coupe', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M8 Competition Gran Coupe', engineSize: 4400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Z4': [
+        { name: 'sDrive20i M Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'sDrive30i M Sport', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'M40i', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 3: Mercedes-Benz ===
+    'A-Class': [
+        { name: 'A200', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'A200 AMG Dynamic', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'A250 AMG Dynamic', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'AMG A45 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'S-Class': [
+        { name: 'S350d AMG Dynamic', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'S500 AMG Dynamic', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'S580e AMG Dynamic', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'Maybach S580', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'GLA': [
+        { name: 'GLA200 AMG Dynamic', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'GLA250 AMG Dynamic', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'GLA250e AMG Dynamic', engineSize: 1300, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'AMG GLA45 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'GLB': [
+        { name: 'GLB200 AMG Dynamic', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'GLB220d AMG Dynamic', engineSize: 2000, fuelType: 'DIESEL', transmission: 'DCT' },
+        { name: 'GLB250e AMG Dynamic', engineSize: 1300, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'AMG GLB35', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'GLE': [
+        { name: 'GLE300d AMG Dynamic', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'GLE350e AMG Dynamic', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'GLE450 AMG Dynamic', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'AMG GLE53', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'AMG GLE63 S', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'GLS': [
+        { name: 'GLS350d AMG Dynamic', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'GLS450 AMG Dynamic', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Maybach GLS600', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'AMG GLS63', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'EQA': [
+        { name: 'EQA250', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQA250+ AMG Dynamic', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQA350 4MATIC', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'EQB': [
+        { name: 'EQB250', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQB250+ AMG Dynamic', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQB350 4MATIC AMG Dynamic', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'EQE': [
+        { name: 'EQE350+', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQE350+ AMG Dynamic', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQE500 4MATIC', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AMG EQE53 4MATIC+', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'EQS': [
+        { name: 'EQS450+', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQS450+ AMG Dynamic', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EQS580 4MATIC', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AMG EQS53 4MATIC+', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 4: Ford + MG + BYD + Lexus ===
+    'Territory': [
+        { name: '1.5 EcoBoost Trend', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 EcoBoost Titanium', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: 'EV Trend', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EV Titanium', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Mustang': [
+        { name: '2.3 EcoBoost', engineSize: 2300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '5.0 GT', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '5.0 GT Premium', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Mach-E', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'MG3': [
+        { name: '1.5 D', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5 X', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'MG EP': [
+        { name: 'MG EP', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'MG Extender': [
+        { name: '2.0 C', engineSize: 2000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.0 Grand C', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.0 Grand X', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Sealion 6': [
+        { name: 'DM-i', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Sealion 7': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Performance', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'M6': [
+        { name: 'M6 EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'M6 DM-i', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'D9': [
+        { name: 'DM-i', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'CT': [
+        { name: 'CT200h Luxury', engineSize: 1800, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: 'CT200h F Sport', engineSize: 1800, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'LS': [
+        { name: 'LS500h Grand Luxury', engineSize: 3500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'LS500h Luxury', engineSize: 3500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'GX': [
+        { name: 'GX460 Luxury', engineSize: 4600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'GX460 Premium', engineSize: 4600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'LX': [
+        { name: 'LX600 Luxury', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'LX600 Ultra Luxury', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'LX600 F Sport', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'LC': [
+        { name: 'LC500 Sport+', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'LC500h Sport+', engineSize: 3500, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: 'LC500 Convertible', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'RC': [
+        { name: 'RC300h Luxury', engineSize: 2500, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: 'RC300h F Sport', engineSize: 2500, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: 'RC350 F Sport', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'LM': [
+        { name: 'LM350h 4-Seat', engineSize: 2500, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: 'LM350h 7-Seat', engineSize: 2500, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: 'LM500h 4-Seat', engineSize: 3500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'RZ': [
+        { name: 'RZ300e', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RZ450e', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RZ450e F Sport', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 5: Suzuki + Subaru + Daihatsu + Mitsuoka ===
+    'Celerio': [
+        { name: '1.0 GL', engineSize: 1000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.0 GLX', engineSize: 1000, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'XL7': [
+        { name: '1.5 GL', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5 GLX', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5 Alpha', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Vitara': [
+        { name: '1.4 Turbo GL', engineSize: 1400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.4 Turbo GLX', engineSize: 1400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'e-Vitara', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'S-Cross': [
+        { name: '1.4 Turbo GL', engineSize: 1400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.4 Turbo GLX', engineSize: 1400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Carry': [
+        { name: '1.5 MT', engineSize: 1500, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.5 AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'XV': [
+        { name: '2.0 i-S EyeSight', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 i-P EyeSight', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 e-Boxer', engineSize: 2000, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'Forester': [
+        { name: '2.0 i-S EyeSight', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 i-P EyeSight', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 e-Boxer', engineSize: 2000, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: '2.0 GT Edition', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Outback': [
+        { name: '2.5 i-S EyeSight', engineSize: 2500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.5 i-T EyeSight', engineSize: 2500, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Crosstrek': [
+        { name: '2.0 i-S EyeSight', engineSize: 2000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.0 e-Boxer', engineSize: 2000, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'WRX': [
+        { name: '2.4 Sport', engineSize: 2400, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '2.4 GT', engineSize: 2400, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '2.4 S-Edition EyeSight', engineSize: 2400, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'BRZ': [
+        { name: '2.4 MT', engineSize: 2400, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '2.4 AT', engineSize: 2400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.4 S Edition', engineSize: 2400, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    'Levorg': [
+        { name: '1.8 GT-S EyeSight', engineSize: 1800, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.8 GT EyeSight', engineSize: 1800, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Solterra': [
+        { name: 'AWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Z', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Mira': [
+        { name: '660 L', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 X', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 RS', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Move': [
+        { name: '660 L', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 X', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 Custom RS', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Tanto': [
+        { name: '660 L', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 X', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 Custom RS', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Rocky': [
+        { name: '1.0 Turbo G', engineSize: 1000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 e-Smart Hybrid G', engineSize: 1200, fuelType: 'HYBRID', transmission: 'CVT' },
+        { name: '1.2 e-Smart Hybrid X', engineSize: 1200, fuelType: 'HYBRID', transmission: 'CVT' },
+    ],
+    'Atrai': [
+        { name: '660 G', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '660 RS', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Hijet': [
+        { name: '660 Standard', engineSize: 660, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '660 Deluxe', engineSize: 660, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Himiko': [
+        { name: '1.5 Cabriolet', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Rock Star': [
+        { name: '2.0 Cabriolet', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Viewt': [
+        { name: '1.2 Standard', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.2 Nicola', engineSize: 1200, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Galue': [
+        { name: '3.5 Sedan', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.5 Limousine', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Buddy': [
+        { name: '1.5 SUV', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 Turbo SUV', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    // === Batch 6: GWM + Chinese brands ===
+    'Haval H6 HEV': [
+        { name: 'HEV Smart', engineSize: 1500, fuelType: 'HYBRID', transmission: 'DCT' },
+        { name: 'HEV Premium', engineSize: 1500, fuelType: 'HYBRID', transmission: 'DCT' },
+    ],
+    'Tank 300': [
+        { name: '2.0T Comfort', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T Luxury', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T Off-Road', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 2000, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Tank 500': [
+        { name: '3.0T Luxury', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.0T Ultra', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 3000, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Poer': [
+        { name: '2.0T MT', engineSize: 2000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.0T AT', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Poer EV': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'ORA 03': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Ultra Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'NETA X': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'CS35 Plus': [
+        { name: '1.4T MT', engineSize: 1400, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.4T AT', engineSize: 1400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'CS55 Plus': [
+        { name: '1.5T MT', engineSize: 1500, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'CS75 Plus': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T AT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Lumin': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Uni-V': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'HEV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'DCT' },
+    ],
+    'Uni-T': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'PHEV', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    'Aion Y Plus': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Max', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Aion V': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Plus', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Aion S': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Omoda 5': [
+        { name: '1.5T MT', engineSize: 1500, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Omoda 5 EV': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Omoda C5': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Jaecoo 7': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5T 4WD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Jaecoo 5': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Jaecoo 6': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'HEV', engineSize: 1500, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'G6': [
+        { name: 'RWD Standard', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RWD Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AWD Performance', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'G9': [
+        { name: 'RWD Standard', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RWD Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AWD Performance', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'P7': [
+        { name: 'RWD Standard', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RWD Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AWD Performance', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Zeekr 001': [
+        { name: 'RWD Standard', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RWD Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AWD Performance', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Zeekr 009': [
+        { name: 'Standard', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Premium', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Zeekr X': [
+        { name: 'RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'AWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Mini EV': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Bingo': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Almaz': [
+        { name: '1.5T AT', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: 'RS Turbo', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Deepal S07': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Deepal L07': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Deepal G318': [
+        { name: '2.0T AT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Tunland V': [
+        { name: '2.0T MT', engineSize: 2000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.0T AT', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.0T 4WD', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Tunland G': [
+        { name: '2.0T MT', engineSize: 2000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.0T AT', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Thunder': [
+        { name: '2.4T MT', engineSize: 2400, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.4T AT', engineSize: 2400, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 7: Audi + Mini + Porsche + Peugeot ===
+    'A3': [
+        { name: '35 TFSI', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '40 TFSI Quattro', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '45 TFSI e Quattro', engineSize: 1400, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'RS3', engineSize: 2500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'A5': [
+        { name: '40 TFSI S line', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '45 TFSI Quattro S line', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'RS5', engineSize: 2900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'A7': [
+        { name: '55 TFSI Quattro S line', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '55 TFSI e Quattro S line', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'RS7', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'A8': [
+        { name: '55 TFSI Quattro', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '60 TFSI e Quattro', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'L 60 TFSI e Quattro', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Q2': [
+        { name: '35 TFSI', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '35 TFSI S line', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Q7': [
+        { name: '45 TFSI Quattro', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '55 TFSI Quattro S line', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '60 TFSI e Quattro S line', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Q8': [
+        { name: '55 TFSI Quattro S line', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '60 TFSI e Quattro S line', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'RS Q8', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'SQ8', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'e-tron': [
+        { name: '50 Quattro', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: '55 Quattro', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'S Quattro', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'e-tron GT': [
+        { name: 'e-tron GT', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'RS e-tron GT', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'RS3': [
+        { name: 'RS3 Sedan', engineSize: 2500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'RS3 Sportback', engineSize: 2500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'RS5': [
+        { name: 'RS5 Coupe', engineSize: 2900, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'RS5 Sportback', engineSize: 2900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'RS6 Avant': [
+        { name: 'RS6 Avant', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'RS6 Avant Performance', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'RS7': [
+        { name: 'RS7 Sportback', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'RS7 Sportback Performance', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'TT': [
+        { name: 'TT Coupe 2.0 TFSI', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'TTS Coupe', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'TT RS Coupe', engineSize: 2500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'TT Roadster', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'R8': [
+        { name: 'R8 V10', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'R8 V10 Performance', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'R8 V10 Spyder', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Cooper SE': [
+        { name: 'Cooper SE', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Cooper SE Level 2', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Cooper SE Level 3', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Countryman SE': [
+        { name: 'SE ALL4', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'SE ALL4 Level 2', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Clubman': [
+        { name: 'Cooper S ALL4', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'JCW ALL4', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'John Cooper Works': [
+        { name: 'JCW', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'JCW GP', engineSize: 2000, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    '718 Cayman': [
+        { name: '718 Cayman', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '718 Cayman S', engineSize: 2500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '718 Cayman GTS 4.0', engineSize: 4000, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: 'Cayman GT4', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    '718 Boxster': [
+        { name: '718 Boxster', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '718 Boxster S', engineSize: 2500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '718 Boxster GTS 4.0', engineSize: 4000, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: 'Boxster Spyder', engineSize: 4000, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    'Panamera': [
+        { name: 'Panamera 4', engineSize: 2900, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Panamera 4S', engineSize: 2900, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Panamera 4 E-Hybrid', engineSize: 2900, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'Panamera Turbo S', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Panamera Turbo S E-Hybrid', engineSize: 4000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Taycan': [
+        { name: 'Taycan', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Taycan 4S', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Taycan GTS', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Taycan Turbo', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Taycan Turbo S', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    '208': [
+        { name: '1.2 PureTech Active', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.2 PureTech Allure', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'e-208', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    '2008': [
+        { name: '1.2 PureTech Active', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.2 PureTech Allure', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'e-2008', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    '3008': [
+        { name: '1.6 THP Active', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.6 THP Allure', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'e-3008', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    '5008': [
+        { name: '1.6 THP Allure', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'e-5008', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    '308': [
+        { name: '1.2 PureTech Active', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.2 PureTech Allure', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    '408': [
+        { name: '1.2 PureTech Allure', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    '508': [
+        { name: '1.6 PureTech Allure', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'SW PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'PSE PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 8: VW + Land Rover + Jaguar + Volvo ===
+    'Polo': [
+        { name: '1.0 TSI Comfortline', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.0 TSI Highline', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 TSI GTI', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Golf': [
+        { name: '1.4 TSI Comfortline', engineSize: 1400, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.5 TSI Highline', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.4 GTE PHEV', engineSize: 1400, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'e-Golf', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Golf GTI': [
+        { name: 'GTI', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'GTI Clubsport', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Golf R': [
+        { name: 'Golf R', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Golf R 333', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Passat': [
+        { name: '2.0 TDI Highline', engineSize: 2000, fuelType: 'DIESEL', transmission: 'DCT' },
+        { name: '1.8 TSI Highline', engineSize: 1800, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.4 GTE PHEV', engineSize: 1400, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    'Arteon': [
+        { name: '2.0 TSI Elegance', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '2.0 TSI R-Line 4Motion', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'R', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'T-Cross': [
+        { name: '1.0 TSI Comfortline', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.0 TSI Highline', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'T-Roc': [
+        { name: '1.5 TSI Comfortline', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '2.0 TSI R-Line', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'R', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Tiguan': [
+        { name: '1.4 TSI Comfortline', engineSize: 1400, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '2.0 TDI Highline', engineSize: 2000, fuelType: 'DIESEL', transmission: 'DCT' },
+        { name: '1.4 eHybrid Elegance', engineSize: 1400, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'Allspace 2.0 TDI', engineSize: 2000, fuelType: 'DIESEL', transmission: 'DCT' },
+    ],
+    'Touareg': [
+        { name: '3.0 TDI', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '3.0 TSI', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'R PHEV', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'ID.4': [
+        { name: 'ID.4 Pure+', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'ID.4 Pro', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'ID.4 GTX', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Caravelle': [
+        { name: '2.0 TDI Comfortline', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.0 TDI Highline', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Amarok': [
+        { name: '3.0 TDI Highline', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'V6 TDI Aventura', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'V6 Panamericana', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Discovery': [
+        { name: 'D250 S', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'D300 SE', engineSize: 3000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'P360 S', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Discovery Sport': [
+        { name: 'P200 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P250 SE', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P300e SE', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Range Rover Velar': [
+        { name: 'P250 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P400 SE', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P400e SE', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'XE': [
+        { name: '2.0D Pure', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.0 Prestige', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P300 R-Dynamic SE', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'XF': [
+        { name: '2.0D Pure', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'P250 SE', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P300 R-Dynamic SE', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'F-Pace': [
+        { name: '2.0D Pure', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'P250 SE', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P400e SE', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'SVR', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'E-Pace': [
+        { name: 'P200 S', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P250 SE', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P300e SE', engineSize: 1500, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'I-Pace': [
+        { name: 'EV400 S', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EV400 SE', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'EV400 HSE', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'F-Type': [
+        { name: 'P300 Coupe', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P450 Coupe', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P575 R Coupe', engineSize: 5000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'P300 Convertible', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'S90': [
+        { name: 'B5 Plus', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'B6 AWD', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'T8 Recharge AWD', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'V60': [
+        { name: 'B4 Momentum', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'B5 R-Design', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'T6 Recharge AWD', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'XC40 Recharge': [
+        { name: 'Pure Electric Single', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Pure Electric Twin', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'XC90': [
+        { name: 'B5 AWD Plus', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'B6 AWD Ultimate', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'T8 Recharge AWD', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'C40 Recharge': [
+        { name: 'Single Motor', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Twin Motor', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'EX30': [
+        { name: 'Single Motor', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Twin Motor', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'EX90': [
+        { name: 'Twin Motor', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Twin Motor Performance', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 9: Alfa Romeo + Citroen + Fiat + Seat + Tesla + Jeep ===
+    'Giulia': [
+        { name: '2.0 Sprint', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 Veloce', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Quadrifoglio', engineSize: 2900, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Stelvio': [
+        { name: '2.0 Sprint', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 Veloce', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Quadrifoglio', engineSize: 2900, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Tonale': [
+        { name: '1.5 MHEV Sprint', engineSize: 1500, fuelType: 'HYBRID', transmission: 'DCT' },
+        { name: '1.5 MHEV Veloce', engineSize: 1500, fuelType: 'HYBRID', transmission: 'DCT' },
+        { name: 'PHEV Q4', engineSize: 1300, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'C3': [
+        { name: '1.2 PureTech Feel', engineSize: 1200, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.2 PureTech Shine', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'C3 Aircross': [
+        { name: '1.2 PureTech Feel', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.2 PureTech Shine', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'C5 Aircross': [
+        { name: '1.6 PureTech Feel', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.6 PureTech Shine', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV Shine', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'C5 X': [
+        { name: '1.6 PureTech Shine', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV Shine', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    '500': [
+        { name: '1.0 MHEV Action', engineSize: 1000, fuelType: 'HYBRID', transmission: 'MANUAL' },
+        { name: '1.0 MHEV Dolcevita', engineSize: 1000, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    '500e': [
+        { name: '500e Action', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: '500e La Prima', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: '500e Convertible', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    '500X': [
+        { name: '1.3 Sport', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.5 MHEV City Cross', engineSize: 1500, fuelType: 'HYBRID', transmission: 'DCT' },
+    ],
+    'Ibiza': [
+        { name: '1.0 TSI Reference', engineSize: 1000, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.0 TSI Style', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'FR 1.5 TSI', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Leon': [
+        { name: '1.5 TSI Style', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '2.0 TDI FR', engineSize: 2000, fuelType: 'DIESEL', transmission: 'DCT' },
+        { name: 'e-Hybrid FR', engineSize: 1400, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'Cupra Leon', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Arona': [
+        { name: '1.0 TSI Reference', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.0 TSI Style', engineSize: 1000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'FR 1.5 TSI', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Ateca': [
+        { name: '1.5 TSI Style', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '2.0 TDI FR', engineSize: 2000, fuelType: 'DIESEL', transmission: 'DCT' },
+        { name: 'Cupra Ateca', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Model S': [
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Plaid', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Model X': [
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Plaid', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Cybertruck': [
+        { name: 'Rear-Wheel Drive', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'All-Wheel Drive', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Cyberbeast', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Wrangler': [
+        { name: '2.0T Sport', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T Sahara', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T Rubicon', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '4xe PHEV Sahara', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: '4xe PHEV Rubicon', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Gladiator': [
+        { name: '3.6 Sport', engineSize: 3600, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '3.6 Sahara', engineSize: 3600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.6 Rubicon', engineSize: 3600, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    'Grand Cherokee': [
+        { name: '3.6 Laredo', engineSize: 3600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.6 Limited', engineSize: 3600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.6 Overland', engineSize: 3600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '4xe PHEV', engineSize: 2000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Cherokee': [
+        { name: '2.4 Sport', engineSize: 2400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.4 Latitude', engineSize: 2400, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.2 Overland', engineSize: 3200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Compass': [
+        { name: '1.3 Turbo Sport', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.3 Turbo Limited', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '4xe PHEV', engineSize: 1300, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Renegade': [
+        { name: '1.3 Turbo Sport', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.3 Turbo Limited', engineSize: 1300, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '4xe PHEV', engineSize: 1300, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Avenger': [
+        { name: '1.2 Turbo Altitude', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'e-Hybrid', engineSize: 1600, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+        { name: '4xe PHEV', engineSize: 1300, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 10: Chevrolet + GMC + Hyundai + Kia + Ssangyong ===
+    'Captiva': [
+        { name: '1.5 LT', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 LTZ', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Corvette': [
+        { name: 'Stingray 3LT', engineSize: 6200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Z06', engineSize: 5500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'E-Ray', engineSize: 6200, fuelType: 'HYBRID', transmission: 'DCT' },
+    ],
+    'Camaro': [
+        { name: '2.0T LT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.6 LT1', engineSize: 3600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '6.2 SS', engineSize: 6200, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: 'ZL1', engineSize: 6200, fuelType: 'PETROL', transmission: 'MANUAL' },
+    ],
+    'Bolt EV': [
+        { name: 'Bolt EV 1LT', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Bolt EV 2LT', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Bolt EUV Premier', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Sierra': [
+        { name: '2.7T SLE', engineSize: 2700, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '5.3 SLT', engineSize: 5300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '6.2 AT4X', engineSize: 6200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Canyon': [
+        { name: '2.5 SLE', engineSize: 2500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.7T AT4', engineSize: 2700, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.7T Denali', engineSize: 2700, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Yukon': [
+        { name: '5.3 SLE', engineSize: 5300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '5.3 SLT', engineSize: 5300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '6.2 Denali', engineSize: 6200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Terrain': [
+        { name: '1.5T SLE', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T SLT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0T Denali', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Hummer EV': [
+        { name: 'Edition 1', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: '3X', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: '2X', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Accent': [
+        { name: '1.4 GL', engineSize: 1400, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.4 GLS', engineSize: 1400, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Elantra': [
+        { name: '1.6 Smart', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.6 Premium', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: 'N Line', engineSize: 1600, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'N', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Sonata': [
+        { name: '2.0 Smart', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 Premium', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 HEV', engineSize: 2000, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Venue': [
+        { name: '1.0T Smart', engineSize: 1000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.0T Premium', engineSize: 1000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Kona': [
+        { name: '1.6T Smart', engineSize: 1600, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.6T Premium', engineSize: 1600, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'N Line', engineSize: 1600, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Kona Electric': [
+        { name: 'Standard Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Palisade': [
+        { name: '2.2D Smart', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.2D Premium', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '3.8 Calligraphy', engineSize: 3800, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Stargazer': [
+        { name: '1.5T Smart', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5T Premium', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Staria': [
+        { name: '2.2D Smart', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.2D Premium', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'PHEV', engineSize: 1600, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Ioniq 5': [
+        { name: 'Standard Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range AWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'N', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Ioniq 6': [
+        { name: 'Standard Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range AWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'H-1': [
+        { name: '2.5D Deluxe', engineSize: 2500, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.5D Grand Starex', engineSize: 2500, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Morning': [
+        { name: '1.0 LX', engineSize: 1000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.0 LX+', engineSize: 1000, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: 'GT', engineSize: 1000, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Rio': [
+        { name: '1.4 LX', engineSize: 1400, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.4 LX+', engineSize: 1400, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Cerato': [
+        { name: '1.6 LX', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.6 SX', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: 'GT', engineSize: 1600, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'K3': [
+        { name: '1.5 LX', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 SX', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'K5': [
+        { name: '1.6T LX', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.6T GT-Line', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.0 HEV', engineSize: 2000, fuelType: 'HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Carnival': [
+        { name: '2.2D LX', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.2D SX', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '3.5 SX Prestige', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'EV6': [
+        { name: 'Standard Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range AWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'GT', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'EV9': [
+        { name: 'Standard Range RWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Long Range AWD', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'GT-Line', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Sonet': [
+        { name: '1.5 LX', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.5 SX', engineSize: 1500, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.0T GT-Line', engineSize: 1000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Stinger': [
+        { name: '2.0T', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.3T GT', engineSize: 3300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '3.3T GT AWD', engineSize: 3300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Tivoli': [
+        { name: '1.5T 2WD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5T AWD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Korando': [
+        { name: '1.5T 2WD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5T AWD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'e-Korando', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Rexton': [
+        { name: '2.2D 4WD', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.2D Ultimate', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.2D 7-Seat', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Musso': [
+        { name: '2.2D Standard', engineSize: 2200, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.2D Premium', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: '2.2D Grand', engineSize: 2200, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Torres': [
+        { name: '1.5T 2WD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5T AWD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'EVX', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    // === Batch 11: Supercar + Proton + TATA + Thairung ===
+    '296 GTB': [
+        { name: '296 GTB', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: '296 GTB Assetto Fiorano', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    '296 GTS': [
+        { name: '296 GTS', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: '296 GTS Assetto Fiorano', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    'Roma': [
+        { name: 'Roma', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Roma Spider': [
+        { name: 'Roma Spider', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'SF90 Stradale': [
+        { name: 'SF90 Stradale', engineSize: 4000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'SF90 Spider', engineSize: 4000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'SF90 XX Stradale', engineSize: 4000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    '812 Competizione': [
+        { name: '812 Competizione', engineSize: 6500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '812 Competizione A', engineSize: 6500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Purosangue': [
+        { name: 'Purosangue V12', engineSize: 6500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'F8 Tributo': [
+        { name: 'F8 Tributo', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'F8 Spider', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    '488': [
+        { name: '488 GTB', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '488 Spider', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '488 Pista', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Portofino M': [
+        { name: 'Portofino M', engineSize: 3900, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Huracan': [
+        { name: 'Huracan EVO RWD', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Huracan EVO AWD', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Huracan Sterrato', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Huracan Tecnica', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Huracan Spyder': [
+        { name: 'Huracan EVO RWD Spyder', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Huracan EVO Spyder AWD', engineSize: 5200, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Revuelto': [
+        { name: 'Revuelto PHEV', engineSize: 6500, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    'Urus': [
+        { name: 'Urus', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Urus S', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Urus Performante', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Urus SE': [
+        { name: 'Urus SE PHEV', engineSize: 4000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+    ],
+    'Ghibli': [
+        { name: 'Ghibli GT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Ghibli Modena', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Ghibli Trofeo', engineSize: 3800, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Quattroporte': [
+        { name: 'Quattroporte GT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Quattroporte Modena', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Quattroporte Trofeo', engineSize: 3800, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Levante': [
+        { name: 'Levante GT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Levante Modena', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Levante Trofeo', engineSize: 3800, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'MC20': [
+        { name: 'MC20', engineSize: 3000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'MC20 Cielo', engineSize: 3000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'MC20 Icona', engineSize: 3000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Grecale': [
+        { name: 'Grecale GT', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Grecale Modena', engineSize: 2000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Grecale Trofeo', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Folgore EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'GranTurismo': [
+        { name: 'GranTurismo Modena', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'GranTurismo Trofeo', engineSize: 3000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'GranTurismo Folgore EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Continental GT': [
+        { name: 'Continental GT V8', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Continental GT W12', engineSize: 6000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Continental GT Speed', engineSize: 6000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Continental GTC': [
+        { name: 'Continental GTC V8', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Continental GTC W12', engineSize: 6000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Flying Spur': [
+        { name: 'Flying Spur V8', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Flying Spur W12', engineSize: 6000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Flying Spur Speed', engineSize: 6000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Flying Spur Hybrid', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    'Bentayga': [
+        { name: 'Bentayga V8', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Bentayga EWB', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Bentayga Hybrid', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'AUTOMATIC' },
+        { name: 'Bentayga Speed', engineSize: 6000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Ghost': [
+        { name: 'Ghost', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Ghost Extended', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Ghost Black Badge', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Phantom': [
+        { name: 'Phantom', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Phantom Extended', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Wraith': [
+        { name: 'Wraith', engineSize: 6600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Wraith Black Badge', engineSize: 6600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Dawn': [
+        { name: 'Dawn', engineSize: 6600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Dawn Black Badge', engineSize: 6600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Cullinan': [
+        { name: 'Cullinan', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Cullinan Black Badge', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Cullinan Series II', engineSize: 6750, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Spectre': [
+        { name: 'Spectre', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Vantage': [
+        { name: 'Vantage', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Vantage Roadster', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Vantage F1 Edition', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'DB11': [
+        { name: 'DB11 V8', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'DB11 AMR', engineSize: 5200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'DB11 Volante V8', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'DB12': [
+        { name: 'DB12 Coupe', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'DB12 Volante', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'DBS': [
+        { name: 'DBS', engineSize: 5200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'DBS Volante', engineSize: 5200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'DBS 770 Ultimate', engineSize: 5200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'DBX': [
+        { name: 'DBX', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'DBX707', engineSize: 4000, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    '720S': [
+        { name: '720S Coupe', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '720S Spider', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    '750S': [
+        { name: '750S Coupe', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '750S Spider', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Artura': [
+        { name: 'Artura', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'Artura Spider', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+        { name: 'Artura Trophy', engineSize: 3000, fuelType: 'PLUGIN_HYBRID', transmission: 'DCT' },
+    ],
+    'GT': [
+        { name: 'GT Coupe', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    '765LT': [
+        { name: '765LT Coupe', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '765LT Spider', engineSize: 4000, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'Emira': [
+        { name: 'Emira V6 First Edition', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'Emira 4-cylinder', engineSize: 2000, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: 'Emira V6 GT Edition', engineSize: 3500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Eletre': [
+        { name: 'Eletre', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Eletre S', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Eletre R', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Emeya': [
+        { name: 'Emeya', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Emeya S', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+        { name: 'Emeya R', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Evija': [
+        { name: 'Evija', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Saga': [
+        { name: '1.3 Standard MT', engineSize: 1300, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.3 Standard AT', engineSize: 1300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.3 Premium MT', engineSize: 1300, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.3 Premium AT', engineSize: 1300, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Persona': [
+        { name: '1.6 Standard MT', engineSize: 1600, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.6 Standard AT', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.6 Premium AT', engineSize: 1600, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Iriz': [
+        { name: '1.3 Standard', engineSize: 1300, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.6 Executive', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'X50': [
+        { name: '1.5T Standard', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.5T Executive', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+        { name: '1.5T Flagship', engineSize: 1500, fuelType: 'PETROL', transmission: 'DCT' },
+    ],
+    'X70': [
+        { name: '1.8T Executive 2WD', engineSize: 1800, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.8T Premium AWD', engineSize: 1800, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'X90': [
+        { name: '1.5T Executive', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '1.5T Premium AWD', engineSize: 1500, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'Exora': [
+        { name: '1.6 CFE Standard', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+        { name: '1.6 CFE Premium', engineSize: 1600, fuelType: 'PETROL', transmission: 'CVT' },
+    ],
+    'Nexon': [
+        { name: '1.2T XM', engineSize: 1200, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.2T XZ+', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Harrier': [
+        { name: '2.0 XE', engineSize: 2000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.0 XZ+', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'Safari': [
+        { name: '2.0 XE', engineSize: 2000, fuelType: 'DIESEL', transmission: 'MANUAL' },
+        { name: '2.0 XZ+', engineSize: 2000, fuelType: 'DIESEL', transmission: 'AUTOMATIC' },
+    ],
+    'Punch': [
+        { name: '1.2 Pure', engineSize: 1200, fuelType: 'PETROL', transmission: 'MANUAL' },
+        { name: '1.2 Accomplished', engineSize: 1200, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: 'EV', engineSize: 0, fuelType: 'EV', transmission: 'AUTOMATIC' },
+    ],
+    'TR Transformer II': [
+        { name: '2.7 4WD 4-Door', engineSize: 2700, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+        { name: '2.7 4WD 2-Door', engineSize: 2700, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
+    'TR Adventure': [
+        { name: '2.7 Adventure', engineSize: 2700, fuelType: 'PETROL', transmission: 'AUTOMATIC' },
+    ],
 };
 
 // =============================================
