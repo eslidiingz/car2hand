@@ -142,3 +142,45 @@ export const NotificationType = {
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const PartnerType = {
+  BANK: 'BANK',
+  INSURANCE: 'INSURANCE',
+  INSPECTION: 'INSPECTION'
+} as const
+
+export type PartnerType = (typeof PartnerType)[keyof typeof PartnerType]
+
+
+export const BookingStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
+
+export const InquiryType = {
+  FINANCE: 'FINANCE',
+  INSURANCE: 'INSURANCE',
+  DELIVERY: 'DELIVERY',
+  TRANSFER: 'TRANSFER',
+  GENERAL: 'GENERAL'
+} as const
+
+export type InquiryType = (typeof InquiryType)[keyof typeof InquiryType]
+
+
+export const InquiryStatus = {
+  NEW: 'NEW',
+  CONTACTED: 'CONTACTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type InquiryStatus = (typeof InquiryStatus)[keyof typeof InquiryStatus]

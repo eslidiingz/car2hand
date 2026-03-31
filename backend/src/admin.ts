@@ -20,11 +20,11 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         try {
             // Validate input
             const validatedData = validateInput(adminLoginSchema, body);
-            const { email, password, rememberMe } = validatedData;
+            const { username, password, rememberMe } = validatedData;
 
-            // Find admin by email
+            // Find admin by username
             const admin = await prisma.admin.findUnique({
-                where: { email }
+                where: { username }
             });
 
             // timing attack prevention
@@ -37,18 +37,18 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 set.status = 401;
                 return {
                     error: 'Authentication Failed',
-                    message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
+                    message: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"
                 };
             }
 
-            // Generate JWT token (Same mechanism but we can add role: admin to payload if needed)
-            const accessToken = await generateAccessToken(jwt.sign, admin.id, admin.email);
+            // Generate JWT token
+            const accessToken = await generateAccessToken(jwt.sign, admin.id, admin.username);
 
             return {
                 message: "เข้าสู่ระบบ Admin สำเร็จ",
                 admin: {
                     id: admin.id,
-                    email: admin.email,
+                    username: admin.username,
                     fullName: admin.fullName,
                     createdAt: admin.createdAt
                 },
@@ -70,7 +70,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         }
     }, {
         body: t.Object({
-            email: t.String(),
+            username: t.String(),
             password: t.String(),
             rememberMe: t.Optional(t.Boolean())
         })

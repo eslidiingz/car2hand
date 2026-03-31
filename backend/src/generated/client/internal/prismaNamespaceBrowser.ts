@@ -71,7 +71,11 @@ export const ModelName = {
   UserNotification: 'UserNotification',
   ListingBumpLog: 'ListingBumpLog',
   NotificationTemplate: 'NotificationTemplate',
-  NotificationLog: 'NotificationLog'
+  NotificationLog: 'NotificationLog',
+  ServicePartner: 'ServicePartner',
+  InspectionPackage: 'InspectionPackage',
+  InspectionBooking: 'InspectionBooking',
+  ServiceInquiry: 'ServiceInquiry'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -110,7 +114,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const AdminScalarFieldEnum = {
   id: 'id',
   fullName: 'fullName',
-  email: 'email',
+  username: 'username',
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -451,6 +455,81 @@ export const NotificationLogScalarFieldEnum = {
 export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
 
 
+export const ServicePartnerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  logoUrl: 'logoUrl',
+  description: 'description',
+  highlight: 'highlight',
+  isActive: 'isActive',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServicePartnerScalarFieldEnum = (typeof ServicePartnerScalarFieldEnum)[keyof typeof ServicePartnerScalarFieldEnum]
+
+
+export const InspectionPackageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  nameEn: 'nameEn',
+  price: 'price',
+  description: 'description',
+  features: 'features',
+  isRecommended: 'isRecommended',
+  isActive: 'isActive',
+  order: 'order',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InspectionPackageScalarFieldEnum = (typeof InspectionPackageScalarFieldEnum)[keyof typeof InspectionPackageScalarFieldEnum]
+
+
+export const InspectionBookingScalarFieldEnum = {
+  id: 'id',
+  packageId: 'packageId',
+  userId: 'userId',
+  brandName: 'brandName',
+  modelName: 'modelName',
+  vehicleNote: 'vehicleNote',
+  location: 'location',
+  appointmentDate: 'appointmentDate',
+  timeSlot: 'timeSlot',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  contactLine: 'contactLine',
+  subtotal: 'subtotal',
+  vat: 'vat',
+  total: 'total',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InspectionBookingScalarFieldEnum = (typeof InspectionBookingScalarFieldEnum)[keyof typeof InspectionBookingScalarFieldEnum]
+
+
+export const ServiceInquiryScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  userId: 'userId',
+  contactName: 'contactName',
+  contactPhone: 'contactPhone',
+  contactLine: 'contactLine',
+  details: 'details',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceInquiryScalarFieldEnum = (typeof ServiceInquiryScalarFieldEnum)[keyof typeof ServiceInquiryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -464,6 +543,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: 'DbNull',
+  JsonNull: 'JsonNull'
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

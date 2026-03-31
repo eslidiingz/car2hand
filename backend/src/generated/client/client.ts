@@ -144,3 +144,23 @@ export type NotificationTemplate = Prisma.NotificationTemplateModel
  * 
  */
 export type NotificationLog = Prisma.NotificationLogModel
+/**
+ * Model ServicePartner
+ * 
+ */
+export type ServicePartner = Prisma.ServicePartnerModel
+/**
+ * Model InspectionPackage
+ * 
+ */
+export type InspectionPackage = Prisma.InspectionPackageModel
+/**
+ * Model InspectionBooking
+ * 
+ */
+export type InspectionBooking = Prisma.InspectionBookingModel
+/**
+ * Model ServiceInquiry
+ * 
+ */
+export type ServiceInquiry = Prisma.ServiceInquiryModel
