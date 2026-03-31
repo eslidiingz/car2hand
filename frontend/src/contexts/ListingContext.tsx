@@ -53,6 +53,8 @@ export interface ListingFormData {
     hasSpareKey: boolean; // มีกุญแจสำรอง
     serviceHistoryFile?: File; // ไฟล์รูปประวัติบริการ
     serviceHistoryPreview?: string; // Preview URL
+    registrationBookFile?: File; // ไฟล์สำเนาเล่มทะเบียนรถ
+    registrationBookPreview?: string; // Preview URL
 }
 
 interface ListingContextType {
@@ -107,6 +109,8 @@ const defaultFormData: ListingFormData = {
     hasSpareKey: false,
     serviceHistoryFile: undefined,
     serviceHistoryPreview: '',
+    registrationBookFile: undefined,
+    registrationBookPreview: '',
 };
 
 const ListingContext = createContext<ListingContextType | undefined>(undefined);
@@ -274,6 +278,33 @@ export async function uploadServiceHistoryImage(
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Failed to upload service history image');
+    }
+}
+
+export async function uploadRegistrationBookImage(
+    userId: string,
+    listingId: string,
+    file: File
+): Promise<void> {
+    const buffer = await file.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+
+    const response = await fetch(`${API_BASE}/listings/${listingId}/registration-book`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            userId,
+            image: {
+                buffer: base64,
+                filename: file.name,
+                mimetype: file.type
+            }
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to upload registration book image');
     }
 }
 

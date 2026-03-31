@@ -2175,6 +2175,7 @@ export const VehicleListingScalarFieldEnum = {
   gasType: 'gasType',
   hasSpareKey: 'hasSpareKey',
   serviceHistoryImage: 'serviceHistoryImage',
+  registrationBookImage: 'registrationBookImage',
   status: 'status',
   adminNote: 'adminNote',
   isFeatured: 'isFeatured',

@@ -255,6 +255,7 @@ model VehicleListing {
   gasType                GasType                @default(NONE) // ติดแก๊สหรือไม่
   hasSpareKey            Boolean                @default(false) // มีกุญแจสำรอง
   serviceHistoryImage    String? // รูปภาพประวัติบริการ (ถ้ามี = มีประวัติ)
+  registrationBookImage  String? // สำเนาเล่มทะเบียนรถ
 
   // สถานะประกาศ
   status     ListingStatus @default(ACTIVE)

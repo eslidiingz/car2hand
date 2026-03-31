@@ -454,6 +454,65 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         })
     })
 
+    // อัปโหลดสำเนาเล่มทะเบียนรถ
+    .post("/:id/registration-book", async ({ params, body, set }) => {
+        const { id } = params;
+        const { userId, image } = body;
+
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            const imageBuffer = Buffer.from(image.buffer, 'base64');
+
+            const webpBuffer = await processImage(imageBuffer, {
+                maxWidth: 1280,
+                maxHeight: 960,
+                quality: 85
+            });
+
+            const baseFilename = generateFilename(image.filename);
+            const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
+            const objectPath = `${listing.userId}/listings/${id}/registration-book-${webpFilename}`;
+
+            const imageUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
+
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { registrationBookImage: imageUrl }
+            });
+
+            return {
+                message: "อัปโหลดสำเนาเล่มทะเบียนสำเร็จ",
+                imageUrl
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัปโหลดรูป" };
+        }
+    }, {
+        body: t.Object({
+            userId: t.String(),
+            image: t.Object({
+                buffer: t.String(),
+                filename: t.String(),
+                mimetype: t.String()
+            })
+        })
+    })
+
     // ลบรูปภาพเดี่ยว
     .delete("/:id/images/:imageId", async ({ params, query, set }) => {
         const { id, imageId } = params;
@@ -1347,6 +1406,16 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         body: t.Object({
             userId: t.String()
         })
+    })
+
+    // สถิติสาธารณะสำหรับ landing page
+    .get("/stats/public", async () => {
+        const [activeListings, soldListings, totalSellers] = await Promise.all([
+            prisma.vehicleListing.count({ where: { status: 'ACTIVE' } }),
+            prisma.vehicleListing.count({ where: { status: 'SOLD' } }),
+            prisma.user.count({ where: { isActive: true, listings: { some: {} } } })
+        ]);
+        return { activeListings, soldListings, totalSellers };
     })
 
     // ดึง pending renewals ของ user
