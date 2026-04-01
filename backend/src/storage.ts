@@ -142,9 +142,6 @@ export async function uploadAvatar(
     userId: string,
     file: { buffer: Buffer; originalname: string; mimetype: string }
 ): Promise<string> {
-    // ลบ avatar เก่าก่อน (ถ้ามี)
-    await deleteAvatarFiles(userId);
-
     // แปลงรูปเป็น WebP (ขนาดเล็กกว่าสำหรับ avatar)
     const webpBuffer = await processImage(file.buffer, {
         maxWidth: 400,
@@ -155,7 +152,17 @@ export async function uploadAvatar(
     const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
     const objectPath = buildAvatarPath(userId, webpFilename);
 
-    return uploadFile(objectPath, webpBuffer, 'image/webp');
+    // อัพโหลดรูปใหม่ก่อน
+    const url = await uploadFile(objectPath, webpBuffer, 'image/webp');
+
+    // ลบ avatar เก่าหลังอัพโหลดสำเร็จ (ลบทั้ง prefix ยกเว้นไฟล์ใหม่)
+    const allAvatars = await listFiles(`${userId}/avatar/`);
+    const oldAvatars = allAvatars.filter(f => f.name !== objectPath);
+    for (const old of oldAvatars) {
+        try { await deleteFile(old.name); } catch { }
+    }
+
+    return url;
 }
 
 /**
@@ -378,6 +385,33 @@ export function isValidImageType(mimetype: string): boolean {
 export function isValidFileSize(size: number, maxSizeMB: number = 10): boolean {
     const maxBytes = maxSizeMB * 1024 * 1024;
     return size <= maxBytes;
+}
+
+/**
+ * ดึง object path จาก MinIO URL เพื่อใช้ในการลบไฟล์
+ * @returns object path หรือ null ถ้า URL ไม่ใช่ MinIO
+ */
+export function extractObjectPath(url: string | null | undefined): string | null {
+    if (!url) return null;
+    const bucketStr = `/${BUCKET}/`;
+    if (!url.includes(bucketStr)) return null;
+    return url.split(bucketStr)[1] || null;
+}
+
+/**
+ * ลบไฟล์เก่าจาก MinIO ตาม URL (ถ้าเป็น MinIO URL)
+ * ใช้เมื่ออัพโหลดรูปใหม่ทับรูปเดิม
+ */
+export async function deleteOldFile(oldUrl: string | null | undefined): Promise<boolean> {
+    const objectPath = extractObjectPath(oldUrl);
+    if (!objectPath) return false;
+    try {
+        await deleteFile(objectPath);
+        return true;
+    } catch (err) {
+        console.warn('Failed to delete old file:', objectPath, err);
+        return false;
+    }
 }
 
 export default minioClient;
