@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
-import { uploadListingImages, deleteListingImages, deleteFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
+import { uploadListingImages, deleteListingImages, deleteFile, deleteOldFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
 import { getUserPackage, canCreateListing, canUploadPhotos, getListingExpiryDate } from "./config/packages";
 
 // Ensure bucket exists on startup
@@ -410,6 +410,9 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         }
 
         try {
+            // เก็บ URL เดิมไว้ลบหลังสำเร็จ
+            const oldServiceHistoryImage = listing.serviceHistoryImage;
+
             // Convert base64 to buffer
             const imageBuffer = Buffer.from(image.buffer, 'base64');
 
@@ -433,6 +436,9 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 where: { id },
                 data: { serviceHistoryImage: imageUrl }
             });
+
+            // ลบรูปเดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
+            await deleteOldFile(oldServiceHistoryImage);
 
             return {
                 message: "อัพโหลดรูปประวัติบริการสำเร็จ",
@@ -474,6 +480,9 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         }
 
         try {
+            // เก็บ URL เดิมไว้ลบหลังสำเร็จ
+            const oldRegistrationBookImage = listing.registrationBookImage;
+
             const imageBuffer = Buffer.from(image.buffer, 'base64');
 
             const webpBuffer = await processImage(imageBuffer, {
@@ -492,6 +501,9 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 where: { id },
                 data: { registrationBookImage: imageUrl }
             });
+
+            // ลบรูปเดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
+            await deleteOldFile(oldRegistrationBookImage);
 
             return {
                 message: "อัปโหลดสำเนาเล่มทะเบียนสำเร็จ",

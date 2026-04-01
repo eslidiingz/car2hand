@@ -410,7 +410,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         .patch("/:id", async ({ params: { id }, body, set }) => {
             try {
                 const { articleSchema, validateInput } = await import("./validation");
-                const { uploadArticleImage, isValidImageType, isValidFileSize } = await import("./storage");
+                const { uploadArticleImage, isValidImageType, isValidFileSize, deleteOldFile } = await import("./storage");
 
                 const existingPost = await prisma.article.findUnique({ where: { id } });
                 if (!existingPost) {
@@ -425,9 +425,15 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 if (b.categoryId !== undefined) postData.categoryId = b.categoryId;
                 if (b.status !== undefined) postData.status = b.status;
                 if (b.excerpt !== undefined) postData.excerpt = b.excerpt === "" ? null : b.excerpt;
-                if (b.featuredImage !== undefined) postData.featuredImage = b.featuredImage === "" ? null : b.featuredImage;
+                if (b.featuredImage !== undefined) {
+                    postData.featuredImage = b.featuredImage === "" ? null : b.featuredImage;
+                }
                 if (b.tags !== undefined) postData.tags = typeof b.tags === 'string' ? JSON.parse(b.tags) : (b.tags || []);
                 if (b.isFeatured !== undefined) postData.isFeatured = b.isFeatured === 'true' || b.isFeatured === true;
+
+                // เก็บ URL รูปเดิมไว้เพื่อลบหลังบันทึกสำเร็จ
+                const oldFeaturedImage = existingPost.featuredImage;
+                let shouldDeleteOldImage = false;
 
                 const imageFile = b.imageFile;
 
@@ -444,6 +450,10 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         mimetype: imageFile.type
                     });
                     postData.featuredImage = url;
+                    shouldDeleteOldImage = true;
+                } else if (b.featuredImage === "" && oldFeaturedImage) {
+                    // เคลียร์รูป — ลบหลังบันทึกสำเร็จ
+                    shouldDeleteOldImage = true;
                 }
 
                 const validatedData = validateInput(articleSchema.partial(), postData);
@@ -475,6 +485,11 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     where: { id },
                     data: updateData
                 });
+
+                // ลบรูปเดิมหลังบันทึก DB สำเร็จแล้วเท่านั้น
+                if (shouldDeleteOldImage) {
+                    await deleteOldFile(oldFeaturedImage);
+                }
 
                 return post;
             } catch (error: any) {
@@ -513,24 +528,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Not Found', message: 'ไม่พบบทความที่ต้องการลบ' };
                 }
 
-                // Delete image from MinIO if it exists and is internal
-                if (article.featuredImage) {
-                    try {
-                        const { deleteFile, BUCKET } = await import("./storage");
-
-                        // Check if the URL points to our MinIO instance
-                        const bucketStr = `/${BUCKET}/`;
-                        if (article.featuredImage.includes(bucketStr)) {
-                            const objectPath = article.featuredImage.split(bucketStr)[1];
-                            if (objectPath) {
-                                await deleteFile(objectPath);
-                            }
-                        }
-                    } catch (storageError) {
-                        console.error('Failed to delete article image from storage:', storageError);
-                        // We continue with database deletion even if storage deletion fails
-                    }
-                }
+                // ลบรูปจาก MinIO (ถ้ามี)
+                const { deleteOldFile } = await import("./storage");
+                await deleteOldFile(article.featuredImage);
 
                 await prisma.article.delete({
                     where: { id }
@@ -1405,7 +1405,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         // อัพโหลด QR Code สำหรับการชำระเงิน
         .post("/upload-qr", async ({ body: { file }, set }) => {
             try {
-                const { uploadFile, isValidImageType, isValidFileSize } = await import("./storage");
+                const { uploadFile, isValidImageType, isValidFileSize, deleteOldFile } = await import("./storage");
 
                 if (!file) {
                     set.status = 400;
@@ -1422,6 +1422,10 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Bad Request', message: 'ขนาดไฟล์ใหญ่เกินไป (สูงสุด 10MB)' };
                 }
 
+                // เก็บ URL เดิมไว้ลบหลังสำเร็จ
+                const existingQr = await prisma.systemSetting.findUnique({ where: { key: 'payment.qrCodeImage' } });
+                const oldQrUrl = existingQr?.value;
+
                 const buffer = Buffer.from(await file.arrayBuffer());
                 const ext = file.name.split('.').pop() || 'png';
                 const filename = `settings/payment-qr-${Date.now()}.${ext}`;
@@ -1434,6 +1438,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     create: { key: 'payment.qrCodeImage', value: url },
                     update: { value: url }
                 });
+
+                // ลบ QR Code เดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
+                await deleteOldFile(oldQrUrl);
 
                 return { url, message: 'อัพโหลด QR Code สำเร็จ' };
             } catch (error) {
