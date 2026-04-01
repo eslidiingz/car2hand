@@ -104,6 +104,7 @@ export default function PackagesPage() {
     const [selectedPackage, setSelectedPackage] = useState<PackageData | null>(null);
     const [slipFile, setSlipFile] = useState<File | null>(null);
     const [slipPreview, setSlipPreview] = useState<string | null>(null);
+    const [dragOverSlip, setDragOverSlip] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -323,7 +324,7 @@ export default function PackagesPage() {
                     </div>
                 </div>
                 {/* Stats row */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className={`grid gap-3 mb-4 ${currentPkg?.expiresAt ? 'grid-cols-2' : 'grid-cols-1'}`}>
                     <div className="bg-gray-50 px-3 py-2.5 rounded-xl">
                         <p className="text-[10px] text-gray-400">ประกาศที่ใช้งาน</p>
                         <p className="text-lg font-bold text-gray-800">
@@ -348,11 +349,11 @@ export default function PackagesPage() {
                         );
                     })()}
                 </div>
-                {/* Renewal button */}
+                {/* Renewal button — แสดงเฉพาะเมื่อเหลือ ≤ 7 วัน */}
                 {currentPkg && currentPkg.slug !== 'basic' && (() => {
                     const currentFullPkg = packages.find(p => p.id === currentPkg.id || p.slug === currentPkg.slug);
                     const daysLeft = getDaysRemaining(currentPkg.expiresAt);
-                    if (!currentFullPkg || (daysLeft !== null && daysLeft <= 0)) return null;
+                    if (!currentFullPkg || daysLeft === null || daysLeft <= 0 || daysLeft > 7) return null;
                     return (
                         <button
                             onClick={() => openUpgradeModal(currentFullPkg, true)}
@@ -619,9 +620,23 @@ export default function PackagesPage() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <label className="flex flex-col items-center gap-3 p-8 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-primary hover:bg-blue-50/50 transition group">
-                                        <ImageIcon weight="thin" className="text-4xl text-gray-300 group-hover:text-primary transition" />
-                                        <span className="text-sm text-gray-500 group-hover:text-primary font-bold">คลิกเพื่ออัพโหลดสลิปการโอนเงิน</span>
+                                    <label
+                                        className={`flex flex-col items-center gap-3 p-8 border-2 border-dashed rounded-xl cursor-pointer transition group ${dragOverSlip ? 'border-primary bg-blue-50/50' : 'border-gray-200 hover:border-primary hover:bg-blue-50/50'}`}
+                                        onDragOver={(e) => { e.preventDefault(); setDragOverSlip(true); }}
+                                        onDragLeave={() => setDragOverSlip(false)}
+                                        onDrop={(e) => {
+                                            e.preventDefault(); setDragOverSlip(false);
+                                            const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                            if (file) {
+                                                setSlipFile(file);
+                                                const reader = new FileReader();
+                                                reader.onload = () => setSlipPreview(reader.result as string);
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    >
+                                        <ImageIcon weight="thin" className={`text-4xl transition ${dragOverSlip ? 'text-primary' : 'text-gray-300 group-hover:text-primary'}`} />
+                                        <span className={`text-sm font-bold transition ${dragOverSlip ? 'text-primary' : 'text-gray-500 group-hover:text-primary'}`}>{dragOverSlip ? 'วางรูปที่นี่' : 'คลิกหรือลากสลิปมาวาง'}</span>
                                         <span className="text-xs text-gray-400">รองรับไฟล์ JPG, PNG, WebP</span>
                                         <input type="file" accept="image/*" onChange={handleSlipChange} className="hidden" />
                                     </label>

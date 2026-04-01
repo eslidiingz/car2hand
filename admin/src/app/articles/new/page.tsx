@@ -70,14 +70,17 @@ export default function NewPostPage() {
 
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [dragOverImage, setDragOverImage] = useState(false);
 
-    const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
+    const handleImageFile = (file: File) => {
         setImageFile(file);
         setImagePreview(URL.createObjectURL(file));
         setError(null);
+    };
+
+    const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) handleImageFile(file);
     };
 
     const handleSubmit = async (e: React.FormEvent, statusOverride?: "DRAFT" | "PUBLISHED") => {
@@ -128,8 +131,8 @@ export default function NewPostPage() {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-2xl font-semibold text-slate-800 tracking-tight">เขียนบทความใหม่</h1>
-                            <p className="text-slate-500 text-sm">สร้างคอนเทนต์คุณภาพเพื่อผู้ใช้งาน Car2Hand</p>
+                            <h1 className="text-2xl font-semibold text-foreground tracking-tight">เขียนบทความใหม่</h1>
+                            <p className="text-muted-foreground text-sm">สร้างคอนเทนต์คุณภาพเพื่อผู้ใช้งาน Car2Hand</p>
                         </div>
                     </div>
                 </div>
@@ -139,32 +142,32 @@ export default function NewPostPage() {
                         {/* Main Editor */}
                         <div className="lg:col-span-2 space-y-6">
                             {/* Title */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
-                                    <Label className="text-sm font-medium text-slate-700 mb-3 block">หัวข้อบทความ</Label>
+                                    <Label className="text-sm font-medium text-foreground mb-3 block">หัวข้อบทความ</Label>
                                     <div className="relative group">
-                                        <Type className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                                        <Type className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                         <Input
                                             required
                                             placeholder="เช่น 10 จุดที่ต้องเช็ค เมื่อไปดูรถมือสอง..."
                                             value={formData.title}
                                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                            className="h-12 pl-12 pr-4 bg-slate-50 border-slate-200 rounded-lg focus:bg-white transition-colors font-semibold text-lg"
+                                            className="h-12 pl-12 pr-4 bg-muted border-border rounded-lg focus:bg-white transition-colors font-semibold text-lg"
                                         />
                                     </div>
                                 </CardContent>
                             </Card>
 
                             {/* Content */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
-                                    <Label className="text-sm font-medium text-slate-700 mb-3 block">เนื้อหาบทความ</Label>
+                                    <Label className="text-sm font-medium text-foreground mb-3 block">เนื้อหาบทความ</Label>
                                     <Textarea
                                         required
                                         placeholder="เริ่มเขียนเนื้อหาบทความของคุณที่นี่..."
                                         value={formData.content}
                                         onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        className="p-4 bg-slate-50 border-slate-200 rounded-lg focus:bg-white transition-colors text-base leading-relaxed min-h-[500px] resize-none"
+                                        className="p-4 bg-muted border-border rounded-lg focus:bg-white transition-colors text-base leading-relaxed min-h-[500px] resize-none"
                                     />
                                 </CardContent>
                             </Card>
@@ -173,17 +176,17 @@ export default function NewPostPage() {
                         {/* Sidebar Options */}
                         <div className="space-y-6">
                             {/* Category & Status Actions */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6 space-y-5">
                                     <div>
-                                        <Label className="text-sm font-medium text-slate-700 mb-2 block flex items-center gap-2">
+                                        <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
                                             <Tag size={14} className="text-primary" /> เลือกหมวดหมู่
                                         </Label>
                                         <Select
                                             value={formData.categoryId}
                                             onValueChange={(val) => setFormData({ ...formData, categoryId: val })}
                                         >
-                                            <SelectTrigger className="h-10 rounded-lg bg-slate-50 border-slate-200 font-medium">
+                                            <SelectTrigger className="h-10 rounded-lg bg-muted border-border font-medium">
                                                 <SelectValue placeholder="เลือกหมวดหมู่" />
                                             </SelectTrigger>
                                             <SelectContent className="rounded-lg">
@@ -194,7 +197,7 @@ export default function NewPostPage() {
                                         </Select>
                                     </div>
 
-                                    <div className="pt-4 border-t border-slate-100 space-y-2">
+                                    <div className="pt-4 border-t border-border space-y-2">
                                         <Button
                                             type="button"
                                             variant="outline"
@@ -225,9 +228,9 @@ export default function NewPostPage() {
                             </Card>
 
                             {/* Excerpt */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
-                                    <Label className="text-sm font-medium text-slate-700 mb-2 block flex items-center gap-2">
+                                    <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
                                         <AlignLeft size={14} className="text-primary" /> คำโปรย (Excerpt)
                                     </Label>
                                     <Textarea
@@ -235,15 +238,15 @@ export default function NewPostPage() {
                                         placeholder="สรุปเนื้อหาสั้นๆ เพื่อแสดงในหน้าแรก..."
                                         value={formData.excerpt}
                                         onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                                        className="p-4 bg-slate-50 border-slate-200 rounded-lg focus:bg-white transition-colors text-sm resize-none"
+                                        className="p-4 bg-muted border-border rounded-lg focus:bg-white transition-colors text-sm resize-none"
                                     />
                                 </CardContent>
                             </Card>
 
                             {/* Tags */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
-                                    <Label className="text-sm font-medium text-slate-700 mb-2 block flex items-center gap-2">
+                                    <Label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
                                         <Hash size={14} className="text-primary" /> แท็ก (Tags)
                                     </Label>
                                     <div className="flex gap-2 mb-3">
@@ -261,7 +264,7 @@ export default function NewPostPage() {
                                                     setTagInput('');
                                                 }
                                             }}
-                                            className="h-9 rounded-lg bg-slate-50 border-slate-200 text-sm flex-1"
+                                            className="h-9 rounded-lg bg-muted border-border text-sm flex-1"
                                         />
                                     </div>
                                     {tags.length > 0 && (
@@ -284,10 +287,10 @@ export default function NewPostPage() {
                             </Card>
 
                             {/* isFeatured Toggle */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
                                     <label className="flex items-center justify-between cursor-pointer">
-                                        <span className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                        <span className="text-sm font-medium text-foreground flex items-center gap-2">
                                             <Star size={14} className="text-primary" /> บทความแนะนำ
                                         </span>
                                         <div className="relative">
@@ -297,40 +300,49 @@ export default function NewPostPage() {
                                                 onChange={(e) => setIsFeatured(e.target.checked)}
                                                 className="sr-only peer"
                                             />
-                                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                            <div className="w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                         </div>
                                     </label>
-                                    <p className="text-xs text-slate-400 mt-2">แสดงบทความนี้ในส่วน &quot;บทความแนะนำ&quot; บนหน้าแรก</p>
+                                    <p className="text-xs text-muted-foreground mt-2">แสดงบทความนี้ในส่วน &quot;บทความแนะนำ&quot; บนหน้าแรก</p>
                                 </CardContent>
                             </Card>
 
                             {/* Featured Image */}
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
-                                    <Label className="text-sm font-medium text-slate-700 mb-3 block flex items-center gap-2">
+                                    <Label className="text-sm font-medium text-foreground mb-3 block flex items-center gap-2">
                                         <ImageIcon size={14} className="text-primary" /> รูปหน้าปกบทความ
                                     </Label>
 
                                     <div className="space-y-4">
                                         {/* Upload Area */}
                                         {!imagePreview && !formData.featuredImage ? (
-                                            <div className="relative group">
+                                            <div
+                                                className="relative group"
+                                                onDragOver={(e) => { e.preventDefault(); setDragOverImage(true); }}
+                                                onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverImage(false); }}
+                                                onDrop={(e) => {
+                                                    e.preventDefault(); setDragOverImage(false);
+                                                    const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                                    if (file) handleImageFile(file);
+                                                }}
+                                            >
                                                 <input
                                                     type="file"
                                                     accept="image/*"
                                                     onChange={handleImageFileChange}
                                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                 />
-                                                <div className="border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center transition-colors bg-slate-50 border-slate-200 group-hover:border-primary/40 group-hover:bg-primary/5">
+                                                <div className={`border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center transition-colors ${dragOverImage ? 'border-primary/60 bg-primary/10' : 'bg-muted border-border group-hover:border-primary/40 group-hover:bg-primary/5'}`}>
                                                     <div className="h-12 w-12 bg-white rounded-lg flex items-center justify-center shadow-sm mb-3">
                                                         <Upload className="h-6 w-6 text-primary" />
                                                     </div>
-                                                    <p className="text-sm font-medium text-slate-600">อัปโหลดรูปภาพ</p>
-                                                    <p className="text-xs text-slate-400 mt-1">WebP, JPG, PNG (1200x800px)</p>
+                                                    <p className="text-sm font-medium text-muted-foreground">{dragOverImage ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}</p>
+                                                    <p className="text-xs text-muted-foreground mt-1">WebP, JPG, PNG (1200x800px)</p>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="relative rounded-lg overflow-hidden aspect-video bg-slate-100 border border-slate-200 group">
+                                            <div className="relative rounded-lg overflow-hidden aspect-video bg-accent border border-border group">
                                                 <img
                                                     src={imagePreview || formData.featuredImage}
                                                     alt="Preview"
@@ -353,13 +365,13 @@ export default function NewPostPage() {
                                         )}
 
                                         <div className="space-y-1.5">
-                                            <Label className="text-xs text-slate-400">หรือระบุ URL รูปภาพ</Label>
+                                            <Label className="text-xs text-muted-foreground">หรือระบุ URL รูปภาพ</Label>
                                             <Input
                                                 type="url"
                                                 placeholder="https://example.com/image.jpg"
                                                 value={formData.featuredImage}
                                                 onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
-                                                className="h-9 rounded-lg bg-slate-50 border-slate-200 text-xs"
+                                                className="h-9 rounded-lg bg-muted border-border text-xs"
                                             />
                                         </div>
                                     </div>

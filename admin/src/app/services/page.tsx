@@ -100,7 +100,7 @@ export default function AdminServicesPage() {
             description: "จัดการแพ็กเกจตรวจสภาพและพาร์ทเนอร์",
             href: "/services/settings",
             icon: Settings,
-            color: "text-slate-600",
+            color: "text-muted-foreground",
         },
     ];
 
@@ -108,8 +108,8 @@ export default function AdminServicesPage() {
         <DashboardLayout>
             <div className="space-y-6">
                 <div className="flex items-center gap-3">
-                    <Wrench className="h-6 w-6 text-slate-700" />
-                    <h1 className="text-2xl font-bold text-slate-900">จัดการบริการ</h1>
+                    <Wrench className="h-6 w-6 text-foreground" />
+                    <h1 className="text-2xl font-bold text-foreground">จัดการบริการ</h1>
                 </div>
 
                 {/* Stats Grid */}
@@ -119,10 +119,10 @@ export default function AdminServicesPage() {
                             <CardContent className="p-5">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-slate-500">{card.title}</p>
-                                        <p className="mt-1 text-2xl font-bold text-slate-900">
+                                        <p className="text-sm text-muted-foreground">{card.title}</p>
+                                        <p className="mt-1 text-2xl font-bold text-foreground">
                                             {loading ? (
-                                                <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                                                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                                             ) : (
                                                 card.value.toLocaleString()
                                             )}
@@ -143,16 +143,16 @@ export default function AdminServicesPage() {
                         <Link key={link.href} href={link.href}>
                             <Card className="cursor-pointer transition-shadow hover:shadow-md h-full">
                                 <CardContent className="flex items-center gap-4 p-5">
-                                    <div className="rounded-lg bg-slate-50 p-3">
+                                    <div className="rounded-lg bg-muted p-3">
                                         <link.icon className={`h-6 w-6 ${link.color}`} />
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-semibold text-slate-900">{link.title}</h3>
-                                        <p className="mt-0.5 text-sm text-slate-500">
+                                        <h3 className="font-semibold text-foreground">{link.title}</h3>
+                                        <p className="mt-0.5 text-sm text-muted-foreground">
                                             {link.description}
                                         </p>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-slate-400" />
+                                    <ArrowRight className="h-4 w-4 text-muted-foreground" />
                                 </CardContent>
                             </Card>
                         </Link>

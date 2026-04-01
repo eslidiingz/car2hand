@@ -71,6 +71,7 @@ export default function MyListingsPage() {
     const [renewLoading, setRenewLoading] = useState(false);
     const [renewSlipPreview, setRenewSlipPreview] = useState<string | null>(null);
     const [renewSlipData, setRenewSlipData] = useState<string | null>(null);
+    const [dragOverSlip, setDragOverSlip] = useState(false);
     const [renewError, setRenewError] = useState<string | null>(null);
     const [pendingRenewalIds, setPendingRenewalIds] = useState<Set<string>>(new Set());
     const [toastMsg, setToastMsg] = useState<{ message: string; type: string } | null>(null);
@@ -640,9 +641,21 @@ export default function MyListingsPage() {
                                         </button>
                                     </div>
                                 ) : (
-                                    <label className="flex flex-col items-center gap-3 p-6 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition group">
-                                        <ImageIcon weight="thin" size={40} className="text-gray-300 group-hover:text-emerald-500 transition" />
-                                        <span className="text-sm text-gray-500 group-hover:text-emerald-600 font-bold">คลิกเพื่ออัพโหลดสลิปการโอนเงิน</span>
+                                    <label
+                                        className={`flex flex-col items-center gap-3 p-6 border-2 border-dashed rounded-xl cursor-pointer transition group ${dragOverSlip ? 'border-emerald-400 bg-emerald-50/50' : 'border-gray-200 hover:border-emerald-400 hover:bg-emerald-50/50'}`}
+                                        onDragOver={(e) => { e.preventDefault(); setDragOverSlip(true); }}
+                                        onDragLeave={() => setDragOverSlip(false)}
+                                        onDrop={(e) => {
+                                            e.preventDefault(); setDragOverSlip(false);
+                                            const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                            if (!file) return;
+                                            const reader = new FileReader();
+                                            reader.onload = () => { setRenewSlipPreview(reader.result as string); setRenewSlipData(reader.result as string); };
+                                            reader.readAsDataURL(file);
+                                        }}
+                                    >
+                                        <ImageIcon weight="thin" size={40} className={`transition ${dragOverSlip ? 'text-emerald-500' : 'text-gray-300 group-hover:text-emerald-500'}`} />
+                                        <span className={`text-sm font-bold transition ${dragOverSlip ? 'text-emerald-600' : 'text-gray-500 group-hover:text-emerald-600'}`}>{dragOverSlip ? 'วางรูปที่นี่' : 'คลิกหรือลากสลิปมาวาง'}</span>
                                         <span className="text-xs text-gray-400">รองรับไฟล์ JPG, PNG, WebP</span>
                                         <input
                                             type="file"

@@ -15,9 +15,9 @@ export default function DashboardLayout({
 
     if (isLoading) {
         return (
-            <div className="h-screen w-full flex flex-col items-center justify-center bg-slate-50">
+            <div className="h-screen w-full flex flex-col items-center justify-center bg-background">
                 <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
-                <p className="text-slate-400 font-medium">กำลังเตรียมข้อมูล...</p>
+                <p className="text-muted-foreground font-medium">กำลังเตรียมข้อมูล...</p>
             </div>
         );
     }
@@ -28,7 +28,7 @@ export default function DashboardLayout({
 
     return (
         <PendingProvider>
-            <div className="flex h-screen bg-slate-50 overflow-hidden">
+            <div className="flex h-screen bg-background overflow-hidden">
                 {/* Sidebar - Desktop */}
                 <div className="hidden md:flex md:flex-shrink-0">
                     <Sidebar />

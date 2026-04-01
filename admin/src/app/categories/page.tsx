@@ -154,10 +154,10 @@ export default function CategoriesPage() {
         <DashboardLayout>
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <Tag className="text-primary" /> จัดการหมวดหมู่บทความ
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">จัดการหัวข้อบทความเพื่อให้ผู้ใช้อ่านข้อมูลได้ตรงตามความสนใจ</p>
+                    <p className="text-muted-foreground mt-1 text-sm">จัดการหัวข้อบทความเพื่อให้ผู้ใช้อ่านข้อมูลได้ตรงตามความสนใจ</p>
                 </div>
                 {!showNewForm && !isEditing && (
                     <Button
@@ -184,7 +184,7 @@ export default function CategoriesPage() {
 
             {/* Create / Edit Form */}
             {(showNewForm || isEditing) && (
-                <Card className="rounded-xl border-slate-200 mb-6">
+                <Card className="rounded-xl border-border mb-6">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-base">
                             {showNewForm ? <Plus className="text-primary" size={18} /> : <Edit className="text-primary" size={18} />}
@@ -240,13 +240,13 @@ export default function CategoriesPage() {
             )}
 
             {/* List */}
-            <Card className="rounded-xl border-slate-200 overflow-hidden shadow-sm">
+            <Card className="rounded-xl border-border overflow-hidden shadow-sm">
                 <Table>
-                    <TableHeader className="bg-slate-50">
+                    <TableHeader className="bg-muted">
                         <TableRow>
-                            <TableHead className="px-6 py-3 font-medium text-slate-500 text-xs">ชื่อหมวดหมู่</TableHead>
-                            <TableHead className="px-6 py-3 font-medium text-slate-500 text-xs">Slug</TableHead>
-                            <TableHead className="px-6 py-3 font-medium text-slate-500 text-xs text-right">จัดการ</TableHead>
+                            <TableHead className="px-6 py-3 font-medium text-muted-foreground text-xs">ชื่อหมวดหมู่</TableHead>
+                            <TableHead className="px-6 py-3 font-medium text-muted-foreground text-xs">Slug</TableHead>
+                            <TableHead className="px-6 py-3 font-medium text-muted-foreground text-xs text-right">จัดการ</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -254,17 +254,17 @@ export default function CategoriesPage() {
                             <TableRow>
                                 <TableCell colSpan={3} className="px-6 py-16 text-center">
                                     <Loader2 className="h-6 w-6 text-primary animate-spin mx-auto mb-2" />
-                                    <p className="text-slate-400 text-sm">กำลังโหลด...</p>
+                                    <p className="text-muted-foreground text-sm">กำลังโหลด...</p>
                                 </TableCell>
                             </TableRow>
                         ) : categories.length > 0 ? (
                             categories.map((category) => (
-                                <TableRow key={category.id} className="group hover:bg-slate-50 transition-colors">
+                                <TableRow key={category.id} className="group hover:bg-muted transition-colors">
                                     <TableCell className="px-6 py-3.5">
-                                        <span className="font-medium text-slate-800 text-sm">{category.name}</span>
+                                        <span className="font-medium text-foreground text-sm">{category.name}</span>
                                     </TableCell>
                                     <TableCell className="px-6 py-3.5">
-                                        <code className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono">
+                                        <code className="text-xs bg-accent text-muted-foreground px-2 py-0.5 rounded font-mono">
                                             {category.slug}
                                         </code>
                                     </TableCell>
@@ -293,7 +293,7 @@ export default function CategoriesPage() {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={3} className="px-6 py-16 text-center">
-                                    <p className="text-slate-400 text-sm">ยังไม่มีหมวดหมู่บทความ</p>
+                                    <p className="text-muted-foreground text-sm">ยังไม่มีหมวดหมู่บทความ</p>
                                 </TableCell>
                             </TableRow>
                         )}

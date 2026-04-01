@@ -78,7 +78,7 @@ interface Transaction {
 }
 
 const slugIcons: Record<string, React.ReactNode> = {
-    basic: <Zap className="text-slate-400" size={16} />,
+    basic: <Zap className="text-muted-foreground" size={16} />,
     standard: <Star className="text-blue-500" size={16} />,
     professional: <Rocket className="text-orange-500" size={16} />,
     premium: <Crown className="text-yellow-500" size={16} />,
@@ -236,10 +236,10 @@ export default function AdminPackagesPage() {
         <DashboardLayout>
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <Package className="text-primary" /> จัดการแพ็กเกจ
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">จัดการ Master Data แพ็กเกจ และตรวจสอบคำขออัพเกรด</p>
+                    <p className="text-muted-foreground mt-1 text-sm">จัดการ Master Data แพ็กเกจ และตรวจสอบคำขออัพเกรด</p>
                 </div>
                 {pendingCount > 0 && (
                     <div className="flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-lg text-sm font-medium border border-amber-200">
@@ -260,31 +260,31 @@ export default function AdminPackagesPage() {
                 </TabsList>
 
             <TabsContent value="packages">
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div className="divide-y divide-slate-100">
+                <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+                    <div className="divide-y divide-border">
                         {packages.map(pkg => (
                             <div key={pkg.id} className={`p-5 ${!pkg.isActive ? 'opacity-50' : ''}`}>
                                 <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                                     <div className="flex items-center gap-3 min-w-[200px]">
-                                        <div className="w-9 h-9 bg-slate-50 rounded-lg flex items-center justify-center">
+                                        <div className="w-9 h-9 bg-muted rounded-lg flex items-center justify-center">
                                             {getSlugIcon(pkg.slug)}
                                         </div>
                                         <div>
-                                            <p className="font-medium text-sm text-slate-800">{pkg.name}</p>
-                                            <p className="text-xs text-slate-400">{pkg.nameTh}</p>
+                                            <p className="font-medium text-sm text-foreground">{pkg.name}</p>
+                                            <p className="text-xs text-muted-foreground">{pkg.nameTh}</p>
                                         </div>
                                     </div>
-                                    <div className="flex flex-wrap gap-2 text-xs text-slate-600">
+                                    <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                                         <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded font-medium flex items-center gap-1"><CreditCard size={12} /> ฿{Number(pkg.price).toLocaleString()}{Number(pkg.price) > 0 ? '/เดือน' : ' ฟรี'}</span>
-                                        <span className="bg-slate-50 px-2 py-1 rounded flex items-center gap-1"><Car size={12} className="text-slate-400" /> {pkg.maxListings === -1 ? '∞' : pkg.maxListings} ประกาศ</span>
-                                        <span className="bg-slate-50 px-2 py-1 rounded flex items-center gap-1"><ImagePlus size={12} className="text-slate-400" /> {pkg.maxPhotosPerListing} รูป</span>
-                                        <span className="bg-slate-50 px-2 py-1 rounded flex items-center gap-1"><Clock size={12} className="text-slate-400" /> {pkg.listingDurationDays === -1 ? 'ไม่หมดอายุ' : `${pkg.listingDurationDays} วัน`}</span>
+                                        <span className="bg-muted px-2 py-1 rounded flex items-center gap-1"><Car size={12} className="text-muted-foreground" /> {pkg.maxListings === -1 ? '∞' : pkg.maxListings} ประกาศ</span>
+                                        <span className="bg-muted px-2 py-1 rounded flex items-center gap-1"><ImagePlus size={12} className="text-muted-foreground" /> {pkg.maxPhotosPerListing} รูป</span>
+                                        <span className="bg-muted px-2 py-1 rounded flex items-center gap-1"><Clock size={12} className="text-muted-foreground" /> {pkg.listingDurationDays === -1 ? 'ไม่หมดอายุ' : `${pkg.listingDurationDays} วัน`}</span>
                                         <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded flex items-center gap-1"><Zap size={12} /> ดันอัตโนมัติ {pkg.autoBumpPerDay || 0}/วัน</span>
                                         <span className="bg-sky-50 text-sky-700 px-2 py-1 rounded flex items-center gap-1"><Zap size={12} /> ดันเอง {pkg.manualBumpPerDay || 0}/คัน/วัน</span>
                                         <span className="bg-amber-50 text-amber-700 px-2 py-1 rounded flex items-center gap-1"><Search size={12} /> {pkg.searchPriority === 'priority' ? 'บนสุด' : pkg.searchPriority === 'top' ? 'ลำดับต้น' : pkg.searchPriority === 'higher' ? 'ดีกว่าปกติ' : 'ปกติ'}</span>
                                         {pkg.badge && <span className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded flex items-center gap-1"><Award size={12} /> {pkg.badge}</span>}
                                     </div>
-                                    <div className="flex gap-3 ml-auto text-xs text-slate-400 flex-shrink-0">
+                                    <div className="flex gap-3 ml-auto text-xs text-muted-foreground flex-shrink-0">
                                         <span>{pkg._count?.users || 0} ผู้ใช้</span>
                                         <span>{pkg._count?.transactions || 0} รายการ</span>
                                     </div>
@@ -296,7 +296,7 @@ export default function AdminPackagesPage() {
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => openEditModal(pkg)}
-                                            className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                                            className="h-8 w-8 text-muted-foreground hover:text-blue-600 hover:bg-blue-50"
                                         >
                                             <Pencil size={14} />
                                         </Button>
@@ -319,42 +319,42 @@ export default function AdminPackagesPage() {
                         </TabsList>
                     </Tabs>
 
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                         {isLoading ? (
-                            <div className="p-12 text-center text-slate-400">
+                            <div className="p-12 text-center text-muted-foreground">
                                 <Package className="mx-auto mb-3 animate-pulse opacity-30" size={32} />
                                 <p className="text-sm">กำลังโหลด...</p>
                             </div>
                         ) : transactions.length === 0 ? (
-                            <div className="p-12 text-center text-slate-400">
+                            <div className="p-12 text-center text-muted-foreground">
                                 <Package className="mx-auto mb-3 opacity-30" size={32} />
                                 <p className="text-sm">ไม่พบรายการ</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-slate-100">
+                            <div className="divide-y divide-border">
                                 {transactions.map(tx => {
                                     const status = statusConfig[tx.status] || statusConfig.PENDING;
                                     return (
-                                        <div key={tx.id} className="p-5 hover:bg-slate-50 transition-colors">
+                                        <div key={tx.id} className="p-5 hover:bg-accent transition-colors">
                                             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                                                 {/* User Info */}
                                                 <div className="flex items-center gap-3 min-w-[200px]">
-                                                    <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500">
+                                                    <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-muted-foreground">
                                                         <User size={18} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-sm text-slate-800">{tx.user.fullName}</p>
-                                                        <p className="text-xs text-slate-400">{tx.user.email}</p>
+                                                        <p className="font-medium text-sm text-foreground">{tx.user.fullName}</p>
+                                                        <p className="text-xs text-muted-foreground">{tx.user.email}</p>
                                                     </div>
                                                 </div>
 
                                                 {/* Package Info */}
                                                 <div className="flex items-center gap-2 min-w-[200px]">
-                                                    <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500">
+                                                    <div className="flex items-center gap-1.5 bg-muted px-2.5 py-1 rounded-md text-xs font-medium text-muted-foreground">
                                                         {getSlugIcon(tx.fromPackageSlug || tx.user.currentPackage?.slug || 'basic')}
                                                         {tx.fromPackageName || tx.user.currentPackage?.name || 'Basic'}
                                                     </div>
-                                                    <span className="text-slate-300 text-xs">{tx.transactionType === 'RENEWAL' ? '🔄' : '→'}</span>
+                                                    <span className="text-muted-foreground text-xs">{tx.transactionType === 'RENEWAL' ? '🔄' : '→'}</span>
                                                     <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium ${tx.transactionType === 'RENEWAL' ? 'bg-green-50 text-green-700' : 'bg-blue-50 text-blue-700'}`}>
                                                         {getSlugIcon(tx.package.slug)}
                                                         {tx.package.name}
@@ -366,11 +366,11 @@ export default function AdminPackagesPage() {
 
                                                 {/* Amount */}
                                                 <div className="min-w-[100px]">
-                                                    <p className="text-base font-semibold text-slate-800">฿{Number(tx.amount).toLocaleString()}</p>
+                                                    <p className="text-base font-semibold text-foreground">฿{Number(tx.amount).toLocaleString()}</p>
                                                 </div>
 
                                                 {/* Date */}
-                                                <div className="min-w-[120px] text-xs text-slate-400">
+                                                <div className="min-w-[120px] text-xs text-muted-foreground">
                                                     {new Date(tx.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                 </div>
 
@@ -453,9 +453,9 @@ export default function AdminPackagesPage() {
             {viewSlip && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewSlip(null)} />
-                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-lg w-full overflow-hidden">
-                        <div className="p-4 border-b border-slate-200 flex justify-between items-center">
-                            <h3 className="font-semibold text-slate-800">สลิปการโอนเงิน</h3>
+                    <div className="relative z-10 bg-card rounded-xl shadow-lg max-w-lg w-full overflow-hidden">
+                        <div className="p-4 border-b border-border flex justify-between items-center">
+                            <h3 className="font-semibold text-foreground">สลิปการโอนเงิน</h3>
                             <Button variant="ghost" size="icon" onClick={() => setViewSlip(null)} className="h-8 w-8">
                                 <X size={18} />
                             </Button>
@@ -474,43 +474,43 @@ export default function AdminPackagesPage() {
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setApproveId(null)} />
-                        <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden">
+                        <div className="relative z-10 bg-card rounded-xl shadow-lg max-w-md w-full overflow-hidden">
                             <div className="p-6">
                                 {/* Icon */}
                                 <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center mx-auto mb-4">
                                     <CheckCircle className="text-emerald-500" size={24} />
                                 </div>
-                                <h3 className="text-lg font-semibold text-center text-slate-800 mb-1">ยืนยันการอนุมัติ</h3>
-                                <p className="text-sm text-center text-slate-400 mb-5">ตรวจสอบรายละเอียดก่อนอนุมัติ</p>
+                                <h3 className="text-lg font-semibold text-center text-foreground mb-1">ยืนยันการอนุมัติ</h3>
+                                <p className="text-sm text-center text-muted-foreground mb-5">ตรวจสอบรายละเอียดก่อนอนุมัติ</p>
 
                                 {/* Transaction Detail Card */}
-                                <div className="bg-slate-50 rounded-xl p-4 space-y-3 mb-5">
+                                <div className="bg-muted rounded-xl p-4 space-y-3 mb-5">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-9 h-9 bg-white rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 flex-shrink-0">
+                                        <div className="w-9 h-9 bg-card rounded-lg border border-border flex items-center justify-center text-muted-foreground flex-shrink-0">
                                             <User size={16} />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-semibold text-slate-800">{tx.user.fullName}</p>
-                                            <p className="text-xs text-slate-400">{tx.user.email}</p>
+                                            <p className="text-sm font-semibold text-foreground">{tx.user.fullName}</p>
+                                            <p className="text-xs text-muted-foreground">{tx.user.email}</p>
                                         </div>
                                     </div>
-                                    <div className="border-t border-slate-200 pt-3 flex items-center justify-between gap-3">
+                                    <div className="border-t border-border pt-3 flex items-center justify-between gap-3">
                                         <div className="flex items-center gap-2">
-                                            <div className="flex items-center gap-1.5 bg-white border border-slate-200 px-2.5 py-1 rounded-md text-xs font-medium text-slate-500">
+                                            <div className="flex items-center gap-1.5 bg-card border border-border px-2.5 py-1 rounded-md text-xs font-medium text-muted-foreground">
                                                 {getSlugIcon(tx.user.currentPackage?.slug || 'basic')}
                                                 {tx.user.currentPackage?.name || 'Basic'}
                                             </div>
-                                            <span className="text-slate-300 text-xs">→</span>
+                                            <span className="text-muted-foreground text-xs">→</span>
                                             <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md text-xs font-semibold text-emerald-700">
                                                 {getSlugIcon(tx.package.slug)}
                                                 {tx.package.name}
                                             </div>
                                         </div>
-                                        <p className="text-base font-bold text-slate-800">฿{Number(tx.amount).toLocaleString()}</p>
+                                        <p className="text-base font-bold text-foreground">฿{Number(tx.amount).toLocaleString()}</p>
                                     </div>
                                 </div>
 
-                                <p className="text-xs text-center text-slate-400 mb-5">
+                                <p className="text-xs text-center text-muted-foreground mb-5">
                                     เมื่ออนุมัติแล้ว ผู้ใช้จะได้รับสิทธิ์แพ็กเกจ <span className="font-semibold text-emerald-600">{tx.package.name}</span> ทันที
                                 </p>
 
@@ -542,60 +542,60 @@ export default function AdminPackagesPage() {
             {editingPkg && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEditingPkg(null)} />
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 relative z-10 max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-slate-100">
-                            <h3 className="text-lg font-bold text-slate-800">แก้ไขแพ็กเกจ: {editingPkg.name}</h3>
+                    <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg mx-4 relative z-10 max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-border">
+                            <h3 className="text-lg font-bold text-foreground">แก้ไขแพ็กเกจ: {editingPkg.name}</h3>
                         </div>
                         <div className="p-6 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ชื่อ (EN)</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ชื่อ (EN)</label>
                                     <input className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.name || ''} onChange={e => setEditForm({...editForm, name: e.target.value})} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ชื่อ (TH)</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ชื่อ (TH)</label>
                                     <input className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.nameTh || ''} onChange={e => setEditForm({...editForm, nameTh: e.target.value})} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">Slug</label>
-                                    <input className="w-full border rounded-lg px-3 py-2 text-sm bg-slate-50" value={editForm.slug || ''} onChange={e => setEditForm({...editForm, slug: e.target.value})} />
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">Slug</label>
+                                    <input className="w-full border rounded-lg px-3 py-2 text-sm bg-muted" value={editForm.slug || ''} onChange={e => setEditForm({...editForm, slug: e.target.value})} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ราคา (บาท/เดือน)</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ราคา (บาท/เดือน)</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.price ?? 0} onChange={e => setEditForm({...editForm, price: Number(e.target.value)})} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">จำนวนประกาศ</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">จำนวนประกาศ</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.maxListings ?? 0} onChange={e => setEditForm({...editForm, maxListings: Number(e.target.value)})} />
-                                    <p className="text-[10px] text-slate-400 mt-0.5">-1 = ไม่จำกัด</p>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">-1 = ไม่จำกัด</p>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">รูป/ประกาศ</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">รูป/ประกาศ</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.maxPhotosPerListing ?? 0} onChange={e => setEditForm({...editForm, maxPhotosPerListing: Number(e.target.value)})} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ระยะเวลา (วัน)</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ระยะเวลา (วัน)</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.listingDurationDays ?? 0} onChange={e => setEditForm({...editForm, listingDurationDays: Number(e.target.value)})} />
-                                    <p className="text-[10px] text-slate-400 mt-0.5">-1 = ไม่หมดอายุ</p>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">-1 = ไม่หมดอายุ</p>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ดันอัตโนมัติ (ครั้ง/วัน)</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ดันอัตโนมัติ (ครั้ง/วัน)</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.autoBumpPerDay ?? 0} onChange={e => setEditForm({...editForm, autoBumpPerDay: Number(e.target.value)})} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ดันเอง (ครั้ง/คัน/วัน)</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ดันเอง (ครั้ง/คัน/วัน)</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.manualBumpPerDay ?? 0} onChange={e => setEditForm({...editForm, manualBumpPerDay: Number(e.target.value)})} />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ลำดับการค้นหา</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ลำดับการค้นหา</label>
                                     <select className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.searchPriority || 'normal'} onChange={e => setEditForm({...editForm, searchPriority: e.target.value})}>
                                         <option value="normal">ปกติ</option>
                                         <option value="higher">ดีกว่าปกติ</option>
@@ -604,24 +604,24 @@ export default function AdminPackagesPage() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">Badge</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">Badge</label>
                                     <input className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.badge || ''} onChange={e => setEditForm({...editForm, badge: e.target.value || null})} placeholder="เช่น Verified Seller" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-500 mb-1">ลำดับแสดง</label>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">ลำดับแสดง</label>
                                     <input type="number" className="w-full border rounded-lg px-3 py-2 text-sm" value={editForm.sortOrder ?? 0} onChange={e => setEditForm({...editForm, sortOrder: Number(e.target.value)})} />
                                 </div>
                                 <div className="flex items-end pb-1">
                                     <label className="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox" checked={editForm.isActive ?? true} onChange={e => setEditForm({...editForm, isActive: e.target.checked})} className="rounded" />
-                                        <span className="text-sm text-slate-700">เปิดใช้งาน</span>
+                                        <span className="text-sm text-foreground">เปิดใช้งาน</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div className="p-6 border-t border-slate-100 flex gap-3">
+                        <div className="p-6 border-t border-border flex gap-3">
                             <Button variant="outline" className="flex-1" onClick={() => setEditingPkg(null)}>ยกเลิก</Button>
                             <Button className="flex-1 bg-brand-primary hover:bg-brand-primary/90 text-white" onClick={handleSaveEdit} disabled={editSaving}>
                                 {editSaving ? 'กำลังบันทึก...' : 'บันทึก'}
@@ -635,13 +635,13 @@ export default function AdminPackagesPage() {
             {deletePackageId && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeletePackageId(null)} />
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
+                    <div className="bg-card rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
                         <div className="text-center">
                             <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 className="text-rose-500" size={24} />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 mb-1">ยืนยันการลบแพ็กเกจ</h3>
-                            <p className="text-sm text-slate-500 mb-5">คุณต้องการลบแพ็กเกจนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+                            <h3 className="text-lg font-bold text-foreground mb-1">ยืนยันการลบแพ็กเกจ</h3>
+                            <p className="text-sm text-muted-foreground mb-5">คุณต้องการลบแพ็กเกจนี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
                             <div className="flex gap-3">
                                 <Button variant="outline" className="flex-1" onClick={() => setDeletePackageId(null)}>
                                     ยกเลิก
@@ -659,18 +659,18 @@ export default function AdminPackagesPage() {
             {rejectId && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setRejectId(null)} />
-                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden">
+                    <div className="relative z-10 bg-card rounded-xl shadow-lg max-w-md w-full overflow-hidden">
                         <div className="p-6">
                             <div className="w-12 h-12 bg-rose-50 rounded-lg flex items-center justify-center mx-auto mb-4">
                                 <XCircle className="text-rose-500" size={24} />
                             </div>
-                            <h3 className="text-lg font-semibold text-center text-slate-800 mb-1.5">ปฏิเสธรายการนี้?</h3>
-                            <p className="text-sm text-center text-slate-500 mb-5">ระบุเหตุผลในการปฏิเสธ (ไม่บังคับ)</p>
+                            <h3 className="text-lg font-semibold text-center text-foreground mb-1.5">ปฏิเสธรายการนี้?</h3>
+                            <p className="text-sm text-center text-muted-foreground mb-5">ระบุเหตุผลในการปฏิเสธ (ไม่บังคับ)</p>
                             <textarea
                                 value={rejectNote}
                                 onChange={e => setRejectNote(e.target.value)}
                                 placeholder="เหตุผลในการปฏิเสธ..."
-                                className="w-full p-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400 resize-none transition-colors"
+                                className="w-full p-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-border focus:border-border resize-none transition-colors"
                                 rows={3}
                             />
                             <div className="flex gap-3 mt-4">

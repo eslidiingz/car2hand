@@ -8,7 +8,8 @@ import {
     Motorcycle,
     MapPin,
     CalendarBlank,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Scales
 } from '@phosphor-icons/react';
 
 interface PreviewCardProps {
@@ -23,17 +24,17 @@ interface PreviewCardProps {
     sellerName?: string;
 }
 
-// Fuel type labels
+// Fuel type labels — match ListingCard
 const getFuelTypeLabel = (fuelType?: string) => {
     if (!fuelType) return '-';
     const labels: Record<string, string> = {
-        'PETROL': 'Petrol (เบนซิน)',
-        'DIESEL': 'Diesel (ดีเซล)',
-        'HYBRID': 'Hybrid (ไฮบริด)',
-        'PLUGIN_HYBRID': 'Plug-in Hybrid (ปลั๊กอินไฮบริด)',
-        'EV': 'EV (ไฟฟ้า)',
-        'LPG': 'LPG (แก๊ส)',
-        'NGV': 'NGV (แก๊ส)'
+        'PETROL': 'เบนซิน',
+        'DIESEL': 'ดีเซล',
+        'HYBRID': 'Hybrid',
+        'PLUGIN_HYBRID': 'Plug-in',
+        'EV': 'ไฟฟ้า (EV)',
+        'LPG': 'LPG',
+        'NGV': 'NGV'
     };
     return labels[fuelType] || fuelType;
 };
@@ -59,9 +60,9 @@ export default function PreviewCard({
     const mileageNum = typeof mileage === 'string' ? parseFloat(mileage) || 0 : mileage;
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
             {/* Image */}
-            <div className="relative aspect-[4/3] overflow-hidden">
+            <div className="relative aspect-3/2 overflow-hidden">
                 {imageUrl ? (
                     <img
                         src={imageUrl}
@@ -81,10 +82,15 @@ export default function PreviewCard({
                     </div>
                 )}
 
-                {/* Favorite Button */}
-                <button className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-400">
+                {/* Compare Button (decorative) */}
+                <div className="absolute top-3 right-12 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-400">
+                    <Scales size={18} />
+                </div>
+
+                {/* Favorite Button (decorative) */}
+                <div className="absolute top-3 right-3 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-400">
                     <Heart size={18} />
-                </button>
+                </div>
 
                 {/* Province Badge */}
                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
@@ -102,39 +108,32 @@ export default function PreviewCard({
                 </h3>
 
                 {/* Specs */}
-                <div className="grid grid-cols-3 gap-2 text-xs text-gray-500 mb-4 bg-gray-50 p-2.5 rounded-xl border border-gray-50">
-                    <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200">
+                <div className="grid grid-cols-3 gap-1 text-xs text-gray-500 mb-4 bg-gray-50 p-2 rounded-xl border border-gray-50">
+                    <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
                         <CalendarBlank size={16} className="text-primary" />
-                        <span>{year}</span>
+                        <span className="font-medium">{year}</span>
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200">
+                    <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
                         <Gauge size={16} className="text-primary" />
-                        <span>{mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-'}</span>
+                        <span className="font-medium whitespace-nowrap">{mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-'}</span>
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-1">
+                    <div className="flex flex-col items-center justify-center gap-1 py-1 px-1">
                         <GasPump size={16} className="text-primary" />
-                        <span>{getFuelTypeLabel(fuelType)}</span>
+                        <span className="font-medium text-center leading-tight">{getFuelTypeLabel(fuelType)}</span>
                     </div>
                 </div>
 
-                {/* Price */}
-                <div className="mt-auto mb-3">
+                {/* Price & Seller */}
+                <div className="flex items-center justify-between mt-auto">
                     <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-bold text-accent">฿{formatPrice(price)}</span>
                     </div>
-                </div>
-
-                <hr className="border-gray-100 mb-3" />
-
-                {/* Seller */}
-                <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold">
-                        {sellerName.charAt(0).toUpperCase()}
+                    <div className="flex items-center gap-1.5 text-gray-500">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-[12px] font-bold text-primary">{sellerName.charAt(0).toUpperCase()}</span>
+                        </div>
+                        <span className="text-sm font-semibold">{sellerName}</span>
                     </div>
-                    <span className="text-xs text-gray-600 truncate max-w-[120px]">{sellerName}</span>
-                    <span className="ml-auto text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-medium">
-                        {vehicleType === 'CAR' ? 'รถยนต์' : 'มอเตอร์ไซค์'}
-                    </span>
                 </div>
             </div>
         </div>

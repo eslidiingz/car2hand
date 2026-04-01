@@ -51,7 +51,7 @@ export default function SearchableSelect({
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Find selected option
-    const selectedOption = options.find(opt => opt.id === value) || (value && allowCustom ? { id: value, label: value } : null);
+    const selectedOption = options.find(opt => opt.id === value) || (value && allowCustom ? { id: value, label: value.startsWith('custom:') ? value.slice(7) : value } : null);
 
     // Filter options based on search
     const filteredOptions = options.filter(opt => {
@@ -183,7 +183,7 @@ export default function SearchableSelect({
 
                     {/* Options List */}
                     <div className="max-h-64 overflow-y-auto">
-                        {filteredOptions.length === 0 ? (
+                        {filteredOptions.length === 0 && !(allowCustom && search.trim()) ? (
                             <div className="p-4 text-center text-gray-400 text-sm">
                                 {emptyMessage}
                             </div>
@@ -192,11 +192,22 @@ export default function SearchableSelect({
                         {allowCustom && search.trim() !== '' && !options.some(opt => opt.label.toLowerCase() === search.toLowerCase()) && (
                             <button
                                 type="button"
-                                onClick={() => handleSelect({ id: search, label: search })}
-                                className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-blue-50 transition border-t border-gray-100 italic text-primary"
+                                onClick={() => handleSelect({ id: `custom:${search}`, label: search })}
+                                className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-blue-50 transition border-b border-gray-100 text-primary font-medium"
                             >
                                 <Plus size={18} weight="bold" />
                                 <span>{customLabel.replace('{search}', search)}</span>
+                            </button>
+                        )}
+
+                        {allowCustom && search.trim() === '' && (
+                            <button
+                                type="button"
+                                onClick={() => { inputRef.current?.focus(); }}
+                                className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-blue-50 transition border-b border-gray-100 text-gray-500"
+                            >
+                                <Plus size={18} weight="bold" className="text-primary" />
+                                <span className="text-sm">เพิ่มรุ่นเอง (พิมพ์ชื่อในช่องค้นหา)</span>
                             </button>
                         )}
 

@@ -7,6 +7,7 @@ import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { getUserPackage } from "./config/packages";
 import { uploadFile, processImage, generateFilename } from "./storage";
+import { getAndBroadcastPendingCounts } from "./admin-sse";
 
 // =============================================
 // Public Routes - ไม่ต้อง login
@@ -187,6 +188,7 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
                 }
             });
 
+            getAndBroadcastPendingCounts();
             return {
                 message: "ส่งคำขออัพเกรดแพ็กเกจสำเร็จ รอการตรวจสอบจากผู้ดูแลระบบ",
                 transaction

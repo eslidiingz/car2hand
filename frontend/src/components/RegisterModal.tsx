@@ -23,6 +23,7 @@ interface RegisterModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSwitchToLogin: () => void;
+    redirectTo?: string;
 }
 
 interface FormData {
@@ -32,7 +33,7 @@ interface FormData {
     password: string;
 }
 
-export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: RegisterModalProps) {
+export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redirectTo }: RegisterModalProps) {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -139,7 +140,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
             setSuccess(true);
             setTimeout(() => {
                 onClose();
-                router.push('/profile/dashboard');
+                router.push(redirectTo || '/profile/dashboard');
             }, 1500);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
@@ -219,7 +220,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }: Regi
                                         name="phoneNumber"
                                         value={formData.phoneNumber}
                                         onChange={handleInputChange}
-                                        placeholder="08x-xxx-xxxx"
+                                        placeholder="08XXXXXXXX"
                                         className="form-input-icon-sm"
                                         maxLength={10}
                                         disabled={isLoading}

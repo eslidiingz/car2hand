@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
     Car,
     Eye,
@@ -14,7 +15,8 @@ import {
     UserCircle,
     ClockCountdown,
     ArrowClockwise,
-    CarProfile
+    CarProfile,
+    Crown
 } from '@phosphor-icons/react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -33,8 +35,12 @@ interface Listing {
 }
 
 export default function DashboardPage() {
+    const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
+    const [maxListings, setMaxListings] = useState<number>(1);
+    const [packageName, setPackageName] = useState<string>('Basic');
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -46,6 +52,17 @@ export default function DashboardPage() {
             .then(data => setListings(data.listings || []))
             .catch(() => {})
             .finally(() => setLoading(false));
+
+        // Fetch package limits
+        fetch(`${API_BASE}/packages/my?userId=${userData.id}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.currentPackage) {
+                    setMaxListings(data.currentPackage.maxListings ?? 1);
+                    setPackageName(data.currentPackage.name ?? 'Basic');
+                }
+            })
+            .catch(() => {});
     }, []);
 
     const activeListings = listings.filter(l => l.status === 'ACTIVE');
@@ -83,7 +100,7 @@ export default function DashboardPage() {
             <h1 className="text-2xl font-bold text-gray-800">ภาพรวมบัญชี (Dashboard)</h1>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {stats.map((stat, index) => (
                     <div key={index} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition">
                         <div className="flex justify-between items-start mb-4">
@@ -184,15 +201,25 @@ export default function DashboardPage() {
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link href="/sell/create" className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition shadow-sm group">
+                <button
+                    onClick={() => {
+                        const usedSlots = listings.filter(l => ['ACTIVE', 'DRAFT', 'PENDING'].includes(l.status)).length;
+                        if (usedSlots >= maxListings) {
+                            setShowUpgradeModal(true);
+                        } else {
+                            router.push('/sell/create');
+                        }
+                    }}
+                    className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition shadow-sm group text-left"
+                >
                     <div className="bg-white/20 p-2 rounded-xl group-hover:scale-110 transition">
                         <Plus weight="bold" className="text-xl" />
                     </div>
-                    <div className="text-left">
-                        <p className="font-bold">ลงขายรถรุ่นใหม่</p>
+                    <div>
+                        <p className="font-bold">ลงขายรถ</p>
                         <p className="text-xs text-blue-100">เพิ่มโอกาสในการขาย</p>
                     </div>
-                </Link>
+                </button>
                 <Link href="/profile/listings" className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-2xl border border-gray-100 transition shadow-sm group">
                     <div className="bg-orange-50 p-2 rounded-xl text-orange-500 group-hover:scale-110 transition">
                         <Megaphone weight="bold" className="text-xl" />
@@ -255,6 +282,41 @@ export default function DashboardPage() {
                                 </div>
                             );
                         })}
+                    </div>
+                </div>
+            )}
+            {/* Upgrade Package Modal */}
+            {showUpgradeModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center">
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowUpgradeModal(false)}
+                    ></div>
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
+                        <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
+                            <Crown size={40} weight="fill" className="text-white" />
+                        </div>
+
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
+                        <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                            แพ็กเกจ {packageName} ลงประกาศได้สูงสุด {maxListings} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <button
+                                onClick={() => router.push('/profile/packages')}
+                                className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+                            >
+                                <Crown size={20} weight="fill" />
+                                ดูแพ็กเกจ
+                            </button>
+                            <button
+                                onClick={() => setShowUpgradeModal(false)}
+                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
+                            >
+                                ปิด
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -199,7 +199,7 @@ function TemplatesTab() {
         return (
             <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                <p className="text-slate-400 text-sm">กำลังโหลดเทมเพลต...</p>
+                <p className="text-muted-foreground text-sm">กำลังโหลดเทมเพลต...</p>
             </div>
         );
     }
@@ -215,7 +215,7 @@ function TemplatesTab() {
                 </Button>
             </div>
 
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
@@ -230,7 +230,7 @@ function TemplatesTab() {
                         <TableBody>
                             {templates.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-10 text-slate-400">
+                                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
                                         ยังไม่มีเทมเพลต
                                     </TableCell>
                                 </TableRow>
@@ -249,12 +249,12 @@ function TemplatesTab() {
                                                     Active
                                                 </Badge>
                                             ) : (
-                                                <Badge variant="outline" className="text-slate-400">
+                                                <Badge variant="outline" className="text-muted-foreground">
                                                     Inactive
                                                 </Badge>
                                             )}
                                         </TableCell>
-                                        <TableCell className="text-slate-500 text-sm">
+                                        <TableCell className="text-muted-foreground text-sm">
                                             {new Date(t.createdAt).toLocaleDateString("th-TH")}
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -304,7 +304,7 @@ function TemplatesTab() {
                                 value={form.name}
                                 onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
                                 placeholder="เช่น แจ้งเตือนประกาศหมดอายุ"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -313,7 +313,7 @@ function TemplatesTab() {
                                 value={form.label}
                                 onChange={(e) => setForm((prev) => ({ ...prev, label: e.target.value }))}
                                 placeholder="เช่น listing-expired"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -322,7 +322,7 @@ function TemplatesTab() {
                                 value={form.type}
                                 onValueChange={(val) => setForm((prev) => ({ ...prev, type: val }))}
                             >
-                                <SelectTrigger className="h-10 rounded-lg bg-slate-50 border-slate-200">
+                                <SelectTrigger className="h-10 rounded-lg bg-muted border-border">
                                     <SelectValue placeholder="เลือกประเภท" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-lg">
@@ -346,7 +346,7 @@ function TemplatesTab() {
                                         onClick={() => insertVariable(v.key)}
                                         className="text-xs h-7 px-2"
                                     >
-                                        {v.label} <code className="ml-1 text-[10px] text-slate-400">{v.key}</code>
+                                        {v.label} <code className="ml-1 text-[10px] text-muted-foreground">{v.key}</code>
                                     </Button>
                                 ))}
                             </div>
@@ -354,7 +354,7 @@ function TemplatesTab() {
                                 value={form.content}
                                 onChange={(e) => setForm((prev) => ({ ...prev, content: e.target.value }))}
                                 placeholder="เช่น สวัสดีคุณ {{userName}} ประกาศ {{listingTitle}} ของคุณจะหมดอายุในวันที่ {{expiryDate}}"
-                                className="rounded-lg bg-slate-50 border-slate-200 min-h-[120px]"
+                                className="rounded-lg bg-muted border-border min-h-[120px]"
                                 rows={5}
                             />
                         </div>
@@ -364,7 +364,7 @@ function TemplatesTab() {
                                     type="checkbox"
                                     checked={form.isActive}
                                     onChange={(e) => setForm((prev) => ({ ...prev, isActive: e.target.checked }))}
-                                    className="rounded border-slate-300"
+                                    className="rounded border-border"
                                 />
                                 เปิดใช้งาน (Active)
                             </Label>
@@ -394,13 +394,13 @@ function TemplatesTab() {
             {deleteTemplateId && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteTemplateId(null)} />
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
+                    <div className="bg-card rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
                         <div className="text-center">
                             <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trash2 className="text-rose-500" size={24} />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 mb-1">ยืนยันการลบ</h3>
-                            <p className="text-sm text-slate-500 mb-5">ต้องการลบเทมเพลตนี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+                            <h3 className="text-lg font-bold text-foreground mb-1">ยืนยันการลบ</h3>
+                            <p className="text-sm text-muted-foreground mb-5">ต้องการลบเทมเพลตนี้หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
                             <div className="flex gap-3">
                                 <Button variant="outline" className="flex-1" onClick={() => setDeleteTemplateId(null)}>
                                     ยกเลิก
@@ -542,7 +542,7 @@ function SendTab() {
         return (
             <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                <p className="text-slate-400 text-sm">กำลังโหลด...</p>
+                <p className="text-muted-foreground text-sm">กำลังโหลด...</p>
             </div>
         );
     }
@@ -550,7 +550,7 @@ function SendTab() {
     return (
         <div className="space-y-6">
             {/* Step 1: Select Template */}
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <span className="flex items-center justify-center h-6 w-6 rounded-full bg-brand-primary text-white text-xs font-bold">1</span>
@@ -559,7 +559,7 @@ function SendTab() {
                 </CardHeader>
                 <CardContent>
                     <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
-                        <SelectTrigger className="h-10 rounded-lg bg-slate-50 border-slate-200">
+                        <SelectTrigger className="h-10 rounded-lg bg-muted border-border">
                             <SelectValue placeholder="เลือกเทมเพลตข้อความ" />
                         </SelectTrigger>
                         <SelectContent className="rounded-lg">
@@ -574,7 +574,7 @@ function SendTab() {
             </Card>
 
             {/* Step 2: Select Recipients */}
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <span className="flex items-center justify-center h-6 w-6 rounded-full bg-brand-primary text-white text-xs font-bold">2</span>
@@ -596,7 +596,7 @@ function SendTab() {
                                 className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-colors text-sm ${
                                     recipientType === opt.value
                                         ? "border-brand-primary bg-brand-primary/5 text-brand-primary"
-                                        : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"
+                                        : "border-border bg-muted text-muted-foreground hover:border-border"
                                 }`}
                             >
                                 <opt.icon size={18} />
@@ -614,7 +614,7 @@ function SendTab() {
                                     onChange={(e) => setSearchUser(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleSearchUser()}
                                     placeholder="ค้นหาด้วยชื่อ, อีเมล หรือเบอร์โทร"
-                                    className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                    className="h-10 rounded-lg bg-muted border-border"
                                 />
                                 <Button variant="outline" onClick={handleSearchUser}>
                                     <Search size={16} />
@@ -631,12 +631,12 @@ function SendTab() {
                                                 setUserResults([]);
                                                 setSearchUser(u.fullName || u.email || u.id);
                                             }}
-                                            className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 ${
+                                            className={`w-full text-left px-3 py-2 text-sm hover:bg-muted ${
                                                 selectedUserId === u.id ? "bg-brand-primary/5" : ""
                                             }`}
                                         >
                                             <span className="font-medium">{u.fullName || u.email}</span>
-                                            {u.email && <span className="text-slate-400 ml-2">{u.email}</span>}
+                                            {u.email && <span className="text-muted-foreground ml-2">{u.email}</span>}
                                         </button>
                                     ))}
                                 </div>
@@ -647,7 +647,7 @@ function SendTab() {
                     {/* Package select */}
                     {recipientType === "package" && (
                         <Select value={selectedPackage} onValueChange={setSelectedPackage}>
-                            <SelectTrigger className="h-10 rounded-lg bg-slate-50 border-slate-200">
+                            <SelectTrigger className="h-10 rounded-lg bg-muted border-border">
                                 <SelectValue placeholder="เลือกแพ็กเกจ" />
                             </SelectTrigger>
                             <SelectContent className="rounded-lg">
@@ -661,7 +661,7 @@ function SendTab() {
                     )}
 
                     {/* Recipient count */}
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         {isLoadingCount ? (
                             <Loader2 size={14} className="animate-spin" />
                         ) : (
@@ -669,7 +669,7 @@ function SendTab() {
                         )}
                         <span>
                             จำนวนผู้รับ:{" "}
-                            <strong className="text-slate-700">
+                            <strong className="text-foreground">
                                 {recipientCount !== null ? recipientCount.toLocaleString() : "..."}
                             </strong>{" "}
                             คน
@@ -679,7 +679,7 @@ function SendTab() {
             </Card>
 
             {/* Step 3: Preview */}
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <span className="flex items-center justify-center h-6 w-6 rounded-full bg-brand-primary text-white text-xs font-bold">3</span>
@@ -699,7 +699,7 @@ function SendTab() {
                         )}
                     </Button>
                     {previewMessage && (
-                        <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm whitespace-pre-wrap">
+                        <div className="p-4 bg-muted rounded-lg border border-border text-sm whitespace-pre-wrap">
                             {previewMessage}
                         </div>
                     )}
@@ -725,13 +725,13 @@ function SendTab() {
             {showSendConfirm && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSendConfirm(false)} />
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
+                    <div className="bg-card rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
                         <div className="text-center">
                             <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Send className="text-emerald-500" size={24} />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 mb-1">ยืนยันการส่งแจ้งเตือน</h3>
-                            <p className="text-sm text-slate-500 mb-5">คุณต้องการส่งแจ้งเตือนไปยังผู้รับที่เลือกใช่หรือไม่?</p>
+                            <h3 className="text-lg font-bold text-foreground mb-1">ยืนยันการส่งแจ้งเตือน</h3>
+                            <p className="text-sm text-muted-foreground mb-5">คุณต้องการส่งแจ้งเตือนไปยังผู้รับที่เลือกใช่หรือไม่?</p>
                             <div className="flex gap-3">
                                 <Button variant="outline" className="flex-1" onClick={() => setShowSendConfirm(false)}>
                                     ยกเลิก
@@ -777,14 +777,14 @@ function HistoryTab() {
         return (
             <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                <p className="text-slate-400 text-sm">กำลังโหลดประวัติ...</p>
+                <p className="text-muted-foreground text-sm">กำลังโหลดประวัติ...</p>
             </div>
         );
     }
 
     return (
         <div className="space-y-4">
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
@@ -799,14 +799,14 @@ function HistoryTab() {
                         <TableBody>
                             {logs.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-10 text-slate-400">
+                                    <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
                                         ยังไม่มีประวัติการส่งแจ้งเตือน
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 logs.map((log) => (
                                     <TableRow key={log.id}>
-                                        <TableCell className="text-sm text-slate-500">
+                                        <TableCell className="text-sm text-muted-foreground">
                                             {new Date(log.createdAt).toLocaleString("th-TH")}
                                         </TableCell>
                                         <TableCell className="font-medium">{log.template?.label || '-'}</TableCell>
@@ -815,7 +815,7 @@ function HistoryTab() {
                                             <span className="text-emerald-600 font-medium">{log.totalSent}</span>
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <span className={log.totalFailed > 0 ? "text-rose-500 font-medium" : "text-slate-400"}>
+                                            <span className={log.totalFailed > 0 ? "text-rose-500 font-medium" : "text-muted-foreground"}>
                                                 {log.totalFailed}
                                             </span>
                                         </TableCell>
@@ -839,7 +839,7 @@ function HistoryTab() {
                     >
                         <ChevronLeft size={16} />
                     </Button>
-                    <span className="text-sm text-slate-500">
+                    <span className="text-sm text-muted-foreground">
                         หน้า {page} / {totalPages}
                     </span>
                     <Button
@@ -864,10 +864,10 @@ export default function NotificationsPage() {
         <DashboardLayout>
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <Bell className="text-primary" /> การแจ้งเตือน
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">จัดการเทมเพลตและส่งแจ้งเตือนผ่าน LINE OA</p>
+                    <p className="text-muted-foreground mt-1 text-sm">จัดการเทมเพลตและส่งแจ้งเตือนผ่าน LINE OA</p>
                 </div>
             </div>
 

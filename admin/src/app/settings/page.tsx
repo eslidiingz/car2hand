@@ -66,6 +66,7 @@ export default function SettingsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [dragOverQr, setDragOverQr] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
 
     useEffect(() => {
@@ -115,10 +116,7 @@ export default function SettingsPage() {
         }
     };
 
-    const handleQrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
+    const uploadQrFile = async (file: File) => {
         setIsUploading(true);
         try {
             const formData = new FormData();
@@ -139,6 +137,11 @@ export default function SettingsPage() {
         }
     };
 
+    const handleQrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) uploadQrFile(file);
+    };
+
     const removeQrCode = () => {
         setSettings(prev => ({ ...prev, "payment.qrCodeImage": "" }));
         setHasChanges(true);
@@ -149,7 +152,7 @@ export default function SettingsPage() {
             <DashboardLayout>
                 <div className="flex flex-col items-center justify-center py-32">
                     <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                    <p className="text-slate-400 text-sm">กำลังโหลดการตั้งค่า...</p>
+                    <p className="text-muted-foreground text-sm">กำลังโหลดการตั้งค่า...</p>
                 </div>
             </DashboardLayout>
         );
@@ -159,10 +162,10 @@ export default function SettingsPage() {
         <DashboardLayout>
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <Settings className="text-primary" /> ตั้งค่าระบบ
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">จัดการการตั้งค่าระบบทั้งหมด</p>
+                    <p className="text-muted-foreground mt-1 text-sm">จัดการการตั้งค่าระบบทั้งหมด</p>
                 </div>
             </div>
 
@@ -190,7 +193,7 @@ export default function SettingsPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Bank Account Info */}
                         <div className="lg:col-span-2 space-y-6">
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                                         <Building2 size={18} className="text-primary" />
@@ -208,7 +211,7 @@ export default function SettingsPage() {
                                                 value={settings["payment.bankCode"]}
                                                 onValueChange={handleBankChange}
                                             >
-                                                <SelectTrigger className="h-10 rounded-lg bg-slate-50 border-slate-200">
+                                                <SelectTrigger className="h-10 rounded-lg bg-muted border-border">
                                                     <SelectValue placeholder="เลือกธนาคาร" />
                                                 </SelectTrigger>
                                                 <SelectContent className="rounded-lg">
@@ -226,7 +229,7 @@ export default function SettingsPage() {
                                                 value={settings["payment.accountNumber"]}
                                                 onChange={(e) => updateSetting("payment.accountNumber", e.target.value)}
                                                 placeholder="เช่น 123-4-56789-0"
-                                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                                className="h-10 rounded-lg bg-muted border-border"
                                             />
                                         </div>
                                     </div>
@@ -237,13 +240,13 @@ export default function SettingsPage() {
                                             value={settings["payment.accountName"]}
                                             onChange={(e) => updateSetting("payment.accountName", e.target.value)}
                                             placeholder="เช่น บริษัท คาร์ทูแฮนด์ จำกัด"
-                                            className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                            className="h-10 rounded-lg bg-muted border-border"
                                         />
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                                         <CreditCard size={18} className="text-primary" />
@@ -260,7 +263,7 @@ export default function SettingsPage() {
                                             value={settings["payment.promptPayNumber"]}
                                             onChange={(e) => updateSetting("payment.promptPayNumber", e.target.value)}
                                             placeholder="เช่น 08x-xxx-xxxx"
-                                            className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                            className="h-10 rounded-lg bg-muted border-border"
                                         />
                                     </div>
 
@@ -270,7 +273,7 @@ export default function SettingsPage() {
                                             value={settings["payment.note"]}
                                             onChange={(e) => updateSetting("payment.note", e.target.value)}
                                             placeholder="เช่น กรุณาโอนเงินตามจำนวนที่แสดง แล้วแนบสลิป"
-                                            className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                            className="h-10 rounded-lg bg-muted border-border"
                                         />
                                     </div>
                                 </CardContent>
@@ -279,7 +282,7 @@ export default function SettingsPage() {
 
                         {/* QR Code */}
                         <div>
-                            <Card className="rounded-xl border-slate-200 shadow-sm">
+                            <Card className="rounded-xl border-border shadow-sm">
                                 <CardHeader>
                                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                                         <QrCode size={18} className="text-primary" />
@@ -292,7 +295,7 @@ export default function SettingsPage() {
                                 <CardContent>
                                     {settings["payment.qrCodeImage"] ? (
                                         <div className="space-y-3">
-                                            <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-white">
+                                            <div className="relative rounded-lg overflow-hidden border border-border bg-card">
                                                 <img
                                                     src={settings["payment.qrCodeImage"]}
                                                     alt="Payment QR Code"
@@ -300,7 +303,7 @@ export default function SettingsPage() {
                                                 />
                                                 <button
                                                     onClick={removeQrCode}
-                                                    className="absolute top-2 right-2 h-7 w-7 bg-white/90 rounded-md flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors shadow-sm border border-slate-200"
+                                                    className="absolute top-2 right-2 h-7 w-7 bg-white/90 rounded-md flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors shadow-sm border border-border"
                                                 >
                                                     <X size={14} />
                                                 </button>
@@ -331,7 +334,16 @@ export default function SettingsPage() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="relative group">
+                                        <div
+                                            className="relative group"
+                                            onDragOver={(e) => { e.preventDefault(); setDragOverQr(true); }}
+                                            onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverQr(false); }}
+                                            onDrop={(e) => {
+                                                e.preventDefault(); setDragOverQr(false);
+                                                const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                                if (file && !isUploading) uploadQrFile(file);
+                                            }}
+                                        >
                                             <input
                                                 type="file"
                                                 accept="image/*"
@@ -339,19 +351,19 @@ export default function SettingsPage() {
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                                 disabled={isUploading}
                                             />
-                                            <div className="border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center transition-colors bg-slate-50 border-slate-200 group-hover:border-primary/40 group-hover:bg-primary/5 aspect-square">
+                                            <div className={`border-2 border-dashed rounded-lg p-8 flex flex-col items-center justify-center transition-colors aspect-square ${dragOverQr ? 'border-primary/60 bg-primary/10' : 'bg-muted border-border group-hover:border-primary/40 group-hover:bg-primary/5'}`}>
                                                 {isUploading ? (
                                                     <>
                                                         <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                                                        <p className="text-sm font-medium text-slate-600">กำลังอัพโหลด...</p>
+                                                        <p className="text-sm font-medium text-muted-foreground">กำลังอัพโหลด...</p>
                                                     </>
                                                 ) : (
                                                     <>
                                                         <div className="h-14 w-14 bg-white rounded-lg flex items-center justify-center shadow-sm mb-3">
                                                             <QrCode className="h-7 w-7 text-primary" />
                                                         </div>
-                                                        <p className="text-sm font-medium text-slate-600">อัพโหลด QR Code</p>
-                                                        <p className="text-xs text-slate-400 mt-1 text-center">PNG, JPG (แนะนำ 500x500px)</p>
+                                                        <p className="text-sm font-medium text-muted-foreground">{dragOverQr ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}</p>
+                                                        <p className="text-xs text-muted-foreground mt-1 text-center">PNG, JPG (แนะนำ 500x500px)</p>
                                                     </>
                                                 )}
                                             </div>

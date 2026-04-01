@@ -21,6 +21,7 @@ import { userNotificationRoutes } from "./user-notifications";
 import { garageRoutes } from "./garage";
 import { serviceRoutes } from "./services";
 import { adminServiceRoutes } from "./admin-services";
+import { adminSSERoutes, userSSERoutes } from "./admin-sse";
 import { forumRoutes } from "./forum";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 
@@ -80,6 +81,8 @@ const app = new Elysia()
       .use(garageRoutes)
       .use(serviceRoutes)
       .use(adminServiceRoutes)
+      .use(adminSSERoutes)
+      .use(userSSERoutes)
       .use(forumRoutes)
   )
 
