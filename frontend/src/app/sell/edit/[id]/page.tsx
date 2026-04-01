@@ -112,6 +112,7 @@ interface FormData {
     gasType: 'NONE' | 'LPG' | 'NGV';
     hasSpareKey: boolean;
     serviceHistoryImage?: string;
+    registrationBookImage?: string;
     // Contact Info
     contactName: string;
     contactPhone: string;
@@ -214,12 +215,20 @@ export default function EditListingPage() {
         hasSpareKey: false,
 
         serviceHistoryImage: '',
+        registrationBookImage: '',
         // Contact Info
         contactName: '',
         contactPhone: '',
         lineId: '',
         facebookUrl: ''
     });
+
+    // Scroll to error when it appears
+    useEffect(() => {
+        if (error && errorRef.current) {
+            errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [error]);
 
     const brands = formData.vehicleType === 'CAR' ? CAR_BRANDS : MOTORCYCLE_BRANDS;
 
@@ -229,6 +238,40 @@ export default function EditListingPage() {
     const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
     const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
     const [maxPhotos, setMaxPhotos] = useState(10);
+    const [isBasicPackage, setIsBasicPackage] = useState(true);
+
+    // Registration book state
+    const [regBookFile, setRegBookFile] = useState<File | null>(null);
+    const [regBookPreview, setRegBookPreview] = useState<string>('');
+
+    // Drag & drop states
+    const [dragOverPhotos, setDragOverPhotos] = useState(false);
+    const [dragOverRegBook, setDragOverRegBook] = useState(false);
+    const errorRef = useRef<HTMLDivElement>(null);
+
+    // Lightbox state
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+    const [lightboxRegBook, setLightboxRegBook] = useState(false);
+
+    const openLightbox = (index: number) => { setLightboxIndex(index); setLightboxOpen(true); setLightboxRegBook(false); };
+    const openRegBookLightbox = () => { setLightboxRegBook(true); setLightboxOpen(true); };
+    const closeLightbox = () => setLightboxOpen(false);
+    const prevImage = () => setLightboxIndex(i => (i - 1 + displayImages.length) % displayImages.length);
+    const nextImage = () => setLightboxIndex(i => (i + 1) % displayImages.length);
+
+    useEffect(() => {
+        if (!lightboxOpen) return;
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') closeLightbox();
+            if (!lightboxRegBook) {
+                if (e.key === 'ArrowLeft') prevImage();
+                if (e.key === 'ArrowRight') nextImage();
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [lightboxOpen, lightboxRegBook, displayImages.length]);
 
     // Image management functions
     const handleDeleteImage = (imageId: string) => {
@@ -344,6 +387,7 @@ export default function EditListingPage() {
             .then(r => r.json())
             .then(data => {
                 setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 10);
+                setIsBasicPackage(!data.currentPackage || data.currentPackage.slug === 'basic');
             })
             .catch(() => {});
     }, [router]);
@@ -418,6 +462,7 @@ export default function EditListingPage() {
                     hasSpareKey: (listingData as any).hasSpareKey || false,
 
                     serviceHistoryImage: (listingData as any).serviceHistoryImage || '',
+                    registrationBookImage: (listingData as any).registrationBookImage || '',
                     // Contact Info
                     contactName: (listingData as any).contactName || (listingData.user?.fullName) || '',
                     contactPhone: (listingData as any).contactPhone || (listingData.user as any)?.phoneNumber || '',
@@ -686,6 +731,23 @@ export default function EditListingPage() {
                 throw new Error(data.message || 'เกิดข้อผิดพลาดในการอัพเดทประกาศ');
             }
 
+            // 5. Upload new registration book image if selected
+            if (regBookFile) {
+                const regBookBase64 = await new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve((reader.result as string).split(',')[1]);
+                    reader.readAsDataURL(regBookFile);
+                });
+                await fetch(`${API_URL}/listings/${listingId}/registration-book`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId,
+                        image: { buffer: regBookBase64, filename: regBookFile.name, mimetype: regBookFile.type }
+                    })
+                });
+            }
+
             setSuccess(true);
             setTimeout(() => {
                 router.push('/profile/listings');
@@ -725,6 +787,52 @@ export default function EditListingPage() {
 
     return (
         <div className="min-h-screen bg-surface pb-20">
+            {/* Lightbox */}
+            {lightboxOpen && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+                    onClick={closeLightbox}
+                >
+                    <button
+                        onClick={closeLightbox}
+                        className="absolute top-4 right-4 text-white bg-white/20 hover:bg-white/30 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold transition z-10"
+                    >✕</button>
+
+                    {lightboxRegBook ? (
+                        <img
+                            src={regBookPreview || formData.registrationBookImage}
+                            alt="สำเนาเล่มทะเบียน"
+                            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    ) : (
+                        <>
+                            <img
+                                src={displayImages[lightboxIndex]?.url}
+                                alt={`รูปที่ ${lightboxIndex + 1}`}
+                                className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                            {displayImages.length > 1 && (
+                                <>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                                        className="absolute left-4 text-white bg-white/20 hover:bg-white/30 rounded-full w-11 h-11 flex items-center justify-center text-xl font-bold transition"
+                                    >‹</button>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                                        className="absolute right-4 text-white bg-white/20 hover:bg-white/30 rounded-full w-11 h-11 flex items-center justify-center text-xl font-bold transition"
+                                    >›</button>
+                                    <div className="absolute bottom-4 text-white/70 text-sm font-medium">
+                                        {lightboxIndex + 1} / {displayImages.length}
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
+
             {/* Header */}
             <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-4 py-4">
@@ -771,7 +879,7 @@ export default function EditListingPage() {
 
             {/* Error Message */}
             {error && listing && (
-                <div className="max-w-7xl mx-auto px-4 mt-4">
+                <div ref={errorRef} className="max-w-7xl mx-auto px-4 mt-4">
                     <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
                         <WarningCircle size={24} weight="bold" />
                         <span className="font-medium">{error}</span>
@@ -818,7 +926,10 @@ export default function EditListingPage() {
                                                         ${deletedImageIds.includes(img.id) ? 'opacity-30 grayscale' : ''}
                                                     `}
                                                 >
-                                                    <div className="aspect-[4/3]">
+                                                    <div
+                                                        className="aspect-[4/3] cursor-zoom-in"
+                                                        onClick={(e) => { e.stopPropagation(); openLightbox(index); }}
+                                                    >
                                                         <img
                                                             src={img.url}
                                                             alt={`Image ${index + 1}`}
@@ -862,7 +973,26 @@ export default function EditListingPage() {
 
                                 {/* Add New Image Button */}
                                 {displayImages.length < maxPhotos ? (
-                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition cursor-pointer">
+                                    <div
+                                        className={`border-2 border-dashed rounded-xl p-6 text-center transition cursor-pointer ${dragOverPhotos ? 'border-primary bg-blue-50 ring-2 ring-primary/30' : 'border-gray-300 hover:border-primary'}`}
+                                        onDragOver={(e) => { e.preventDefault(); setDragOverPhotos(true); }}
+                                        onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverPhotos(false); }}
+                                        onDrop={(e) => {
+                                            e.preventDefault(); setDragOverPhotos(false);
+                                            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+                                            if (files.length === 0) return;
+                                            const remaining = maxPhotos - displayImages.length;
+                                            const accepted = files.slice(0, remaining);
+                                            const newDisplayImages = accepted.map(file => ({
+                                                id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                                                url: URL.createObjectURL(file),
+                                                isPrimary: false,
+                                                isNew: true,
+                                                file: file
+                                            }));
+                                            setDisplayImages(prev => [...prev, ...newDisplayImages]);
+                                        }}
+                                    >
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -876,7 +1006,7 @@ export default function EditListingPage() {
                                                 <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                                                     <Plus size={24} className="text-gray-400" />
                                                 </div>
-                                                <p className="text-sm font-medium text-gray-600">คลิกเพื่อเพิ่มรูปภาพ</p>
+                                                <p className="text-sm font-medium text-gray-600">{dragOverPhotos ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}</p>
                                                 <p className="text-xs text-gray-400">รองรับ JPG, PNG, WebP (สูงสุด 10MB ต่อรูป)</p>
                                             </div>
                                         </label>
@@ -1314,16 +1444,18 @@ export default function EditListingPage() {
                                         onChange={(e) => updateFormData({ lineId: e.target.value })}
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Facebook</label>
-                                    <input
-                                        type="text"
-                                        placeholder="URL หรือ Username"
-                                        className="form-input"
-                                        value={formData.facebookUrl}
-                                        onChange={(e) => updateFormData({ facebookUrl: e.target.value })}
-                                    />
-                                </div>
+                                {!isBasicPackage && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Facebook</label>
+                                        <input
+                                            type="text"
+                                            placeholder="URL หรือ Username"
+                                            className="form-input"
+                                            value={formData.facebookUrl}
+                                            onChange={(e) => updateFormData({ facebookUrl: e.target.value })}
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             {/* Vehicle Extras Section */}
@@ -1382,6 +1514,55 @@ export default function EditListingPage() {
                                             </button>
                                         ))}
                                     </div>
+                                </div>
+
+                                {/* Registration Book Image */}
+                                <div className="p-4 bg-gray-50 rounded-xl">
+                                    <p className="font-medium text-gray-800 mb-1">📄 สำเนาเล่มทะเบียนรถ</p>
+                                    <p className="text-xs text-gray-500 mb-3">หน้าที่มีชื่อเจ้าของรถ — ใช้ยืนยันความเป็นเจ้าของ</p>
+                                    {regBookPreview ? (
+                                        <div className="relative inline-block">
+                                            <img
+                                                src={regBookPreview}
+                                                alt="สำเนาเล่มทะเบียน"
+                                                className="w-48 h-36 object-cover rounded-lg border border-gray-200 cursor-zoom-in"
+                                                onClick={openRegBookLightbox}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => { URL.revokeObjectURL(regBookPreview); setRegBookFile(null); setRegBookPreview(''); }}
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                            >✕</button>
+                                        </div>
+                                    ) : formData.registrationBookImage ? (
+                                        <img
+                                            src={formData.registrationBookImage}
+                                            alt="สำเนาเล่มทะเบียน"
+                                            className="w-48 h-36 object-cover rounded-lg border border-gray-200 cursor-zoom-in"
+                                            onClick={openRegBookLightbox}
+                                        />
+                                    ) : (
+                                        <label
+                                            className={`flex items-center gap-3 px-5 py-4 bg-white border-2 border-dashed rounded-xl cursor-pointer transition text-gray-500 ${dragOverRegBook ? 'border-primary bg-blue-50' : 'border-gray-300 hover:border-primary hover:bg-blue-50'}`}
+                                            onDragOver={(e) => { e.preventDefault(); setDragOverRegBook(true); }}
+                                            onDragLeave={() => setDragOverRegBook(false)}
+                                            onDrop={(e) => {
+                                                e.preventDefault(); setDragOverRegBook(false);
+                                                const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                                if (file) { setRegBookFile(file); setRegBookPreview(URL.createObjectURL(file)); }
+                                            }}
+                                        >
+                                            <span className="text-2xl">📄</span>
+                                            <div>
+                                                <span className="font-medium text-gray-700 block">{dragOverRegBook ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}</span>
+                                                <span className="text-xs text-gray-400">รองรับ JPG, PNG</span>
+                                            </div>
+                                            <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) { setRegBookFile(file); setRegBookPreview(URL.createObjectURL(file)); }
+                                            }} />
+                                        </label>
+                                    )}
                                 </div>
 
                                 {/* Gas Type */}

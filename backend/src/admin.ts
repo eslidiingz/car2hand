@@ -10,6 +10,7 @@ import { adminLoginSchema, validateInput } from "./validation";
 import { authRateLimiter } from "./security";
 import { getUserPackage, getListingExpiryDate } from "./config/packages";
 import { testLineConnection } from "./line";
+import { getAndBroadcastPendingCounts, pushNotification } from "./admin-sse";
 
 export const adminRoutes = new Elysia({ prefix: "/admin" })
     .use(jwtPlugin())
@@ -75,6 +76,136 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             rememberMe: t.Optional(t.Boolean())
         })
     })
+
+    // Dashboard Stats
+    .group("/dashboard", (app) => app
+        .derive(async ({ jwt, headers, set }) => {
+            const authHeader = headers['authorization'];
+            if (!authHeader?.startsWith('Bearer ')) {
+                set.status = 401;
+                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+            const token = authHeader.slice(7).trim();
+            const payload = await jwt.verify(token);
+            if (!payload) {
+                set.status = 401;
+                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+            return { adminId: (payload as any).userId };
+        })
+        .onBeforeHandle(({ adminId, set }) => {
+            if (!adminId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+            }
+        })
+        .get("/", async () => {
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+            const calcChange = (current: number, previous: number) => {
+                if (previous === 0) return current > 0 ? 100 : 0;
+                return Math.round(((current - previous) / previous) * 1000) / 10;
+            };
+
+            const [
+                totalUsers,
+                usersThisMonth,
+                usersLastMonth,
+                activeListings,
+                pendingListings,
+                listingsThisMonth,
+                listingsLastMonth,
+                revenueThisMonth,
+                revenueLastMonth,
+                recentListings,
+                recentUsers,
+                recentPublished,
+                recentTransactions,
+            ] = await Promise.all([
+                prisma.user.count(),
+                prisma.user.count({ where: { createdAt: { gte: startOfMonth } } }),
+                prisma.user.count({ where: { createdAt: { gte: startOfLastMonth, lt: startOfMonth } } }),
+                prisma.vehicleListing.count({ where: { status: 'ACTIVE' } }),
+                prisma.vehicleListing.count({ where: { status: 'PENDING' } }),
+                prisma.vehicleListing.count({ where: { createdAt: { gte: startOfMonth } } }),
+                prisma.vehicleListing.count({ where: { createdAt: { gte: startOfLastMonth, lt: startOfMonth } } }),
+                prisma.packageTransaction.aggregate({
+                    _sum: { amount: true },
+                    where: { status: 'APPROVED', createdAt: { gte: startOfMonth } }
+                }),
+                prisma.packageTransaction.aggregate({
+                    _sum: { amount: true },
+                    where: { status: 'APPROVED', createdAt: { gte: startOfLastMonth, lt: startOfMonth } }
+                }),
+                prisma.vehicleListing.findMany({
+                    take: 5,
+                    orderBy: { createdAt: 'desc' },
+                    select: {
+                        id: true, title: true, price: true, status: true, createdAt: true,
+                        user: { select: { fullName: true } },
+                        images: { take: 1, select: { url: true } }
+                    }
+                }),
+                prisma.user.findMany({
+                    take: 3,
+                    orderBy: { createdAt: 'desc' },
+                    select: { fullName: true, phoneNumber: true, createdAt: true }
+                }),
+                prisma.vehicleListing.findMany({
+                    take: 3,
+                    orderBy: { createdAt: 'desc' },
+                    where: { status: 'ACTIVE' },
+                    select: { title: true, createdAt: true }
+                }),
+                prisma.packageTransaction.findMany({
+                    take: 3,
+                    orderBy: { createdAt: 'desc' },
+                    where: { status: 'APPROVED' },
+                    select: {
+                        createdAt: true,
+                        user: { select: { fullName: true } },
+                        package: { select: { name: true } }
+                    }
+                }),
+            ]);
+
+            const thisMonthRev = Number(revenueThisMonth._sum.amount || 0);
+            const lastMonthRev = Number(revenueLastMonth._sum.amount || 0);
+
+            // Build activity timeline
+            const activities: { type: string; text: string; time: Date }[] = [];
+            for (const u of recentUsers) {
+                activities.push({ type: 'user', text: `${u.fullName || u.phoneNumber} สมัครสมาชิกใหม่`, time: u.createdAt });
+            }
+            for (const l of recentPublished) {
+                activities.push({ type: 'listing', text: `${l.title} ลงขายสำเร็จ`, time: l.createdAt });
+            }
+            for (const t of recentTransactions) {
+                activities.push({ type: 'package', text: `${t.user.fullName || 'ผู้ใช้'} อัปเกรดเป็น ${t.package.name}`, time: t.createdAt });
+            }
+            activities.sort((a, b) => b.time.getTime() - a.time.getTime());
+
+            return {
+                stats: {
+                    totalUsers,
+                    activeListings,
+                    pendingListings,
+                    monthlyRevenue: thisMonthRev,
+                    usersChange: calcChange(usersThisMonth, usersLastMonth),
+                    listingsChange: calcChange(listingsThisMonth, listingsLastMonth),
+                    revenueChange: calcChange(thisMonthRev, lastMonthRev),
+                },
+                recentListings,
+                recentActivity: activities.slice(0, 6).map(a => ({
+                    type: a.type,
+                    text: a.text,
+                    time: a.time.toISOString(),
+                })),
+            };
+        })
+    )
 
     // Category Management
     .group("/categories", (app) => app
@@ -651,6 +782,12 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     }
                 });
 
+                // แจ้งเตือนผู้ลงขาย
+                const approveNotif = { title: 'ประกาศได้รับการอนุมัติ', message: `ประกาศ "${listing.title}" ของคุณได้รับการอนุมัติแล้ว ขณะนี้แสดงอยู่ในหน้าซื้อรถ`, type: 'LISTING_APPROVED' };
+                await prisma.userNotification.create({ data: { userId: listing.userId, ...approveNotif } });
+                pushNotification(listing.userId, approveNotif);
+
+                getAndBroadcastPendingCounts();
                 return { message: 'อนุมัติประกาศสำเร็จ', listing: updated };
             } catch (error) {
                 console.error('Approve listing error:', error);
@@ -686,6 +823,12 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     }
                 });
 
+                // แจ้งเตือนผู้ลงขาย
+                const rejectNotif = { title: 'ประกาศไม่ผ่านการตรวจสอบ', message: `ประกาศ "${listing.title}" ไม่ผ่านการตรวจสอบ${reason ? ': ' + reason : ''} กรุณาแก้ไขและลงใหม่อีกครั้ง`, type: 'LISTING_REJECTED' };
+                await prisma.userNotification.create({ data: { userId: listing.userId, ...rejectNotif } });
+                pushNotification(listing.userId, rejectNotif);
+
+                getAndBroadcastPendingCounts();
                 return { message: 'ปฏิเสธประกาศเรียบร้อย', listing: updated };
             } catch (error) {
                 console.error('Reject listing error:', error);
@@ -760,6 +903,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     })
                 ]);
 
+                getAndBroadcastPendingCounts();
                 return { message: 'อนุมัติต่ออายุประกาศสำเร็จ' };
             } catch (error) {
                 console.error('Approve renewal error:', error);
@@ -794,6 +938,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     }
                 });
 
+                getAndBroadcastPendingCounts();
                 return { message: 'ปฏิเสธการต่ออายุเรียบร้อย' };
             } catch (error) {
                 console.error('Reject renewal error:', error);
@@ -1237,14 +1382,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 ]);
 
                 // สร้าง notification แจ้งผู้ใช้
-                await prisma.userNotification.create({
-                    data: {
-                        userId: transaction.userId,
-                        title: 'แพ็กเกจได้รับการอนุมัติ',
-                        message: `แพ็กเกจ ${transaction.package.name} ของคุณได้รับการอนุมัติแล้ว`,
-                        type: 'PACKAGE_APPROVED',
-                    }
-                });
+                const pkgApproveNotif = { title: 'แพ็กเกจได้รับการอนุมัติ', message: `แพ็กเกจ ${transaction.package.name} ของคุณได้รับการอนุมัติแล้ว`, type: 'PACKAGE_APPROVED' };
+                await prisma.userNotification.create({ data: { userId: transaction.userId, ...pkgApproveNotif } });
+                pushNotification(transaction.userId, pkgApproveNotif);
 
                 // ส่ง LINE push notification
                 if (currentUser?.lineUserId) {
@@ -1254,6 +1394,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     } catch {} // silent fail
                 }
 
+                getAndBroadcastPendingCounts();
                 return {
                     message: 'อนุมัติรายการสำเร็จ',
                     transaction: updatedTransaction
@@ -1298,14 +1439,9 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 });
 
                 // สร้าง notification แจ้งผู้ใช้
-                await prisma.userNotification.create({
-                    data: {
-                        userId: transaction.userId,
-                        title: 'แพ็กเกจถูกปฏิเสธ',
-                        message: `คำขอแพ็กเกจ ${transactionWithPackage?.package.name} ถูกปฏิเสธ${(body as any).adminNote ? ': ' + (body as any).adminNote : ''}`,
-                        type: 'PACKAGE_REJECTED',
-                    }
-                });
+                const pkgRejectNotif = { title: 'แพ็กเกจถูกปฏิเสธ', message: `คำขอแพ็กเกจ ${transactionWithPackage?.package.name} ถูกปฏิเสธ${(body as any).adminNote ? ': ' + (body as any).adminNote : ''}`, type: 'PACKAGE_REJECTED' };
+                await prisma.userNotification.create({ data: { userId: transaction.userId, ...pkgRejectNotif } });
+                pushNotification(transaction.userId, pkgRejectNotif);
 
                 // ส่ง LINE push notification
                 const rejectedUser = await prisma.user.findUnique({
@@ -1319,6 +1455,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     } catch {} // silent fail
                 }
 
+                getAndBroadcastPendingCounts();
                 return {
                     message: 'ปฏิเสธรายการเรียบร้อย',
                     transaction: updatedTransaction

@@ -137,6 +137,21 @@ export default function CreateListingPage() {
     const [motorcycleBodyOptions, setMotorcycleBodyOptions] = useState<{ value: string; label: string }[]>([]);
     const [maxPhotos, setMaxPhotos] = useState(10);
     const [isBasicPackage, setIsBasicPackage] = useState(true);
+    const [limitReached, setLimitReached] = useState(false);
+
+    const errorRef = useRef<HTMLDivElement>(null);
+
+    // Drag & drop states
+    const [dragOverPhotos, setDragOverPhotos] = useState(false);
+    const [dragOverServiceHistory, setDragOverServiceHistory] = useState(false);
+    const [dragOverRegBook, setDragOverRegBook] = useState(false);
+
+    // Scroll to error when it appears
+    useEffect(() => {
+        if (error && errorRef.current) {
+            errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [error]);
 
     // Check if user is logged in
     useEffect(() => {
@@ -156,15 +171,27 @@ export default function CreateListingPage() {
             updateFormData({ contactPhone: userData.phoneNumber });
         }
 
-        // Fetch package image limit
+        // Fetch package info & check listing limit
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-        fetch(`${API_URL}/packages/my?userId=${userData.id}`)
-            .then(r => r.json())
-            .then(data => {
-                setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 10);
-                setIsBasicPackage(!data.currentPackage || data.currentPackage.slug === 'basic');
-            })
-            .catch(() => {});
+        Promise.all([
+            fetch(`${API_URL}/packages/my?userId=${userData.id}`).then(r => r.json()),
+            fetch(`${API_URL}/listings/user/${userData.id}`).then(r => r.json()),
+        ]).then(([pkgData, listingsData]) => {
+            const pkg = pkgData.currentPackage;
+            setMaxPhotos(pkg?.maxPhotosPerListing ?? 10);
+            setIsBasicPackage(!pkg || pkg.slug === 'basic');
+
+            // Check listing limit
+            const maxAllowed = pkg?.maxListings ?? 1;
+            const activeCount = (listingsData.listings || []).filter(
+                (l: any) => ['ACTIVE', 'DRAFT', 'PENDING'].includes(l.status)
+            ).length;
+            if (activeCount >= maxAllowed) {
+                setLimitReached(true);
+                setUpgradeMessage(`แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${maxAllowed} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม`);
+                setShowUpgradeModal(true);
+            }
+        }).catch(() => {});
     }, [router]);
 
     useEffect(() => {
@@ -265,11 +292,8 @@ export default function CreateListingPage() {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 31 }, (_, i) => currentYear - i);
 
-    // Handle image upload
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files) return;
-
+    // Handle image upload (from input or drop)
+    const handleImageFiles = (files: File[]) => {
         const currentTotal = formData.images.length;
         const remainingSlots = maxPhotos - currentTotal;
 
@@ -278,7 +302,7 @@ export default function CreateListingPage() {
             return;
         }
 
-        let fileArray = Array.from(files);
+        let fileArray = files.filter(f => f.type.startsWith('image/'));
         if (fileArray.length > remainingSlots) {
             setError(`เพิ่มรูปภาพได้อีกเพียง ${remainingSlots} รูป (ครบจำนวนสูงสุด ${maxPhotos} รูปแล้ว)`);
             fileArray = fileArray.slice(0, remainingSlots);
@@ -292,8 +316,12 @@ export default function CreateListingPage() {
             images: [...formData.images, ...fileArray],
             imagesPreviews: [...formData.imagesPreviews, ...newPreviews]
         });
+    };
 
-        // Clear input value to allow selecting same files if needed
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+        handleImageFiles(Array.from(files));
         e.target.value = '';
     };
 
@@ -374,7 +402,7 @@ export default function CreateListingPage() {
             setCurrentStep(2);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (currentStep === 2) {
-            // Validate step 2 - images
+            // Validate step 2 - images + registration book
             if (formData.images.length === 0) {
                 setFieldErrors({ images: true });
                 setError('กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป');
@@ -383,6 +411,11 @@ export default function CreateListingPage() {
                 if (imagesRef?.current) {
                     imagesRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
+                return;
+            }
+            if (!formData.registrationBookFile) {
+                setFieldErrors({ registrationBook: true });
+                setError('กรุณาอัพโหลดสำเนาเล่มทะเบียนรถ');
                 return;
             }
             setCurrentStep(3);
@@ -429,7 +462,7 @@ export default function CreateListingPage() {
             missingFields.push('เบอร์โทรติดต่อ');
         }
 
-        if (isBasicPackage && !formData.registrationBookFile) {
+        if (!formData.registrationBookFile) {
             errors.registrationBook = true;
             missingFields.push('สำเนาเล่มทะเบียนรถ');
         }
@@ -559,7 +592,7 @@ export default function CreateListingPage() {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="mb-6 flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
+                    <div ref={errorRef} className="mb-6 flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
                         <WarningCircle weight="bold" className="text-xl flex-shrink-0" />
                         <span>{error}</span>
                     </div>
@@ -951,64 +984,7 @@ export default function CreateListingPage() {
                                             </div>
                                         </div>
 
-                                        {/* Registration Book Image Upload */}
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <p className="font-medium text-gray-800 mb-1">
-                                                สำเนาเล่มทะเบียนรถ (หน้าที่มีชื่อเจ้าของ)
-                                                {isBasicPackage && <span className="text-red-500 ml-1">*</span>}
-                                            </p>
-                                            <p className="text-xs text-gray-500 mb-3">
-                                                {isBasicPackage
-                                                    ? 'จำเป็นสำหรับแพ็กเกจ Basic เพื่อยืนยันความเป็นเจ้าของ'
-                                                    : 'ไม่บังคับ แต่แนะนำเพื่อเพิ่มความน่าเชื่อถือ'}
-                                            </p>
-                                            {formData.registrationBookPreview ? (
-                                                <div className="relative inline-block">
-                                                    <img
-                                                        src={formData.registrationBookPreview}
-                                                        alt="สำเนาเล่มทะเบียน"
-                                                        className="w-48 h-36 object-cover rounded-lg border border-gray-200"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            if (formData.registrationBookPreview) {
-                                                                URL.revokeObjectURL(formData.registrationBookPreview);
-                                                            }
-                                                            updateFormData({
-                                                                registrationBookFile: undefined,
-                                                                registrationBookPreview: ''
-                                                            });
-                                                        }}
-                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                                                    >
-                                                        ✕
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <label className="flex items-center gap-2 px-4 py-3 bg-white border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary transition text-sm text-gray-500">
-                                                    <span>📄</span>
-                                                    <span>เลือกรูปสำเนาเล่มทะเบียน</span>
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        className="hidden"
-                                                        onChange={(e) => {
-                                                            const file = e.target.files?.[0];
-                                                            if (file) {
-                                                                const preview = URL.createObjectURL(file);
-                                                                updateFormData({
-                                                                    registrationBookFile: file,
-                                                                    registrationBookPreview: preview
-                                                                });
-                                                            }
-                                                        }}
-                                                    />
-                                                </label>
-                                            )}
-                                        </div>
-
-                                        {/* Gas Type - ย้ายมาอยู่ต่อจากสถานะเล่มทะเบียน */}
+                                        {/* Gas Type */}
                                         <div className="p-4 bg-gray-50 rounded-xl">
                                             <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
                                             <div className="flex flex-wrap gap-2">
@@ -1098,12 +1074,21 @@ export default function CreateListingPage() {
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-primary transition">
+                                                <label
+                                                    className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition ${dragOverServiceHistory ? 'border-primary bg-blue-50' : 'border-gray-300 hover:border-primary'}`}
+                                                    onDragOver={(e) => { e.preventDefault(); setDragOverServiceHistory(true); }}
+                                                    onDragLeave={() => setDragOverServiceHistory(false)}
+                                                    onDrop={(e) => {
+                                                        e.preventDefault(); setDragOverServiceHistory(false);
+                                                        const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                                        if (file) { updateFormData({ serviceHistoryFile: file, serviceHistoryPreview: URL.createObjectURL(file) }); }
+                                                    }}
+                                                >
                                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                         <svg className="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                         </svg>
-                                                        <p className="text-xs text-gray-500">คลิกเพื่ออัพโหลด</p>
+                                                        <p className="text-xs text-gray-500">{dragOverServiceHistory ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}</p>
                                                     </div>
                                                     <input
                                                         type="file"
@@ -1142,7 +1127,12 @@ export default function CreateListingPage() {
                                     </p>
 
                                     {/* Image Upload Area */}
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                    <div
+                                        className={`grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 -m-4 rounded-2xl transition-colors ${dragOverPhotos ? 'bg-blue-50 ring-2 ring-primary ring-dashed' : ''}`}
+                                        onDragOver={(e) => { e.preventDefault(); setDragOverPhotos(true); }}
+                                        onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverPhotos(false); }}
+                                        onDrop={(e) => { e.preventDefault(); setDragOverPhotos(false); handleImageFiles(Array.from(e.dataTransfer.files)); }}
+                                    >
                                         {formData.imagesPreviews.map((preview, index) => (
                                             <div key={index} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-gray-200 group">
                                                 <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-full object-cover" />
@@ -1162,9 +1152,9 @@ export default function CreateListingPage() {
                                         ))}
 
                                         {formData.images.length < maxPhotos && (
-                                            <label className="aspect-[4/3] rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-blue-50 transition">
+                                            <label className={`aspect-[4/3] rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition ${dragOverPhotos ? 'border-primary bg-blue-100' : 'border-gray-300 hover:border-primary hover:bg-blue-50'}`}>
                                                 <Plus size={32} className="text-gray-400 mb-2" />
-                                                <span className="text-xs text-gray-500">เพิ่มรูป</span>
+                                                <span className="text-xs text-gray-500">{dragOverPhotos ? 'วางรูปที่นี่' : 'เพิ่มรูป'}</span>
                                                 <input
                                                     type="file"
                                                     accept="image/*"
@@ -1186,6 +1176,73 @@ export default function CreateListingPage() {
                                             <li>• ถ่ายเลขไมล์บนหน้าปัด</li>
                                             <li>• ใช้แสงธรรมชาติให้เพียงพอ</li>
                                         </ul>
+                                    </div>
+
+                                    {/* Registration Book Image Upload */}
+                                    <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
+                                        <h3 className="font-bold text-gray-800 mb-1 flex items-center gap-2">
+                                            📄 สำเนาเล่มทะเบียนรถ (หน้าที่มีชื่อเจ้าของ)
+                                            <span className="text-red-500">*</span>
+                                        </h3>
+                                        <p className="text-sm text-gray-500 mb-4">
+                                            จำเป็นต้องอัพโหลดเพื่อยืนยันความเป็นเจ้าของรถ
+                                        </p>
+                                        {formData.registrationBookPreview ? (
+                                            <div className="relative inline-block">
+                                                <img
+                                                    src={formData.registrationBookPreview}
+                                                    alt="สำเนาเล่มทะเบียน"
+                                                    className="w-48 h-36 object-cover rounded-lg border border-gray-200"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (formData.registrationBookPreview) {
+                                                            URL.revokeObjectURL(formData.registrationBookPreview);
+                                                        }
+                                                        updateFormData({
+                                                            registrationBookFile: undefined,
+                                                            registrationBookPreview: ''
+                                                        });
+                                                    }}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <label
+                                                className={`flex items-center gap-3 px-5 py-4 bg-white border-2 border-dashed rounded-xl cursor-pointer transition text-gray-500 ${dragOverRegBook ? 'border-primary bg-blue-50' : 'border-gray-300 hover:border-primary hover:bg-blue-50'}`}
+                                                onDragOver={(e) => { e.preventDefault(); setDragOverRegBook(true); }}
+                                                onDragLeave={() => setDragOverRegBook(false)}
+                                                onDrop={(e) => {
+                                                    e.preventDefault(); setDragOverRegBook(false);
+                                                    const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                                                    if (file) { updateFormData({ registrationBookFile: file, registrationBookPreview: URL.createObjectURL(file) }); }
+                                                }}
+                                            >
+                                                <span className="text-2xl">📄</span>
+                                                <div>
+                                                    <span className="font-medium text-gray-700 block">{dragOverRegBook ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}</span>
+                                                    <span className="text-xs text-gray-400">รองรับ JPG, PNG</span>
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const preview = URL.createObjectURL(file);
+                                                            updateFormData({
+                                                                registrationBookFile: file,
+                                                                registrationBookPreview: preview
+                                                            });
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        )}
                                     </div>
                                 </>
                             )}
@@ -1323,16 +1380,18 @@ export default function CreateListingPage() {
                                             />
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Facebook</label>
-                                            <input
-                                                type="text"
-                                                placeholder="URL หรือ Username"
-                                                className="form-input"
-                                                value={formData.facebookUrl || ''}
-                                                onChange={(e) => updateFormData({ facebookUrl: e.target.value })}
-                                            />
-                                        </div>
+                                        {!isBasicPackage && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1.5">Facebook</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="URL หรือ Username"
+                                                    className="form-input"
+                                                    value={formData.facebookUrl || ''}
+                                                    onChange={(e) => updateFormData({ facebookUrl: e.target.value })}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </>
                             )}
@@ -1438,7 +1497,7 @@ export default function CreateListingPage() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center">
                     <div
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setShowUpgradeModal(false)}
+                        onClick={() => limitReached ? router.push('/profile/dashboard') : setShowUpgradeModal(false)}
                     ></div>
                     <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
                         {/* Gradient icon background */}
@@ -1464,10 +1523,10 @@ export default function CreateListingPage() {
                                 ดูแพ็กเกจ
                             </button>
                             <button
-                                onClick={() => setShowUpgradeModal(false)}
+                                onClick={() => limitReached ? router.push('/profile/dashboard') : setShowUpgradeModal(false)}
                                 className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
                             >
-                                ปิด
+                                {limitReached ? 'กลับหน้าหลัก' : 'ปิด'}
                             </button>
                         </div>
                     </div>

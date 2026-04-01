@@ -68,6 +68,7 @@ export default function SellPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [stats, setStats] = useState({ activeListings: 0, soldListings: 0, totalSellers: 0 });
     const [packages, setPackages] = useState<PackageData[]>([]);
+    const [pendingRedirect, setPendingRedirect] = useState<string>('/sell/create');
 
     useEffect(() => {
         const user = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -88,14 +89,17 @@ export default function SellPage() {
     const handleSellClick = (e: React.MouseEvent) => {
         if (!isLoggedIn) {
             e.preventDefault();
+            setPendingRedirect('/sell/create');
             setShowLoginModal(true);
         }
     };
 
-    const handlePackageClick = () => {
+    const handlePackageClick = (slug: string) => {
+        const redirect = slug === 'basic' ? '/sell/create' : '/profile/packages';
         if (isLoggedIn) {
-            window.location.href = '/profile/packages';
+            window.location.href = redirect;
         } else {
+            setPendingRedirect(redirect);
             setShowRegisterModal(true);
         }
     };
@@ -384,7 +388,7 @@ export default function SellPage() {
                                         {/* CTA */}
                                         <div className="px-6 pb-6">
                                             <button
-                                                onClick={handlePackageClick}
+                                                onClick={() => handlePackageClick(pkg.slug)}
                                                 className={`w-full py-3 rounded-xl font-bold text-sm transition ${
                                                     isRecommended
                                                         ? 'bg-orange-500 text-white hover:bg-orange-600'
@@ -429,7 +433,7 @@ export default function SellPage() {
                             initial: 'อ',
                             color: 'bg-green-600',
                             car: 'ขาย Toyota Fortuner',
-                            review: '"ฟีเจอร์ประเมินราคาดีมากครับ ช่วยให้เราตั้งราคาได้เหมาะสม เพราะมีราคากลางอ้างอิง วิน-วินทั้งสองฝ่าย"'
+                            review: '"ฟีเจอร์แนะนำราคาดีมาก ช่วยให้ตั้งราคาได้เหมาะสม เพราะมีราคากลางอ้างอิง วิน-วินทั้งสองฝ่าย"'
                         },
                     ].map((t, i) => (
                         <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition">
@@ -530,7 +534,7 @@ export default function SellPage() {
                     setShowLoginModal(false);
                     setShowRegisterModal(true);
                 }}
-                redirectTo="/sell/create"
+                redirectTo={pendingRedirect}
             />
 
             {/* Register Modal */}
@@ -541,6 +545,7 @@ export default function SellPage() {
                     setShowRegisterModal(false);
                     setShowLoginModal(true);
                 }}
+                redirectTo={pendingRedirect}
             />
         </div>
     );

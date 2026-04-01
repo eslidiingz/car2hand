@@ -206,14 +206,14 @@ export default function AdminInquiriesPage() {
         <DashboardLayout>
             <div className="space-y-6">
                 <div className="flex items-center gap-3">
-                    <MessageSquare className="h-6 w-6 text-slate-700" />
-                    <h1 className="text-2xl font-bold text-slate-900">จัดการการสอบถาม</h1>
+                    <MessageSquare className="h-6 w-6 text-foreground" />
+                    <h1 className="text-2xl font-bold text-foreground">จัดการการสอบถาม</h1>
                 </div>
 
                 {/* Filter Bar */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                     <div className="flex items-center gap-2">
-                        <Filter className="h-4 w-4 text-slate-400" />
+                        <Filter className="h-4 w-4 text-muted-foreground" />
                         <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setPage(1); }}>
                             <SelectTrigger className="w-[150px]">
                                 <SelectValue placeholder="ประเภท" />
@@ -242,7 +242,7 @@ export default function AdminInquiriesPage() {
                 </div>
 
                 {/* Table */}
-                <div className="rounded-lg border bg-white">
+                <div className="rounded-lg border bg-card">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -260,21 +260,21 @@ export default function AdminInquiriesPage() {
                             {loading ? (
                                 <TableRow>
                                     <TableCell colSpan={8} className="py-12 text-center">
-                                        <Loader2 className="mx-auto h-6 w-6 animate-spin text-slate-400" />
-                                        <p className="mt-2 text-sm text-slate-500">กำลังโหลด...</p>
+                                        <Loader2 className="mx-auto h-6 w-6 animate-spin text-muted-foreground" />
+                                        <p className="mt-2 text-sm text-muted-foreground">กำลังโหลด...</p>
                                     </TableCell>
                                 </TableRow>
                             ) : inquiries.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={8} className="py-12 text-center">
-                                        <MessageSquare className="mx-auto h-10 w-10 text-slate-300" />
-                                        <p className="mt-2 text-sm text-slate-500">ไม่พบรายการสอบถาม</p>
+                                        <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground" />
+                                        <p className="mt-2 text-sm text-muted-foreground">ไม่พบรายการสอบถาม</p>
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 inquiries.map((inquiry) => (
                                     <TableRow key={inquiry.id}>
-                                        <TableCell className="font-mono text-xs text-slate-500">
+                                        <TableCell className="font-mono text-xs text-muted-foreground">
                                             {inquiry.id.slice(0, 8)}
                                         </TableCell>
                                         <TableCell>
@@ -286,10 +286,10 @@ export default function AdminInquiriesPage() {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="font-medium">{inquiry.customerName}</TableCell>
-                                        <TableCell className="text-sm text-slate-600">
+                                        <TableCell className="text-sm text-muted-foreground">
                                             {inquiry.customerPhone}
                                         </TableCell>
-                                        <TableCell className="max-w-[200px] truncate text-sm text-slate-600">
+                                        <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
                                             {inquiry.details}
                                         </TableCell>
                                         <TableCell>
@@ -300,7 +300,7 @@ export default function AdminInquiriesPage() {
                                                 {STATUS_LABELS[inquiry.status] || inquiry.status}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-sm text-slate-600">
+                                        <TableCell className="text-sm text-muted-foreground">
                                             {formatDate(inquiry.createdAt)}
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -340,7 +340,7 @@ export default function AdminInquiriesPage() {
                 {/* Pagination */}
                 {totalPages > 1 && (
                     <div className="flex items-center justify-between">
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                             หน้า {page} จาก {totalPages}
                         </p>
                         <div className="flex items-center gap-2">
@@ -374,11 +374,11 @@ export default function AdminInquiriesPage() {
                             <div className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <p className="text-slate-500">รหัส</p>
+                                        <p className="text-muted-foreground">รหัส</p>
                                         <p className="font-mono font-medium">{selectedInquiry.id.slice(0, 12)}</p>
                                     </div>
                                     <div>
-                                        <p className="text-slate-500">ประเภท</p>
+                                        <p className="text-muted-foreground">ประเภท</p>
                                         <Badge
                                             variant="outline"
                                             className={cn("text-xs", TYPE_COLORS[selectedInquiry.type])}
@@ -387,25 +387,25 @@ export default function AdminInquiriesPage() {
                                         </Badge>
                                     </div>
                                     <div>
-                                        <p className="flex items-center gap-1 text-slate-500">
+                                        <p className="flex items-center gap-1 text-muted-foreground">
                                             <User className="h-3.5 w-3.5" /> ลูกค้า
                                         </p>
                                         <p className="font-medium">{selectedInquiry.customerName}</p>
                                     </div>
                                     <div>
-                                        <p className="flex items-center gap-1 text-slate-500">
+                                        <p className="flex items-center gap-1 text-muted-foreground">
                                             <Phone className="h-3.5 w-3.5" /> เบอร์โทร
                                         </p>
                                         <p className="font-medium">{selectedInquiry.customerPhone}</p>
                                     </div>
                                     <div className="col-span-2">
-                                        <p className="text-slate-500">รายละเอียด</p>
-                                        <p className="mt-1 rounded-md bg-slate-50 p-3 text-slate-700">
+                                        <p className="text-muted-foreground">รายละเอียด</p>
+                                        <p className="mt-1 rounded-md bg-muted p-3 text-foreground">
                                             {selectedInquiry.details}
                                         </p>
                                     </div>
                                     <div className="col-span-2">
-                                        <p className="text-slate-500">สถานะ</p>
+                                        <p className="text-muted-foreground">สถานะ</p>
                                         <Badge
                                             variant="outline"
                                             className={cn("text-xs", STATUS_COLORS[selectedInquiry.status])}
@@ -414,8 +414,8 @@ export default function AdminInquiriesPage() {
                                         </Badge>
                                     </div>
                                     <div className="col-span-2">
-                                        <p className="text-slate-500">วันที่สร้าง</p>
-                                        <p className="text-slate-700">{formatDate(selectedInquiry.createdAt)}</p>
+                                        <p className="text-muted-foreground">วันที่สร้าง</p>
+                                        <p className="text-foreground">{formatDate(selectedInquiry.createdAt)}</p>
                                     </div>
                                 </div>
 

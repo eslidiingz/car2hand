@@ -336,8 +336,8 @@ export default function AdminServiceSettingsPage() {
         <DashboardLayout>
             <div className="space-y-6">
                 <div className="flex items-center gap-3">
-                    <Settings className="h-6 w-6 text-slate-700" />
-                    <h1 className="text-2xl font-bold text-slate-900">ตั้งค่าบริการ</h1>
+                    <Settings className="h-6 w-6 text-foreground" />
+                    <h1 className="text-2xl font-bold text-foreground">ตั้งค่าบริการ</h1>
                 </div>
 
                 <Tabs defaultValue="packages" className="w-full">
@@ -349,7 +349,7 @@ export default function AdminServiceSettingsPage() {
                     {/* ─── Tab 1: Inspection Packages ─── */}
                     <TabsContent value="packages" className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-muted-foreground">
                                 จัดการแพ็กเกจตรวจสภาพรถสำหรับบริการจอง
                             </p>
                             <Button size="sm" onClick={openAddPackage}>
@@ -360,10 +360,10 @@ export default function AdminServiceSettingsPage() {
 
                         {packagesLoading ? (
                             <div className="flex justify-center py-12">
-                                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>
                         ) : packages.length === 0 ? (
-                            <div className="py-12 text-center text-sm text-slate-500">
+                            <div className="py-12 text-center text-sm text-muted-foreground">
                                 ยังไม่มีแพ็กเกจ กดปุ่ม &quot;เพิ่มแพ็กเกจ&quot; เพื่อเริ่มต้น
                             </div>
                         ) : (
@@ -382,7 +382,7 @@ export default function AdminServiceSettingsPage() {
                                                     <CardTitle className="text-base">
                                                         {pkg.name}
                                                     </CardTitle>
-                                                    <p className="mt-1 text-lg font-bold text-slate-900">
+                                                    <p className="mt-1 text-lg font-bold text-foreground">
                                                         {formatCurrency(pkg.price)}
                                                     </p>
                                                 </div>
@@ -409,7 +409,7 @@ export default function AdminServiceSettingsPage() {
                                         </CardHeader>
                                         <CardContent>
                                             {pkg.features.length > 0 && (
-                                                <ul className="mb-4 space-y-1.5 text-sm text-slate-600">
+                                                <ul className="mb-4 space-y-1.5 text-sm text-muted-foreground">
                                                     {pkg.features.map((f, i) => (
                                                         <li key={i} className="flex items-start gap-2">
                                                             <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-green-500" />
@@ -452,7 +452,7 @@ export default function AdminServiceSettingsPage() {
                     {/* ─── Tab 2: Service Partners ─── */}
                     <TabsContent value="partners" className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-muted-foreground">
                                 จัดการพาร์ทเนอร์สำหรับบริการสินเชื่อและประกัน
                             </p>
                             <Button size="sm" onClick={openAddPartner}>
@@ -463,10 +463,10 @@ export default function AdminServiceSettingsPage() {
 
                         {partnersLoading ? (
                             <div className="flex justify-center py-12">
-                                <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
+                                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                             </div>
                         ) : partners.length === 0 ? (
-                            <div className="py-12 text-center text-sm text-slate-500">
+                            <div className="py-12 text-center text-sm text-muted-foreground">
                                 ยังไม่มีพาร์ทเนอร์ กดปุ่ม &quot;เพิ่มพาร์ทเนอร์&quot; เพื่อเริ่มต้น
                             </div>
                         ) : (
@@ -474,7 +474,7 @@ export default function AdminServiceSettingsPage() {
                                 {/* Bank Partners */}
                                 {bankPartners.length > 0 && (
                                     <div className="space-y-3">
-                                        <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                        <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
                                             <Building2 className="h-4 w-4" />
                                             ธนาคาร ({bankPartners.length})
                                         </h3>
@@ -495,7 +495,7 @@ export default function AdminServiceSettingsPage() {
                                 {/* Insurance Partners */}
                                 {insurancePartners.length > 0 && (
                                     <div className="space-y-3">
-                                        <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                        <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
                                             <ShieldCheck className="h-4 w-4" />
                                             ประกัน ({insurancePartners.length})
                                         </h3>
@@ -715,7 +715,7 @@ function PartnerCard({
             <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold text-slate-500">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-xs font-bold text-muted-foreground">
                             {partner.logoUrl ? (
                                 <img
                                     src={partner.logoUrl}
@@ -727,8 +727,8 @@ function PartnerCard({
                             )}
                         </div>
                         <div>
-                            <p className="font-medium text-slate-900">{partner.name}</p>
-                            <p className="text-xs text-slate-500">{partner.highlight}</p>
+                            <p className="font-medium text-foreground">{partner.name}</p>
+                            <p className="text-xs text-muted-foreground">{partner.highlight}</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">

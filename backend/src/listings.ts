@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { uploadListingImages, deleteListingImages, deleteFile, deleteOldFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
 import { getUserPackage, canCreateListing, canUploadPhotos, getListingExpiryDate } from "./config/packages";
+import { getAndBroadcastPendingCounts } from "./admin-sse";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
@@ -140,6 +141,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         }
 
 
+        // Basic (free) package ไม่อนุญาตให้ใส่ facebookUrl
+        const isFreePkg = !userPkg.id;
+        const allowedFacebookUrl = isFreePkg ? null : (listingData.facebookUrl || null);
+
         try {
             const listing = await prisma.vehicleListing.create({
                 data: {
@@ -170,7 +175,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     contactName: listingData.contactName,
                     contactPhone: listingData.contactPhone,
                     lineId: listingData.lineId,
-                    facebookUrl: listingData.facebookUrl,
+                    facebookUrl: allowedFacebookUrl,
                     // Vehicle Extras
                     taxPaid: listingData.taxPaid ?? false,
                     registrationBookStatus: listingData.registrationBookStatus ?? "READY",
@@ -777,6 +782,11 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 }
             });
 
+            // Notify admin SSE clients if listing is pending approval
+            if (newStatus === "PENDING") {
+                getAndBroadcastPendingCounts();
+            }
+
             return {
                 message: isBasicFree
                     ? "ส่งประกาศเพื่อรอการตรวจสอบจากผู้ดูแลระบบ"
@@ -816,6 +826,10 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
         }
 
+        // Basic (free) package ไม่อนุญาตให้ใส่ facebookUrl
+        const updatePkg = await getUserPackage(userId);
+        const allowedFbUrl = !updatePkg.id ? null : (updateData.facebookUrl || null);
+
         try {
             const updatedListing = await prisma.vehicleListing.update({
                 where: { id },
@@ -846,7 +860,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                     contactName: updateData.contactName,
                     contactPhone: updateData.contactPhone,
                     lineId: updateData.lineId,
-                    facebookUrl: updateData.facebookUrl,
+                    facebookUrl: allowedFbUrl,
                     // Vehicle Extras
                     taxPaid: updateData.taxPaid ?? false,
                     registrationBookStatus: updateData.registrationBookStatus ?? "READY",
@@ -1491,6 +1505,7 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
                 }
             });
 
+            getAndBroadcastPendingCounts();
             return {
                 message: "ส่งคำขอต่ออายุประกาศแล้ว รอการตรวจสอบจาก admin",
                 requiresApproval: true,

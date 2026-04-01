@@ -96,9 +96,9 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.R
     PENDING: { label: 'รอตรวจสอบ', color: 'bg-amber-50 text-amber-700', icon: <Clock size={13} /> },
     ACTIVE: { label: 'อนุมัติแล้ว', color: 'bg-emerald-50 text-emerald-700', icon: <CheckCircle size={13} /> },
     SUSPENDED: { label: 'ถูกปฏิเสธ', color: 'bg-rose-50 text-rose-700', icon: <XCircle size={13} /> },
-    DRAFT: { label: 'แบบร่าง', color: 'bg-slate-50 text-slate-500', icon: <Clock size={13} /> },
+    DRAFT: { label: 'แบบร่าง', color: 'bg-muted text-muted-foreground', icon: <Clock size={13} /> },
     SOLD: { label: 'ขายแล้ว', color: 'bg-blue-50 text-blue-700', icon: <Check size={13} /> },
-    EXPIRED: { label: 'หมดอายุ', color: 'bg-slate-50 text-slate-500', icon: <Clock size={13} /> },
+    EXPIRED: { label: 'หมดอายุ', color: 'bg-muted text-muted-foreground', icon: <Clock size={13} /> },
 };
 
 interface Renewal {
@@ -295,10 +295,10 @@ export default function ListingModerationPage() {
         <DashboardLayout>
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <Car className="text-primary" /> ตรวจสอบประกาศขาย
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">ตรวจสอบและอนุมัติประกาศขายรถยนต์และจักรยานยนต์</p>
+                    <p className="text-muted-foreground mt-1 text-sm">ตรวจสอบและอนุมัติประกาศขายรถยนต์และจักรยานยนต์</p>
                 </div>
             </div>
 
@@ -317,47 +317,47 @@ export default function ListingModerationPage() {
 
             {/* ===== Tab: Renewals ===== */}
             <TabsContent value="renewals">
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                     {renewalLoading ? (
-                        <div className="p-12 text-center text-slate-400">
+                        <div className="p-12 text-center text-muted-foreground">
                             <RefreshCw className="mx-auto mb-3 animate-spin opacity-30" size={32} />
                             <p className="text-sm">กำลังโหลด...</p>
                         </div>
                     ) : renewals.length === 0 ? (
-                        <div className="p-12 text-center text-slate-400">
+                        <div className="p-12 text-center text-muted-foreground">
                             <CheckCircle className="mx-auto mb-3 opacity-30" size={32} />
                             <p className="text-sm font-medium">ไม่มีคำขอต่ออายุที่รอตรวจสอบ</p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-slate-100">
+                        <div className="divide-y divide-border">
                             {renewals.map(r => (
-                                <div key={r.id} className="p-5 hover:bg-slate-50 transition-colors">
+                                <div key={r.id} className="p-5 hover:bg-accent transition-colors">
                                     <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                                         {/* User */}
                                         <div className="flex items-center gap-3 min-w-[180px]">
-                                            <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500">
+                                            <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-muted-foreground">
                                                 <User size={18} />
                                             </div>
                                             <div>
-                                                <p className="font-medium text-sm text-slate-800">{r.user.fullName}</p>
-                                                <p className="text-xs text-slate-400">{r.user.email}</p>
+                                                <p className="font-medium text-sm text-foreground">{r.user.fullName}</p>
+                                                <p className="text-xs text-muted-foreground">{r.user.email}</p>
                                             </div>
                                         </div>
 
                                         {/* Listing */}
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-slate-700 truncate">{r.listing.title}</p>
-                                            <p className="text-xs text-slate-400">{r.listing.brand} {r.listing.model} ({r.listing.year})</p>
+                                            <p className="text-sm font-medium text-foreground truncate">{r.listing.title}</p>
+                                            <p className="text-xs text-muted-foreground">{r.listing.brand} {r.listing.model} ({r.listing.year})</p>
                                         </div>
 
                                         {/* Amount */}
                                         <div className="flex items-center gap-1.5 min-w-[80px]">
-                                            <CreditCard size={14} className="text-slate-400" />
-                                            <span className="text-sm font-semibold text-slate-800">฿{Number(r.amount).toLocaleString()}</span>
+                                            <CreditCard size={14} className="text-muted-foreground" />
+                                            <span className="text-sm font-semibold text-foreground">฿{Number(r.amount).toLocaleString()}</span>
                                         </div>
 
                                         {/* Date */}
-                                        <div className="text-xs text-slate-400 min-w-[100px]">
+                                        <div className="text-xs text-muted-foreground min-w-[100px]">
                                             {new Date(r.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                         </div>
 
@@ -397,9 +397,9 @@ export default function ListingModerationPage() {
                 {/* Renewal Slip Modal */}
                 {viewRenewalSlip && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setViewRenewalSlip(null)}>
-                        <div className="bg-white rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-4" onClick={e => e.stopPropagation()}>
+                        <div className="bg-card rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-4" onClick={e => e.stopPropagation()}>
                             <div className="flex justify-between items-center mb-3">
-                                <h3 className="font-semibold text-slate-800">สลิปการโอนเงิน</h3>
+                                <h3 className="font-semibold text-foreground">สลิปการโอนเงิน</h3>
                                 <Button variant="ghost" size="icon" onClick={() => setViewRenewalSlip(null)}><X size={18} /></Button>
                             </div>
                             <img src={viewRenewalSlip} alt="Slip" className="w-full rounded-lg" />
@@ -410,13 +410,13 @@ export default function ListingModerationPage() {
                 {/* Renewal Reject Modal */}
                 {renewalRejectId && (
                     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setRenewalRejectId(null)}>
-                        <div className="bg-white rounded-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
-                            <h3 className="font-semibold text-slate-800 mb-4">ปฏิเสธคำขอต่ออายุ</h3>
+                        <div className="bg-card rounded-xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
+                            <h3 className="font-semibold text-foreground mb-4">ปฏิเสธคำขอต่ออายุ</h3>
                             <textarea
                                 value={renewalRejectNote}
                                 onChange={e => setRenewalRejectNote(e.target.value)}
                                 placeholder="เหตุผลในการปฏิเสธ (ไม่บังคับ)"
-                                className="w-full border border-slate-200 rounded-lg p-3 text-sm min-h-[80px] mb-4 outline-none focus:border-slate-400"
+                                className="w-full border border-border rounded-lg p-3 text-sm min-h-[80px] mb-4 outline-none focus:border-border"
                             />
                             <div className="flex gap-3">
                                 <Button variant="outline" className="flex-1" onClick={() => setRenewalRejectId(null)}>ยกเลิก</Button>
@@ -435,13 +435,13 @@ export default function ListingModerationPage() {
             {/* Search */}
             <div className="mb-4 max-w-sm">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <input
                         type="text"
                         placeholder="ค้นหาชื่อประกาศ, ผู้ขาย..."
                         value={searchQuery}
                         onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-                        className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-slate-400 transition-colors"
+                        className="w-full pl-9 pr-4 py-2 bg-card border border-border rounded-lg text-sm outline-none focus:border-border transition-colors"
                     />
                 </div>
             </div>
@@ -459,12 +459,12 @@ export default function ListingModerationPage() {
 
             {/* Listings */}
             {isLoading ? (
-                <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-slate-400">
+                <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">
                     <Car className="mx-auto mb-3 animate-pulse opacity-30" size={32} />
                     <p className="text-sm">กำลังโหลด...</p>
                 </div>
             ) : listings.length === 0 ? (
-                <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-slate-400">
+                <div className="bg-card rounded-xl border border-border p-12 text-center text-muted-foreground">
                     <Car className="mx-auto mb-3 opacity-30" size={32} />
                     <p className="text-sm">ไม่พบรายการ</p>
                 </div>
@@ -474,14 +474,14 @@ export default function ListingModerationPage() {
                         const status = statusConfig[listing.status] || statusConfig.PENDING;
                         const thumbnail = listing.images?.[0]?.url;
                         return (
-                            <div key={listing.id} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col md:flex-row">
+                            <div key={listing.id} className="bg-card rounded-xl shadow-sm border border-border overflow-hidden flex flex-col md:flex-row">
                                 {/* Thumbnail */}
-                                <div className="w-full md:w-56 aspect-[4/3] bg-slate-100 relative overflow-hidden flex-shrink-0">
+                                <div className="w-full md:w-56 aspect-[4/3] bg-accent relative overflow-hidden flex-shrink-0">
                                     {thumbnail ? (
                                         <img src={thumbnail} alt={listing.title} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
-                                            <ImageOff className="text-slate-300" size={32} />
+                                            <ImageOff className="text-muted-foreground" size={32} />
                                         </div>
                                     )}
                                     <div className="absolute top-3 left-3 flex gap-2">
@@ -501,18 +501,18 @@ export default function ListingModerationPage() {
                                 <div className="flex-1 p-5 flex flex-col">
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <h2 className="text-base font-semibold text-slate-800">{listing.title}</h2>
+                                            <h2 className="text-base font-semibold text-foreground">{listing.title}</h2>
                                             <div className="flex items-center gap-4 mt-1.5 flex-wrap">
-                                                <span className="text-xs text-slate-500 flex items-center gap-1">
+                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
                                                     <Clock size={13} />
                                                     {new Date(listing.createdAt).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                                 {listing.province && (
-                                                    <span className="text-xs text-slate-500 flex items-center gap-1">
+                                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
                                                         <MapPin size={13} /> {listing.province}
                                                     </span>
                                                 )}
-                                                <span className="text-xs text-slate-500 flex items-center gap-1">
+                                                <span className="text-xs text-muted-foreground flex items-center gap-1">
                                                     <Eye size={13} /> {listing.viewCount} ครั้ง
                                                 </span>
                                             </div>
@@ -538,15 +538,15 @@ export default function ListingModerationPage() {
                                     </div>
 
                                     {/* Seller Info */}
-                                    <div className="mt-3 p-3 bg-slate-50 rounded-lg flex items-center justify-between">
+                                    <div className="mt-3 p-3 bg-muted rounded-lg flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="h-9 w-9 bg-white rounded-lg flex items-center justify-center border border-slate-200 text-slate-600 font-medium text-sm">
+                                            <div className="h-9 w-9 bg-card rounded-lg flex items-center justify-center border border-border text-muted-foreground font-medium text-sm">
                                                 <User size={16} />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-medium text-slate-700">{listing.user.fullName}</p>
+                                                <p className="text-sm font-medium text-foreground">{listing.user.fullName}</p>
                                                 <div className="flex items-center gap-2">
-                                                    <p className="text-xs text-slate-400">{listing.user.email}</p>
+                                                    <p className="text-xs text-muted-foreground">{listing.user.email}</p>
                                                     {listing.user.currentPackage && (
                                                         <span className="text-[10px] font-medium bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">
                                                             {listing.user.currentPackage.name}
@@ -642,7 +642,7 @@ export default function ListingModerationPage() {
                     >
                         <ChevronLeft size={18} />
                     </Button>
-                    <span className="text-sm font-medium text-slate-600">
+                    <span className="text-sm font-medium text-muted-foreground">
                         หน้า {page} จาก {totalPages} ({total} รายการ)
                     </span>
                     <Button
@@ -667,27 +667,27 @@ export default function ListingModerationPage() {
                 return (
                     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setApproveId(null)} />
-                        <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden">
+                        <div className="relative z-10 bg-card rounded-xl shadow-lg max-w-md w-full overflow-hidden">
                             <div className="p-6">
                                 <div className="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center mx-auto mb-4">
                                     <CheckCircle className="text-emerald-500" size={24} />
                                 </div>
-                                <h3 className="text-lg font-semibold text-center text-slate-800 mb-1">ยืนยันอนุมัติประกาศ</h3>
-                                <p className="text-sm text-center text-slate-400 mb-5">ประกาศจะแสดงบนเว็บไซต์ทันที</p>
+                                <h3 className="text-lg font-semibold text-center text-foreground mb-1">ยืนยันอนุมัติประกาศ</h3>
+                                <p className="text-sm text-center text-muted-foreground mb-5">ประกาศจะแสดงบนเว็บไซต์ทันที</p>
 
-                                <div className="bg-slate-50 rounded-xl p-4 space-y-3 mb-5">
-                                    <p className="text-sm font-semibold text-slate-800">{listing.title}</p>
+                                <div className="bg-muted rounded-xl p-4 space-y-3 mb-5">
+                                    <p className="text-sm font-semibold text-foreground">{listing.title}</p>
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-7 w-7 bg-white rounded-md border border-slate-200 flex items-center justify-center">
-                                                <User size={14} className="text-slate-500" />
+                                            <div className="h-7 w-7 bg-card rounded-md border border-border flex items-center justify-center">
+                                                <User size={14} className="text-muted-foreground" />
                                             </div>
                                             <div>
-                                                <p className="text-xs font-medium text-slate-700">{listing.user.fullName}</p>
-                                                <p className="text-[10px] text-slate-400">{listing.user.currentPackage?.name || 'Basic (Free)'}</p>
+                                                <p className="text-xs font-medium text-foreground">{listing.user.fullName}</p>
+                                                <p className="text-[10px] text-muted-foreground">{listing.user.currentPackage?.name || 'Basic (Free)'}</p>
                                             </div>
                                         </div>
-                                        <p className="text-base font-bold text-slate-800">฿{Number(listing.price).toLocaleString()}</p>
+                                        <p className="text-base font-bold text-foreground">฿{Number(listing.price).toLocaleString()}</p>
                                     </div>
                                 </div>
 
@@ -719,18 +719,18 @@ export default function ListingModerationPage() {
             {rejectId && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setRejectId(null)} />
-                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden">
+                    <div className="relative z-10 bg-card rounded-xl shadow-lg max-w-md w-full overflow-hidden">
                         <div className="p-6">
                             <div className="w-12 h-12 bg-rose-50 rounded-lg flex items-center justify-center mx-auto mb-4">
                                 <XCircle className="text-rose-500" size={24} />
                             </div>
-                            <h3 className="text-lg font-semibold text-center text-slate-800 mb-1.5">ปฏิเสธประกาศนี้?</h3>
-                            <p className="text-sm text-center text-slate-500 mb-5">ระบุเหตุผลในการปฏิเสธ (ไม่บังคับ)</p>
+                            <h3 className="text-lg font-semibold text-center text-foreground mb-1.5">ปฏิเสธประกาศนี้?</h3>
+                            <p className="text-sm text-center text-muted-foreground mb-5">ระบุเหตุผลในการปฏิเสธ (ไม่บังคับ)</p>
                             <textarea
                                 value={rejectNote}
                                 onChange={e => setRejectNote(e.target.value)}
                                 placeholder="เหตุผลในการปฏิเสธ เช่น ข้อมูลไม่ครบ, รูปไม่ชัด..."
-                                className="w-full p-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400 resize-none transition-colors"
+                                className="w-full p-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-border focus:border-border resize-none transition-colors"
                                 rows={3}
                             />
                             <div className="flex gap-3 mt-4">
@@ -759,9 +759,9 @@ export default function ListingModerationPage() {
             {viewSlip && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewSlip(null)} />
-                    <div className="relative z-10 bg-white rounded-xl shadow-lg max-w-3xl w-full overflow-hidden max-h-[90vh] overflow-y-auto">
-                        <div className="p-4 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white z-10">
-                            <h3 className="font-semibold text-slate-800">รายละเอียดประกาศ</h3>
+                    <div className="relative z-10 bg-card rounded-xl shadow-lg max-w-3xl w-full overflow-hidden max-h-[90vh] overflow-y-auto">
+                        <div className="p-4 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
+                            <h3 className="font-semibold text-foreground">รายละเอียดประกาศ</h3>
                             <Button variant="ghost" size="icon" onClick={() => setViewSlip(null)} className="h-8 w-8">
                                 <X size={18} />
                             </Button>
@@ -770,7 +770,7 @@ export default function ListingModerationPage() {
                             {/* Image Carousel */}
                             {viewSlip.images.length > 0 ? (
                                 <div className="space-y-2">
-                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100">
+                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-accent">
                                         <img src={viewSlip.images[carouselIdx]?.url} alt="" className="w-full h-full object-cover" />
                                         {viewSlip.images.length > 1 && (
                                             <>
@@ -795,30 +795,30 @@ export default function ListingModerationPage() {
                                     )}
                                 </div>
                             ) : (
-                                <div className="h-48 bg-slate-100 rounded-xl flex items-center justify-center">
-                                    <ImageOff className="text-slate-300" size={32} />
+                                <div className="h-48 bg-accent rounded-xl flex items-center justify-center">
+                                    <ImageOff className="text-muted-foreground" size={32} />
                                 </div>
                             )}
 
                             {/* Title & Price */}
                             <div className="flex items-start justify-between gap-4">
                                 <div>
-                                    <h2 className="text-lg font-bold text-slate-800">{viewSlip.title}</h2>
-                                    <p className="text-sm text-slate-400">{viewSlip.brand} {viewSlip.model}{viewSlip.subModel ? ` ${viewSlip.subModel}` : ''}</p>
+                                    <h2 className="text-lg font-bold text-foreground">{viewSlip.title}</h2>
+                                    <p className="text-sm text-muted-foreground">{viewSlip.brand} {viewSlip.model}{viewSlip.subModel ? ` ${viewSlip.subModel}` : ''}</p>
                                 </div>
                                 <p className="text-xl font-bold text-primary whitespace-nowrap">฿{Number(viewSlip.price).toLocaleString()}</p>
                             </div>
 
                             {/* Vehicle Info Grid */}
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-2 text-sm">
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">ปี</p><p className="font-medium text-slate-700">{viewSlip.year}</p></div>
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">สี</p><p className="font-medium text-slate-700">{viewSlip.color || '-'}</p></div>
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เชื้อเพลิง</p><p className="font-medium text-slate-700">{viewSlip.fuelType || '-'}</p></div>
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เกียร์</p><p className="font-medium text-slate-700">{viewSlip.transmission || '-'}</p></div>
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เลขไมล์</p><p className="font-medium text-slate-700">{viewSlip.mileage?.toLocaleString() || '-'} กม.</p></div>
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">ประเภท</p><p className="font-medium text-slate-700">{viewSlip.bodyType || '-'}</p></div>
-                                <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">จังหวัด</p><p className="font-medium text-slate-700">{viewSlip.province || '-'}</p></div>
-                                {viewSlip.engineSize && <div className="bg-slate-50 p-2.5 rounded-lg"><p className="text-[10px] text-slate-400">เครื่องยนต์</p><p className="font-medium text-slate-700">{viewSlip.engineSize} cc</p></div>}
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">ปี</p><p className="font-medium text-foreground">{viewSlip.year}</p></div>
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">สี</p><p className="font-medium text-foreground">{viewSlip.color || '-'}</p></div>
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">เชื้อเพลิง</p><p className="font-medium text-foreground">{viewSlip.fuelType || '-'}</p></div>
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">เกียร์</p><p className="font-medium text-foreground">{viewSlip.transmission || '-'}</p></div>
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">เลขไมล์</p><p className="font-medium text-foreground">{viewSlip.mileage?.toLocaleString() || '-'} กม.</p></div>
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">ประเภท</p><p className="font-medium text-foreground">{viewSlip.bodyType || '-'}</p></div>
+                                <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">จังหวัด</p><p className="font-medium text-foreground">{viewSlip.province || '-'}</p></div>
+                                {viewSlip.engineSize && <div className="bg-muted p-2.5 rounded-lg"><p className="text-[10px] text-muted-foreground">เครื่องยนต์</p><p className="font-medium text-foreground">{viewSlip.engineSize} cc</p></div>}
                             </div>
 
                             {/* Condition Info */}
@@ -835,32 +835,32 @@ export default function ListingModerationPage() {
                             {/* Description */}
                             {viewSlip.description && (
                                 <div>
-                                    <p className="text-xs font-medium text-slate-400 mb-1">รายละเอียด</p>
-                                    <p className="text-sm text-slate-600 whitespace-pre-line bg-slate-50 p-3 rounded-lg max-h-40 overflow-y-auto">{viewSlip.description}</p>
+                                    <p className="text-xs font-medium text-muted-foreground mb-1">รายละเอียด</p>
+                                    <p className="text-sm text-muted-foreground whitespace-pre-line bg-muted p-3 rounded-lg max-h-40 overflow-y-auto">{viewSlip.description}</p>
                                 </div>
                             )}
 
                             {/* Contact & Seller */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div className="p-3 bg-slate-50 rounded-lg">
-                                    <p className="text-[10px] text-slate-400 mb-1.5">ข้อมูลผู้ขาย</p>
+                                <div className="p-3 bg-muted rounded-lg">
+                                    <p className="text-[10px] text-muted-foreground mb-1.5">ข้อมูลผู้ขาย</p>
                                     <div className="flex items-center gap-3">
-                                        <div className="h-9 w-9 bg-white rounded-lg flex items-center justify-center border border-slate-200 text-slate-600"><User size={16} /></div>
+                                        <div className="h-9 w-9 bg-card rounded-lg flex items-center justify-center border border-border text-muted-foreground"><User size={16} /></div>
                                         <div>
-                                            <p className="text-sm font-medium text-slate-700">{viewSlip.user.fullName}</p>
-                                            <p className="text-xs text-slate-400">{viewSlip.user.email} · {viewSlip.user.currentPackage?.name || 'Basic (Free)'}</p>
+                                            <p className="text-sm font-medium text-foreground">{viewSlip.user.fullName}</p>
+                                            <p className="text-xs text-muted-foreground">{viewSlip.user.email} · {viewSlip.user.currentPackage?.name || 'Basic (Free)'}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-3 bg-slate-50 rounded-lg">
-                                    <p className="text-[10px] text-slate-400 mb-1.5">ข้อมูลติดต่อ</p>
-                                    <p className="text-sm text-slate-700">{viewSlip.contactName || viewSlip.user.fullName}</p>
-                                    <p className="text-xs text-slate-500">{viewSlip.contactPhone || '-'}{viewSlip.lineId ? ` · LINE: ${viewSlip.lineId}` : ''}</p>
+                                <div className="p-3 bg-muted rounded-lg">
+                                    <p className="text-[10px] text-muted-foreground mb-1.5">ข้อมูลติดต่อ</p>
+                                    <p className="text-sm text-foreground">{viewSlip.contactName || viewSlip.user.fullName}</p>
+                                    <p className="text-xs text-muted-foreground">{viewSlip.contactPhone || '-'}{viewSlip.lineId ? ` · LINE: ${viewSlip.lineId}` : ''}</p>
                                 </div>
                             </div>
 
                             {/* Stats */}
-                            <div className="flex gap-4 text-xs text-slate-400">
+                            <div className="flex gap-4 text-xs text-muted-foreground">
                                 <span className="flex items-center gap-1"><Eye size={13} className="text-blue-500" /> {viewSlip.viewCount} วิว</span>
                                 <span className="flex items-center gap-1"><Heart size={13} className="text-red-400" /> {viewSlip.favoriteCount || 0} ถูกใจ</span>
                                 <span>ลงเมื่อ {new Date(viewSlip.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</span>

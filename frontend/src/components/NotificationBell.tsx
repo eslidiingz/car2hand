@@ -84,12 +84,33 @@ export default function NotificationBell() {
         }
     }, [getToken]);
 
-    // Poll unread count every 60 seconds
+    // SSE for real-time notifications
     useEffect(() => {
         fetchUnreadCount();
-        const interval = setInterval(fetchUnreadCount, 60000);
-        return () => clearInterval(interval);
-    }, [fetchUnreadCount]);
+
+        const token = getToken();
+        if (!token) return;
+
+        const es = new EventSource(`${API_URL}/notifications/sse?token=${encodeURIComponent(token)}`);
+
+        es.addEventListener('unread-count', (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                setUnreadCount(data.unreadCount ?? 0);
+            } catch { /* invalid data */ }
+        });
+
+        es.addEventListener('new-notification', (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                setUnreadCount(data.unreadCount ?? 0);
+                // If dropdown is open, refresh the list
+                if (isOpen) fetchNotifications();
+            } catch { /* invalid data */ }
+        });
+
+        return () => es.close();
+    }, [fetchUnreadCount, getToken]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Close on outside click
     useEffect(() => {

@@ -84,7 +84,7 @@ export default function ArticlesManagementPage() {
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "PUBLISHED": return <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-none rounded-md px-2 py-0.5 text-xs font-medium">Published</Badge>;
-            case "DRAFT": return <Badge variant="secondary" className="bg-slate-100 text-slate-500 hover:bg-slate-100 border-none rounded-md px-2 py-0.5 text-xs font-medium">Draft</Badge>;
+            case "DRAFT": return <Badge variant="secondary" className="bg-accent text-muted-foreground hover:bg-accent border-none rounded-md px-2 py-0.5 text-xs font-medium">Draft</Badge>;
             default: return null;
         }
     };
@@ -102,10 +102,10 @@ export default function ArticlesManagementPage() {
         <DashboardLayout>
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
                         <BookOpen className="text-primary" /> จัดการบทความ
                     </h1>
-                    <p className="text-slate-500 mt-1 text-sm">เขียนบทความ ให้ความรู้ และเทคนิคเรื่องรถยนต์เพื่อชุมชน</p>
+                    <p className="text-muted-foreground mt-1 text-sm">เขียนบทความ ให้ความรู้ และเทคนิคเรื่องรถยนต์เพื่อชุมชน</p>
                 </div>
                 <Button asChild className="bg-brand-primary hover:bg-brand-primary/90 text-white font-medium">
                     <Link href="/articles/new">
@@ -117,14 +117,14 @@ export default function ArticlesManagementPage() {
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-20">
                     <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
-                    <p className="text-slate-400 text-sm">กำลังโหลดบทความ...</p>
+                    <p className="text-muted-foreground text-sm">กำลังโหลดบทความ...</p>
                 </div>
             ) : posts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {posts.map((post) => (
-                        <Card key={post.id} className="rounded-xl overflow-hidden border-slate-200 shadow-sm">
+                        <Card key={post.id} className="rounded-xl overflow-hidden border-border shadow-sm">
                             <CardContent className="p-0 flex flex-col sm:flex-row">
-                                <div className="w-full sm:w-44 h-44 sm:h-auto bg-slate-100 relative overflow-hidden flex-shrink-0">
+                                <div className="w-full sm:w-44 h-44 sm:h-auto bg-accent relative overflow-hidden flex-shrink-0">
                                     <img
                                         src={post.featuredImage || `https://picsum.photos/seed/${post.slug}/400/300`}
                                         alt={post.title}
@@ -140,16 +140,16 @@ export default function ArticlesManagementPage() {
                                         <span className="text-xs font-medium text-primary bg-primary/5 px-2 py-0.5 rounded-md mb-2 inline-block">
                                             {post.category?.name || "ไม่มีหมวดหมู่"}
                                         </span>
-                                        <h2 className="text-base font-semibold text-slate-800 leading-snug line-clamp-2 min-h-[3rem]">{post.title}</h2>
+                                        <h2 className="text-base font-semibold text-foreground leading-snug line-clamp-2 min-h-[3rem]">{post.title}</h2>
                                     </div>
 
-                                    <div className="flex flex-wrap items-center gap-3 text-slate-400 text-xs">
+                                    <div className="flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
                                         <span className="flex items-center gap-1"><User size={12} /> {post.author.fullName}</span>
                                         <span className="flex items-center gap-1"><Calendar size={12} /> {formatDate(post.createdAt)}</span>
                                         <span className="flex items-center gap-1"><Eye size={12} /> {post.viewCount.toLocaleString()}</span>
                                     </div>
 
-                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100">
+                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
                                         <div className="flex gap-1">
                                             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
                                                 <Link href={`/articles/${post.id}`}>
@@ -177,12 +177,12 @@ export default function ArticlesManagementPage() {
                     ))}
                 </div>
             ) : (
-                <Card className="rounded-xl p-16 text-center border-slate-200 border-dashed border-2 bg-slate-50/50">
+                <Card className="rounded-xl p-16 text-center border-border border-dashed border-2 bg-muted/50">
                     <div className="h-16 w-16 bg-white rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                        <BookOpen size={32} className="text-slate-300" />
+                        <BookOpen size={32} className="text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-800">ยังไม่มีบทความ</h3>
-                    <p className="text-slate-500 mt-1.5 mb-6 text-sm max-w-sm mx-auto">เริ่มต้นเขียนบทความแรกเพื่อให้ความรู้และเทคนิคดีๆ กับผู้ใช้งาน Car2Hand</p>
+                    <h3 className="text-lg font-semibold text-foreground">ยังไม่มีบทความ</h3>
+                    <p className="text-muted-foreground mt-1.5 mb-6 text-sm max-w-sm mx-auto">เริ่มต้นเขียนบทความแรกเพื่อให้ความรู้และเทคนิคดีๆ กับผู้ใช้งาน Car2Hand</p>
                     <Button asChild className="bg-brand-primary hover:bg-brand-primary/90 text-white font-medium">
                         <Link href="/articles/new">
                             <Plus size={18} className="mr-2" /> เขียนบทความใหม่
@@ -192,14 +192,14 @@ export default function ArticlesManagementPage() {
             )}
 
             {!isLoading && posts.length > 0 && (
-                <div className="mt-6 flex items-center justify-between p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <div className="mt-6 flex items-center justify-between p-5 bg-card rounded-xl border border-border shadow-sm">
                     <div className="flex items-center gap-4">
                         <div className="h-10 w-10 bg-primary/5 rounded-lg flex items-center justify-center text-primary">
                             <BookOpen size={20} />
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-slate-800">จัดการคอนเทนต์ของคุณ</p>
-                            <p className="text-xs text-slate-500">คุณมีบทความทั้งหมด {posts.length} รายการในระบบ</p>
+                            <p className="text-sm font-medium text-foreground">จัดการคอนเทนต์ของคุณ</p>
+                            <p className="text-xs text-muted-foreground">คุณมีบทความทั้งหมด {posts.length} รายการในระบบ</p>
                         </div>
                     </div>
                     <Button variant="ghost" asChild className="text-primary font-medium text-sm">

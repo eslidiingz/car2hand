@@ -17,6 +17,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
 import { cn } from "@/lib/utils";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navigation = [
     { name: "สรุปภาพรวม", href: "/", icon: LayoutDashboard },
@@ -35,11 +36,11 @@ export default function Sidebar() {
     const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount } = usePendingCounts();
 
     return (
-        <div className="flex h-full w-60 flex-col bg-white border-r border-slate-200">
+        <div className="flex h-full w-60 flex-col bg-card border-r border-border">
 
-            <div className="flex h-16 items-center px-5 border-b border-slate-100">
-                <span className="text-lg font-semibold tracking-tight text-slate-800">
-                    Car<span className="text-brand-accent">2</span>Hand <span className="text-xs font-normal text-slate-400 ml-1">Admin</span>
+            <div className="flex h-16 items-center px-5 border-b border-border">
+                <span className="text-lg font-semibold tracking-tight text-foreground">
+                    Car<span className="text-brand-accent">2</span>Hand <span className="text-xs font-normal text-muted-foreground ml-1">Admin</span>
                 </span>
             </div>
 
@@ -58,13 +59,13 @@ export default function Sidebar() {
                             className={cn(
                                 "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                                 isActive
-                                    ? "bg-slate-100 text-slate-900 font-semibold"
-                                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                                    ? "bg-accent text-foreground font-semibold"
+                                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                             )}
                         >
                             <item.icon className={cn(
                                 "mr-3 h-[18px] w-[18px] flex-shrink-0",
-                                isActive ? "text-slate-700" : "text-slate-400"
+                                isActive ? "text-foreground" : "text-muted-foreground"
                             )} aria-hidden="true" />
                             <span className="flex-1">{item.name}</span>
                             {showBadge && (
@@ -77,17 +78,21 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            <div className="border-t border-slate-100 p-3">
+            <div className="border-t border-border p-3 space-y-1">
+                <div className="flex items-center justify-between px-3 py-1">
+                    <span className="text-xs text-muted-foreground">ธีม</span>
+                    <ThemeToggle />
+                </div>
                 <Link
                     href="/settings"
-                    className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
+                    className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
                 >
                     <Settings className="mr-3 h-[18px] w-[18px] flex-shrink-0" />
                     ตั้งค่าระบบ
                 </Link>
                 <button
                     onClick={logout}
-                    className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-rose-500 hover:bg-rose-50 hover:text-rose-600 rounded-lg transition-colors mt-0.5"
+                    className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 rounded-lg transition-colors"
                 >
                     <LogOut className="mr-3 h-[18px] w-[18px] flex-shrink-0" />
                     ออกจากระบบ

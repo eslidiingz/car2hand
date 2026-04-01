@@ -13,7 +13,8 @@ import {
     Lightning,
     Phone,
     ArrowClockwise,
-    Clock
+    Clock,
+    ArrowSquareOut
 } from '@phosphor-icons/react';
 
 export interface VehicleListing {
@@ -130,6 +131,15 @@ export default function ProfileListingCard({
                                         <div className="absolute right-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-20 overflow-hidden text-[#1E293B]">
                                             {listing.status === 'EXPIRED' ? (
                                                 <>
+                                                    <Link
+                                                        href={`/buy/${listing.id}`}
+                                                        target="_blank"
+                                                        onClick={() => onToggleMenu(null)}
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
+                                                    >
+                                                        <ArrowSquareOut weight="bold" />
+                                                        ดูประกาศ
+                                                    </Link>
                                                     <button
                                                         onClick={() => {
                                                             onRenew?.(listing.id);
@@ -155,9 +165,18 @@ export default function ProfileListingCard({
                                             ) : (
                                                 <>
                                                     <Link
-                                                        href={`/sell/edit/${listing.id}`}
+                                                        href={`/buy/${listing.id}`}
+                                                        target="_blank"
                                                         onClick={() => onToggleMenu(null)}
                                                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
+                                                    >
+                                                        <ArrowSquareOut weight="bold" />
+                                                        ดูประกาศ
+                                                    </Link>
+                                                    <Link
+                                                        href={`/sell/edit/${listing.id}`}
+                                                        onClick={() => onToggleMenu(null)}
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-orange-50 flex items-center gap-2 transition font-medium text-orange-500"
                                                     >
                                                         <PencilSimple weight="bold" />
                                                         แก้ไขประกาศ

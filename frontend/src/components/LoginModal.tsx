@@ -165,7 +165,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                                     name="phoneNumber"
                                     value={formData.phoneNumber}
                                     onChange={handleInputChange}
-                                    placeholder="08x-xxx-xxxx"
+                                    placeholder="08XXXXXXXX"
                                     className="form-input-icon-sm"
                                     maxLength={10}
                                     disabled={isLoading}
