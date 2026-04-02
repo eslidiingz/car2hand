@@ -30,6 +30,12 @@ function getUserId(): string | null {
     } catch { return null; }
 }
 
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 interface Reminder {
     id: string;
     title: string;
@@ -141,7 +147,10 @@ export default function GaragePage() {
     const fetchVehicles = useCallback(async () => {
         if (!userId) return;
         try {
-            const res = await fetch(`${API_URL}/garage?userId=${userId}`);
+            const token = getAuthToken();
+            const res = await fetch(`${API_URL}/garage`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             const data = await res.json();
             setVehicles(data.vehicles || []);
         } catch { showToast('โหลดข้อมูลรถไม่สำเร็จ', 'error'); }
@@ -165,11 +174,14 @@ export default function GaragePage() {
             return;
         }
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/garage`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({
-                    userId,
                     nickname: addForm.nickname,
                     brand: addForm.brand,
                     model: addForm.model,
@@ -190,9 +202,13 @@ export default function GaragePage() {
     const handleUpdateVehicle = async () => {
         if (!editingVehicle) return;
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/garage/${editingVehicle.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({
                     nickname: editForm.nickname,
                     brand: editForm.brand,
@@ -212,7 +228,11 @@ export default function GaragePage() {
 
     const handleDeleteVehicle = async (id: string) => {
         try {
-            await fetch(`${API_URL}/garage/${id}`, { method: 'DELETE' });
+            const token = getAuthToken();
+            await fetch(`${API_URL}/garage/${id}`, {
+                method: 'DELETE',
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             showToast('ลบรถสำเร็จ');
             fetchVehicles();
             if (selectedVehicle?.id === id) setSelectedVehicle(null);
@@ -232,9 +252,13 @@ export default function GaragePage() {
         const val = parseInt(mileageValue);
         if (isNaN(val) || val < 0) { showToast('กรุณากรอกเลขไมล์ที่ถูกต้อง', 'error'); return; }
         try {
+            const token = getAuthToken();
             await fetch(`${API_URL}/garage/${id}/mileage`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({ mileage: val }),
             });
             showToast('อัปเดตเลขไมล์สำเร็จ');
@@ -251,9 +275,11 @@ export default function GaragePage() {
         setShowServiceForm(false);
         setShowReminderForm(false);
         try {
+            const token = getAuthToken();
+            const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
             const [sRes, rRes] = await Promise.all([
-                fetch(`${API_URL}/garage/${vehicle.id}/services`),
-                fetch(`${API_URL}/garage/${vehicle.id}/reminders`),
+                fetch(`${API_URL}/garage/${vehicle.id}/services`, { headers: authHeaders }),
+                fetch(`${API_URL}/garage/${vehicle.id}/reminders`, { headers: authHeaders }),
             ]);
             const sData = await sRes.json();
             const rData = await rRes.json();
@@ -270,9 +296,13 @@ export default function GaragePage() {
             return;
         }
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/garage/${selectedVehicle.id}/services`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({
                     title: serviceForm.title,
                     description: serviceForm.description || undefined,
@@ -287,7 +317,10 @@ export default function GaragePage() {
             setServiceForm(emptyServiceForm);
             setShowServiceForm(false);
             // Refresh
-            const sRes = await fetch(`${API_URL}/garage/${selectedVehicle.id}/services`);
+            const refreshToken = getAuthToken();
+            const sRes = await fetch(`${API_URL}/garage/${selectedVehicle.id}/services`, {
+                headers: refreshToken ? { 'Authorization': `Bearer ${refreshToken}` } : {}
+            });
             const sData = await sRes.json();
             setDetailServices(sData.records || []);
             fetchVehicles();
@@ -297,7 +330,11 @@ export default function GaragePage() {
     const handleDeleteService = async (id: string) => {
         if (!selectedVehicle) return;
         try {
-            await fetch(`${API_URL}/garage/services/${id}`, { method: 'DELETE' });
+            const token = getAuthToken();
+            await fetch(`${API_URL}/garage/services/${id}`, {
+                method: 'DELETE',
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             setDetailServices(prev => prev.filter(s => s.id !== id));
             fetchVehicles();
         } catch { showToast('ลบไม่สำเร็จ', 'error'); }
@@ -310,9 +347,13 @@ export default function GaragePage() {
             return;
         }
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/garage/${selectedVehicle.id}/reminders`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({
                     title: reminderForm.title,
                     type: reminderForm.type,
@@ -324,7 +365,10 @@ export default function GaragePage() {
             showToast('เพิ่มแจ้งเตือนสำเร็จ');
             setReminderForm(emptyReminderForm);
             setShowReminderForm(false);
-            const rRes = await fetch(`${API_URL}/garage/${selectedVehicle.id}/reminders`);
+            const refreshToken = getAuthToken();
+            const rRes = await fetch(`${API_URL}/garage/${selectedVehicle.id}/reminders`, {
+                headers: refreshToken ? { 'Authorization': `Bearer ${refreshToken}` } : {}
+            });
             const rData = await rRes.json();
             setDetailReminders(rData.reminders || []);
             fetchVehicles();
@@ -333,9 +377,13 @@ export default function GaragePage() {
 
     const handleToggleReminder = async (r: Reminder) => {
         try {
+            const token = getAuthToken();
             await fetch(`${API_URL}/garage/reminders/${r.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({ isCompleted: !r.isCompleted }),
             });
             setDetailReminders(prev => prev.map(rem => rem.id === r.id ? { ...rem, isCompleted: !rem.isCompleted } : rem));
@@ -345,7 +393,11 @@ export default function GaragePage() {
 
     const handleDeleteReminder = async (id: string) => {
         try {
-            await fetch(`${API_URL}/garage/reminders/${id}`, { method: 'DELETE' });
+            const token = getAuthToken();
+            await fetch(`${API_URL}/garage/reminders/${id}`, {
+                method: 'DELETE',
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             setDetailReminders(prev => prev.filter(r => r.id !== id));
             fetchVehicles();
         } catch { showToast('ลบไม่สำเร็จ', 'error'); }

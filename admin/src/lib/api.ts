@@ -21,6 +21,15 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
         headers,
     });
 
+    if (response.status === 401) {
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            window.location.href = '/login';
+        }
+        throw new Error('กรุณาเข้าสู่ระบบใหม่');
+    }
+
     if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         throw new Error(error.message || 'Something went wrong');

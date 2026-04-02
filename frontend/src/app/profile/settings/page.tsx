@@ -40,6 +40,12 @@ function getUserId(): string | null {
     }
 }
 
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 function updateStoredUser(updates: Partial<{ fullName: string; phoneNumber: string }>) {
     for (const storage of [localStorage, sessionStorage]) {
         const raw = storage.getItem('user');
@@ -87,7 +93,10 @@ export default function SettingsPage() {
         }
 
         try {
-            const res = await fetch(`${API_URL}/users/me?userId=${userId}`);
+            const token = getAuthToken();
+            const res = await fetch(`${API_URL}/users/me`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             if (!res.ok) throw new Error('Failed to fetch');
             const data = await res.json();
             setProfile(data.user);
@@ -115,10 +124,14 @@ export default function SettingsPage() {
 
         setSaving(true);
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/users/me`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, fullName }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ fullName }),
             });
             const data = await res.json();
             if (!res.ok) {
@@ -154,10 +167,14 @@ export default function SettingsPage() {
 
         setChangingPassword(true);
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/users/me/password`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, currentPassword, newPassword }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ currentPassword, newPassword }),
             });
             const data = await res.json();
             if (!res.ok) {

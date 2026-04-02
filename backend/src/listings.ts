@@ -3,6 +3,8 @@ import prisma from "./db";
 import { uploadListingImages, deleteListingImages, deleteFile, deleteOldFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
 import { getUserPackage, canCreateListing, canUploadPhotos, getListingExpiryDate } from "./config/packages";
 import { getAndBroadcastPendingCounts } from "./admin-sse";
+import { authGuard } from "./jwt";
+import { sanitizeObject } from "./security";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
@@ -109,881 +111,8 @@ async function autoBumpListings() {
 // เรียกทุก 1 นาที
 setInterval(autoBumpListings, 60 * 1000);
 
-export const listingRoutes = new Elysia({ prefix: "/listings" })
-    // สร้างประกาศขายใหม่
-    .post("/", async ({ body, set }) => {
-        const { userId, ...listingData } = body;
-
-        // ตรวจสอบว่า user มีอยู่จริง
-        const user = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-
-        if (!user) {
-            set.status = 401;
-            return { message: "กรุณาเข้าสู่ระบบ" };
-        }
-
-        // ตรวจสอบ limit จำนวนประกาศตาม package
-        const activeListings = await prisma.vehicleListing.count({
-            where: {
-                userId,
-                status: { in: ['ACTIVE', 'DRAFT', 'PENDING'] }
-            }
-        });
-        const userPkg = await getUserPackage(userId);
-        if (!canCreateListing(userPkg.maxListings, activeListings)) {
-            set.status = 403;
-            return {
-                message: `แพ็กเกจ ${userPkg.name} ลงประกาศได้สูงสุด ${userPkg.maxListings} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม`,
-                upgradeRequired: true,
-            };
-        }
-
-
-        // Basic (free) package ไม่อนุญาตให้ใส่ facebookUrl
-        const isFreePkg = !userPkg.id;
-        const allowedFacebookUrl = isFreePkg ? null : (listingData.facebookUrl || null);
-
-        try {
-            const listing = await prisma.vehicleListing.create({
-                data: {
-                    userId,
-                    vehicleType: listingData.vehicleType,
-                    title: listingData.title,
-                    description: listingData.description,
-                    price: listingData.price,
-                    brand: listingData.brand,
-                    model: listingData.model,
-                    subModel: listingData.subModel,
-                    year: listingData.year,
-                    color: listingData.color,
-                    fuelType: listingData.fuelType,
-                    transmission: listingData.transmission,
-                    engineSize: listingData.engineSize,
-                    seats: listingData.seats,
-                    mileage: listingData.mileage,
-                    bodyType: listingData.bodyType,
-                    plateProvince: listingData.plateProvince,
-                    registrationType: listingData.registrationType ?? "PERSONAL",
-                    condition: listingData.condition,
-                    hasAccident: listingData.hasAccident ?? false,
-                    hasModified: listingData.hasModified ?? false,
-                    hasWarranty: listingData.hasWarranty ?? false,
-                    province: listingData.province,
-                    district: listingData.district,
-                    contactName: listingData.contactName,
-                    contactPhone: listingData.contactPhone,
-                    lineId: listingData.lineId,
-                    facebookUrl: allowedFacebookUrl,
-                    // Vehicle Extras
-                    taxPaid: listingData.taxPaid ?? false,
-                    registrationBookStatus: listingData.registrationBookStatus ?? "READY",
-                    insuranceDetails: listingData.insuranceDetails,
-                    warrantyDetails: listingData.warrantyDetails,
-                    bsiDetails: listingData.bsiDetails,
-                    gasType: listingData.gasType ?? "NONE",
-                    hasSpareKey: listingData.hasSpareKey ?? false,
-                    // serviceHistoryImage will be uploaded separately
-                    status: "DRAFT", // เริ่มต้นเป็น draft
-                },
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            fullName: true,
-                            phoneNumber: true,
-                        }
-                    }
-                }
-            });
-
-            return {
-                message: "สร้างประกาศสำเร็จ",
-                listing
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการสร้างประกาศ" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            vehicleType: t.Union([t.Literal("CAR"), t.Literal("MOTORCYCLE")]),
-            title: t.String(),
-            description: t.Optional(t.String()),
-            price: t.Number(),
-            brand: t.String(),
-            model: t.String(),
-            subModel: t.Optional(t.String()),
-            year: t.Number(),
-            color: t.String(),
-            fuelType: t.Union([
-                t.Literal("PETROL"),
-                t.Literal("DIESEL"),
-                t.Literal("HYBRID"),
-                t.Literal("PLUGIN_HYBRID"),
-                t.Literal("EV"),
-                t.Literal("LPG"),
-                t.Literal("NGV")
-            ]),
-            transmission: t.Optional(t.Union([
-                t.Literal("AUTOMATIC"),
-                t.Literal("MANUAL"),
-                t.Literal("CVT"),
-                t.Literal("DCT"),
-                t.Literal("SEMI_AUTO")
-            ])),
-            engineSize: t.Optional(t.Number()),
-            seats: t.Optional(t.Number()),
-            mileage: t.Number(),
-            bodyType: t.Union([
-                // รถยนต์
-                t.Literal("SEDAN"),
-                t.Literal("HATCHBACK"),
-                t.Literal("SUV"),
-                t.Literal("CROSSOVER"),
-                t.Literal("MPV"),
-                t.Literal("PICKUP"),
-                t.Literal("COUPE"),
-                t.Literal("CONVERTIBLE"),
-                t.Literal("WAGON"),
-                t.Literal("VAN"),
-                // มอเตอร์ไซค์
-                t.Literal("STANDARD"),
-                t.Literal("SCOOTER"),
-                t.Literal("SPORT"),
-                t.Literal("NAKED"),
-                t.Literal("CRUISER"),
-                t.Literal("TOURING"),
-                t.Literal("ADVENTURE"),
-                t.Literal("DIRT"),
-                t.Literal("CAFE_RACER"),
-                t.Literal("UNDERBONE"),
-                t.Literal("CUB")
-            ]),
-            plateProvince: t.Optional(t.String()),
-            registrationType: t.Optional(t.Union([
-                t.Literal("PERSONAL"),
-                t.Literal("COMPANY")
-            ])),
-            condition: t.Union([
-                t.Literal("EXCELLENT"),
-                t.Literal("GOOD"),
-                t.Literal("FAIR"),
-                t.Literal("POOR")
-            ]),
-            hasAccident: t.Optional(t.Boolean()),
-            hasModified: t.Optional(t.Boolean()),
-            hasWarranty: t.Optional(t.Boolean()),
-            province: t.String(),
-            district: t.Optional(t.String()),
-            contactName: t.Optional(t.String()),
-            contactPhone: t.Optional(t.String()),
-            lineId: t.Optional(t.String()),
-            facebookUrl: t.Optional(t.String()),
-            // Vehicle Extras
-            taxPaid: t.Optional(t.Boolean()),
-            registrationBookStatus: t.Optional(t.Union([
-                t.Literal("READY"),
-                t.Literal("FINANCED")
-            ])),
-            insuranceDetails: t.Optional(t.String()),
-            warrantyDetails: t.Optional(t.String()),
-            bsiDetails: t.Optional(t.String()),
-            gasType: t.Optional(t.Union([
-                t.Literal("NONE"),
-                t.Literal("LPG"),
-                t.Literal("NGV")
-            ])),
-            hasSpareKey: t.Optional(t.Boolean())
-        })
-    })
-
-    // อัพโหลดรูปภาพสำหรับประกาศ
-    .post("/:id/images", async ({ params, body, set }) => {
-        const { id } = params;
-        const { userId, images } = body;
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        // ดึงรูปที่มีอยู่เดิม
-        const existingImages = await prisma.vehicleImage.findMany({
-            where: { listingId: id },
-            orderBy: { order: 'asc' }
-        });
-
-        // ตรวจสอบจำนวนรูปตาม package limit
-        const userPkgForPhotos = await getUserPackage(userId);
-        if (!canUploadPhotos(userPkgForPhotos.maxPhotosPerListing, existingImages.length, images.length)) {
-            set.status = 400;
-            return {
-                message: `แพ็กเกจ ${userPkgForPhotos.name} อัพโหลดได้สูงสุด ${userPkgForPhotos.maxPhotosPerListing} รูป/ประกาศ (ปัจจุบันมี ${existingImages.length} รูป)`,
-                upgradeRequired: true,
-            };
-        }
-
-
-        try {
-            // อัพโหลดรูปไปยัง MinIO
-            const uploadedImages = await uploadListingImages(
-                userId,
-                id,
-                images.map((img: { buffer: string; filename: string; mimetype: string }) => ({
-                    buffer: Buffer.from(img.buffer, 'base64'),
-                    originalname: img.filename,
-                    mimetype: img.mimetype
-                }))
-            );
-
-            // คำนวณ order เริ่มต้น (ต่อจากรูปสุดท้าย)
-            const startOrder = existingImages.length > 0
-                ? Math.max(...existingImages.map(img => img.order)) + 1
-                : 0;
-
-            // ตรวจสอบว่ามีรูปหลักอยู่แล้วหรือไม่
-            const hasPrimary = existingImages.some(img => img.isPrimary);
-
-            // บันทึกข้อมูลรูปลง database
-            await prisma.vehicleImage.createMany({
-                data: uploadedImages.map((img, index) => ({
-                    listingId: id,
-                    url: img.url,
-                    isPrimary: !hasPrimary && index === 0, // ถ้ายังไม่มีรูปหลัก ให้รูปแรกใหม่เป็นรูปหลัก
-                    order: startOrder + index
-                }))
-            });
-
-            // ดึงรูปทั้งหมดกลับมา
-            const allImages = await prisma.vehicleImage.findMany({
-                where: { listingId: id },
-                orderBy: { order: 'asc' }
-            });
-
-            return {
-                message: "อัพโหลดรูปภาพสำเร็จ",
-                images: allImages
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            images: t.Array(t.Object({
-                buffer: t.String(), // base64 encoded
-                filename: t.String(),
-                mimetype: t.String()
-            }))
-        })
-    })
-
-    // อัพโหลดรูปประวัติบริการ
-    .post("/:id/service-history", async ({ params, body, set }) => {
-        const { id } = params;
-        const { userId, image } = body;
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        try {
-            // เก็บ URL เดิมไว้ลบหลังสำเร็จ
-            const oldServiceHistoryImage = listing.serviceHistoryImage;
-
-            // Convert base64 to buffer
-            const imageBuffer = Buffer.from(image.buffer, 'base64');
-
-            // Process image to WebP
-            const webpBuffer = await processImage(imageBuffer, {
-                maxWidth: 1920,
-                maxHeight: 1440,
-                quality: 85
-            });
-
-            // Generate filename and path
-            const baseFilename = generateFilename(image.filename);
-            const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
-            const objectPath = `${listing.userId}/listings/${id}/service-history-${webpFilename}`;
-
-            // Upload to MinIO
-            const imageUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
-
-            // Update listing with service history image URL
-            await prisma.vehicleListing.update({
-                where: { id },
-                data: { serviceHistoryImage: imageUrl }
-            });
-
-            // ลบรูปเดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
-            await deleteOldFile(oldServiceHistoryImage);
-
-            return {
-                message: "อัพโหลดรูปประวัติบริการสำเร็จ",
-                imageUrl
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการอัพโหลดรูป" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            image: t.Object({
-                buffer: t.String(),
-                filename: t.String(),
-                mimetype: t.String()
-            })
-        })
-    })
-
-    // อัปโหลดสำเนาเล่มทะเบียนรถ
-    .post("/:id/registration-book", async ({ params, body, set }) => {
-        const { id } = params;
-        const { userId, image } = body;
-
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        try {
-            // เก็บ URL เดิมไว้ลบหลังสำเร็จ
-            const oldRegistrationBookImage = listing.registrationBookImage;
-
-            const imageBuffer = Buffer.from(image.buffer, 'base64');
-
-            const webpBuffer = await processImage(imageBuffer, {
-                maxWidth: 1280,
-                maxHeight: 960,
-                quality: 85
-            });
-
-            const baseFilename = generateFilename(image.filename);
-            const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
-            const objectPath = `${listing.userId}/listings/${id}/registration-book-${webpFilename}`;
-
-            const imageUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
-
-            await prisma.vehicleListing.update({
-                where: { id },
-                data: { registrationBookImage: imageUrl }
-            });
-
-            // ลบรูปเดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
-            await deleteOldFile(oldRegistrationBookImage);
-
-            return {
-                message: "อัปโหลดสำเนาเล่มทะเบียนสำเร็จ",
-                imageUrl
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการอัปโหลดรูป" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            image: t.Object({
-                buffer: t.String(),
-                filename: t.String(),
-                mimetype: t.String()
-            })
-        })
-    })
-
-    // ลบรูปภาพเดี่ยว
-    .delete("/:id/images/:imageId", async ({ params, query, set }) => {
-        const { id, imageId } = params;
-        const userId = query.userId;
-
-        if (!userId) {
-            set.status = 400;
-            return { message: "กรุณาระบุ userId" };
-        }
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id },
-            include: { images: true }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        // หา image ที่ต้องการลบ
-        const imageToDelete = listing.images.find(img => img.id === imageId);
-        if (!imageToDelete) {
-            set.status = 404;
-            return { message: "ไม่พบรูปภาพนี้" };
-        }
-
-        try {
-            // ลบจาก MinIO โดยดึง path จาก URL
-            const url = new URL(imageToDelete.url);
-            const objectPath = url.pathname.replace(/^\/car2hand\//, '');
-            await deleteFile(objectPath);
-
-            // ลบจาก database
-            await prisma.vehicleImage.delete({
-                where: { id: imageId }
-            });
-
-            // ถ้าเป็นรูปหลักและยังมีรูปอื่น ให้ตั้งรูปแรกเป็นหลักแทน
-            if (imageToDelete.isPrimary && listing.images.length > 1) {
-                const remainingImages = listing.images.filter(img => img.id !== imageId);
-                if (remainingImages.length > 0) {
-                    await prisma.vehicleImage.update({
-                        where: { id: remainingImages[0].id },
-                        data: { isPrimary: true }
-                    });
-                }
-            }
-
-            // ดึงรูปที่เหลือกลับมา
-            const remainingImages = await prisma.vehicleImage.findMany({
-                where: { listingId: id },
-                orderBy: { order: 'asc' }
-            });
-
-            return {
-                message: "ลบรูปภาพสำเร็จ",
-                images: remainingImages
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการลบรูปภาพ" };
-        }
-    })
-
-    // เรียงลำดับรูปภาพใหม่
-    .put("/:id/images/reorder", async ({ params, body, set }) => {
-        const { id } = params;
-        const { userId, imageIds } = body;
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        try {
-            // อัพเดท order และ isPrimary
-            await Promise.all(imageIds.map((imageId: string, index: number) =>
-                prisma.vehicleImage.update({
-                    where: { id: imageId },
-                    data: {
-                        order: index,
-                        isPrimary: index === 0
-                    }
-                })
-            ));
-
-            // ดึงรูปที่อัพเดทแล้วกลับมา
-            const updatedImages = await prisma.vehicleImage.findMany({
-                where: { listingId: id },
-                orderBy: { order: 'asc' }
-            });
-
-            return {
-                message: "เรียงลำดับรูปภาพสำเร็จ",
-                images: updatedImages
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการเรียงลำดับรูปภาพ" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            imageIds: t.Array(t.String())
-        })
-    })
-
-    // ตั้งรูปหลัก
-    .put("/:id/images/:imageId/primary", async ({ params, body, set }) => {
-        const { id, imageId } = params;
-        const { userId } = body;
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id },
-            include: { images: true }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        // หา image ที่ต้องการตั้งเป็นหลัก
-        const targetImage = listing.images.find(img => img.id === imageId);
-        if (!targetImage) {
-            set.status = 404;
-            return { message: "ไม่พบรูปภาพนี้" };
-        }
-
-        try {
-            // ยกเลิกรูปหลักเดิม
-            await prisma.vehicleImage.updateMany({
-                where: { listingId: id, isPrimary: true },
-                data: { isPrimary: false }
-            });
-
-            // ตั้งรูปใหม่เป็นหลัก
-            await prisma.vehicleImage.update({
-                where: { id: imageId },
-                data: { isPrimary: true, order: 0 }
-            });
-
-            // ดึงรูปที่อัพเดทแล้วกลับมา
-            const updatedImages = await prisma.vehicleImage.findMany({
-                where: { listingId: id },
-                orderBy: { order: 'asc' }
-            });
-
-            return {
-                message: "ตั้งรูปหลักสำเร็จ",
-                images: updatedImages
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการตั้งรูปหลัก" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String()
-        })
-    })
-
-    // อัพเดทราคาและเผยแพร่ประกาศ
-    .patch("/:id/publish", async ({ params, body, set }) => {
-        const { id } = params;
-        const { userId, price } = body;
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id },
-            include: { images: true }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        // ตรวจสอบว่ามีรูปภาพหรือยัง
-        if (listing.images.length === 0) {
-            set.status = 400;
-            return { message: "กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป" };
-        }
-
-        try {
-            // ตรวจสอบแพ็กเกจผู้ใช้ — Basic (Free) ต้องรอ admin อนุมัติ
-            const userWithPkg = await prisma.user.findUnique({
-                where: { id: userId },
-                select: { currentPackage: { select: { slug: true, price: true, listingDurationDays: true } } }
-            });
-
-            const isBasicFree = !userWithPkg?.currentPackage
-                || userWithPkg.currentPackage.slug === 'basic'
-                || Number(userWithPkg.currentPackage.price) === 0;
-
-            const newStatus = isBasicFree ? "PENDING" : "ACTIVE";
-            const durationDays = userWithPkg?.currentPackage?.listingDurationDays ?? 30;
-
-            const updatedListing = await prisma.vehicleListing.update({
-                where: { id },
-                data: {
-                    price,
-                    status: newStatus,
-                    // ตั้ง publishedAt + expiredAt เฉพาะเมื่อ ACTIVE ทันที (แพ็กเกจที่ไม่ใช่ Basic)
-                    ...(newStatus === "ACTIVE" ? {
-                        publishedAt: new Date(),
-                        expiredAt: getListingExpiryDate(durationDays)
-                    } : {})
-                },
-                include: {
-                    images: true,
-                    user: {
-                        select: {
-                            id: true,
-                            fullName: true,
-                            phoneNumber: true,
-                        }
-                    }
-                }
-            });
-
-            // Notify admin SSE clients if listing is pending approval
-            if (newStatus === "PENDING") {
-                getAndBroadcastPendingCounts();
-            }
-
-            return {
-                message: isBasicFree
-                    ? "ส่งประกาศเพื่อรอการตรวจสอบจากผู้ดูแลระบบ"
-                    : "เผยแพร่ประกาศสำเร็จ",
-                listing: updatedListing,
-                requiresApproval: isBasicFree
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการเผยแพร่ประกาศ" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            price: t.Number()
-        })
-    })
-
-    // อัพเดทข้อมูลประกาศ
-    .put("/:id", async ({ params, body, set }) => {
-        const { id } = params;
-        const { userId, ...updateData } = body;
-
-        // ตรวจสอบ listing
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        if (listing.userId !== userId) {
-            set.status = 403;
-            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
-        }
-
-        // Basic (free) package ไม่อนุญาตให้ใส่ facebookUrl
-        const updatePkg = await getUserPackage(userId);
-        const allowedFbUrl = !updatePkg.id ? null : (updateData.facebookUrl || null);
-
-        try {
-            const updatedListing = await prisma.vehicleListing.update({
-                where: { id },
-                data: {
-                    vehicleType: updateData.vehicleType,
-                    title: updateData.title,
-                    description: updateData.description,
-                    price: updateData.price,
-                    brand: updateData.brand,
-                    model: updateData.model,
-                    subModel: updateData.subModel,
-                    year: updateData.year,
-                    color: updateData.color,
-                    fuelType: updateData.fuelType,
-                    transmission: updateData.transmission,
-                    engineSize: updateData.engineSize,
-                    seats: updateData.seats,
-                    mileage: updateData.mileage,
-                    bodyType: updateData.bodyType,
-                    plateProvince: updateData.plateProvince,
-                    registrationType: updateData.registrationType ?? "PERSONAL",
-                    condition: updateData.condition,
-                    hasAccident: updateData.hasAccident ?? false,
-                    hasModified: updateData.hasModified ?? false,
-                    hasWarranty: updateData.hasWarranty ?? false,
-                    province: updateData.province,
-                    district: updateData.district,
-                    contactName: updateData.contactName,
-                    contactPhone: updateData.contactPhone,
-                    lineId: updateData.lineId,
-                    facebookUrl: allowedFbUrl,
-                    // Vehicle Extras
-                    taxPaid: updateData.taxPaid ?? false,
-                    registrationBookStatus: updateData.registrationBookStatus ?? "READY",
-                    insuranceDetails: updateData.insuranceDetails,
-                    warrantyDetails: updateData.warrantyDetails,
-                    bsiDetails: updateData.bsiDetails,
-                    gasType: updateData.gasType ?? "NONE",
-                    hasSpareKey: updateData.hasSpareKey ?? false,
-                },
-                include: {
-                    images: {
-                        orderBy: { order: 'asc' }
-                    },
-                    user: {
-                        select: {
-                            id: true,
-                            fullName: true,
-                            phoneNumber: true,
-                        }
-                    }
-                }
-            });
-
-            return {
-                message: "อัพเดทประกาศสำเร็จ",
-                listing: updatedListing
-            };
-        } catch (error) {
-            console.error(error);
-            set.status = 500;
-            return { message: "เกิดข้อผิดพลาดในการอัพเดทประกาศ" };
-        }
-    }, {
-        body: t.Object({
-            userId: t.String(),
-            vehicleType: t.Union([t.Literal("CAR"), t.Literal("MOTORCYCLE")]),
-            title: t.String(),
-            description: t.Optional(t.String()),
-            price: t.Number(),
-            brand: t.String(),
-            model: t.String(),
-            subModel: t.Optional(t.String()),
-            year: t.Number(),
-            color: t.String(),
-            fuelType: t.Union([
-                t.Literal("PETROL"),
-                t.Literal("DIESEL"),
-                t.Literal("HYBRID"),
-                t.Literal("PLUGIN_HYBRID"),
-                t.Literal("EV"),
-                t.Literal("LPG"),
-                t.Literal("NGV")
-            ]),
-            transmission: t.Optional(t.Union([
-                t.Literal("AUTOMATIC"),
-                t.Literal("MANUAL"),
-                t.Literal("CVT"),
-                t.Literal("DCT"),
-                t.Literal("SEMI_AUTO")
-            ])),
-            engineSize: t.Optional(t.Number()),
-            seats: t.Optional(t.Number()),
-            mileage: t.Optional(t.Number()),
-            bodyType: t.Optional(t.Union([
-                t.Literal("SEDAN"),
-                t.Literal("HATCHBACK"),
-                t.Literal("SUV"),
-                t.Literal("CROSSOVER"),
-                t.Literal("MPV"),
-                t.Literal("PICKUP"),
-                t.Literal("COUPE"),
-                t.Literal("CONVERTIBLE"),
-                t.Literal("WAGON"),
-                t.Literal("VAN"),
-                t.Literal("STANDARD"),
-                t.Literal("SCOOTER"),
-                t.Literal("SPORT"),
-                t.Literal("NAKED"),
-                t.Literal("CRUISER"),
-                t.Literal("TOURING"),
-                t.Literal("ADVENTURE"),
-                t.Literal("DIRT"),
-                t.Literal("CAFE_RACER"),
-                t.Literal("UNDERBONE"),
-                t.Literal("CUB")
-            ])),
-            plateProvince: t.Optional(t.String()),
-            registrationType: t.Optional(t.Union([
-                t.Literal("PERSONAL"),
-                t.Literal("COMPANY")
-            ])),
-            condition: t.Optional(t.Union([
-                t.Literal("EXCELLENT"),
-                t.Literal("GOOD"),
-                t.Literal("FAIR"),
-                t.Literal("POOR")
-            ])),
-            hasAccident: t.Optional(t.Boolean()),
-            hasModified: t.Optional(t.Boolean()),
-            hasWarranty: t.Optional(t.Boolean()),
-            province: t.String(),
-            district: t.Optional(t.String()),
-            contactName: t.Optional(t.String()),
-            contactPhone: t.Optional(t.String()),
-            lineId: t.Optional(t.String()),
-            facebookUrl: t.Optional(t.String()),
-            // Vehicle Extras
-            taxPaid: t.Optional(t.Boolean()),
-            registrationBookStatus: t.Optional(t.Union([
-                t.Literal("READY"),
-                t.Literal("FINANCED")
-            ])),
-            insuranceDetails: t.Optional(t.String()),
-            warrantyDetails: t.Optional(t.String()),
-            bsiDetails: t.Optional(t.String()),
-            gasType: t.Optional(t.Union([
-                t.Literal("NONE"),
-                t.Literal("LPG"),
-                t.Literal("NGV")
-            ])),
-            hasSpareKey: t.Optional(t.Boolean())
-        })
-    })
+// ===== Public GET routes (no auth required) =====
+const publicListingRoutes = new Elysia({ prefix: "/listings" })
 
     // ดึงประกาศแนะนำ (Featured / Premium / Paid Package users)
     .get("/featured", async () => {
@@ -1040,67 +169,14 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         return { listings: enriched };
     })
 
-    // ดึงประกาศตาม ID
-    .get("/:id", async ({ params, query, set }) => {
-        const { id } = params;
-        const { viewerId } = query; // Optional: userId ของคนที่กำลังดู
-
-        const listing = await prisma.vehicleListing.findUnique({
-            where: { id },
-            include: {
-                images: {
-                    orderBy: { order: 'asc' }
-                },
-                user: {
-                    select: {
-                        id: true,
-                        fullName: true,
-                        phoneNumber: true,
-                        packageExpiresAt: true,
-                        currentPackage: {
-                            select: { badge: true }
-                        }
-                    }
-                }
-            }
-        });
-
-        if (!listing) {
-            set.status = 404;
-            return { message: "ไม่พบประกาศนี้" };
-        }
-
-        // เช็คว่าประกาศหมดอายุหรือไม่
-        const isExpired = listing.status === 'EXPIRED'
-            || (listing.expiredAt && new Date(listing.expiredAt) < new Date());
-
-        // ถ้าหมดอายุและไม่ใช่เจ้าของ → return expired flag (ไม่แสดงข้อมูลรถ)
-        if (isExpired && (!viewerId || viewerId !== listing.userId)) {
-            return { listing: null, expired: true, message: "ประกาศนี้หมดอายุแล้ว" };
-        }
-
-        // เพิ่ม view count เฉพาะเมื่อคนดูไม่ใช่เจ้าของประกาศ และยังไม่หมดอายุ
-        if (!isExpired && (!viewerId || viewerId !== listing.userId)) {
-            await prisma.vehicleListing.update({
-                where: { id },
-                data: { viewCount: { increment: 1 } }
-            });
-        }
-
-        // Enrich with badge (check package expiry)
-        const now = new Date();
-        const pkgActive = listing.user.currentPackage ? (listing.user.packageExpiresAt ? new Date(listing.user.packageExpiresAt) > now : true) : false;
-        const enrichedListing = {
-            ...listing,
-            badge: pkgActive ? (listing.user.currentPackage?.badge || null) : null,
-            user: {
-                id: listing.user.id,
-                fullName: listing.user.fullName,
-                phoneNumber: listing.user.phoneNumber,
-            }
-        };
-
-        return { listing: enrichedListing, expired: isExpired };
+    // สถิติสาธารณะสำหรับ landing page
+    .get("/stats/public", async () => {
+        const [activeListings, soldListings, totalSellers] = await Promise.all([
+            prisma.vehicleListing.count({ where: { status: 'ACTIVE' } }),
+            prisma.vehicleListing.count({ where: { status: 'SOLD' } }),
+            prisma.user.count({ where: { isActive: true, listings: { some: {} } } })
+        ]);
+        return { activeListings, soldListings, totalSellers };
     })
 
     // ดึงประกาศทั้งหมด (พร้อม filter)
@@ -1357,6 +433,69 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         };
     })
 
+    // ดึงประกาศตาม ID
+    .get("/:id", async ({ params, query, set }) => {
+        const { id } = params;
+        const { viewerId } = query; // Optional: userId ของคนที่กำลังดู
+
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: {
+                images: {
+                    orderBy: { order: 'asc' }
+                },
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        phoneNumber: true,
+                        packageExpiresAt: true,
+                        currentPackage: {
+                            select: { badge: true }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        // เช็คว่าประกาศหมดอายุหรือไม่
+        const isExpired = listing.status === 'EXPIRED'
+            || (listing.expiredAt && new Date(listing.expiredAt) < new Date());
+
+        // ถ้าหมดอายุและไม่ใช่เจ้าของ → return expired flag (ไม่แสดงข้อมูลรถ)
+        if (isExpired && (!viewerId || viewerId !== listing.userId)) {
+            return { listing: null, expired: true, message: "ประกาศนี้หมดอายุแล้ว" };
+        }
+
+        // เพิ่ม view count เฉพาะเมื่อคนดูไม่ใช่เจ้าของประกาศ และยังไม่หมดอายุ
+        if (!isExpired && (!viewerId || viewerId !== listing.userId)) {
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { viewCount: { increment: 1 } }
+            });
+        }
+
+        // Enrich with badge (check package expiry)
+        const now = new Date();
+        const pkgActive = listing.user.currentPackage ? (listing.user.packageExpiresAt ? new Date(listing.user.packageExpiresAt) > now : true) : false;
+        const enrichedListing = {
+            ...listing,
+            badge: pkgActive ? (listing.user.currentPackage?.badge || null) : null,
+            user: {
+                id: listing.user.id,
+                fullName: listing.user.fullName,
+                phoneNumber: listing.user.phoneNumber,
+            }
+        };
+
+        return { listing: enrichedListing, expired: isExpired };
+    })
+
     // ดึงประกาศของ user
     .get("/user/:userId", async ({ params, query }) => {
         const { userId } = params;
@@ -1394,10 +533,972 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         };
     })
 
-    // ลบประกาศ
-    .delete("/:id", async ({ params, body, set }) => {
+    // ดึง pending renewals ของ user
+    .get("/renewals/pending", async ({ query }) => {
+        const { userId } = query;
+        if (!userId) return { renewals: [] };
+        const renewals = await prisma.listingRenewal.findMany({
+            where: { userId: userId as string, status: 'PENDING' },
+            select: { id: true, listingId: true, createdAt: true, amount: true }
+        });
+        return { renewals };
+    })
+
+    // ดึงข้อมูล slots ของ user (จำนวนต่อ slot + ความจุ)
+    .get("/bump-slots", async ({ query }) => {
+        const { userId } = query;
+        if (!userId) return { slots: [] };
+
+        const userPkg = await getUserPackage(userId as string);
+        const autoBump = (userPkg as any).autoBumpPerDay ?? 0;
+        const maxListings = userPkg.maxListings;
+
+        if (autoBump <= 0) return { slots: [], maxPerSlot: 0, autoBump: 0 };
+
+        const maxPerSlot = Math.ceil(maxListings / autoBump);
+
+        // ดึง package slug เพื่อหาตาราง slots
+        const pkg = await prisma.package.findFirst({ where: { id: userPkg.id }, select: { slug: true } });
+        const schedules = AUTO_BUMP_SCHEDULES[pkg?.slug || ''] || [];
+
+        // นับ listing ในแต่ละ slot
+        const slots = await Promise.all(
+            schedules.map(async (time, idx) => {
+                const count = await prisma.vehicleListing.count({
+                    where: { userId: userId as string, autoBumpSlot: idx, status: 'ACTIVE' }
+                });
+                return { index: idx, time, count, maxPerSlot };
+            })
+        );
+
+        // นับ listing ที่ไม่ได้กำหนด slot (null = ระบบจัดให้)
+        const unassigned = await prisma.vehicleListing.count({
+            where: { userId: userId as string, autoBumpSlot: null, status: 'ACTIVE' }
+        });
+
+        return { slots, maxPerSlot, autoBump, unassigned };
+    });
+
+// ===== Protected write routes (authGuard required) =====
+const protectedListingRoutes = new Elysia({ prefix: "/listings" })
+    .use(authGuard)
+
+    // สร้างประกาศขายใหม่
+    .post("/", async ({ body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { ...listingData } = body;
+
+        // ตรวจสอบว่า user มีอยู่จริง
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            set.status = 401;
+            return { message: "กรุณาเข้าสู่ระบบ" };
+        }
+
+        // ตรวจสอบ limit จำนวนประกาศตาม package
+        const activeListings = await prisma.vehicleListing.count({
+            where: {
+                userId,
+                status: { in: ['ACTIVE', 'DRAFT', 'PENDING'] }
+            }
+        });
+        const userPkg = await getUserPackage(userId);
+        if (!canCreateListing(userPkg.maxListings, activeListings)) {
+            set.status = 403;
+            return {
+                message: `แพ็กเกจ ${userPkg.name} ลงประกาศได้สูงสุด ${userPkg.maxListings} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม`,
+                upgradeRequired: true,
+            };
+        }
+
+
+        // Basic (free) package ไม่อนุญาตให้ใส่ facebookUrl
+        const isFreePkg = !userPkg.id;
+        const allowedFacebookUrl = isFreePkg ? null : (listingData.facebookUrl || null);
+
+        // Sanitize listing data before database operation
+        const sanitizedData = sanitizeObject(listingData as Record<string, unknown>);
+
+        try {
+            const listing = await prisma.vehicleListing.create({
+                data: {
+                    userId,
+                    vehicleType: sanitizedData.vehicleType as any,
+                    title: sanitizedData.title as string,
+                    description: sanitizedData.description as string | undefined,
+                    price: sanitizedData.price as number,
+                    brand: sanitizedData.brand as string,
+                    model: sanitizedData.model as string,
+                    subModel: sanitizedData.subModel as string | undefined,
+                    year: sanitizedData.year as number,
+                    color: sanitizedData.color as string,
+                    fuelType: sanitizedData.fuelType as any,
+                    transmission: sanitizedData.transmission as any,
+                    engineSize: sanitizedData.engineSize as number | undefined,
+                    seats: sanitizedData.seats as number | undefined,
+                    mileage: sanitizedData.mileage as number,
+                    bodyType: sanitizedData.bodyType as any,
+                    plateProvince: sanitizedData.plateProvince as string | undefined,
+                    registrationType: (sanitizedData.registrationType as any) ?? "PERSONAL",
+                    condition: sanitizedData.condition as any,
+                    hasAccident: (sanitizedData.hasAccident as boolean) ?? false,
+                    hasModified: (sanitizedData.hasModified as boolean) ?? false,
+                    hasWarranty: (sanitizedData.hasWarranty as boolean) ?? false,
+                    province: sanitizedData.province as string,
+                    district: sanitizedData.district as string | undefined,
+                    contactName: sanitizedData.contactName as string | undefined,
+                    contactPhone: sanitizedData.contactPhone as string | undefined,
+                    lineId: sanitizedData.lineId as string | undefined,
+                    facebookUrl: allowedFacebookUrl,
+                    // Vehicle Extras
+                    taxPaid: (sanitizedData.taxPaid as boolean) ?? false,
+                    registrationBookStatus: (sanitizedData.registrationBookStatus as any) ?? "READY",
+                    insuranceDetails: sanitizedData.insuranceDetails as string | undefined,
+                    warrantyDetails: sanitizedData.warrantyDetails as string | undefined,
+                    bsiDetails: sanitizedData.bsiDetails as string | undefined,
+                    gasType: (sanitizedData.gasType as any) ?? "NONE",
+                    hasSpareKey: (sanitizedData.hasSpareKey as boolean) ?? false,
+                    // serviceHistoryImage will be uploaded separately
+                    status: "DRAFT", // เริ่มต้นเป็น draft
+                },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phoneNumber: true,
+                        }
+                    }
+                }
+            });
+
+            return {
+                message: "สร้างประกาศสำเร็จ",
+                listing
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการสร้างประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            vehicleType: t.Union([t.Literal("CAR"), t.Literal("MOTORCYCLE")]),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            price: t.Number(),
+            brand: t.String(),
+            model: t.String(),
+            subModel: t.Optional(t.String()),
+            year: t.Number(),
+            color: t.String(),
+            fuelType: t.Union([
+                t.Literal("PETROL"),
+                t.Literal("DIESEL"),
+                t.Literal("HYBRID"),
+                t.Literal("PLUGIN_HYBRID"),
+                t.Literal("EV"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ]),
+            transmission: t.Optional(t.Union([
+                t.Literal("AUTOMATIC"),
+                t.Literal("MANUAL"),
+                t.Literal("CVT"),
+                t.Literal("DCT"),
+                t.Literal("SEMI_AUTO")
+            ])),
+            engineSize: t.Optional(t.Number()),
+            seats: t.Optional(t.Number()),
+            mileage: t.Number(),
+            bodyType: t.Union([
+                // รถยนต์
+                t.Literal("SEDAN"),
+                t.Literal("HATCHBACK"),
+                t.Literal("SUV"),
+                t.Literal("CROSSOVER"),
+                t.Literal("MPV"),
+                t.Literal("PICKUP"),
+                t.Literal("COUPE"),
+                t.Literal("CONVERTIBLE"),
+                t.Literal("WAGON"),
+                t.Literal("VAN"),
+                // มอเตอร์ไซค์
+                t.Literal("STANDARD"),
+                t.Literal("SCOOTER"),
+                t.Literal("SPORT"),
+                t.Literal("NAKED"),
+                t.Literal("CRUISER"),
+                t.Literal("TOURING"),
+                t.Literal("ADVENTURE"),
+                t.Literal("DIRT"),
+                t.Literal("CAFE_RACER"),
+                t.Literal("UNDERBONE"),
+                t.Literal("CUB")
+            ]),
+            plateProvince: t.Optional(t.String()),
+            registrationType: t.Optional(t.Union([
+                t.Literal("PERSONAL"),
+                t.Literal("COMPANY")
+            ])),
+            condition: t.Union([
+                t.Literal("EXCELLENT"),
+                t.Literal("GOOD"),
+                t.Literal("FAIR"),
+                t.Literal("POOR")
+            ]),
+            hasAccident: t.Optional(t.Boolean()),
+            hasModified: t.Optional(t.Boolean()),
+            hasWarranty: t.Optional(t.Boolean()),
+            province: t.String(),
+            district: t.Optional(t.String()),
+            contactName: t.Optional(t.String()),
+            contactPhone: t.Optional(t.String()),
+            lineId: t.Optional(t.String()),
+            facebookUrl: t.Optional(t.String()),
+            // Vehicle Extras
+            taxPaid: t.Optional(t.Boolean()),
+            registrationBookStatus: t.Optional(t.Union([
+                t.Literal("READY"),
+                t.Literal("FINANCED")
+            ])),
+            insuranceDetails: t.Optional(t.String()),
+            warrantyDetails: t.Optional(t.String()),
+            bsiDetails: t.Optional(t.String()),
+            gasType: t.Optional(t.Union([
+                t.Literal("NONE"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ])),
+            hasSpareKey: t.Optional(t.Boolean())
+        })
+    })
+
+    // อัพโหลดรูปภาพสำหรับประกาศ
+    .post("/:id/images", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
         const { id } = params;
-        const { userId } = body;
+        const { images } = body;
+
+        // Validate each image
+        for (const img of images) {
+            if (!isValidImageType(img.mimetype)) {
+                set.status = 400;
+                return { message: "รองรับเฉพาะไฟล์ JPEG, PNG, WebP และ GIF" };
+            }
+            const buffer = Buffer.from(img.buffer, 'base64');
+            if (!isValidFileSize(buffer.length)) {
+                set.status = 400;
+                return { message: "ขนาดไฟล์ต้องไม่เกิน 10 MB" };
+            }
+        }
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // ดึงรูปที่มีอยู่เดิม
+        const existingImages = await prisma.vehicleImage.findMany({
+            where: { listingId: id },
+            orderBy: { order: 'asc' }
+        });
+
+        // ตรวจสอบจำนวนรูปตาม package limit
+        const userPkgForPhotos = await getUserPackage(userId);
+        if (!canUploadPhotos(userPkgForPhotos.maxPhotosPerListing, existingImages.length, images.length)) {
+            set.status = 400;
+            return {
+                message: `แพ็กเกจ ${userPkgForPhotos.name} อัพโหลดได้สูงสุด ${userPkgForPhotos.maxPhotosPerListing} รูป/ประกาศ (ปัจจุบันมี ${existingImages.length} รูป)`,
+                upgradeRequired: true,
+            };
+        }
+
+
+        try {
+            // อัพโหลดรูปไปยัง MinIO
+            const uploadedImages = await uploadListingImages(
+                userId,
+                id,
+                images.map((img: { buffer: string; filename: string; mimetype: string }) => ({
+                    buffer: Buffer.from(img.buffer, 'base64'),
+                    originalname: img.filename,
+                    mimetype: img.mimetype
+                }))
+            );
+
+            // คำนวณ order เริ่มต้น (ต่อจากรูปสุดท้าย)
+            const startOrder = existingImages.length > 0
+                ? Math.max(...existingImages.map(img => img.order)) + 1
+                : 0;
+
+            // ตรวจสอบว่ามีรูปหลักอยู่แล้วหรือไม่
+            const hasPrimary = existingImages.some(img => img.isPrimary);
+
+            // บันทึกข้อมูลรูปลง database
+            await prisma.vehicleImage.createMany({
+                data: uploadedImages.map((img, index) => ({
+                    listingId: id,
+                    url: img.url,
+                    isPrimary: !hasPrimary && index === 0, // ถ้ายังไม่มีรูปหลัก ให้รูปแรกใหม่เป็นรูปหลัก
+                    order: startOrder + index
+                }))
+            });
+
+            // ดึงรูปทั้งหมดกลับมา
+            const allImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "อัพโหลดรูปภาพสำเร็จ",
+                images: allImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ" };
+        }
+    }, {
+        body: t.Object({
+            images: t.Array(t.Object({
+                buffer: t.String(), // base64 encoded
+                filename: t.String(),
+                mimetype: t.String()
+            }))
+        })
+    })
+
+    // อัพโหลดรูปประวัติบริการ
+    .post("/:id/service-history", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id } = params;
+        const { image } = body;
+
+        // Validate image type and size
+        if (!isValidImageType(image.mimetype)) {
+            set.status = 400;
+            return { message: "รองรับเฉพาะไฟล์ JPEG, PNG, WebP และ GIF" };
+        }
+        const imageBuffer = Buffer.from(image.buffer, 'base64');
+        if (!isValidFileSize(imageBuffer.length)) {
+            set.status = 400;
+            return { message: "ขนาดไฟล์ต้องไม่เกิน 10 MB" };
+        }
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            // เก็บ URL เดิมไว้ลบหลังสำเร็จ
+            const oldServiceHistoryImage = listing.serviceHistoryImage;
+
+            // Process image to WebP
+            const webpBuffer = await processImage(imageBuffer, {
+                maxWidth: 1920,
+                maxHeight: 1440,
+                quality: 85
+            });
+
+            // Generate filename and path
+            const baseFilename = generateFilename(image.filename);
+            const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
+            const objectPath = `${listing.userId}/listings/${id}/service-history-${webpFilename}`;
+
+            // Upload to MinIO
+            const imageUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
+
+            // Update listing with service history image URL
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { serviceHistoryImage: imageUrl }
+            });
+
+            // ลบรูปเดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
+            await deleteOldFile(oldServiceHistoryImage);
+
+            return {
+                message: "อัพโหลดรูปประวัติบริการสำเร็จ",
+                imageUrl
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัพโหลดรูป" };
+        }
+    }, {
+        body: t.Object({
+            image: t.Object({
+                buffer: t.String(),
+                filename: t.String(),
+                mimetype: t.String()
+            })
+        })
+    })
+
+    // อัปโหลดสำเนาเล่มทะเบียนรถ
+    .post("/:id/registration-book", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id } = params;
+        const { image } = body;
+
+        // Validate image type and size
+        if (!isValidImageType(image.mimetype)) {
+            set.status = 400;
+            return { message: "รองรับเฉพาะไฟล์ JPEG, PNG, WebP และ GIF" };
+        }
+        const imageBuffer = Buffer.from(image.buffer, 'base64');
+        if (!isValidFileSize(imageBuffer.length)) {
+            set.status = 400;
+            return { message: "ขนาดไฟล์ต้องไม่เกิน 10 MB" };
+        }
+
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            // เก็บ URL เดิมไว้ลบหลังสำเร็จ
+            const oldRegistrationBookImage = listing.registrationBookImage;
+
+            const webpBuffer = await processImage(imageBuffer, {
+                maxWidth: 1280,
+                maxHeight: 960,
+                quality: 85
+            });
+
+            const baseFilename = generateFilename(image.filename);
+            const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
+            const objectPath = `${listing.userId}/listings/${id}/registration-book-${webpFilename}`;
+
+            const imageUrl = await uploadFile(objectPath, webpBuffer, 'image/webp');
+
+            await prisma.vehicleListing.update({
+                where: { id },
+                data: { registrationBookImage: imageUrl }
+            });
+
+            // ลบรูปเดิมหลังอัพโหลดและบันทึก DB สำเร็จแล้ว
+            await deleteOldFile(oldRegistrationBookImage);
+
+            return {
+                message: "อัปโหลดสำเนาเล่มทะเบียนสำเร็จ",
+                imageUrl
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัปโหลดรูป" };
+        }
+    }, {
+        body: t.Object({
+            image: t.Object({
+                buffer: t.String(),
+                filename: t.String(),
+                mimetype: t.String()
+            })
+        })
+    })
+
+    // ลบรูปภาพเดี่ยว
+    .delete("/:id/images/:imageId", async ({ params, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id, imageId } = params;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // หา image ที่ต้องการลบ
+        const imageToDelete = listing.images.find(img => img.id === imageId);
+        if (!imageToDelete) {
+            set.status = 404;
+            return { message: "ไม่พบรูปภาพนี้" };
+        }
+
+        try {
+            // ลบจาก MinIO โดยดึง path จาก URL
+            const url = new URL(imageToDelete.url);
+            const objectPath = url.pathname.replace(/^\/car2hand\//, '');
+            await deleteFile(objectPath);
+
+            // ลบจาก database
+            await prisma.vehicleImage.delete({
+                where: { id: imageId }
+            });
+
+            // ถ้าเป็นรูปหลักและยังมีรูปอื่น ให้ตั้งรูปแรกเป็นหลักแทน
+            if (imageToDelete.isPrimary && listing.images.length > 1) {
+                const remainingImages = listing.images.filter(img => img.id !== imageId);
+                if (remainingImages.length > 0) {
+                    await prisma.vehicleImage.update({
+                        where: { id: remainingImages[0].id },
+                        data: { isPrimary: true }
+                    });
+                }
+            }
+
+            // ดึงรูปที่เหลือกลับมา
+            const remainingImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "ลบรูปภาพสำเร็จ",
+                images: remainingImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการลบรูปภาพ" };
+        }
+    })
+
+    // เรียงลำดับรูปภาพใหม่
+    .put("/:id/images/reorder", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id } = params;
+        const { imageIds } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        try {
+            // อัพเดท order และ isPrimary
+            await Promise.all(imageIds.map((imageId: string, index: number) =>
+                prisma.vehicleImage.update({
+                    where: { id: imageId },
+                    data: {
+                        order: index,
+                        isPrimary: index === 0
+                    }
+                })
+            ));
+
+            // ดึงรูปที่อัพเดทแล้วกลับมา
+            const updatedImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "เรียงลำดับรูปภาพสำเร็จ",
+                images: updatedImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการเรียงลำดับรูปภาพ" };
+        }
+    }, {
+        body: t.Object({
+            imageIds: t.Array(t.String())
+        })
+    })
+
+    // ตั้งรูปหลัก
+    .put("/:id/images/:imageId/primary", async ({ params, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id, imageId } = params;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // หา image ที่ต้องการตั้งเป็นหลัก
+        const targetImage = listing.images.find(img => img.id === imageId);
+        if (!targetImage) {
+            set.status = 404;
+            return { message: "ไม่พบรูปภาพนี้" };
+        }
+
+        try {
+            // ยกเลิกรูปหลักเดิม
+            await prisma.vehicleImage.updateMany({
+                where: { listingId: id, isPrimary: true },
+                data: { isPrimary: false }
+            });
+
+            // ตั้งรูปใหม่เป็นหลัก
+            await prisma.vehicleImage.update({
+                where: { id: imageId },
+                data: { isPrimary: true, order: 0 }
+            });
+
+            // ดึงรูปที่อัพเดทแล้วกลับมา
+            const updatedImages = await prisma.vehicleImage.findMany({
+                where: { listingId: id },
+                orderBy: { order: 'asc' }
+            });
+
+            return {
+                message: "ตั้งรูปหลักสำเร็จ",
+                images: updatedImages
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการตั้งรูปหลัก" };
+        }
+    })
+
+    // อัพเดทราคาและเผยแพร่ประกาศ
+    .patch("/:id/publish", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id } = params;
+        const { price } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id },
+            include: { images: true }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // ตรวจสอบว่ามีรูปภาพหรือยัง
+        if (listing.images.length === 0) {
+            set.status = 400;
+            return { message: "กรุณาอัพโหลดรูปภาพอย่างน้อย 1 รูป" };
+        }
+
+        try {
+            // ตรวจสอบแพ็กเกจผู้ใช้ — Basic (Free) ต้องรอ admin อนุมัติ
+            const userWithPkg = await prisma.user.findUnique({
+                where: { id: userId },
+                select: { currentPackage: { select: { slug: true, price: true, listingDurationDays: true } } }
+            });
+
+            const isBasicFree = !userWithPkg?.currentPackage
+                || userWithPkg.currentPackage.slug === 'basic'
+                || Number(userWithPkg.currentPackage.price) === 0;
+
+            const newStatus = isBasicFree ? "PENDING" : "ACTIVE";
+            const durationDays = userWithPkg?.currentPackage?.listingDurationDays ?? 30;
+
+            const updatedListing = await prisma.vehicleListing.update({
+                where: { id },
+                data: {
+                    price,
+                    status: newStatus,
+                    // ตั้ง publishedAt + expiredAt เฉพาะเมื่อ ACTIVE ทันที (แพ็กเกจที่ไม่ใช่ Basic)
+                    ...(newStatus === "ACTIVE" ? {
+                        publishedAt: new Date(),
+                        expiredAt: getListingExpiryDate(durationDays)
+                    } : {})
+                },
+                include: {
+                    images: true,
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phoneNumber: true,
+                        }
+                    }
+                }
+            });
+
+            // Notify admin SSE clients if listing is pending approval
+            if (newStatus === "PENDING") {
+                getAndBroadcastPendingCounts();
+            }
+
+            return {
+                message: isBasicFree
+                    ? "ส่งประกาศเพื่อรอการตรวจสอบจากผู้ดูแลระบบ"
+                    : "เผยแพร่ประกาศสำเร็จ",
+                listing: updatedListing,
+                requiresApproval: isBasicFree
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการเผยแพร่ประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            price: t.Number()
+        })
+    })
+
+    // อัพเดทข้อมูลประกาศ
+    .put("/:id", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id } = params;
+        const { ...updateData } = body;
+
+        // ตรวจสอบ listing
+        const listing = await prisma.vehicleListing.findUnique({
+            where: { id }
+        });
+
+        if (!listing) {
+            set.status = 404;
+            return { message: "ไม่พบประกาศนี้" };
+        }
+
+        if (listing.userId !== userId) {
+            set.status = 403;
+            return { message: "คุณไม่มีสิทธิ์แก้ไขประกาศนี้" };
+        }
+
+        // Basic (free) package ไม่อนุญาตให้ใส่ facebookUrl
+        const updatePkg = await getUserPackage(userId);
+        const allowedFbUrl = !updatePkg.id ? null : (updateData.facebookUrl || null);
+
+        // Sanitize update data before database operation
+        const sanitizedUpdate = sanitizeObject(updateData as Record<string, unknown>);
+
+        try {
+            const updatedListing = await prisma.vehicleListing.update({
+                where: { id },
+                data: {
+                    vehicleType: sanitizedUpdate.vehicleType as any,
+                    title: sanitizedUpdate.title as string,
+                    description: sanitizedUpdate.description as string | undefined,
+                    price: sanitizedUpdate.price as number,
+                    brand: sanitizedUpdate.brand as string,
+                    model: sanitizedUpdate.model as string,
+                    subModel: sanitizedUpdate.subModel as string | undefined,
+                    year: sanitizedUpdate.year as number,
+                    color: sanitizedUpdate.color as string,
+                    fuelType: sanitizedUpdate.fuelType as any,
+                    transmission: sanitizedUpdate.transmission as any,
+                    engineSize: sanitizedUpdate.engineSize as number | undefined,
+                    seats: sanitizedUpdate.seats as number | undefined,
+                    mileage: sanitizedUpdate.mileage as number | undefined,
+                    bodyType: sanitizedUpdate.bodyType as any,
+                    plateProvince: sanitizedUpdate.plateProvince as string | undefined,
+                    registrationType: (sanitizedUpdate.registrationType as any) ?? "PERSONAL",
+                    condition: sanitizedUpdate.condition as any,
+                    hasAccident: (sanitizedUpdate.hasAccident as boolean) ?? false,
+                    hasModified: (sanitizedUpdate.hasModified as boolean) ?? false,
+                    hasWarranty: (sanitizedUpdate.hasWarranty as boolean) ?? false,
+                    province: sanitizedUpdate.province as string,
+                    district: sanitizedUpdate.district as string | undefined,
+                    contactName: sanitizedUpdate.contactName as string | undefined,
+                    contactPhone: sanitizedUpdate.contactPhone as string | undefined,
+                    lineId: sanitizedUpdate.lineId as string | undefined,
+                    facebookUrl: allowedFbUrl,
+                    // Vehicle Extras
+                    taxPaid: (sanitizedUpdate.taxPaid as boolean) ?? false,
+                    registrationBookStatus: (sanitizedUpdate.registrationBookStatus as any) ?? "READY",
+                    insuranceDetails: sanitizedUpdate.insuranceDetails as string | undefined,
+                    warrantyDetails: sanitizedUpdate.warrantyDetails as string | undefined,
+                    bsiDetails: sanitizedUpdate.bsiDetails as string | undefined,
+                    gasType: (sanitizedUpdate.gasType as any) ?? "NONE",
+                    hasSpareKey: (sanitizedUpdate.hasSpareKey as boolean) ?? false,
+                },
+                include: {
+                    images: {
+                        orderBy: { order: 'asc' }
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            phoneNumber: true,
+                        }
+                    }
+                }
+            });
+
+            return {
+                message: "อัพเดทประกาศสำเร็จ",
+                listing: updatedListing
+            };
+        } catch (error) {
+            console.error(error);
+            set.status = 500;
+            return { message: "เกิดข้อผิดพลาดในการอัพเดทประกาศ" };
+        }
+    }, {
+        body: t.Object({
+            vehicleType: t.Union([t.Literal("CAR"), t.Literal("MOTORCYCLE")]),
+            title: t.String(),
+            description: t.Optional(t.String()),
+            price: t.Number(),
+            brand: t.String(),
+            model: t.String(),
+            subModel: t.Optional(t.String()),
+            year: t.Number(),
+            color: t.String(),
+            fuelType: t.Union([
+                t.Literal("PETROL"),
+                t.Literal("DIESEL"),
+                t.Literal("HYBRID"),
+                t.Literal("PLUGIN_HYBRID"),
+                t.Literal("EV"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ]),
+            transmission: t.Optional(t.Union([
+                t.Literal("AUTOMATIC"),
+                t.Literal("MANUAL"),
+                t.Literal("CVT"),
+                t.Literal("DCT"),
+                t.Literal("SEMI_AUTO")
+            ])),
+            engineSize: t.Optional(t.Number()),
+            seats: t.Optional(t.Number()),
+            mileage: t.Optional(t.Number()),
+            bodyType: t.Optional(t.Union([
+                t.Literal("SEDAN"),
+                t.Literal("HATCHBACK"),
+                t.Literal("SUV"),
+                t.Literal("CROSSOVER"),
+                t.Literal("MPV"),
+                t.Literal("PICKUP"),
+                t.Literal("COUPE"),
+                t.Literal("CONVERTIBLE"),
+                t.Literal("WAGON"),
+                t.Literal("VAN"),
+                t.Literal("STANDARD"),
+                t.Literal("SCOOTER"),
+                t.Literal("SPORT"),
+                t.Literal("NAKED"),
+                t.Literal("CRUISER"),
+                t.Literal("TOURING"),
+                t.Literal("ADVENTURE"),
+                t.Literal("DIRT"),
+                t.Literal("CAFE_RACER"),
+                t.Literal("UNDERBONE"),
+                t.Literal("CUB")
+            ])),
+            plateProvince: t.Optional(t.String()),
+            registrationType: t.Optional(t.Union([
+                t.Literal("PERSONAL"),
+                t.Literal("COMPANY")
+            ])),
+            condition: t.Optional(t.Union([
+                t.Literal("EXCELLENT"),
+                t.Literal("GOOD"),
+                t.Literal("FAIR"),
+                t.Literal("POOR")
+            ])),
+            hasAccident: t.Optional(t.Boolean()),
+            hasModified: t.Optional(t.Boolean()),
+            hasWarranty: t.Optional(t.Boolean()),
+            province: t.String(),
+            district: t.Optional(t.String()),
+            contactName: t.Optional(t.String()),
+            contactPhone: t.Optional(t.String()),
+            lineId: t.Optional(t.String()),
+            facebookUrl: t.Optional(t.String()),
+            // Vehicle Extras
+            taxPaid: t.Optional(t.Boolean()),
+            registrationBookStatus: t.Optional(t.Union([
+                t.Literal("READY"),
+                t.Literal("FINANCED")
+            ])),
+            insuranceDetails: t.Optional(t.String()),
+            warrantyDetails: t.Optional(t.String()),
+            bsiDetails: t.Optional(t.String()),
+            gasType: t.Optional(t.Union([
+                t.Literal("NONE"),
+                t.Literal("LPG"),
+                t.Literal("NGV")
+            ])),
+            hasSpareKey: t.Optional(t.Boolean())
+        })
+    })
+
+    // ลบประกาศ
+    .delete("/:id", async ({ params, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { id } = params;
 
         const listing = await prisma.vehicleListing.findUnique({
             where: { id }
@@ -1428,37 +1529,14 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             set.status = 500;
             return { message: "เกิดข้อผิดพลาดในการลบประกาศ" };
         }
-    }, {
-        body: t.Object({
-            userId: t.String()
-        })
-    })
-
-    // สถิติสาธารณะสำหรับ landing page
-    .get("/stats/public", async () => {
-        const [activeListings, soldListings, totalSellers] = await Promise.all([
-            prisma.vehicleListing.count({ where: { status: 'ACTIVE' } }),
-            prisma.vehicleListing.count({ where: { status: 'SOLD' } }),
-            prisma.user.count({ where: { isActive: true, listings: { some: {} } } })
-        ]);
-        return { activeListings, soldListings, totalSellers };
-    })
-
-    // ดึง pending renewals ของ user
-    .get("/renewals/pending", async ({ query }) => {
-        const { userId } = query;
-        if (!userId) return { renewals: [] };
-        const renewals = await prisma.listingRenewal.findMany({
-            where: { userId: userId as string, status: 'PENDING' },
-            select: { id: true, listingId: true, createdAt: true, amount: true }
-        });
-        return { renewals };
     })
 
     // ต่ออายุ / รีประกาศ
-    .post("/:id/renew", async ({ params, body, set }) => {
+    .post("/:id/renew", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
         const { id } = params;
-        const { userId, paymentSlip } = body;
+        const { paymentSlip } = body;
 
         // ตรวจสอบว่าเป็นเจ้าของ + สถานะ EXPIRED
         const listing = await prisma.vehicleListing.findFirst({
@@ -1525,15 +1603,15 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         }
     }, {
         body: t.Object({
-            userId: t.String(),
             paymentSlip: t.Optional(t.String()),
         })
     })
 
     // ดันโพส (manual bump)
-    .post("/:id/bump", async ({ params, body, set }) => {
+    .post("/:id/bump", async ({ params, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
         const { id } = params;
-        const { userId } = body;
 
         // ตรวจสอบ listing
         const listing = await prisma.vehicleListing.findFirst({
@@ -1592,51 +1670,14 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
             bumpedAt: now,
             remaining: manualLimit - todayBumps - 1,
         };
-    }, {
-        body: t.Object({
-            userId: t.String(),
-        })
     })
 
     // กำหนด slot ดันโพสอัตโนมัติ
-    // ดึงข้อมูล slots ของ user (จำนวนต่อ slot + ความจุ)
-    .get("/bump-slots", async ({ query }) => {
-        const { userId } = query;
-        if (!userId) return { slots: [] };
-
-        const userPkg = await getUserPackage(userId as string);
-        const autoBump = (userPkg as any).autoBumpPerDay ?? 0;
-        const maxListings = userPkg.maxListings;
-
-        if (autoBump <= 0) return { slots: [], maxPerSlot: 0, autoBump: 0 };
-
-        const maxPerSlot = Math.ceil(maxListings / autoBump);
-
-        // ดึง package slug เพื่อหาตาราง slots
-        const pkg = await prisma.package.findFirst({ where: { id: userPkg.id }, select: { slug: true } });
-        const schedules = AUTO_BUMP_SCHEDULES[pkg?.slug || ''] || [];
-
-        // นับ listing ในแต่ละ slot
-        const slots = await Promise.all(
-            schedules.map(async (time, idx) => {
-                const count = await prisma.vehicleListing.count({
-                    where: { userId: userId as string, autoBumpSlot: idx, status: 'ACTIVE' }
-                });
-                return { index: idx, time, count, maxPerSlot };
-            })
-        );
-
-        // นับ listing ที่ไม่ได้กำหนด slot (null = ระบบจัดให้)
-        const unassigned = await prisma.vehicleListing.count({
-            where: { userId: userId as string, autoBumpSlot: null, status: 'ACTIVE' }
-        });
-
-        return { slots, maxPerSlot, autoBump, unassigned };
-    })
-
-    .put("/:id/bump-slot", async ({ params, body, set }) => {
+    .put("/:id/bump-slot", async ({ params, body, set, auth }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
         const { id } = params;
-        const { userId, slot } = body as any;
+        const { slot } = body as any;
 
         const listing = await prisma.vehicleListing.findFirst({
             where: { id, userId }
@@ -1708,7 +1749,11 @@ export const listingRoutes = new Elysia({ prefix: "/listings" })
         };
     }, {
         body: t.Object({
-            userId: t.String(),
             slot: t.Union([t.Number(), t.Null()]),
         })
     });
+
+// ===== Combined export =====
+export const listingRoutes = new Elysia()
+    .use(publicListingRoutes)
+    .use(protectedListingRoutes);

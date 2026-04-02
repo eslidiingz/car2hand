@@ -7,6 +7,12 @@ import { ArrowLeft, PencilSimple, X, SpinnerGap } from '@phosphor-icons/react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 interface Category {
     id: string;
     name: string;
@@ -69,10 +75,14 @@ export default function CreateTopicPage() {
         setSubmitting(true);
         setError('');
         try {
+            const token = getAuthToken();
             const res = await fetch(`${API_BASE}/forum/posts`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId, categoryId, title, content, tags }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ categoryId, title, content, tags }),
             });
             if (!res.ok) {
                 const data = await res.json();
