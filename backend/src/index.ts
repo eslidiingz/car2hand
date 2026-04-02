@@ -43,7 +43,7 @@ const app = new Elysia()
 
   // CORS configuration
   .use(cors({
-    origin: true, // Allow all origins in development
+    origin: ALLOWED_ORIGINS,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,

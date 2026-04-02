@@ -41,7 +41,7 @@ export default function FeaturedListings() {
     if (!loading && listings.length === 0) return null;
 
     return (
-        <section className="max-w-7xl mx-auto px-4 mt-12 mb-12">
+        <section className="max-w-7xl mx-auto px-4 mt-12">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
                     <Sparkle weight="fill" className="text-amber-500" />

@@ -87,8 +87,10 @@ export const securityHeaders = new Elysia({ name: 'security-headers' })
         // Prevent clickjacking
         set.headers['X-Frame-Options'] = 'DENY';
 
-        // HTTP Strict Transport Security (for production with HTTPS)
-        // set.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+        // HTTP Strict Transport Security (production with HTTPS)
+        if (process.env.NODE_ENV === 'production') {
+            set.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains';
+        }
 
         // Content Security Policy
         set.headers['Content-Security-Policy'] = "default-src 'self'";

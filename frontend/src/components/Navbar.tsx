@@ -90,6 +90,7 @@ export default function Navbar() {
     const confirmLogout = () => {
         localStorage.removeItem('user');
         sessionStorage.removeItem('user');
+        document.cookie = 'has_session=; path=/; max-age=0';
         setUser(null);
         setShowLogoutConfirm(false);
         window.location.href = '/';

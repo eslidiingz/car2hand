@@ -11,6 +11,12 @@ import {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 interface Author { id: string; fullName: string; }
 interface CommentVote { type: string; }
 interface Reply {
@@ -87,10 +93,14 @@ export default function TopicDetailPage() {
 
     const handleVote = async (type: 'UP' | 'DOWN') => {
         if (!userId) { router.push('/login'); return; }
+        const token = getAuthToken();
         const res = await fetch(`${API_BASE}/forum/posts/${topicId}/vote`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, type }),
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ type }),
         });
         const data = await res.json();
         if (data.voted === null) {
@@ -110,11 +120,14 @@ export default function TopicDetailPage() {
         if (!userId || !replyContent.trim()) return;
         setSending(true);
         try {
+            const token = getAuthToken();
             await fetch(`${API_BASE}/forum/posts/${topicId}/comments`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify({
-                    userId,
                     content: replyContent,
                     parentId: replyTo?.id ?? undefined,
                 }),
@@ -129,10 +142,13 @@ export default function TopicDetailPage() {
 
     const handleBestAnswer = async (commentId: string) => {
         if (!userId) return;
+        const token = getAuthToken();
         await fetch(`${API_BASE}/forum/comments/${commentId}/best-answer`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId }),
+            headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
         });
         fetchPost();
     };

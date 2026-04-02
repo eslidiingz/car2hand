@@ -37,6 +37,12 @@ interface ApiResponse {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 interface PackageInfo {
     currentPackage: {
         name: string;
@@ -118,9 +124,12 @@ export default function MyListingsPage() {
         } catch { /* silently fail */ }
     };
 
-    const fetchPackageInfo = async (userId: string) => {
+    const fetchPackageInfo = async (_userId: string) => {
         try {
-            const response = await fetch(`${API_BASE}/packages/my?userId=${userId}`);
+            const token = getAuthToken();
+            const response = await fetch(`${API_BASE}/packages/my`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             if (response.ok) {
                 const data = await response.json();
                 setPackageInfo(data);
@@ -153,10 +162,13 @@ export default function MyListingsPage() {
 
         setDeleting(true);
         try {
+            const token = getAuthToken();
             const response = await fetch(`${API_BASE}/listings/${listingId}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id })
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
             });
 
             if (!response.ok) {
@@ -179,7 +191,10 @@ export default function MyListingsPage() {
         if (!user) return;
         setSlotListingId(listingId);
         try {
-            const res = await fetch(`${API_BASE}/listings/bump-slots?userId=${user.id}`);
+            const token = getAuthToken();
+            const res = await fetch(`${API_BASE}/listings/bump-slots`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             const data = await res.json();
             setSlotInfo(data);
         } catch {
@@ -201,10 +216,14 @@ export default function MyListingsPage() {
         if (!user) return;
         setSlotSaving(true);
         try {
+            const token = getAuthToken();
             const response = await fetch(`${API_BASE}/listings/${listingId}/bump-slot`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id, slot })
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ slot })
             });
             const data = await response.json();
             if (response.ok) {
@@ -224,10 +243,13 @@ export default function MyListingsPage() {
     const handleBump = async (listingId: string) => {
         if (!user) return;
         try {
+            const token = getAuthToken();
             const response = await fetch(`${API_BASE}/listings/${listingId}/bump`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id })
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
             });
             const data = await response.json();
             if (response.ok) {
@@ -251,10 +273,13 @@ export default function MyListingsPage() {
             // Paid user → repost ทันที
             setRenewLoading(true);
             try {
+                const token = getAuthToken();
                 const response = await fetch(`${API_BASE}/listings/${listingId}/renew`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: user.id })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
                 });
                 const data = await response.json();
                 if (response.ok) {
@@ -288,10 +313,14 @@ export default function MyListingsPage() {
         if (!user || !renewId) return;
         setRenewLoading(true);
         try {
+            const token = getAuthToken();
             const response = await fetch(`${API_BASE}/listings/${renewId}/renew`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id, paymentSlip: slipBase64 })
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({ paymentSlip: slipBase64 })
             });
             const data = await response.json();
             if (response.ok) {

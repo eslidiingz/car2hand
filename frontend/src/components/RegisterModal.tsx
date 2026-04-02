@@ -132,6 +132,8 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                     token: data.accessToken
                 };
                 localStorage.setItem('user', JSON.stringify(userWithToken));
+                // Set session cookie for middleware route protection
+                document.cookie = 'has_session=1; path=/; SameSite=Strict; max-age=604800';
 
                 // Dispatch custom event to notify other components
                 window.dispatchEvent(new CustomEvent('userLogin', { detail: userWithToken }));

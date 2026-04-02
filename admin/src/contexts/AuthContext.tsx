@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAdmin(adminData);
         localStorage.setItem('admin_token', token);
         localStorage.setItem('admin_user', JSON.stringify(adminData));
+        document.cookie = 'admin_session=1; path=/; SameSite=Strict; max-age=604800';
         router.push('/');
     };
 
@@ -64,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAdmin(null);
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_user');
+        document.cookie = 'admin_session=; path=/; max-age=0';
         router.push('/login');
     };
 

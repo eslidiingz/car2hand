@@ -8,7 +8,10 @@ import { jwt } from "@elysiajs/jwt";
 import { cookie } from "@elysiajs/cookie";
 
 // JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required. Set it in .env file.');
+}
 const JWT_EXPIRES_IN = '7d'; // Token expires in 7 days
 const JWT_REFRESH_EXPIRES_IN = '30d'; // Refresh token expires in 30 days
 
@@ -94,74 +97,51 @@ export const blacklistToken = (token: string): void => {
  * Auth Guard Middleware
  * Protects routes that require authentication
  */
-export const authGuard = new Elysia({ name: 'auth-guard' })
+// Helper to extract and verify JWT from request
+async function verifyAuthToken(
+    jwtVerify: (token: string) => Promise<JWTPayload | false>,
+    request: Request,
+    cookie: any
+): Promise<{ userId: string; email: string; token: string } | null> {
+    let token: string | null = null;
+
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+    } else if (cookie?.accessToken) {
+        token = String(cookie.accessToken.value);
+    }
+
+    if (!token || isTokenBlacklisted(token)) return null;
+
+    try {
+        const payload = await jwtVerify(token) as JWTPayload | false;
+        if (!payload) return null;
+        return { userId: payload.userId, email: payload.email, token };
+    } catch {
+        return null;
+    }
+}
+
+export { verifyAuthToken };
+
+// authGuard as a function that applies jwt + derive directly to the instance
+// This works in Elysia 1.4 where plugin derive doesn't propagate
+export function authGuard(app: Elysia<any, any, any, any, any, any, any, any>) {
+    return app
+        .use(jwtPlugin())
+        .derive(async ({ jwt, request, cookie }: any) => {
+            const auth = await verifyAuthToken(jwt.verify.bind(jwt), request, cookie);
+            return { auth };
+        });
+}
+
+// Keep plugin version for backward compatibility (used in admin.ts derive pattern)
+export const authGuardPlugin = new Elysia({ name: 'auth-guard' })
     .use(jwtPlugin())
     .derive(async ({ jwt, request, set, cookie }) => {
-        // Try to get token from Authorization header or cookie
-        let token: string | null = null;
-
-        const authHeader = request.headers.get('Authorization');
-        if (authHeader?.startsWith('Bearer ')) {
-            token = authHeader.substring(7);
-        } else if (cookie?.accessToken) {
-            token = String(cookie.accessToken.value);
-        }
-
-        if (!token) {
-            set.status = 401;
-            return {
-                auth: null,
-                authError: {
-                    error: 'Unauthorized',
-                    message: 'กรุณาเข้าสู่ระบบ'
-                }
-            };
-        }
-
-        // Check if token is blacklisted
-        if (isTokenBlacklisted(token)) {
-            set.status = 401;
-            return {
-                auth: null,
-                authError: {
-                    error: 'Unauthorized',
-                    message: 'Token ไม่ถูกต้อง กรุณาเข้าสู่ระบบใหม่'
-                }
-            };
-        }
-
-        try {
-            const payload = await jwt.verify(token) as JWTPayload | false;
-
-            if (!payload) {
-                set.status = 401;
-                return {
-                    auth: null,
-                    authError: {
-                        error: 'Unauthorized',
-                        message: 'Token หมดอายุ กรุณาเข้าสู่ระบบใหม่'
-                    }
-                };
-            }
-
-            return {
-                auth: {
-                    userId: payload.userId,
-                    email: payload.email,
-                    token
-                },
-                authError: null
-            };
-        } catch {
-            set.status = 401;
-            return {
-                auth: null,
-                authError: {
-                    error: 'Unauthorized',
-                    message: 'Token ไม่ถูกต้อง'
-                }
-            };
-        }
+        const auth = await verifyAuthToken(jwt.verify.bind(jwt), request, cookie);
+        return { auth };
     });
 
 /**

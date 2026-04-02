@@ -8,9 +8,9 @@
 
 import { Elysia, t } from "elysia";
 import prisma from "./db";
-import { jwtPlugin, generateAccessToken, blacklistToken } from "./jwt";
+import { jwtPlugin, generateAccessToken, blacklistToken, authGuard } from "./jwt";
 import { registerSchema, loginSchema, validateInput } from "./validation";
-import { sanitizeObject, authRateLimiter } from "./security";
+import { sanitizeObject, authRateLimiter, rateLimiter } from "./security";
 
 export const authRoutes = new Elysia({ prefix: "/auth" })
     .use(jwtPlugin())
@@ -34,7 +34,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
                 set.status = 400;
                 return {
                     error: 'Registration Failed',
-                    message: "อีเมลนี้ถูกใช้งานแล้ว"
+                    message: "อีเมลหรือเบอร์โทรศัพท์นี้ถูกใช้งานแล้ว"
                 };
             }
 
@@ -47,7 +47,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
                 set.status = 400;
                 return {
                     error: 'Registration Failed',
-                    message: "เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว"
+                    message: "อีเมลหรือเบอร์โทรศัพท์นี้ถูกใช้งานแล้ว"
                 };
             }
 
@@ -232,98 +232,8 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
         }
     });
 
-// Users routes
-export const usersRoutes = new Elysia({ prefix: "/users" })
-
-    // Get own profile (must be before /:id to avoid param matching)
-    .get("/me", async ({ query, set }) => {
-        const userId = query.userId as string | undefined;
-        if (!userId) {
-            set.status = 400;
-            return { error: 'Missing userId' };
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                fullName: true,
-                email: true,
-                phoneNumber: true,
-                isActive: true,
-                lineUserId: true,
-                createdAt: true,
-                currentPackage: { select: { name: true, slug: true } },
-                packageExpiresAt: true,
-            }
-        });
-
-        if (!user) {
-            set.status = 404;
-            return { error: 'Not Found' };
-        }
-        return { user };
-    })
-
-    // Update own profile
-    .put("/me", async ({ body, set }) => {
-        const { userId, fullName, phoneNumber } = body as any;
-        if (!userId) {
-            set.status = 400;
-            return { error: 'Missing userId' };
-        }
-
-        try {
-            const updated = await prisma.user.update({
-                where: { id: userId },
-                data: {
-                    ...(fullName && { fullName }),
-                    ...(phoneNumber && { phoneNumber }),
-                },
-                select: { id: true, fullName: true, email: true, phoneNumber: true }
-            });
-            return { message: 'อัปเดตโปรไฟล์สำเร็จ', user: updated };
-        } catch {
-            set.status = 500;
-            return { error: 'ไม่สามารถอัปเดตได้' };
-        }
-    })
-
-    // Change password
-    .put("/me/password", async ({ body, set }) => {
-        const { userId, currentPassword, newPassword } = body as any;
-        if (!userId || !currentPassword || !newPassword) {
-            set.status = 400;
-            return { error: 'กรุณากรอกข้อมูลให้ครบ' };
-        }
-
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (!user) {
-            set.status = 404;
-            return { error: 'ไม่พบผู้ใช้' };
-        }
-
-        // Verify current password using Bun.password (same as login)
-        const isValid = await Bun.password.verify(currentPassword, user.password);
-        if (!isValid) {
-            set.status = 400;
-            return { error: 'รหัสผ่านปัจจุบันไม่ถูกต้อง' };
-        }
-
-        // Hash new password with same settings as registration
-        const hashed = await Bun.password.hash(newPassword, {
-            algorithm: 'argon2id',
-            memoryCost: 65536,
-            timeCost: 3
-        });
-
-        await prisma.user.update({
-            where: { id: userId },
-            data: { password: hashed }
-        });
-
-        return { message: 'เปลี่ยนรหัสผ่านสำเร็จ' };
-    })
+// Users routes - public endpoints (no auth required)
+const usersPublicRoutes = new Elysia({ prefix: "/users" })
 
     // Get user by ID (public, limited data)
     .get("/:id", async ({ params, set }) => {
@@ -362,3 +272,103 @@ export const usersRoutes = new Elysia({ prefix: "/users" })
             }
         };
     });
+
+// Users routes - protected endpoints (auth required)
+const usersProtectedRoutes = new Elysia({ prefix: "/users" })
+    .use(authGuard)
+
+    // Get own profile
+    .get("/me", async ({ auth, set }) => {
+
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phoneNumber: true,
+                isActive: true,
+                lineUserId: true,
+                createdAt: true,
+                currentPackage: { select: { name: true, slug: true } },
+                packageExpiresAt: true,
+            }
+        });
+
+        if (!user) {
+            set.status = 404;
+            return { error: 'Not Found' };
+        }
+        return { user };
+    })
+
+    // Update own profile
+    .put("/me", async ({ auth, body, set }) => {
+
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { fullName, phoneNumber } = body as any;
+
+        try {
+            const updated = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    ...(fullName && { fullName }),
+                    ...(phoneNumber && { phoneNumber }),
+                },
+                select: { id: true, fullName: true, email: true, phoneNumber: true }
+            });
+            return { message: 'อัปเดตโปรไฟล์สำเร็จ', user: updated };
+        } catch {
+            set.status = 500;
+            return { error: 'ไม่สามารถอัปเดตได้' };
+        }
+    })
+
+    // Change password (with stricter rate limiting)
+    .use(rateLimiter(5))
+    .put("/me/password", async ({ auth, body, set }) => {
+
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { currentPassword, newPassword } = body as any;
+        if (!currentPassword || !newPassword) {
+            set.status = 400;
+            return { error: 'กรุณากรอกข้อมูลให้ครบ' };
+        }
+
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            set.status = 404;
+            return { error: 'ไม่พบผู้ใช้' };
+        }
+
+        // Verify current password using Bun.password (same as login)
+        const isValid = await Bun.password.verify(currentPassword, user.password);
+        if (!isValid) {
+            set.status = 400;
+            return { error: 'รหัสผ่านปัจจุบันไม่ถูกต้อง' };
+        }
+
+        // Hash new password with same settings as registration
+        const hashed = await Bun.password.hash(newPassword, {
+            algorithm: 'argon2id',
+            memoryCost: 65536,
+            timeCost: 3
+        });
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashed }
+        });
+
+        return { message: 'เปลี่ยนรหัสผ่านสำเร็จ' };
+    });
+
+// Combined users routes export
+export const usersRoutes = new Elysia()
+    .use(usersPublicRoutes)
+    .use(usersProtectedRoutes);

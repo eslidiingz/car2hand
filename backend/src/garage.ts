@@ -1,15 +1,17 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
+import { authGuard } from "./jwt";
 
 export const garageRoutes = new Elysia({ prefix: "/garage" })
+    .use(authGuard)
 
     // List user's vehicles
-    .get("/", async ({ query }) => {
-        const { userId } = query;
-        if (!userId) return { vehicles: [] };
+    .get("/", async ({ auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
 
         const vehicles = await prisma.garageVehicle.findMany({
-            where: { userId: userId as string },
+            where: { userId },
             orderBy: { createdAt: 'desc' },
             include: {
                 reminders: { where: { isCompleted: false }, orderBy: { createdAt: 'desc' } },
@@ -20,7 +22,8 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
     })
 
     // Get single vehicle with details
-    .get("/:id", async ({ params, set }) => {
+    .get("/:id", async ({ params, auth, set }) => {
+
         const vehicle = await prisma.garageVehicle.findUnique({
             where: { id: params.id },
             include: {
@@ -29,16 +32,22 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
             }
         });
         if (!vehicle) { set.status = 404; return { message: "ไม่พบรถ" }; }
+        if (vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
         return { vehicle };
     })
 
     // Add vehicle
-    .post("/", async ({ body }) => {
-        const vehicle = await prisma.garageVehicle.create({ data: body as any });
+    .post("/", async ({ body, auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+
+        const vehicle = await prisma.garageVehicle.create({ data: { ...body, userId } as any });
         return { message: "เพิ่มรถสำเร็จ", vehicle };
     }, {
         body: t.Object({
-            userId: t.String(),
             nickname: t.String(),
             brand: t.String(),
             model: t.String(),
@@ -51,13 +60,20 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
     })
 
     // Update vehicle
-    .put("/:id", async ({ params, body, set }) => {
+    .put("/:id", async ({ params, body, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
-            const vehicle = await prisma.garageVehicle.update({
+            const updated = await prisma.garageVehicle.update({
                 where: { id: params.id },
                 data: body as any,
             });
-            return { message: "อัปเดตสำเร็จ", vehicle };
+            return { message: "อัปเดตสำเร็จ", vehicle: updated };
         } catch { set.status = 404; return { message: "ไม่พบรถ" }; }
     }, {
         body: t.Object({
@@ -73,7 +89,14 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
     })
 
     // Delete vehicle
-    .delete("/:id", async ({ params, set }) => {
+    .delete("/:id", async ({ params, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
             await prisma.garageVehicle.delete({ where: { id: params.id } });
             return { message: "ลบรถสำเร็จ" };
@@ -81,18 +104,32 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
     })
 
     // Update mileage
-    .put("/:id/mileage", async ({ params, body, set }) => {
+    .put("/:id/mileage", async ({ params, body, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
-            const vehicle = await prisma.garageVehicle.update({
+            const updated = await prisma.garageVehicle.update({
                 where: { id: params.id },
                 data: { currentMileage: (body as any).mileage }
             });
-            return { message: "อัปเดตเลขไมล์สำเร็จ", vehicle };
+            return { message: "อัปเดตเลขไมล์สำเร็จ", vehicle: updated };
         } catch { set.status = 404; return { message: "ไม่พบรถ" }; }
     }, { body: t.Object({ mileage: t.Number() }) })
 
     // === Service Records ===
-    .get("/:id/services", async ({ params }) => {
+    .get("/:id/services", async ({ params, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         const records = await prisma.serviceRecord.findMany({
             where: { vehicleId: params.id },
             orderBy: { serviceDate: 'desc' }
@@ -100,7 +137,14 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
         return { records };
     })
 
-    .post("/:id/services", async ({ params, body, set }) => {
+    .post("/:id/services", async ({ params, body, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
             const { serviceDate, cost, ...rest } = body as any;
             const record = await prisma.serviceRecord.create({
@@ -127,7 +171,17 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
         })
     })
 
-    .delete("/services/:id", async ({ params, set }) => {
+    .delete("/services/:id", async ({ params, auth, set }) => {
+
+        const record = await prisma.serviceRecord.findUnique({
+            where: { id: params.id },
+            include: { vehicle: true }
+        });
+        if (!record || record.vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
             await prisma.serviceRecord.delete({ where: { id: params.id } });
             return { message: "ลบสำเร็จ" };
@@ -135,7 +189,14 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
     })
 
     // === Maintenance Reminders ===
-    .get("/:id/reminders", async ({ params }) => {
+    .get("/:id/reminders", async ({ params, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         const reminders = await prisma.maintenanceReminder.findMany({
             where: { vehicleId: params.id },
             orderBy: { createdAt: 'desc' }
@@ -143,7 +204,14 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
         return { reminders };
     })
 
-    .post("/:id/reminders", async ({ params, body }) => {
+    .post("/:id/reminders", async ({ params, body, auth, set }) => {
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         const { dueDate, ...rest } = body as any;
         const reminder = await prisma.maintenanceReminder.create({
             data: {
@@ -162,17 +230,27 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
         })
     })
 
-    .put("/reminders/:id", async ({ params, body, set }) => {
+    .put("/reminders/:id", async ({ params, body, auth, set }) => {
+
+        const reminder = await prisma.maintenanceReminder.findUnique({
+            where: { id: params.id },
+            include: { vehicle: true }
+        });
+        if (!reminder || reminder.vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
             const { dueDate, ...rest } = body as any;
-            const reminder = await prisma.maintenanceReminder.update({
+            const updated = await prisma.maintenanceReminder.update({
                 where: { id: params.id },
                 data: {
                     ...rest,
                     ...(dueDate !== undefined ? { dueDate: dueDate ? new Date(dueDate) : null } : {}),
                 },
             });
-            return { message: "อัปเดตสำเร็จ", reminder };
+            return { message: "อัปเดตสำเร็จ", reminder: updated };
         } catch { set.status = 404; return { message: "ไม่พบรายการ" }; }
     }, {
         body: t.Object({
@@ -184,7 +262,17 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
         })
     })
 
-    .delete("/reminders/:id", async ({ params, set }) => {
+    .delete("/reminders/:id", async ({ params, auth, set }) => {
+
+        const reminder = await prisma.maintenanceReminder.findUnique({
+            where: { id: params.id },
+            include: { vehicle: true }
+        });
+        if (!reminder || reminder.vehicle.userId !== auth.userId) {
+            set.status = 403;
+            return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
         try {
             await prisma.maintenanceReminder.delete({ where: { id: params.id } });
             return { message: "ลบสำเร็จ" };

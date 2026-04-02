@@ -99,12 +99,14 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                 token: data.accessToken
             };
 
-            // Store user data (you can use localStorage, context, or state management)
+            // Store user data
             if (rememberMe) {
                 localStorage.setItem('user', JSON.stringify(userWithToken));
             } else {
                 sessionStorage.setItem('user', JSON.stringify(userWithToken));
             }
+            // Set session cookie for middleware route protection
+            document.cookie = 'has_session=1; path=/; SameSite=Strict; max-age=604800';
 
             // Dispatch custom event to notify other components (like WishlistContext)
             window.dispatchEvent(new CustomEvent('userLogin', { detail: userWithToken }));
