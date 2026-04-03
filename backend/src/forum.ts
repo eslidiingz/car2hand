@@ -48,6 +48,7 @@ const publicForumRoutes = new Elysia({ prefix: '/forum' })
             page = '1',
             limit = '20',
             tag,
+            listingId,
         } = query;
 
         const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
@@ -57,6 +58,7 @@ const publicForumRoutes = new Elysia({ prefix: '/forum' })
             status: 'PUBLISHED',
             ...(category && { category: { slug: category } }),
             ...(tag && { tags: { some: { tag: { name: tag } } } }),
+            ...(listingId && { listingId }),
             ...(tab === 'unanswered' && {
                 comments: { none: {} },
             }),
@@ -251,7 +253,7 @@ const protectedForumRoutes = new Elysia({ prefix: '/forum' })
         async ({ body, auth, set }) => {
             if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
         const userId = auth.userId;
-            const { categoryId, title, content, imageUrl, tags } = body;
+            const { categoryId, title, content, imageUrl, tags, listingId } = body;
 
             const user = await prisma.user.findUnique({ where: { id: userId } });
             if (!user) {
@@ -283,6 +285,7 @@ const protectedForumRoutes = new Elysia({ prefix: '/forum' })
                     imageUrl,
                     authorId: userId,
                     categoryId,
+                    ...(listingId && { listingId }),
                     tags: {
                         create: tagRecords.map((tag) => ({ tagId: tag.id })),
                     },
@@ -313,6 +316,7 @@ const protectedForumRoutes = new Elysia({ prefix: '/forum' })
                 content: t.String({ minLength: 10 }),
                 imageUrl: t.Optional(t.String()),
                 tags: t.Optional(t.Array(t.String())),
+                listingId: t.Optional(t.String()),
             }),
         }
     )
