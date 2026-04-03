@@ -29,6 +29,8 @@ import {
     Crown,
     Fire,
     SealCheck,
+    ChatsCircle,
+    ChatCircle,
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
@@ -107,6 +109,15 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const thumbnailRef = useRef<HTMLDivElement>(null);
     const thumbnailFullscreenRef = useRef<HTMLDivElement>(null);
+
+    // Forum related posts
+    const [relatedPosts, setRelatedPosts] = useState<{ id: string; title: string; commentCount: number; score: number; createdAt: string }[]>([]);
+    useEffect(() => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/forum/posts?listingId=${initialListing.id}&limit=3`)
+            .then((r) => r.json())
+            .then((data) => setRelatedPosts(data.posts ?? []))
+            .catch(() => {});
+    }, [initialListing.id]);
 
     const formatPrice = (price: number | string) => {
         const numPrice = typeof price === 'string' ? parseFloat(price) : Number(price);
@@ -478,6 +489,15 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 </button>
                             </div>
 
+                            {/* Ask Community button */}
+                            <Link
+                                href={`/community/create?listingId=${listing.id}&brand=${encodeURIComponent(listing.brand)}&model=${encodeURIComponent(listing.model)}&year=${listing.year}`}
+                                className="w-full mt-2 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition border-2 border-blue-200 text-primary hover:bg-blue-50"
+                            >
+                                <ChatsCircle weight="fill" size={18} />
+                                ขอความเห็นชุมชน
+                            </Link>
+
                             {/* Stats */}
                             <div className="mt-6 pt-6 border-t border-gray-100 flex justify-between text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
@@ -490,6 +510,36 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 </div>
                             </div>
                         </div>
+
+                        {/* Community Related Posts */}
+                        {relatedPosts.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-base font-bold text-primary flex items-center gap-2">
+                                        <ChatsCircle weight="fill" className="text-blue-400" size={20} />
+                                        ถามในชุมชน
+                                    </h3>
+                                    <Link href={`/community?listingId=${listing.id}`} className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
+                                </div>
+                                <div className="space-y-3">
+                                    {relatedPosts.map((p) => (
+                                        <Link key={p.id} href={`/community/topic/${p.id}`} className="block group">
+                                            <p className="text-sm text-gray-700 group-hover:text-primary transition line-clamp-2 leading-snug">{p.title}</p>
+                                            <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
+                                                <span className="flex items-center gap-1"><ChatCircle size={11} /> {p.commentCount}</span>
+                                                <span>{p.score > 0 ? `+${p.score}` : p.score} votes</span>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                                <Link
+                                    href={`/community/create?listingId=${listing.id}&brand=${encodeURIComponent(listing.brand)}&model=${encodeURIComponent(listing.model)}&year=${listing.year}`}
+                                    className="mt-4 w-full py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-2 border border-blue-200 text-primary hover:bg-blue-50 transition"
+                                >
+                                    <ChatsCircle size={16} /> ตั้งคำถามเพิ่ม
+                                </Link>
+                            </div>
+                        )}
 
                         {/* Seller Info */}
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

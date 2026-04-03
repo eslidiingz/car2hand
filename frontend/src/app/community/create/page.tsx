@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, PencilSimple, X, SpinnerGap } from '@phosphor-icons/react';
+import { ArrowLeft, PencilSimple, X, SpinnerGap, LinkSimple } from '@phosphor-icons/react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -23,6 +23,12 @@ interface Category {
 
 export default function CreateTopicPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const linkedListingId = searchParams.get('listingId');
+    const linkedBrand = searchParams.get('brand');
+    const linkedModel = searchParams.get('model');
+    const linkedYear = searchParams.get('year');
+
     const [userId, setUserId] = useState<string | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
     const [title, setTitle] = useState('');
@@ -51,6 +57,16 @@ export default function CreateTopicPage() {
                 if (data.categories?.length > 0) setCategoryId(data.categories[0].id);
             });
     }, []);
+
+    // Pre-fill title/tags when coming from a listing page
+    useEffect(() => {
+        if (linkedBrand && linkedModel) {
+            setTitle(`ขอความเห็น ${linkedBrand} ${linkedModel}${linkedYear ? ` ปี ${linkedYear}` : ''}`);
+            const brandTag = linkedBrand.replace(/\s+/g, '');
+            const modelTag = `${linkedBrand}${linkedModel}`.replace(/\s+/g, '');
+            setTags([brandTag, modelTag].filter((t, i, arr) => arr.indexOf(t) === i).slice(0, 2));
+        }
+    }, [linkedBrand, linkedModel, linkedYear]);
 
     const addTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
@@ -82,7 +98,7 @@ export default function CreateTopicPage() {
                     'Content-Type': 'application/json',
                     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
                 },
-                body: JSON.stringify({ categoryId, title, content, tags }),
+                body: JSON.stringify({ categoryId, title, content, tags, ...(linkedListingId && { listingId: linkedListingId }) }),
             });
             if (!res.ok) {
                 const data = await res.json();
@@ -110,6 +126,15 @@ export default function CreateTopicPage() {
                         <PencilSimple weight="fill" className="text-accent" />
                         ตั้งกระทู้ใหม่
                     </h1>
+
+                    {/* Linked listing badge */}
+                    {linkedListingId && linkedBrand && linkedModel && (
+                        <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-primary text-sm px-4 py-3 rounded-xl mb-5">
+                            <LinkSimple weight="bold" size={16} className="flex-shrink-0" />
+                            <span>กระทู้นี้เชื่อมกับประกาศ <strong>{linkedBrand} {linkedModel}{linkedYear ? ` ปี ${linkedYear}` : ''}</strong></span>
+                            <Link href={`/buy/${linkedListingId}`} className="ml-auto text-xs underline hover:text-accent whitespace-nowrap">ดูประกาศ</Link>
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         {/* Category */}
