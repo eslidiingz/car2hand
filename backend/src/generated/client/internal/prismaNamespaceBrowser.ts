@@ -122,7 +122,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const AdminScalarFieldEnum = {
   id: 'id',
   fullName: 'fullName',
-  email: 'email',
+  username: 'username',
   password: 'password',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -140,6 +140,8 @@ export const ArticleScalarFieldEnum = {
   featuredImage: 'featuredImage',
   status: 'status',
   viewCount: 'viewCount',
+  isFeatured: 'isFeatured',
+  tags: 'tags',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   authorId: 'authorId',

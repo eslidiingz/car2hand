@@ -4,20 +4,22 @@
     {
       "name": "backend",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd .claude/worktrees/features/backend && bun dev"],
+      "runtimeArgs": ["-c", "cd /Users/nickzerofriction/WORK/HOBBY/CAR2Hand/car2hand/.claude/worktrees/quirky-hoover/backend && /Users/nickzerofriction/.bun/bin/bun dev"],
       "port": 8000
     },
     {
       "name": "frontend",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd .claude/worktrees/features/frontend && pnpm dev"],
-      "port": 3000
+      "runtimeArgs": ["-c", "export PATH=/Users/nickzerofriction/.nvm/versions/node/v22.14.0/bin:$PATH && cd /Users/nickzerofriction/WORK/HOBBY/CAR2Hand/car2hand/frontend && pnpm dev --port 3000"],
+      "port": 3000,
+      "autoPort": true
     },
     {
       "name": "admin",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd .claude/worktrees/features/admin && pnpm dev"],
-      "port": 3001
+      "runtimeArgs": ["-c", "export PATH=/Users/nickzerofriction/.nvm/versions/node/v22.14.0/bin:$PATH && cd /Users/nickzerofriction/WORK/HOBBY/CAR2Hand/car2hand/admin && pnpm dev --port 3001"],
+      "port": 3001,
+      "autoPort": true
     }
   ]
 }

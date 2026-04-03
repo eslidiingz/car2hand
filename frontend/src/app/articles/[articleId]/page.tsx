@@ -5,7 +5,6 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
-    BookmarkSimple,
     FacebookLogo,
     Clock,
     SealCheck,
@@ -41,6 +40,35 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
     const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [copied, setCopied] = useState(false);
+
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+    const handleShareFacebook = () => {
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    };
+
+    const handleShareLine = () => {
+        window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}`, '_blank', 'width=600,height=400');
+    };
+
+    const handleCopyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {
+            // fallback
+            const input = document.createElement('input');
+            input.value = shareUrl;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -128,11 +156,9 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                     {/* Social Share (Desktop Sticky) */}
                     <div className="hidden lg:block lg:col-span-1">
                         <div className="sticky top-24 flex flex-col gap-4 items-center">
-                            <button className="w-10 h-10 rounded-full bg-white text-blue-600 shadow-sm flex items-center justify-center hover:scale-110 transition"><FacebookLogo weight="fill" className="text-xl" /></button>
-                            <button className="w-10 h-10 rounded-full bg-white text-green-500 shadow-sm flex items-center justify-center hover:scale-110 transition"><Chats weight="fill" className="text-xl" /></button>
-                            <button className="w-10 h-10 rounded-full bg-white text-gray-400 shadow-sm flex items-center justify-center hover:scale-110 transition"><LinkIcon weight="bold" className="text-xl" /></button>
-                            <div className="w-8 h-[1px] bg-gray-300 my-2"></div>
-                            <button className="w-10 h-10 rounded-full bg-white text-gray-400 shadow-sm flex items-center justify-center hover:text-red-500 transition" title="บันทึกไว้อ่าน"><BookmarkSimple weight="bold" className="text-xl" /></button>
+                            <button onClick={handleShareFacebook} title="แชร์ไปยัง Facebook" className="w-10 h-10 rounded-full bg-white text-blue-600 shadow-sm flex items-center justify-center hover:scale-110 transition"><FacebookLogo weight="fill" className="text-xl" /></button>
+                            <button onClick={handleShareLine} title="แชร์ไปยัง LINE" className="w-10 h-10 rounded-full bg-white text-green-500 shadow-sm flex items-center justify-center hover:scale-110 transition"><Chats weight="fill" className="text-xl" /></button>
+                            <button onClick={handleCopyLink} title={copied ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'} className={`w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:scale-110 transition ${copied ? 'text-green-500' : 'text-gray-400'}`}><LinkIcon weight="bold" className="text-xl" /></button>
                         </div>
                     </div>
 
@@ -167,8 +193,11 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                         {article.featuredImage && (
                             <div className="rounded-2xl overflow-hidden mb-10 shadow-lg">
                                 <img src={article.featuredImage} className="w-full object-cover" alt={article.title} />
-                                {article.excerpt && <p className="text-xs text-gray-400 text-right mt-2 italic">{article.excerpt}</p>}
                             </div>
+                        )}
+
+                        {article.excerpt && (
+                            <p className="text-lg text-gray-500 italic border-l-4 border-primary/30 pl-4 mb-8">{article.excerpt}</p>
                         )}
 
                         {/* Article Content with Markdown */}
