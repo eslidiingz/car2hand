@@ -4,22 +4,20 @@
     {
       "name": "backend",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd /Users/nickzerofriction/WORK/HOBBY/CAR2Hand/car2hand/.claude/worktrees/quirky-hoover/backend && /Users/nickzerofriction/.bun/bin/bun dev"],
+      "runtimeArgs": ["-c", "export PATH=/Users/nickzerofriction/.bun/bin:$PATH && cd backend && bun run dev"],
       "port": 8000
     },
     {
       "name": "frontend",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "export PATH=/Users/nickzerofriction/.nvm/versions/node/v22.14.0/bin:$PATH && cd /Users/nickzerofriction/WORK/HOBBY/CAR2Hand/car2hand/frontend && pnpm dev --port 3000"],
-      "port": 3000,
-      "autoPort": true
+      "runtimeArgs": ["-c", "export NVM_DIR=/Users/nickzerofriction/.nvm && . $NVM_DIR/nvm.sh && nvm use 20 && cd frontend && pnpm dev"],
+      "port": 3000
     },
     {
       "name": "admin",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "export PATH=/Users/nickzerofriction/.nvm/versions/node/v22.14.0/bin:$PATH && cd /Users/nickzerofriction/WORK/HOBBY/CAR2Hand/car2hand/admin && pnpm dev --port 3001"],
-      "port": 3001,
-      "autoPort": true
+      "runtimeArgs": ["-c", "export NVM_DIR=/Users/nickzerofriction/.nvm && . $NVM_DIR/nvm.sh && nvm use 20 && cd admin && pnpm dev"],
+      "port": 3001
     }
   ]
 }

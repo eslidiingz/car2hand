@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  SellerProfile: 'SellerProfile',
   Admin: 'Admin',
   Article: 'Article',
   ArticleCategory: 'ArticleCategory',
@@ -432,7 +433,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "listingBumpLog" | "notificationTemplate" | "notificationLog" | "servicePartner" | "inspectionPackage" | "inspectionBooking" | "serviceInquiry" | "forumCategory" | "forumPost" | "forumComment" | "forumVote" | "forumCommentVote" | "forumTag" | "forumPostTag" | "userReputation"
+    modelProps: "user" | "sellerProfile" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "listingBumpLog" | "notificationTemplate" | "notificationLog" | "servicePartner" | "inspectionPackage" | "inspectionBooking" | "serviceInquiry" | "forumCategory" | "forumPost" | "forumComment" | "forumVote" | "forumCommentVote" | "forumTag" | "forumPostTag" | "userReputation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -507,6 +508,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    SellerProfile: {
+      payload: Prisma.$SellerProfilePayload<ExtArgs>
+      fields: Prisma.SellerProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SellerProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SellerProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.SellerProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SellerProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        findMany: {
+          args: Prisma.SellerProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>[]
+        }
+        create: {
+          args: Prisma.SellerProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        createMany: {
+          args: Prisma.SellerProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SellerProfileCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>[]
+        }
+        delete: {
+          args: Prisma.SellerProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        update: {
+          args: Prisma.SellerProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.SellerProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SellerProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SellerProfileUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>[]
+        }
+        upsert: {
+          args: Prisma.SellerProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.SellerProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSellerProfile>
+        }
+        groupBy: {
+          args: Prisma.SellerProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SellerProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerProfileCountAggregateOutputType> | number
         }
       }
     }
@@ -2934,6 +3009,36 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const SellerProfileScalarFieldEnum = {
+  id: 'id',
+  shopName: 'shopName',
+  shopDescription: 'shopDescription',
+  shopLogo: 'shopLogo',
+  shopCoverImage: 'shopCoverImage',
+  shopAddress: 'shopAddress',
+  shopProvince: 'shopProvince',
+  shopDistrict: 'shopDistrict',
+  shopMapUrl: 'shopMapUrl',
+  shopPhone: 'shopPhone',
+  showroomType: 'showroomType',
+  shopOpenHours: 'shopOpenHours',
+  shopEstablishedYear: 'shopEstablishedYear',
+  socialWebsite: 'socialWebsite',
+  socialFacebook: 'socialFacebook',
+  socialLine: 'socialLine',
+  socialInstagram: 'socialInstagram',
+  specializations: 'specializations',
+  totalSoldCount: 'totalSoldCount',
+  isVerified: 'isVerified',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
+
+
 export const AdminScalarFieldEnum = {
   id: 'id',
   fullName: 'fullName',
@@ -3539,16 +3644,16 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'PostStatus'
+ * Reference to a field of type 'ShowroomType'
  */
-export type EnumPostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PostStatus'>
+export type EnumShowroomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShowroomType'>
     
 
 
 /**
- * Reference to a field of type 'PostStatus[]'
+ * Reference to a field of type 'ShowroomType[]'
  */
-export type ListEnumPostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PostStatus[]'>
+export type ListEnumShowroomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShowroomType[]'>
     
 
 
@@ -3563,6 +3668,34 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'PostStatus'
+ */
+export type EnumPostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PostStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PostStatus[]'
+ */
+export type ListEnumPostStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PostStatus[]'>
     
 
 
@@ -3703,20 +3836,6 @@ export type EnumListingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'ListingStatus[]'
  */
 export type ListEnumListingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ListingStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -3941,6 +4060,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  sellerProfile?: Prisma.SellerProfileOmit
   admin?: Prisma.AdminOmit
   article?: Prisma.ArticleOmit
   articleCategory?: Prisma.ArticleCategoryOmit

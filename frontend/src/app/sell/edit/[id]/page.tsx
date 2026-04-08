@@ -1721,7 +1721,9 @@ export default function EditListingPage() {
                                 fuelType={formData.fuelType}
                                 province={formData.province}
                                 imageUrl={displayImages[0]?.url}
-                                sellerName={listing?.user?.fullName || 'ผู้ขาย'}
+                                sellerName={(listing as any)?.user?.sellerProfile?.shopName || listing?.user?.fullName || 'ผู้ขาย'}
+                                sellerLogo={(listing as any)?.user?.sellerProfile?.shopLogo}
+                                viewCount={(listing as any)?.viewCount || 0}
                             />
 
                             {/* Tips */}

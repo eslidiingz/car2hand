@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  SellerProfile: 'SellerProfile',
   Admin: 'Admin',
   Article: 'Article',
   ArticleCategory: 'ArticleCategory',
@@ -117,6 +118,36 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SellerProfileScalarFieldEnum = {
+  id: 'id',
+  shopName: 'shopName',
+  shopDescription: 'shopDescription',
+  shopLogo: 'shopLogo',
+  shopCoverImage: 'shopCoverImage',
+  shopAddress: 'shopAddress',
+  shopProvince: 'shopProvince',
+  shopDistrict: 'shopDistrict',
+  shopMapUrl: 'shopMapUrl',
+  shopPhone: 'shopPhone',
+  showroomType: 'showroomType',
+  shopOpenHours: 'shopOpenHours',
+  shopEstablishedYear: 'shopEstablishedYear',
+  socialWebsite: 'socialWebsite',
+  socialFacebook: 'socialFacebook',
+  socialLine: 'socialLine',
+  socialInstagram: 'socialInstagram',
+  specializations: 'specializations',
+  totalSoldCount: 'totalSoldCount',
+  isVerified: 'isVerified',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
 
 
 export const AdminScalarFieldEnum = {

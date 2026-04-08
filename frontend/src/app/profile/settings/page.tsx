@@ -13,6 +13,7 @@ import {
     SpinnerGap,
 } from '@phosphor-icons/react';
 import LineConnection from '@/components/settings/LineConnection';
+import SellerProfileForm from '@/components/settings/SellerProfileForm';
 import Toast from '@/components/Toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -218,6 +219,14 @@ export default function SettingsPage() {
                 >
                     การแจ้งเตือน
                 </button>
+                {profile?.currentPackage && profile.currentPackage.slug !== 'basic' && (
+                    <button
+                        onClick={() => setActiveTab('shop')}
+                        className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap ${activeTab === 'shop' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    >
+                        ร้านค้า/ธุรกิจ
+                    </button>
+                )}
             </div>
 
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm">
@@ -392,6 +401,10 @@ export default function SettingsPage() {
                 {/* ===== NOTIFICATIONS TAB ===== */}
                 {activeTab === 'notifications' && (
                     <LineConnection />
+                )}
+
+                {activeTab === 'shop' && (
+                    <SellerProfileForm />
                 )}
             </div>
 

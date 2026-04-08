@@ -239,9 +239,9 @@ const usersPublicRoutes = new Elysia({ prefix: "/users" })
     .get("/:id", async ({ params, set }) => {
         const { id } = params;
 
-        // Validate UUID format
-        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-        if (!uuidRegex.test(id)) {
+        // Validate ID format (cuid or uuid)
+        const idRegex = /^[a-z0-9]{20,30}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!idRegex.test(id)) {
             set.status = 400;
             return {
                 error: 'Invalid ID',

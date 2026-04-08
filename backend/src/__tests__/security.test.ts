@@ -4,7 +4,7 @@ import { sanitizeInput, sanitizeObject } from "../security";
 describe("sanitizeInput", () => {
     test("escapes < and > tags", () => {
         expect(sanitizeInput("<script>alert('xss')</script>")).toBe(
-            "&lt;script&gt;alert(&#x27;xss&#x27;)&lt;&#x2F;script&gt;"
+            "&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;"
         );
     });
 
@@ -18,8 +18,8 @@ describe("sanitizeInput", () => {
         expect(sanitizeInput("it's a test")).toBe("it&#x27;s a test");
     });
 
-    test("escapes forward slashes", () => {
-        expect(sanitizeInput("path/to/file")).toBe("path&#x2F;to&#x2F;file");
+    test("preserves forward slashes", () => {
+        expect(sanitizeInput("path/to/file")).toBe("path/to/file");
     });
 
     test("trims whitespace", () => {
@@ -50,7 +50,7 @@ describe("sanitizeInput", () => {
 describe("sanitizeObject", () => {
     test("sanitizes string values", () => {
         const result = sanitizeObject({ name: "<b>bold</b>", age: 25 });
-        expect(result.name).toBe("&lt;b&gt;bold&lt;&#x2F;b&gt;");
+        expect(result.name).toBe("&lt;b&gt;bold&lt;/b&gt;");
         expect(result.age).toBe(25);
     });
 

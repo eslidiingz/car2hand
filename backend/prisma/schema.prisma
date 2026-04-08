@@ -49,11 +49,59 @@ model User {
   forumCommentVotes   ForumCommentVote[]
   reputation          UserReputation?
 
+  // Seller Profile
+  sellerProfile       SellerProfile?
+
   @@index([currentPackageId])
   @@index([lineUserId])
   @@map("users")
 }
 
+// =============================================
+// Seller Profile - โปรไฟล์ร้านค้า/ผู้ขาย
+// =============================================
+
+enum ShowroomType {
+  INDIVIDUAL // ส่วนตัว
+  TENT       // เต๊นท์
+  DEALER     // ตัวแทนจำหน่าย
+}
+
+model SellerProfile {
+  id                  String       @id @default(cuid())
+  shopName            String       // ชื่อร้าน เช่น "เต๊นเฮียชัย นนทบุรี"
+  shopDescription     String?      @db.Text
+  shopLogo            String?      // MinIO URL
+  shopCoverImage      String?      // MinIO URL
+  shopAddress         String?
+  shopProvince        String?
+  shopDistrict        String?
+  shopMapUrl          String?      // Google Maps link
+  shopPhone           String?
+  showroomType        ShowroomType @default(INDIVIDUAL)
+  shopOpenHours       String?      // "จ-ส 09:00-18:00"
+  shopEstablishedYear Int?
+  socialWebsite       String?
+  socialFacebook      String?
+  socialLine          String?
+  socialInstagram     String?
+  specializations     Json         @default("[]") // ["รถยุโรป", "Big Bike"]
+  totalSoldCount      Int          @default(0)
+  isVerified          Boolean      @default(false)
+  verifiedAt          DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([shopProvince])
+  @@map("seller_profiles")
+}
+
+// =============================================
+// Admin - ผู้ดูแลระบบ
+// =============================================
 model Admin {
   id        String   @id @default(cuid())
   fullName  String

@@ -15,6 +15,7 @@ import {
     Crown,
     Fire,
     SealCheck,
+    Eye,
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import Toast from '@/components/Toast';
@@ -37,6 +38,12 @@ export interface VehicleListing {
     user: {
         id: string;
         fullName: string;
+        sellerProfile?: {
+            shopName: string;
+            shopLogo?: string | null;
+            showroomType?: string;
+            isVerified?: boolean;
+        } | null;
     };
     createdAt: string;
     badge?: string | null;
@@ -234,32 +241,38 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         {listing.title}
                     </h3>
 
-                    {/* Specs */}
-                    <div className="grid grid-cols-3 gap-1 text-xs text-gray-500 mb-4 bg-gray-50 p-2 rounded-xl border border-gray-50">
-                        <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
-                            <CalendarBlank size={16} className="text-primary" />
+                    {/* Specs — 2x2 grid */}
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-500 mb-3">
+                        <span className="flex items-center gap-1.5">
+                            <CalendarBlank size={14} className="text-gray-400" />
                             <span className="font-medium">{listing.year}</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
-                            <Gauge size={16} className="text-primary" />
-                            <span className="font-medium whitespace-nowrap">{listing.mileage ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : '-'}</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center gap-1 py-1 px-1">
-                            <GasPump size={16} className="text-primary" />
-                            <span className="font-medium text-center leading-tight">{getFuelTypeLabel(listing.fuelType)}</span>
-                        </div>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <Gauge size={14} className="text-gray-400" />
+                            <span className="font-medium">{listing.mileage ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : '-'}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <GasPump size={14} className="text-gray-400" />
+                            <span className="font-medium">{getFuelTypeLabel(listing.fuelType)}</span>
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                            <Eye size={14} className="text-gray-400" />
+                            <span className="font-medium">{listing.viewCount > 0 ? listing.viewCount.toLocaleString() : '0'}</span>
+                        </span>
                     </div>
 
                     {/* Price & Seller */}
                     <div className="flex items-center justify-between mt-auto">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-accent">฿{formatPrice(listing.price)}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-gray-500">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                                <span className="text-[12px] font-bold text-primary">{listing.user.fullName.charAt(0)}</span>
+                        <span className="text-2xl font-bold text-accent">฿{formatPrice(listing.price)}</span>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                {listing.user.sellerProfile?.shopLogo ? (
+                                    <img src={listing.user.sellerProfile.shopLogo} alt="" className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-[11px] font-bold text-primary">{(listing.user.sellerProfile?.shopName || listing.user.fullName).charAt(0)}</span>
+                                )}
                             </div>
-                            <span className="text-sm font-semibold">{listing.user.fullName}</span>
+                            <span className="text-xs font-medium text-gray-500 truncate max-w-[100px]">{listing.user.sellerProfile?.shopName || listing.user.fullName}</span>
                         </div>
                     </div>
 
