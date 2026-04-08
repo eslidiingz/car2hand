@@ -80,6 +80,8 @@ model Article {
   featuredImage String?
   status        PostStatus @default(DRAFT)
   viewCount     Int        @default(0)
+  isFeatured    Boolean    @default(false)
+  tags          String[]   @default([])
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -91,6 +93,7 @@ model Article {
 
   @@index([categoryId])
   @@index([status])
+  @@index([isFeatured])
   @@index([createdAt])
   @@map("articles")
 }

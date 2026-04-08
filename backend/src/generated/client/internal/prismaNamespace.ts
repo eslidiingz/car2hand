@@ -2955,6 +2955,8 @@ export const ArticleScalarFieldEnum = {
   featuredImage: 'featuredImage',
   status: 'status',
   viewCount: 'viewCount',
+  isFeatured: 'isFeatured',
+  tags: 'tags',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   authorId: 'authorId',
