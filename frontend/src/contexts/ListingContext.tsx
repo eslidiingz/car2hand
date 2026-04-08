@@ -165,13 +165,24 @@ export class UpgradeRequiredError extends Error {
     }
 }
 
+// Auth helper
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 // API Functions
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export async function createListing(userId: string, data: ListingFormData): Promise<{ listing: { id: string } }> {
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE}/listings`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
             userId,
             vehicleType: data.vehicleType,
@@ -242,9 +253,13 @@ export async function uploadListingImages(
         })
     );
 
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE}/listings/${listingId}/images`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ userId, images })
     });
 
@@ -262,9 +277,13 @@ export async function uploadServiceHistoryImage(
     const buffer = await file.arrayBuffer();
     const base64 = Buffer.from(buffer).toString('base64');
 
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE}/listings/${listingId}/service-history`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
             userId,
             image: {
@@ -289,9 +308,13 @@ export async function uploadRegistrationBookImage(
     const buffer = await file.arrayBuffer();
     const base64 = Buffer.from(buffer).toString('base64');
 
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE}/listings/${listingId}/registration-book`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({
             userId,
             image: {
@@ -313,9 +336,13 @@ export async function publishListing(
     listingId: string,
     price: number
 ): Promise<void> {
+    const token = getAuthToken();
     const response = await fetch(`${API_BASE}/listings/${listingId}/publish`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ userId, price })
     });
 

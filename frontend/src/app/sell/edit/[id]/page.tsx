@@ -145,6 +145,13 @@ const PROVINCES = ['กรุงเทพมหานคร', 'กระบี�
 
 const years = Array.from({ length: 30 }, (_, i) => new Date().getFullYear() + 1 - i);
 
+// Auth helper
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 export default function EditListingPage() {
     const params = useParams();
     const router = useRouter();
@@ -383,7 +390,10 @@ export default function EditListingPage() {
 
         // Fetch package image limit
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-        fetch(`${API_URL}/packages/my?userId=${user.id}`)
+        const token = getAuthToken();
+        fetch(`${API_URL}/packages/my`, {
+            headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+        })
             .then(r => r.json())
             .then(data => {
                 setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 10);
@@ -641,8 +651,12 @@ export default function EditListingPage() {
             // 1. Process deletions
             if (deletedImageIds.length > 0) {
                 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const token = getAuthToken();
                 await Promise.all(deletedImageIds.map(id =>
-                    fetch(`${API_URL}/listings/${listingId}/images/${id}?userId=${userId}`, { method: 'DELETE' })
+                    fetch(`${API_URL}/listings/${listingId}/images/${id}?userId=${userId}`, {
+                        method: 'DELETE',
+                        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+                    })
                 ));
             }
 
@@ -665,9 +679,13 @@ export default function EditListingPage() {
                 const imageData = await Promise.all(imagePromises);
 
                 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const token = getAuthToken();
                 const uploadRes = await fetch(`${API_URL}/listings/${listingId}/images`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
                     body: JSON.stringify({ userId, images: imageData })
                 });
 
@@ -701,9 +719,13 @@ export default function EditListingPage() {
             // 3. Reorder
             if (finalImageOrder.length > 0) {
                 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+                const token = getAuthToken();
                 await fetch(`${API_URL}/listings/${listingId}/images/reorder`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
                     body: JSON.stringify({
                         userId,
                         imageIds: finalImageOrder
@@ -713,10 +735,12 @@ export default function EditListingPage() {
 
             // 4. Update listing data
             const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const token4 = getAuthToken();
             const response = await fetch(`${API_URL}/listings/${listingId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    ...(token4 ? { 'Authorization': `Bearer ${token4}` } : {})
                 },
                 body: JSON.stringify({
                     userId,
@@ -738,9 +762,13 @@ export default function EditListingPage() {
                     reader.onload = () => resolve((reader.result as string).split(',')[1]);
                     reader.readAsDataURL(regBookFile);
                 });
+                const tokenReg = getAuthToken();
                 await fetch(`${API_URL}/listings/${listingId}/registration-book`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(tokenReg ? { 'Authorization': `Bearer ${tokenReg}` } : {})
+                    },
                     body: JSON.stringify({
                         userId,
                         image: { buffer: regBookBase64, filename: regBookFile.name, mimetype: regBookFile.type }

@@ -6,13 +6,14 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { getUserPackage } from "./config/packages";
-import { uploadFile, processImage, generateFilename } from "./storage";
+import { uploadFile, processImage, generateFilename, isValidImageType, isValidFileSize } from "./storage";
 import { getAndBroadcastPendingCounts } from "./admin-sse";
+import { authGuard } from "./jwt";
 
 // =============================================
 // Public Routes - ไม่ต้อง login
 // =============================================
-export const packageRoutes = new Elysia({ prefix: "/packages" })
+const publicPackageRoutes = new Elysia({ prefix: "/packages" })
 
     // ดึงรายการแพ็กเกจทั้งหมดจาก Database
     .get("/", async () => {
@@ -41,13 +42,30 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
         return { packages };
     })
 
-    // ดึง Package ปัจจุบันของ user
-    .get("/my", async ({ query, set }) => {
-        const userId = query.userId;
-        if (!userId) {
-            set.status = 400;
-            return { message: "กรุณาระบุ userId" };
+    // ดึงข้อมูลการชำระเงิน (บัญชีธนาคาร, QR Code) สำหรับแสดงให้ผู้ใช้
+    .get("/payment-info", async () => {
+        const settings = await prisma.systemSetting.findMany({
+            where: { key: { startsWith: 'payment.' } }
+        });
+        const result: Record<string, string> = {};
+        for (const s of settings) {
+            // ตัด prefix 'payment.' ออกเพื่อให้ key สั้นลง
+            const shortKey = s.key.replace('payment.', '');
+            result[shortKey] = s.value;
         }
+        return result;
+    });
+
+// =============================================
+// Protected Routes - ต้อง login
+// =============================================
+const protectedPackageRoutes = new Elysia({ prefix: "/packages" })
+    .use(authGuard)
+
+    // ดึง Package ปัจจุบันของ user
+    .get("/my", async ({ auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -94,8 +112,21 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
     })
 
     // ส่งคำขออัพเกรดแพ็กเกจ (พร้อมแนบสลิป)
-    .post("/upgrade", async ({ body, set }) => {
-        const { userId, packageId, slipImage } = body;
+    .post("/upgrade", async ({ body, auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { packageId, slipImage } = body;
+
+        // Validate slip image
+        if (!isValidImageType(slipImage.mimetype)) {
+            set.status = 400;
+            return { message: "รองรับเฉพาะไฟล์รูปภาพ" };
+        }
+        const slipBuffer = Buffer.from(slipImage.buffer, 'base64');
+        if (!isValidFileSize(slipBuffer.length)) {
+            set.status = 400;
+            return { message: "ขนาดไฟล์ต้องไม่เกิน 10 MB" };
+        }
 
         // ตรวจสอบ user
         const user = await prisma.user.findUnique({
@@ -147,7 +178,6 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
 
         try {
             // อัพโหลดสลิป
-            const slipBuffer = Buffer.from(slipImage.buffer, 'base64');
             const webpBuffer = await processImage(slipBuffer, {
                 maxWidth: 800,
                 quality: 85
@@ -200,7 +230,6 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
         }
     }, {
         body: t.Object({
-            userId: t.String(),
             packageId: t.String(),
             slipImage: t.Object({
                 buffer: t.String(), // base64
@@ -211,12 +240,14 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
     })
 
     // คำนวณราคาอัพเกรดพร้อม prorate
-    .get("/upgrade-price", async ({ query, set }) => {
-        const { userId, targetPackageId } = query;
-        if (!userId || !targetPackageId) { set.status = 400; return { message: "Missing params" }; }
+    .get("/upgrade-price", async ({ query, auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
+        const { targetPackageId } = query;
+        if (!targetPackageId) { set.status = 400; return { message: "Missing params" }; }
 
         const user = await prisma.user.findUnique({
-            where: { id: userId as string },
+            where: { id: userId },
             select: { currentPackageId: true, packageExpiresAt: true, currentPackage: { select: { price: true, sortOrder: true } } }
         });
 
@@ -243,27 +274,10 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
         };
     })
 
-    // ดึงข้อมูลการชำระเงิน (บัญชีธนาคาร, QR Code) สำหรับแสดงให้ผู้ใช้
-    .get("/payment-info", async () => {
-        const settings = await prisma.systemSetting.findMany({
-            where: { key: { startsWith: 'payment.' } }
-        });
-        const result: Record<string, string> = {};
-        for (const s of settings) {
-            // ตัด prefix 'payment.' ออกเพื่อให้ key สั้นลง
-            const shortKey = s.key.replace('payment.', '');
-            result[shortKey] = s.value;
-        }
-        return result;
-    })
-
     // ดึงประวัติการอัพเกรดของ user
-    .get("/transactions", async ({ query, set }) => {
-        const userId = query.userId;
-        if (!userId) {
-            set.status = 400;
-            return { message: "กรุณาระบุ userId" };
-        }
+    .get("/transactions", async ({ auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const userId = auth.userId;
 
         const transactions = await prisma.packageTransaction.findMany({
             where: { userId },
@@ -277,3 +291,10 @@ export const packageRoutes = new Elysia({ prefix: "/packages" })
 
         return { transactions };
     });
+
+// =============================================
+// Combined export
+// =============================================
+export const packageRoutes = new Elysia()
+    .use(publicPackageRoutes)
+    .use(protectedPackageRoutes);

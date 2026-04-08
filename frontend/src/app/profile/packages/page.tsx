@@ -122,6 +122,12 @@ export default function PackagesPage() {
         return null;
     };
 
+    const getAuthToken = (): string | null => {
+        const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+        if (!stored) return null;
+        try { return JSON.parse(stored).token || null; } catch { return null; }
+    };
+
     const getDaysRemaining = (expiresAt?: string) => {
         if (!expiresAt) return null;
         const now = new Date();
@@ -135,7 +141,10 @@ export default function PackagesPage() {
         if (!userId) return;
         setProrateLoading(true);
         try {
-            const res = await fetch(`${API_URL}/packages/upgrade-price?userId=${userId}&targetPackageId=${targetPackageId}`);
+            const token = getAuthToken();
+            const res = await fetch(`${API_URL}/packages/upgrade-price?targetPackageId=${targetPackageId}`, {
+                headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+            });
             if (res.ok) {
                 const data = await res.json();
                 setProrateInfo(data);
@@ -173,12 +182,16 @@ export default function PackagesPage() {
         const userId = getUserId();
         if (!userId) return;
 
+        const token = getAuthToken();
+
         fetch(`${API_URL}/packages`)
             .then(r => r.json())
             .then(data => setPackages(data.packages || []))
             .catch(console.error);
 
-        fetch(`${API_URL}/packages/my?userId=${userId}`)
+        fetch(`${API_URL}/packages/my`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        })
             .then(r => r.json())
             .then(data => {
                 setCurrentPkg(data.currentPackage || null);
@@ -186,7 +199,9 @@ export default function PackagesPage() {
             })
             .catch(console.error);
 
-        fetch(`${API_URL}/packages/transactions?userId=${userId}`)
+        fetch(`${API_URL}/packages/transactions`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        })
             .then(r => r.json())
             .then(data => setTransactions(data.transactions || []))
             .catch(console.error);
@@ -223,11 +238,14 @@ export default function PackagesPage() {
             }
             const base64 = btoa(binary);
 
+            const token = getAuthToken();
             const res = await fetch(`${API_URL}/packages/upgrade`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify({
-                    userId,
                     packageId: selectedPackage.id,
                     slipImage: {
                         buffer: base64,
@@ -245,7 +263,10 @@ export default function PackagesPage() {
                 setSlipPreview(null);
                 setSelectedPackage(null);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                const txRes = await fetch(`${API_URL}/packages/transactions?userId=${userId}`);
+                const txToken = getAuthToken();
+                const txRes = await fetch(`${API_URL}/packages/transactions`, {
+                    headers: txToken ? { 'Authorization': `Bearer ${txToken}` } : {}
+                });
                 const txData = await txRes.json();
                 setTransactions(txData.transactions || []);
             } else {

@@ -21,6 +21,12 @@ import {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 interface Listing {
     id: string;
     title: string;
@@ -54,7 +60,10 @@ export default function DashboardPage() {
             .finally(() => setLoading(false));
 
         // Fetch package limits
-        fetch(`${API_BASE}/packages/my?userId=${userData.id}`)
+        const token = getAuthToken();
+        fetch(`${API_BASE}/packages/my`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        })
             .then(r => r.json())
             .then(data => {
                 if (data.currentPackage) {

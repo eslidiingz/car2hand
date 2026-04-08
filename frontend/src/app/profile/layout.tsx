@@ -92,6 +92,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             // Invalid user data, redirect to home
             localStorage.removeItem('user');
             sessionStorage.removeItem('user');
+            document.cookie = 'has_session=; path=/; max-age=0';
             router.push('/');
             return;
         }
@@ -104,6 +105,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     const confirmLogout = () => {
         localStorage.removeItem('user');
         sessionStorage.removeItem('user');
+        document.cookie = 'has_session=; path=/; max-age=0';
         router.push('/');
     };
 

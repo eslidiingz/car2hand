@@ -100,6 +100,13 @@ interface SubModel {
     transmission: string | null;
 }
 
+// Auth helper
+function getAuthToken(): string | null {
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+    if (!stored) return null;
+    try { return JSON.parse(stored).token || null; } catch { return null; }
+}
+
 export default function CreateListingPage() {
     const router = useRouter();
     const { formData, updateFormData, currentStep, setCurrentStep, listingId, setListingId, isSubmitting, setIsSubmitting } = useListingForm();
@@ -173,8 +180,11 @@ export default function CreateListingPage() {
 
         // Fetch package info & check listing limit
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+        const token = getAuthToken();
         Promise.all([
-            fetch(`${API_URL}/packages/my?userId=${userData.id}`).then(r => r.json()),
+            fetch(`${API_URL}/packages/my`, {
+                headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+            }).then(r => r.json()),
             fetch(`${API_URL}/listings/user/${userData.id}`).then(r => r.json()),
         ]).then(([pkgData, listingsData]) => {
             const pkg = pkgData.currentPackage;
