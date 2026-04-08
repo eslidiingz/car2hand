@@ -4,19 +4,19 @@
     {
       "name": "backend",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd .claude/worktrees/features/backend && bun dev"],
+      "runtimeArgs": ["-c", "export PATH=/Users/nickzerofriction/.bun/bin:$PATH && cd backend && bun run dev"],
       "port": 8000
     },
     {
       "name": "frontend",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd .claude/worktrees/features/frontend && pnpm dev"],
+      "runtimeArgs": ["-c", "export NVM_DIR=/Users/nickzerofriction/.nvm && . $NVM_DIR/nvm.sh && nvm use 20 && cd frontend && pnpm dev"],
       "port": 3000
     },
     {
       "name": "admin",
       "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd .claude/worktrees/features/admin && pnpm dev"],
+      "runtimeArgs": ["-c", "export NVM_DIR=/Users/nickzerofriction/.nvm && . $NVM_DIR/nvm.sh && nvm use 20 && cd admin && pnpm dev"],
       "port": 3001
     }
   ]

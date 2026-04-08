@@ -45,6 +45,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model SellerProfile
+ * 
+ */
+export type SellerProfile = Prisma.SellerProfileModel
+/**
  * Model Admin
  * 
  */

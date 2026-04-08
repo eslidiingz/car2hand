@@ -591,14 +591,6 @@ export type NullableEnumBodyTypeFieldUpdateOperationsInput = {
   set?: $Enums.BodyType | null
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type VehicleModelCreateNestedOneWithoutSubModelsInput = {
   create?: Prisma.XOR<Prisma.VehicleModelCreateWithoutSubModelsInput, Prisma.VehicleModelUncheckedCreateWithoutSubModelsInput>
   connectOrCreate?: Prisma.VehicleModelCreateOrConnectWithoutSubModelsInput

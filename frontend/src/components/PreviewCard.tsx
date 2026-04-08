@@ -9,7 +9,8 @@ import {
     MapPin,
     CalendarBlank,
     Image as ImageIcon,
-    Scales
+    Scales,
+    Eye,
 } from '@phosphor-icons/react';
 
 interface PreviewCardProps {
@@ -22,6 +23,8 @@ interface PreviewCardProps {
     province?: string;
     imageUrl?: string;
     sellerName?: string;
+    sellerLogo?: string | null;
+    viewCount?: number;
 }
 
 // Fuel type labels — match ListingCard
@@ -55,7 +58,9 @@ export default function PreviewCard({
     fuelType = 'PETROL',
     province = 'กรุงเทพมหานคร',
     imageUrl,
-    sellerName = 'ผู้ขาย'
+    sellerName = 'ผู้ขาย',
+    sellerLogo,
+    viewCount = 0,
 }: PreviewCardProps) {
     const mileageNum = typeof mileage === 'string' ? parseFloat(mileage) || 0 : mileage;
 
@@ -107,32 +112,38 @@ export default function PreviewCard({
                     {title || 'ชื่อรถของคุณ'}
                 </h3>
 
-                {/* Specs */}
-                <div className="grid grid-cols-3 gap-1 text-xs text-gray-500 mb-4 bg-gray-50 p-2 rounded-xl border border-gray-50">
-                    <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
-                        <CalendarBlank size={16} className="text-primary" />
+                {/* Specs — 2x2 grid (matching ListingCard) */}
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-500 mb-3">
+                    <span className="flex items-center gap-1.5">
+                        <CalendarBlank size={14} className="text-gray-400" />
                         <span className="font-medium">{year}</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center gap-1 border-r border-gray-200 py-1">
-                        <Gauge size={16} className="text-primary" />
-                        <span className="font-medium whitespace-nowrap">{mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-'}</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center gap-1 py-1 px-1">
-                        <GasPump size={16} className="text-primary" />
-                        <span className="font-medium text-center leading-tight">{getFuelTypeLabel(fuelType)}</span>
-                    </div>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <Gauge size={14} className="text-gray-400" />
+                        <span className="font-medium">{mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-'}</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <GasPump size={14} className="text-gray-400" />
+                        <span className="font-medium">{getFuelTypeLabel(fuelType)}</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <Eye size={14} className="text-gray-400" />
+                        <span className="font-medium">{viewCount > 0 ? viewCount.toLocaleString() : '0'}</span>
+                    </span>
                 </div>
 
-                {/* Price & Seller */}
+                {/* Price & Seller (matching ListingCard) */}
                 <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-baseline gap-2">
-                        <span className="text-2xl font-bold text-accent">฿{formatPrice(price)}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-gray-500">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span className="text-[12px] font-bold text-primary">{sellerName.charAt(0).toUpperCase()}</span>
+                    <span className="text-2xl font-bold text-accent">฿{formatPrice(price)}</span>
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
+                            {sellerLogo ? (
+                                <img src={sellerLogo} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-[11px] font-bold text-primary">{sellerName.charAt(0).toUpperCase()}</span>
+                            )}
                         </div>
-                        <span className="text-sm font-semibold">{sellerName}</span>
+                        <span className="text-xs font-medium text-gray-500 truncate max-w-[100px]">{sellerName}</span>
                     </div>
                 </div>
             </div>

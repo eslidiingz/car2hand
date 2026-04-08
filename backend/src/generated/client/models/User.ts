@@ -245,6 +245,7 @@ export type UserWhereInput = {
   forumVotes?: Prisma.ForumVoteListRelationFilter
   forumCommentVotes?: Prisma.ForumCommentVoteListRelationFilter
   reputation?: Prisma.XOR<Prisma.UserReputationNullableScalarRelationFilter, Prisma.UserReputationWhereInput> | null
+  sellerProfile?: Prisma.XOR<Prisma.SellerProfileNullableScalarRelationFilter, Prisma.SellerProfileWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -274,6 +275,7 @@ export type UserOrderByWithRelationInput = {
   forumVotes?: Prisma.ForumVoteOrderByRelationAggregateInput
   forumCommentVotes?: Prisma.ForumCommentVoteOrderByRelationAggregateInput
   reputation?: Prisma.UserReputationOrderByWithRelationInput
+  sellerProfile?: Prisma.SellerProfileOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -306,6 +308,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   forumVotes?: Prisma.ForumVoteListRelationFilter
   forumCommentVotes?: Prisma.ForumCommentVoteListRelationFilter
   reputation?: Prisma.XOR<Prisma.UserReputationNullableScalarRelationFilter, Prisma.UserReputationWhereInput> | null
+  sellerProfile?: Prisma.XOR<Prisma.SellerProfileNullableScalarRelationFilter, Prisma.SellerProfileWhereInput> | null
 }, "id" | "email" | "lineUserId">
 
 export type UserOrderByWithAggregationInput = {
@@ -368,6 +371,7 @@ export type UserCreateInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -396,6 +400,7 @@ export type UserUncheckedCreateInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -424,6 +429,7 @@ export type UserUpdateInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -452,6 +458,7 @@ export type UserUncheckedUpdateInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -575,6 +582,20 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type UserCreateNestedOneWithoutSellerProfileInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSellerProfileInput, Prisma.UserUncheckedCreateWithoutSellerProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSellerProfileInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSellerProfileNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSellerProfileInput, Prisma.UserUncheckedCreateWithoutSellerProfileInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSellerProfileInput
+  upsert?: Prisma.UserUpsertWithoutSellerProfileInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSellerProfileInput, Prisma.UserUpdateWithoutSellerProfileInput>, Prisma.UserUncheckedUpdateWithoutSellerProfileInput>
 }
 
 export type UserCreateNestedOneWithoutWishlistsInput = {
@@ -819,6 +840,134 @@ export type UserUpdateOneRequiredWithoutReputationNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutReputationInput, Prisma.UserUpdateWithoutReputationInput>, Prisma.UserUncheckedUpdateWithoutReputationInput>
 }
 
+export type UserCreateWithoutSellerProfileInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSellerProfileInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSellerProfileInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSellerProfileInput, Prisma.UserUncheckedCreateWithoutSellerProfileInput>
+}
+
+export type UserUpsertWithoutSellerProfileInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSellerProfileInput, Prisma.UserUncheckedUpdateWithoutSellerProfileInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSellerProfileInput, Prisma.UserUncheckedCreateWithoutSellerProfileInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSellerProfileInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSellerProfileInput, Prisma.UserUncheckedUpdateWithoutSellerProfileInput>
+}
+
+export type UserUpdateWithoutSellerProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSellerProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+}
+
 export type UserCreateWithoutWishlistsInput = {
   id?: string
   fullName: string
@@ -844,6 +993,7 @@ export type UserCreateWithoutWishlistsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWishlistsInput = {
@@ -871,6 +1021,7 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWishlistsInput = {
@@ -914,6 +1065,7 @@ export type UserUpdateWithoutWishlistsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWishlistsInput = {
@@ -941,6 +1093,7 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutListingsInput = {
@@ -968,6 +1121,7 @@ export type UserCreateWithoutListingsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutListingsInput = {
@@ -995,6 +1149,7 @@ export type UserUncheckedCreateWithoutListingsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutListingsInput = {
@@ -1038,6 +1193,7 @@ export type UserUpdateWithoutListingsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutListingsInput = {
@@ -1065,6 +1221,7 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCurrentPackageInput = {
@@ -1092,6 +1249,7 @@ export type UserCreateWithoutCurrentPackageInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCurrentPackageInput = {
@@ -1119,6 +1277,7 @@ export type UserUncheckedCreateWithoutCurrentPackageInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCurrentPackageInput = {
@@ -1189,6 +1348,7 @@ export type UserCreateWithoutPackageTransactionsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPackageTransactionsInput = {
@@ -1216,6 +1376,7 @@ export type UserUncheckedCreateWithoutPackageTransactionsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPackageTransactionsInput = {
@@ -1259,6 +1420,7 @@ export type UserUpdateWithoutPackageTransactionsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
@@ -1286,6 +1448,7 @@ export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutListingRenewalsInput = {
@@ -1313,6 +1476,7 @@ export type UserCreateWithoutListingRenewalsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutListingRenewalsInput = {
@@ -1340,6 +1504,7 @@ export type UserUncheckedCreateWithoutListingRenewalsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutListingRenewalsInput = {
@@ -1383,6 +1548,7 @@ export type UserUpdateWithoutListingRenewalsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutListingRenewalsInput = {
@@ -1410,6 +1576,7 @@ export type UserUncheckedUpdateWithoutListingRenewalsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGarageVehiclesInput = {
@@ -1437,6 +1604,7 @@ export type UserCreateWithoutGarageVehiclesInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGarageVehiclesInput = {
@@ -1464,6 +1632,7 @@ export type UserUncheckedCreateWithoutGarageVehiclesInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGarageVehiclesInput = {
@@ -1507,6 +1676,7 @@ export type UserUpdateWithoutGarageVehiclesInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGarageVehiclesInput = {
@@ -1534,6 +1704,7 @@ export type UserUncheckedUpdateWithoutGarageVehiclesInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -1561,6 +1732,7 @@ export type UserCreateWithoutNotificationsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -1588,6 +1760,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -1631,6 +1804,7 @@ export type UserUpdateWithoutNotificationsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -1658,6 +1832,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBumpLogsInput = {
@@ -1685,6 +1860,7 @@ export type UserCreateWithoutBumpLogsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBumpLogsInput = {
@@ -1712,6 +1888,7 @@ export type UserUncheckedCreateWithoutBumpLogsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBumpLogsInput = {
@@ -1755,6 +1932,7 @@ export type UserUpdateWithoutBumpLogsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBumpLogsInput = {
@@ -1782,6 +1960,7 @@ export type UserUncheckedUpdateWithoutBumpLogsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInspectionBookingsInput = {
@@ -1809,6 +1988,7 @@ export type UserCreateWithoutInspectionBookingsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInspectionBookingsInput = {
@@ -1836,6 +2016,7 @@ export type UserUncheckedCreateWithoutInspectionBookingsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInspectionBookingsInput = {
@@ -1879,6 +2060,7 @@ export type UserUpdateWithoutInspectionBookingsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInspectionBookingsInput = {
@@ -1906,6 +2088,7 @@ export type UserUncheckedUpdateWithoutInspectionBookingsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutServiceInquiriesInput = {
@@ -1933,6 +2116,7 @@ export type UserCreateWithoutServiceInquiriesInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutServiceInquiriesInput = {
@@ -1960,6 +2144,7 @@ export type UserUncheckedCreateWithoutServiceInquiriesInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutServiceInquiriesInput = {
@@ -2003,6 +2188,7 @@ export type UserUpdateWithoutServiceInquiriesInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceInquiriesInput = {
@@ -2030,6 +2216,7 @@ export type UserUncheckedUpdateWithoutServiceInquiriesInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumPostsInput = {
@@ -2057,6 +2244,7 @@ export type UserCreateWithoutForumPostsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumPostsInput = {
@@ -2084,6 +2272,7 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumPostsInput = {
@@ -2127,6 +2316,7 @@ export type UserUpdateWithoutForumPostsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumPostsInput = {
@@ -2154,6 +2344,7 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumCommentsInput = {
@@ -2181,6 +2372,7 @@ export type UserCreateWithoutForumCommentsInput = {
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumCommentsInput = {
@@ -2208,6 +2400,7 @@ export type UserUncheckedCreateWithoutForumCommentsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumCommentsInput = {
@@ -2251,6 +2444,7 @@ export type UserUpdateWithoutForumCommentsInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumCommentsInput = {
@@ -2278,6 +2472,7 @@ export type UserUncheckedUpdateWithoutForumCommentsInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumVotesInput = {
@@ -2305,6 +2500,7 @@ export type UserCreateWithoutForumVotesInput = {
   forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumVotesInput = {
@@ -2332,6 +2528,7 @@ export type UserUncheckedCreateWithoutForumVotesInput = {
   forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumVotesInput = {
@@ -2375,6 +2572,7 @@ export type UserUpdateWithoutForumVotesInput = {
   forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumVotesInput = {
@@ -2402,6 +2600,7 @@ export type UserUncheckedUpdateWithoutForumVotesInput = {
   forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumCommentVotesInput = {
@@ -2429,6 +2628,7 @@ export type UserCreateWithoutForumCommentVotesInput = {
   forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumCommentVotesInput = {
@@ -2456,6 +2656,7 @@ export type UserUncheckedCreateWithoutForumCommentVotesInput = {
   forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumCommentVotesInput = {
@@ -2499,6 +2700,7 @@ export type UserUpdateWithoutForumCommentVotesInput = {
   forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumCommentVotesInput = {
@@ -2526,6 +2728,7 @@ export type UserUncheckedUpdateWithoutForumCommentVotesInput = {
   forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutReputationInput = {
@@ -2553,6 +2756,7 @@ export type UserCreateWithoutReputationInput = {
   forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
   forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutReputationInput = {
@@ -2580,6 +2784,7 @@ export type UserUncheckedCreateWithoutReputationInput = {
   forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
   forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutReputationInput = {
@@ -2623,6 +2828,7 @@ export type UserUpdateWithoutReputationInput = {
   forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReputationInput = {
@@ -2650,6 +2856,7 @@ export type UserUncheckedUpdateWithoutReputationInput = {
   forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyCurrentPackageInput = {
@@ -2690,6 +2897,7 @@ export type UserUpdateWithoutCurrentPackageInput = {
   forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCurrentPackageInput = {
@@ -2717,6 +2925,7 @@ export type UserUncheckedUpdateWithoutCurrentPackageInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutCurrentPackageInput = {
@@ -2898,6 +3107,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   forumVotes?: boolean | Prisma.User$forumVotesArgs<ExtArgs>
   forumCommentVotes?: boolean | Prisma.User$forumCommentVotesArgs<ExtArgs>
   reputation?: boolean | Prisma.User$reputationArgs<ExtArgs>
+  sellerProfile?: boolean | Prisma.User$sellerProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2962,6 +3172,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   forumVotes?: boolean | Prisma.User$forumVotesArgs<ExtArgs>
   forumCommentVotes?: boolean | Prisma.User$forumCommentVotesArgs<ExtArgs>
   reputation?: boolean | Prisma.User$reputationArgs<ExtArgs>
+  sellerProfile?: boolean | Prisma.User$sellerProfileArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2989,6 +3200,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     forumVotes: Prisma.$ForumVotePayload<ExtArgs>[]
     forumCommentVotes: Prisma.$ForumCommentVotePayload<ExtArgs>[]
     reputation: Prisma.$UserReputationPayload<ExtArgs> | null
+    sellerProfile: Prisma.$SellerProfilePayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3411,6 +3623,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   forumVotes<T extends Prisma.User$forumVotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$forumVotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumVotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   forumCommentVotes<T extends Prisma.User$forumCommentVotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$forumCommentVotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumCommentVotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reputation<T extends Prisma.User$reputationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$reputationArgs<ExtArgs>>): Prisma.Prisma__UserReputationClient<runtime.Types.Result.GetResult<Prisma.$UserReputationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sellerProfile<T extends Prisma.User$sellerProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sellerProfileArgs<ExtArgs>>): Prisma.Prisma__SellerProfileClient<runtime.Types.Result.GetResult<Prisma.$SellerProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4194,6 +4407,25 @@ export type User$reputationArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.UserReputationInclude<ExtArgs> | null
   where?: Prisma.UserReputationWhereInput
+}
+
+/**
+ * User.sellerProfile
+ */
+export type User$sellerProfileArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SellerProfile
+   */
+  select?: Prisma.SellerProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SellerProfile
+   */
+  omit?: Prisma.SellerProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SellerProfileInclude<ExtArgs> | null
+  where?: Prisma.SellerProfileWhereInput
 }
 
 /**

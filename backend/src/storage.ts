@@ -41,6 +41,22 @@ export function buildArticlePath(filename: string): string {
     return `articles/${filename}`;
 }
 
+/**
+ * สร้าง path สำหรับโลโก้ร้านผู้ขาย
+ * Structure: {userId}/seller/logo/{filename}
+ */
+export function buildSellerLogoPath(userId: string, filename: string): string {
+    return `${userId}/seller/logo/${filename}`;
+}
+
+/**
+ * สร้าง path สำหรับภาพปกร้านผู้ขาย
+ * Structure: {userId}/seller/cover/{filename}
+ */
+export function buildSellerCoverPath(userId: string, filename: string): string {
+    return `${userId}/seller/cover/${filename}`;
+}
+
 
 // =============================================
 // URL Builders

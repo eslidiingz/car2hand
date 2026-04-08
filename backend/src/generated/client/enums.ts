@@ -9,6 +9,15 @@
 * 🟢 You can import this file directly.
 */
 
+export const ShowroomType = {
+  INDIVIDUAL: 'INDIVIDUAL',
+  TENT: 'TENT',
+  DEALER: 'DEALER'
+} as const
+
+export type ShowroomType = (typeof ShowroomType)[keyof typeof ShowroomType]
+
+
 export const PostStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED'

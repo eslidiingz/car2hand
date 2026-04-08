@@ -149,6 +149,9 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                         packageExpiresAt: true,
                         currentPackage: {
                             select: { badge: true, searchPriority: true }
+                        },
+                        sellerProfile: {
+                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
                         }
                     }
                 }
@@ -162,7 +165,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                 badge: pkgActive ? (l.user.currentPackage?.badge || null) : null,
                 isFeatured: l.isFeatured,
                 isPremium: l.isPremium,
-                user: { id: l.user.id, fullName: l.user.fullName }
+                user: { id: l.user.id, fullName: l.user.fullName, sellerProfile: (l.user as any).sellerProfile || null }
             };
         });
 
@@ -353,6 +356,9 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                             packageExpiresAt: true,
                             currentPackage: {
                                 select: { badge: true, searchPriority: true }
+                            },
+                            sellerProfile: {
+                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
                             }
                         }
                     }
@@ -414,7 +420,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
             return {
                 ...l,
                 badge: pkgActive ? (l.user.currentPackage?.badge || null) : null,
-                user: { id: l.user.id, fullName: l.user.fullName }
+                user: { id: l.user.id, fullName: l.user.fullName, sellerProfile: (l.user as any).sellerProfile || null }
             };
         });
 
@@ -452,6 +458,9 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                         packageExpiresAt: true,
                         currentPackage: {
                             select: { badge: true }
+                        },
+                        sellerProfile: {
+                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, shopProvince: true }
                         }
                     }
                 }
@@ -490,6 +499,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                 id: listing.user.id,
                 fullName: listing.user.fullName,
                 phoneNumber: listing.user.phoneNumber,
+                sellerProfile: (listing.user as any).sellerProfile || null,
             }
         };
 
@@ -513,6 +523,17 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                     images: {
                         where: { isPrimary: true },
                         take: 1
+                    },
+                    user: {
+                        select: {
+                            id: true,
+                            fullName: true,
+                            packageExpiresAt: true,
+                            currentPackage: { select: { badge: true } },
+                            sellerProfile: {
+                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
+                            }
+                        }
                     }
                 },
                 orderBy: { createdAt: 'desc' },
@@ -522,8 +543,22 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
             prisma.vehicleListing.count({ where })
         ]);
 
+        const now = new Date();
+        const enrichedListings = listings.map((l: any) => {
+            const pkgActive = l.user?.currentPackage ? (l.user.packageExpiresAt ? new Date(l.user.packageExpiresAt) > now : true) : false;
+            return {
+                ...l,
+                badge: pkgActive ? (l.user?.currentPackage?.badge || null) : null,
+                user: {
+                    id: l.user?.id,
+                    fullName: l.user?.fullName,
+                    sellerProfile: l.user?.sellerProfile || null,
+                }
+            };
+        });
+
         return {
-            listings,
+            listings: enrichedListings,
             pagination: {
                 page: parseInt(page),
                 limit: parseInt(limit),

@@ -23,6 +23,7 @@ import { serviceRoutes } from "./services";
 import { adminServiceRoutes } from "./admin-services";
 import { adminSSERoutes, userSSERoutes } from "./admin-sse";
 import { forumRoutes } from "./forum";
+import { sellerProfileRoutes } from "./seller-profile";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 
 // Allowed origins (update for production)
@@ -84,6 +85,7 @@ const app = new Elysia()
       .use(adminSSERoutes)
       .use(userSSERoutes)
       .use(forumRoutes)
+      .use(sellerProfileRoutes)
   )
 
   // Global error handler

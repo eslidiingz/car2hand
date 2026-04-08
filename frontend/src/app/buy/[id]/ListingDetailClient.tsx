@@ -29,6 +29,7 @@ import {
     Crown,
     Fire,
     SealCheck,
+    Storefront,
 } from '@phosphor-icons/react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
@@ -495,12 +496,28 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                             <h3 className="text-lg font-bold text-primary mb-4">ข้อมูลผู้ขาย</h3>
                             <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold">
-                                    {listing.user.fullName.charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-bold text-gray-800">{listing.user.fullName}</p>
+                                {(listing as any).user?.sellerProfile ? (
+                                    <a href={`/sellers/${listing.user.id}`} className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold overflow-hidden hover:ring-2 hover:ring-primary/30 transition">
+                                        {(listing as any).user.sellerProfile.shopLogo ? (
+                                            <img src={(listing as any).user.sellerProfile.shopLogo} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            ((listing as any).user.sellerProfile.shopName || listing.user.fullName).charAt(0).toUpperCase()
+                                        )}
+                                    </a>
+                                ) : (
+                                    <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold overflow-hidden">
+                                        {listing.user.fullName.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        {(listing as any).user?.sellerProfile ? (
+                                            <a href={`/sellers/${listing.user.id}`} className="font-bold text-gray-800 hover:text-primary transition">
+                                                {(listing as any).user.sellerProfile.shopName}
+                                            </a>
+                                        ) : (
+                                            <p className="font-bold text-gray-800">{listing.user.fullName}</p>
+                                        )}
                                         {listing.badge && (
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${
                                                 listing.badge === 'Premium Choice' ? 'bg-gradient-to-r from-yellow-500 to-amber-600' :
@@ -513,13 +530,28 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                                 {listing.badge}
                                             </span>
                                         )}
+                                        {(listing as any).user?.sellerProfile?.isVerified && (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-green-500">
+                                                <SealCheck size={10} weight="fill" />
+                                                ยืนยันตัวตน
+                                            </span>
+                                        )}
                                     </div>
                                     <p className="text-sm text-gray-500 flex items-center gap-1">
                                         <MapPin size={12} />
-                                        {listing.province}
+                                        {(listing as any).user?.sellerProfile?.shopProvince || listing.province}
                                     </p>
                                 </div>
                             </div>
+                            {(listing as any).user?.sellerProfile && (
+                                <a
+                                    href={`/sellers/${listing.user.id}`}
+                                    className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary/5 text-primary font-bold text-sm rounded-xl hover:bg-primary/10 transition"
+                                >
+                                    <Storefront size={18} weight="bold" />
+                                    ดูโปรไฟล์ร้าน
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>
