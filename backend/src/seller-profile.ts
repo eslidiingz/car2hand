@@ -96,7 +96,7 @@ const publicSellerRoutes = new Elysia({ prefix: "/sellers" })
                             packageExpiresAt: true,
                             currentPackage: { select: { badge: true } },
                             sellerProfile: {
-                                select: { shopName: true, showroomType: true }
+                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
                             }
                         }
                     }
