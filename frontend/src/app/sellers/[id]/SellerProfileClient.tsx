@@ -103,7 +103,7 @@ function LoadingSkeleton() {
 
                 {/* Listings */}
                 <SkeletonBlock className="mt-8 h-8 w-48" />
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 pb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4 pb-10">
                     {[1, 2, 3, 4, 5, 6].map(i => (
                         <SkeletonBlock key={i} className="h-64" />
                     ))}
@@ -203,9 +203,10 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
             if (!res.ok) return;
             const data: ListingsResponse = await res.json();
             setListings(prev => append ? [...prev, ...data.listings] : data.listings);
-            setListingsTotal(data.total);
-            setTotalPages(data.totalPages);
-            setPage(data.page);
+            const pg = (data as any).pagination || data;
+            setListingsTotal(pg.total);
+            setTotalPages(pg.totalPages);
+            setPage(pg.page);
         } catch {
             // silently fail
         } finally {
@@ -450,7 +451,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                     </h2>
 
                     {listings.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {listings.map(listing => (
                                 <ListingCard key={listing.id} listing={listing} />
                             ))}
