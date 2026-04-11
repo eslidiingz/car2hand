@@ -5,14 +5,14 @@ import {
     Bell,
     Check,
     Circle,
-    CaretLeft,
-    CaretRight,
+    ChevronLeft,
+    ChevronRight,
     CheckCircle,
     Megaphone,
     Package,
-    CarProfile,
-    Warning,
-} from '@phosphor-icons/react';
+    Car,
+    AlertTriangle,
+} from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -44,19 +44,19 @@ function timeAgo(dateStr: string): string {
 function getTypeStyle(type: string) {
     switch (type) {
         case 'LISTING_APPROVED':
-            return { icon: <CheckCircle weight="fill" size={20} />, color: 'text-green-500', bg: 'bg-green-50' };
+            return { icon: <CheckCircle fill="currentColor" size={20} />, color: 'text-green-500', bg: 'bg-green-50' };
         case 'LISTING_REJECTED':
-            return { icon: <Warning weight="fill" size={20} />, color: 'text-red-500', bg: 'bg-red-50' };
+            return { icon: <AlertTriangle fill="currentColor" size={20} />, color: 'text-red-500', bg: 'bg-red-50' };
         case 'PACKAGE_APPROVED':
         case 'PACKAGE_REJECTED':
-            return { icon: <Package weight="fill" size={20} />, color: 'text-blue-500', bg: 'bg-blue-50' };
+            return { icon: <Package fill="currentColor" size={20} />, color: 'text-blue-500', bg: 'bg-blue-50' };
         case 'LISTING_EXPIRING':
         case 'LISTING_EXPIRED':
-            return { icon: <Warning weight="fill" size={20} />, color: 'text-amber-500', bg: 'bg-amber-50' };
+            return { icon: <AlertTriangle fill="currentColor" size={20} />, color: 'text-amber-500', bg: 'bg-amber-50' };
         case 'PROMOTION':
-            return { icon: <Megaphone weight="fill" size={20} />, color: 'text-purple-500', bg: 'bg-purple-50' };
+            return { icon: <Megaphone fill="currentColor" size={20} />, color: 'text-purple-500', bg: 'bg-purple-50' };
         default:
-            return { icon: <Bell weight="fill" size={20} />, color: 'text-primary', bg: 'bg-blue-50' };
+            return { icon: <Bell fill="currentColor" size={20} />, color: 'text-primary', bg: 'bg-blue-50' };
     }
 }
 
@@ -151,7 +151,7 @@ export default function NotificationsPage() {
                         onClick={markAllAsRead}
                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary bg-blue-50 hover:bg-blue-100 rounded-lg transition"
                     >
-                        <Check weight="bold" size={14} />
+                        <Check size={14} />
                         อ่านทั้งหมด
                     </button>
                 )}
@@ -160,7 +160,7 @@ export default function NotificationsPage() {
             {/* Unread count badge */}
             {unreadCount > 0 && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-xl">
-                    <Circle weight="fill" size={8} className="text-blue-500" />
+                    <Circle fill="currentColor" size={8} className="text-blue-500" />
                     <span className="text-xs text-blue-700 font-medium">ยังไม่ได้อ่าน {unreadCount} รายการ</span>
                 </div>
             )}
@@ -173,7 +173,7 @@ export default function NotificationsPage() {
                 </div>
             ) : notifications.length === 0 ? (
                 <div className="py-16 text-center">
-                    <Bell weight="thin" size={56} className="text-gray-200 mx-auto mb-3" />
+                    <Bell strokeWidth={1} size={56} className="text-gray-200 mx-auto mb-3" />
                     <p className="text-gray-400 font-bold">ไม่มีการแจ้งเตือน</p>
                     <p className="text-gray-300 text-sm mt-1">เมื่อมีการแจ้งเตือนใหม่จะแสดงที่นี่</p>
                 </div>
@@ -204,7 +204,7 @@ export default function NotificationsPage() {
                                                 {n.title}
                                             </p>
                                             {!n.isRead && (
-                                                <Circle weight="fill" size={8} className="text-blue-500 flex-shrink-0 mt-1.5" />
+                                                <Circle fill="currentColor" size={8} className="text-blue-500 flex-shrink-0 mt-1.5" />
                                             )}
                                         </div>
                                         <p className={`text-xs mt-1 leading-relaxed ${!n.isRead ? 'text-gray-600' : 'text-gray-400'}`}>
@@ -229,7 +229,7 @@ export default function NotificationsPage() {
                         disabled={page <= 1}
                         className="p-2 rounded-lg hover:bg-gray-100 transition disabled:opacity-30"
                     >
-                        <CaretLeft weight="bold" size={16} />
+                        <ChevronLeft size={16} />
                     </button>
                     <span className="text-sm text-gray-600 font-medium">
                         {page} / {totalPages}
@@ -239,7 +239,7 @@ export default function NotificationsPage() {
                         disabled={page >= totalPages}
                         className="p-2 rounded-lg hover:bg-gray-100 transition disabled:opacity-30"
                     >
-                        <CaretRight weight="bold" size={16} />
+                        <ChevronRight size={16} />
                     </button>
                 </div>
             )}

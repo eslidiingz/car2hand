@@ -5,11 +5,11 @@ import Link from 'next/link';
 import {
     Heart,
     Check,
-    Warning,
-    ArrowClockwise,
+    AlertTriangle,
+    RotateCcw,
     Trash,
     X,
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import Toast from '@/components/Toast';
 import { useWishlist } from '@/contexts/WishlistContext';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
@@ -97,10 +97,10 @@ export default function WishlistPage() {
                 </div>
             )}
 
-            {/* Warning for old data */}
+            {/* AlertTriangle for old data */}
             {hasOldData && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                    <Warning size={24} className="text-amber-500 flex-shrink-0 mt-0.5" weight="fill" />
+                    <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor" />
                     <div className="flex-1">
                         <p className="text-amber-800 text-sm font-medium">บางรายการมีข้อมูลไม่ครบ</p>
                         <p className="text-amber-600 text-xs mt-1">
@@ -111,7 +111,7 @@ export default function WishlistPage() {
                         onClick={handleClearAll}
                         className="flex items-center gap-1.5 text-xs bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 transition font-medium"
                     >
-                        <ArrowClockwise size={14} weight="bold" />
+                        <RotateCcw size={14} />
                         ล้างทั้งหมด
                     </button>
                 </div>
@@ -130,11 +130,11 @@ export default function WishlistPage() {
                 </div>
             ) : (
                 <div className="text-center py-20 bg-white rounded-2xl border border-gray-100 border-dashed">
-                    <Heart weight="duotone" className="text-gray-300 text-6xl mx-auto mb-4" />
+                    <Heart className="text-gray-300 text-6xl mx-auto mb-4" />
                     <h3 className="font-bold text-gray-800 text-lg">ยังไม่มีรายการที่บันทึก</h3>
                     <p className="text-gray-500 text-sm mb-6">คุณยังไม่ได้กดหัวใจให้รถคันไหนเลย</p>
                     <Link href="/buy" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition shadow-lg shadow-primary/20">
-                        <Heart weight="bold" />
+                        <Heart />
                         ค้นหารถถูกใจ
                     </Link>
                 </div>

@@ -2,22 +2,22 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
-    Storefront,
+    Store,
     MapPin,
     Phone,
     Globe,
-    FacebookLogo,
-    ChatCircle,
-    InstagramLogo,
+    Facebook,
+    MessageCircle,
+    Instagram,
     Tag,
     Camera,
-    ImageSquare,
-    SpinnerGap,
-    FloppyDisk,
+    ImageIcon,
+    Loader2,
+    Save,
     X,
     Plus,
     Clock,
-} from "@phosphor-icons/react";
+} from "lucide-react";
 import Toast from "@/components/Toast";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
@@ -375,7 +375,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-16">
-                <SpinnerGap
+                <Loader2
                     size={32}
                     className="animate-spin text-primary"
                 />
@@ -416,7 +416,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                         />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <ImageSquare size={48} />
+                            <ImageIcon size={48} />
                             <span className="text-sm mt-2">
                                 คลิกหรือลากรูปภาพเพื่ออัปโหลดภาพหน้าปก
                             </span>
@@ -425,7 +425,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition">
                             {uploadingCover ? (
-                                <SpinnerGap
+                                <Loader2
                                     size={32}
                                     className="animate-spin text-white"
                                 />
@@ -466,13 +466,13 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                         />
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                            <Storefront size={36} />
+                            <Store size={36} />
                         </div>
                     )}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 rounded-full transition flex items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition">
                             {uploadingLogo ? (
-                                <SpinnerGap
+                                <Loader2
                                     size={24}
                                     className="animate-spin text-white"
                                 />
@@ -504,7 +504,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
             {/* ===== Basic Info ===== */}
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm">
                 <SectionHeader
-                    icon={<Storefront size={22} weight="bold" />}
+                    icon={<Store size={22} />}
                     title="ข้อมูลร้าน"
                 />
 
@@ -584,7 +584,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
             {/* ===== Location ===== */}
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm">
                 <SectionHeader
-                    icon={<MapPin size={22} weight="bold" />}
+                    icon={<MapPin size={22} />}
                     title="ที่ตั้งร้าน"
                 />
 
@@ -652,7 +652,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
             {/* ===== Contact ===== */}
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm">
                 <SectionHeader
-                    icon={<Phone size={22} weight="bold" />}
+                    icon={<Phone size={22} />}
                     title="ช่องทางติดต่อ"
                 />
 
@@ -703,7 +703,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
             {/* ===== Social Links ===== */}
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm">
                 <SectionHeader
-                    icon={<Globe size={22} weight="bold" />}
+                    icon={<Globe size={22} />}
                     title="ช่องทางออนไลน์"
                 />
 
@@ -730,7 +730,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                     <div className="space-y-2">
                         <FieldLabel>Facebook</FieldLabel>
                         <div className="relative">
-                            <FacebookLogo
+                            <Facebook
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                                 size={18}
                             />
@@ -749,7 +749,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                     <div className="space-y-2">
                         <FieldLabel>LINE</FieldLabel>
                         <div className="relative">
-                            <ChatCircle
+                            <MessageCircle
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                                 size={18}
                             />
@@ -768,7 +768,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                     <div className="space-y-2">
                         <FieldLabel>Instagram</FieldLabel>
                         <div className="relative">
-                            <InstagramLogo
+                            <Instagram
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                                 size={18}
                             />
@@ -789,7 +789,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
             {/* ===== Specializations ===== */}
             <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm">
                 <SectionHeader
-                    icon={<Tag size={22} weight="bold" />}
+                    icon={<Tag size={22} />}
                     title="ความเชี่ยวชาญ"
                 />
 
@@ -818,7 +818,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                         }
                         className="h-12 px-5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-opacity-90 transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                     >
-                        <Plus size={16} weight="bold" />
+                        <Plus size={16} />
                         เพิ่ม
                     </button>
                 </div>
@@ -837,7 +837,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                                     onClick={() => removeTag(tag)}
                                     className="hover:bg-primary/20 rounded-full p-0.5 transition"
                                 >
-                                    <X size={14} weight="bold" />
+                                    <X size={14} />
                                 </button>
                             </span>
                         ))}
@@ -880,9 +880,9 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                     className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/10 hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {saving ? (
-                        <SpinnerGap size={20} className="animate-spin" />
+                        <Loader2 size={20} className="animate-spin" />
                     ) : (
-                        <FloppyDisk weight="bold" />
+                        <Save />
                     )}
                     บันทึกโปรไฟล์ร้าน
                 </button>

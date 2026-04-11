@@ -3,15 +3,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
     User,
-    EnvelopeSimple,
+    Mail,
     Phone,
-    LockKey,
+    Lock,
     Bell,
-    FloppyDisk,
+    Save,
     Eye,
-    EyeSlash,
-    SpinnerGap,
-} from '@phosphor-icons/react';
+    EyeOff,
+    Loader2,
+} from 'lucide-react';
 import LineConnection from '@/components/settings/LineConnection';
 import SellerProfileForm from '@/components/settings/SellerProfileForm';
 import Toast from '@/components/Toast';
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                     <>
                         {loading ? (
                             <div className="flex items-center justify-center py-16">
-                                <SpinnerGap size={32} className="animate-spin text-primary" />
+                                <Loader2 size={32} className="animate-spin text-primary" />
                             </div>
                         ) : !profile ? (
                             <div className="text-center py-10 text-gray-500">
@@ -274,7 +274,7 @@ export default function SettingsPage() {
                                     <div className="space-y-2 md:col-span-2">
                                         <label className="text-sm font-bold text-gray-700">อีเมล</label>
                                         <div className="relative">
-                                            <EnvelopeSimple className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
+                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
                                             <input
                                                 type="email"
                                                 value={profile.email}
@@ -293,9 +293,9 @@ export default function SettingsPage() {
                                         className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/10 hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {saving ? (
-                                            <SpinnerGap size={20} className="animate-spin" />
+                                            <Loader2 size={20} className="animate-spin" />
                                         ) : (
-                                            <FloppyDisk weight="bold" />
+                                            <Save />
                                         )}
                                         บันทึกการเปลี่ยนแปลง
                                     </button>
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-gray-700">รหัสผ่านปัจจุบัน</label>
                                 <div className="relative">
-                                    <LockKey className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
                                     <input
                                         type={showCurrentPw ? 'text' : 'password'}
                                         value={currentPassword}
@@ -330,7 +330,7 @@ export default function SettingsPage() {
                                         onClick={() => setShowCurrentPw(!showCurrentPw)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                     >
-                                        {showCurrentPw ? <EyeSlash size={18} /> : <Eye size={18} />}
+                                        {showCurrentPw ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
                             </div>
@@ -338,7 +338,7 @@ export default function SettingsPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-gray-700">รหัสผ่านใหม่</label>
                                 <div className="relative">
-                                    <LockKey className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
                                     <input
                                         type={showNewPw ? 'text' : 'password'}
                                         value={newPassword}
@@ -351,7 +351,7 @@ export default function SettingsPage() {
                                         onClick={() => setShowNewPw(!showNewPw)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                     >
-                                        {showNewPw ? <EyeSlash size={18} /> : <Eye size={18} />}
+                                        {showNewPw ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
                             </div>
@@ -359,7 +359,7 @@ export default function SettingsPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-gray-700">ยืนยันรหัสผ่านใหม่</label>
                                 <div className="relative">
-                                    <LockKey className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" size={18} />
                                     <input
                                         type={showConfirmPw ? 'text' : 'password'}
                                         value={confirmPassword}
@@ -372,7 +372,7 @@ export default function SettingsPage() {
                                         onClick={() => setShowConfirmPw(!showConfirmPw)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                     >
-                                        {showConfirmPw ? <EyeSlash size={18} /> : <Eye size={18} />}
+                                        {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
                                 {confirmPassword && newPassword !== confirmPassword && (
@@ -388,9 +388,9 @@ export default function SettingsPage() {
                                 className="bg-primary text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-blue-900/10 hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {changingPassword ? (
-                                    <SpinnerGap size={20} className="animate-spin" />
+                                    <Loader2 size={20} className="animate-spin" />
                                 ) : (
-                                    <LockKey weight="bold" />
+                                    <Lock />
                                 )}
                                 เปลี่ยนรหัสผ่าน
                             </button>

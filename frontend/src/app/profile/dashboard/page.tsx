@@ -7,17 +7,16 @@ import {
     Car,
     Eye,
     Heart,
-    Warning,
+    AlertTriangle,
     Plus,
     Megaphone,
     ListChecks,
     Phone,
     UserCircle,
-    ClockCountdown,
-    ArrowClockwise,
-    CarProfile,
+    Clock,
+    RotateCcw,
     Crown
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -98,10 +97,10 @@ export default function DashboardPage() {
     };
 
     const stats = [
-        { label: 'ประกาศกำลังขาย', value: activeListings.length.toString(), icon: <CarProfile weight="fill" className="text-blue-500" />, badge: null },
-        { label: 'ยอดเข้าชมทั้งหมด', value: totalViews.toLocaleString(), icon: <Eye weight="fill" className="text-emerald-500" />, badge: null },
-        { label: 'คนกดถูกใจ', value: totalFavorites.toLocaleString(), icon: <Heart weight="fill" className="text-red-500" />, badge: null },
-        { label: 'ประกาศหมดอายุ', value: expiredListings.length.toString(), icon: <ClockCountdown weight="fill" className="text-orange-500" />, badge: expiredListings.length > 0 ? 'ต้องดำเนินการ' : null },
+        { label: 'ประกาศกำลังขาย', value: activeListings.length.toString(), icon: <Car fill="currentColor" className="text-blue-500" />, badge: null },
+        { label: 'ยอดเข้าชมทั้งหมด', value: totalViews.toLocaleString(), icon: <Eye fill="currentColor" className="text-emerald-500" />, badge: null },
+        { label: 'คนกดถูกใจ', value: totalFavorites.toLocaleString(), icon: <Heart fill="currentColor" className="text-red-500" />, badge: null },
+        { label: 'ประกาศหมดอายุ', value: expiredListings.length.toString(), icon: <Clock className="text-orange-500" />, badge: expiredListings.length > 0 ? 'ต้องดำเนินการ' : null },
     ];
 
     return (
@@ -131,7 +130,7 @@ export default function DashboardPage() {
                 <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-orange-100 p-2 rounded-xl">
-                            <ClockCountdown weight="bold" className="text-xl text-orange-600" />
+                            <Clock className="text-xl text-orange-600" />
                         </div>
                         <div>
                             <h3 className="font-bold text-orange-800">ประกาศหมดอายุ ({expiredListings.length} รายการ)</h3>
@@ -145,7 +144,7 @@ export default function DashboardPage() {
                                     <img src={getPrimaryImage(listing.images)} alt="" className="w-14 h-10 rounded-lg object-cover flex-shrink-0" />
                                 ) : (
                                     <div className="w-14 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                        <Car weight="bold" className="text-gray-300" />
+                                        <Car className="text-gray-300" />
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
@@ -163,7 +162,7 @@ export default function DashboardPage() {
                         href="/profile/listings?status=EXPIRED"
                         className="flex items-center justify-center gap-2 mt-4 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition"
                     >
-                        <ClockCountdown weight="bold" size={18} />
+                        <Clock size={18} />
                         ดูรายการที่หมดอายุ ({expiredListings.length} รายการ)
                     </Link>
                 </div>
@@ -174,7 +173,7 @@ export default function DashboardPage() {
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
                     <div className="flex items-center gap-3 mb-4">
                         <div className="bg-amber-100 p-2 rounded-xl">
-                            <Warning weight="bold" className="text-xl text-amber-600" />
+                            <AlertTriangle className="text-xl text-amber-600" />
                         </div>
                         <div>
                             <h3 className="font-bold text-amber-800">ประกาศใกล้หมดอายุ ({soonExpiring.length} รายการ)</h3>
@@ -190,7 +189,7 @@ export default function DashboardPage() {
                                         <img src={getPrimaryImage(listing.images)} alt="" className="w-14 h-10 rounded-lg object-cover flex-shrink-0" />
                                     ) : (
                                         <div className="w-14 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                            <Car weight="bold" className="text-gray-300" />
+                                            <Car className="text-gray-300" />
                                         </div>
                                     )}
                                     <div className="flex-1 min-w-0">
@@ -222,7 +221,7 @@ export default function DashboardPage() {
                     className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition shadow-sm group text-left"
                 >
                     <div className="bg-white/20 p-2 rounded-xl group-hover:scale-110 transition">
-                        <Plus weight="bold" className="text-xl" />
+                        <Plus className="text-xl" />
                     </div>
                     <div>
                         <p className="font-bold">ลงขายรถ</p>
@@ -231,7 +230,7 @@ export default function DashboardPage() {
                 </button>
                 <Link href="/profile/listings" className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-2xl border border-gray-100 transition shadow-sm group">
                     <div className="bg-orange-50 p-2 rounded-xl text-orange-500 group-hover:scale-110 transition">
-                        <Megaphone weight="bold" className="text-xl" />
+                        <Megaphone className="text-xl" />
                     </div>
                     <div className="text-left">
                         <p className="font-bold text-gray-900">ดันประกาศ (Boost)</p>
@@ -240,7 +239,7 @@ export default function DashboardPage() {
                 </Link>
                 <Link href="/profile/listings" className="flex items-center gap-3 bg-white hover:bg-gray-50 text-gray-800 p-4 rounded-2xl border border-gray-100 transition shadow-sm group">
                     <div className="bg-green-50 p-2 rounded-xl text-green-500 group-hover:scale-110 transition">
-                        <ListChecks weight="bold" className="text-xl" />
+                        <ListChecks className="text-xl" />
                     </div>
                     <div className="text-left">
                         <p className="font-bold text-gray-900">จัดการประกาศ</p>
@@ -269,7 +268,7 @@ export default function DashboardPage() {
                                             <img src={getPrimaryImage(listing.images)} alt="" className="w-16 h-12 rounded-lg object-cover" />
                                         ) : (
                                             <div className="w-16 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                                                <Car weight="bold" className="text-gray-300" />
+                                                <Car className="text-gray-300" />
                                             </div>
                                         )}
                                         <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">Active</span>
@@ -303,7 +302,7 @@ export default function DashboardPage() {
                     ></div>
                     <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
                         <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
-                            <Crown size={40} weight="fill" className="text-white" />
+                            <Crown size={40} fill="currentColor" className="text-white" />
                         </div>
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
@@ -316,7 +315,7 @@ export default function DashboardPage() {
                                 onClick={() => router.push('/profile/packages')}
                                 className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
                             >
-                                <Crown size={20} weight="fill" />
+                                <Crown size={20} fill="currentColor" />
                                 ดูแพ็กเกจ
                             </button>
                             <button

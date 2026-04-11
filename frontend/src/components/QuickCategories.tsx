@@ -50,7 +50,7 @@ function PPVIcon({ size = 32, className = '' }: { size?: number; className?: str
 interface Category {
     id: string;
     label: string;
-    icon: LucideIcon | (({ size, className }: { size?: number; className?: string }) => JSX.Element);
+    icon: LucideIcon | (({ size, className }: { size?: number; className?: string }) => React.ReactNode);
     bodyType?: string;
     fuelType?: string;
     maxPrice?: number;

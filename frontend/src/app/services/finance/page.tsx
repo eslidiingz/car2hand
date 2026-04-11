@@ -6,13 +6,13 @@ import {
     ArrowLeft,
     CheckCircle,
     Calculator,
-    Money,
+    Banknote,
     Check,
     X,
     Info,
-    SpinnerGap,
-    PaperPlaneTilt
-} from '@phosphor-icons/react';
+    Loader2,
+    Send
+} from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -217,7 +217,7 @@ export default function FinancePage() {
             <nav className="bg-white shadow-sm fixed w-full z-50 top-0 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft weight="bold" className="text-xl" /></Link>
+                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft className="text-xl" /></Link>
                         <span className="font-bold text-xl text-primary">ไฟแนนซ์ & ประกันภัย</span>
                     </div>
                     <div className="hidden md:flex space-x-8 text-sm">
@@ -242,13 +242,13 @@ export default function FinancePage() {
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
-                                <CheckCircle weight="fill" className="text-green-500 text-xl" /> ดอกเบี้ยเริ่ม 2.79%
+                                <CheckCircle fill="currentColor" className="text-green-500 text-xl" /> ดอกเบี้ยเริ่ม 2.79%
                             </div>
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
-                                <CheckCircle weight="fill" className="text-green-500 text-xl" /> รู้ผลไว 24 ชม.
+                                <CheckCircle fill="currentColor" className="text-green-500 text-xl" /> รู้ผลไว 24 ชม.
                             </div>
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
-                                <CheckCircle weight="fill" className="text-green-500 text-xl" /> ไม่ต้องค้ำ*
+                                <CheckCircle fill="currentColor" className="text-green-500 text-xl" /> ไม่ต้องค้ำ*
                             </div>
                         </div>
                     </div>
@@ -258,7 +258,7 @@ export default function FinancePage() {
                         </div>
                         <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl flex items-center gap-3 animate-bounce">
                             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl">
-                                <Money weight="fill" />
+                                <Banknote fill="currentColor" />
                             </div>
                             <div>
                                 <div className="font-bold text-gray-800">อนุมัติไว</div>
@@ -275,7 +275,7 @@ export default function FinancePage() {
                 <div className="flex flex-col md:flex-row gap-12">
                     <div className="flex-1 bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-gray-100">
                         <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
-                            <Calculator weight="fill" className="text-accent" /> คำนวณค่างวด (Car Loan)
+                            <Calculator fill="currentColor" className="text-accent" /> คำนวณค่างวด (Car Loan)
                         </h2>
 
                         {/* Calc Type Toggle */}
@@ -437,7 +437,7 @@ export default function FinancePage() {
                         <div className="grid grid-cols-2 gap-4 mb-8">
                             {partnersLoading ? (
                                 <div className="col-span-2 flex justify-center py-8">
-                                    <SpinnerGap weight="bold" className="text-primary text-3xl animate-spin" />
+                                    <Loader2 className="text-primary text-3xl animate-spin" />
                                 </div>
                             ) : bankPartners.length > 0 ? (
                                 bankPartners.map((partner, idx) => {
@@ -494,7 +494,7 @@ export default function FinancePage() {
                         </div>
 
                         <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-sm text-blue-800 flex items-center gap-2">
-                            <Info weight="fill" />
+                            <Info fill="currentColor" />
                             <span>**เงื่อนไขเป็นไปตามที่ธนาคารกำหนด และขึ้นอยู่กับเครดิตของผู้เช่าซื้อ</span>
                         </div>
                     </div>
@@ -519,9 +519,9 @@ export default function FinancePage() {
                             <p className="text-xs text-gray-400">เหมาะกับรถเก่า ขับน้อย เน้นประหยัด</p>
                         </div>
                         <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> ซ่อมเขา + ซ่อมเรา</li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> กรณีรถชนรถเท่านั้น</li>
-                            <li className="flex items-center gap-2"><X weight="bold" className="text-red-400" /> ไม่คุ้มครองรถหาย/ไฟไหม้</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> ซ่อมเขา + ซ่อมเรา</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> กรณีรถชนรถเท่านั้น</li>
+                            <li className="flex items-center gap-2"><X className="text-red-400" /> ไม่คุ้มครองรถหาย/ไฟไหม้</li>
                         </ul>
                         <Link href="#contact" className="block w-full border border-gray-300 text-gray-600 py-2 rounded-xl font-bold hover:bg-gray-50 transition text-center">เลือกแผนนี้</Link>
                     </div>
@@ -536,10 +536,10 @@ export default function FinancePage() {
                             <p className="text-xs text-gray-500">คุ้มค่าที่สุด สำหรับรถมือสอง</p>
                         </div>
                         <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> ซ่อมเขา + ซ่อมเรา</li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> กรณีรถชนรถเท่านั้น</li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> <span className="font-bold text-primary">คุ้มครองรถหาย/ไฟไหม้</span></li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> บริการช่วยเหลือ 24 ชม.</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> ซ่อมเขา + ซ่อมเรา</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> กรณีรถชนรถเท่านั้น</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> <span className="font-bold text-primary">คุ้มครองรถหาย/ไฟไหม้</span></li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> บริการช่วยเหลือ 24 ชม.</li>
                         </ul>
                         <Link href="#contact" className="block w-full bg-accent text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg text-center">สนใจแผนนี้</Link>
                     </div>
@@ -551,10 +551,10 @@ export default function FinancePage() {
                             <p className="text-xs text-gray-400">ดูแลครบ จบทุกกรณี</p>
                         </div>
                         <ul className="space-y-3 text-sm text-gray-600 mb-8">
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> ซ่อมเขา + ซ่อมเรา</li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> <span className="font-bold">ชนไม่มีคู่กรณีก็เคลมได้</span></li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> คุ้มครองรถหาย/ไฟไหม้</li>
-                            <li className="flex items-center gap-2"><Check weight="bold" className="text-green-500" /> คุ้มครองน้ำท่วม</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> ซ่อมเขา + ซ่อมเรา</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> <span className="font-bold">ชนไม่มีคู่กรณีก็เคลมได้</span></li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> คุ้มครองรถหาย/ไฟไหม้</li>
+                            <li className="flex items-center gap-2"><Check className="text-green-500" /> คุ้มครองน้ำท่วม</li>
                         </ul>
                         <Link href="#contact" className="block w-full border border-gray-300 text-gray-600 py-2 rounded-xl font-bold hover:bg-gray-50 transition text-center">เลือกแผนนี้</Link>
                     </div>
@@ -571,7 +571,7 @@ export default function FinancePage() {
                         {submitSuccess ? (
                             <div className="text-center py-8">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle weight="fill" className="text-green-500 text-4xl" />
+                                    <CheckCircle fill="currentColor" className="text-green-500 text-4xl" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">ส่งข้อมูลเรียบร้อยแล้ว</h3>
                                 <p className="text-gray-500 mb-6">เจ้าหน้าที่จะติดต่อกลับภายใน 1 วันทำการ</p>
@@ -622,11 +622,11 @@ export default function FinancePage() {
                                 >
                                     {submitting ? (
                                         <>
-                                            <SpinnerGap weight="bold" className="animate-spin" /> กำลังส่ง...
+                                            <Loader2 className="animate-spin" /> กำลังส่ง...
                                         </>
                                     ) : (
                                         <>
-                                            <PaperPlaneTilt weight="bold" /> ส่งข้อมูล
+                                            <Send /> ส่งข้อมูล
                                         </>
                                     )}
                                 </button>

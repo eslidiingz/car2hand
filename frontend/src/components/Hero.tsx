@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { MagnifyingGlass, CaretDown } from '@phosphor-icons/react';
+import { Search, ChevronDown } from 'lucide-react';
 import SearchableSelect, { SelectOption } from './SearchableSelect';
 import QuickCategories from './QuickCategories';
 
@@ -124,7 +124,7 @@ export default function Hero() {
                                 <option value="1m-2m">1 ล้าน - 2 ล้าน</option>
                                 <option value="above-2m">2 ล้านขึ้นไป</option>
                             </select>
-                            <CaretDown size={16} weight="bold" className="absolute right-0 text-slate-400 pointer-events-none group-focus-within:text-primary transition-colors" />
+                            <ChevronDown size={16} className="absolute right-0 text-slate-400 pointer-events-none group-focus-within:text-primary transition-colors" />
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ export default function Hero() {
                     onClick={handleSearch}
                     className="bg-[#ED6B33] text-white rounded-2xl py-5 font-black text-xl hover:bg-[#D45A28] transition w-full shadow-lg shadow-orange-100 flex items-center justify-center gap-3 cursor-pointer active:scale-[0.98]"
                 >
-                    <MagnifyingGlass size={24} weight="bold" />
+                    <Search size={24} />
                     ค้นหา
                 </button>
             </div>

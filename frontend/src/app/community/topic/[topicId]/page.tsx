@@ -4,10 +4,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
-    CaretRight, CaretUp, CaretDown, Eye, ChatCircle,
-    CheckCircle, SealCheck, PaperPlaneRight, ArrowLeft,
-    SpinnerGap, Check, ShareNetwork, BookmarkSimple,
-} from '@phosphor-icons/react';
+    ChevronRight, ChevronUp, ChevronDown, Eye, MessageCircle,
+    CheckCircle, BadgeCheck, Send, ArrowLeft,
+    Loader2, Check, Share2, Bookmark,
+} from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -156,7 +156,7 @@ export default function TopicDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <SpinnerGap weight="bold" className="animate-spin text-primary text-4xl" />
+                <Loader2 className="animate-spin text-primary text-4xl" />
             </div>
         );
     }
@@ -170,7 +170,7 @@ export default function TopicDetailPage() {
             <div className="pt-6 pb-4 max-w-7xl mx-auto px-4">
                 <div className="flex items-center gap-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap">
                     <Link href="/community" className="hover:text-primary flex items-center gap-1"><ArrowLeft size={14} /> ชุมชน</Link>
-                    <CaretRight weight="bold" className="text-xs" />
+                    <ChevronRight className="text-xs" />
                     <Link href={`/community?category=${post.category.slug}`} className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded hover:bg-orange-100 transition font-bold">
                         {post.category.name}
                     </Link>
@@ -189,14 +189,14 @@ export default function TopicDetailPage() {
                                     onClick={() => handleVote('UP')}
                                     className={`p-1 rounded-lg transition ${myVote === 'UP' ? 'text-accent bg-orange-50' : 'text-gray-400 hover:text-accent'}`}
                                 >
-                                    <CaretUp weight="bold" className="text-xl" />
+                                    <ChevronUp className="text-xl" />
                                 </button>
                                 <span className={`font-bold text-lg ${score > 0 ? 'text-primary' : score < 0 ? 'text-red-500' : 'text-gray-500'}`}>{score}</span>
                                 <button
                                     onClick={() => handleVote('DOWN')}
                                     className={`p-1 rounded-lg transition ${myVote === 'DOWN' ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-400'}`}
                                 >
-                                    <CaretDown weight="bold" className="text-xl" />
+                                    <ChevronDown className="text-xl" />
                                 </button>
                             </div>
 
@@ -209,14 +209,14 @@ export default function TopicDetailPage() {
                                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                                 <span>{timeAgo(post.createdAt)}</span>
                                                 <span>•</span>
-                                                <span className="flex items-center gap-1"><Eye weight="fill" /> {post.viewCount.toLocaleString()}</span>
+                                                <span className="flex items-center gap-1"><Eye fill="currentColor" /> {post.viewCount.toLocaleString()}</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {post.isSolved && (
                                             <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                                                <Check weight="bold" /> แก้ไขแล้ว
+                                                <Check /> แก้ไขแล้ว
                                             </span>
                                         )}
                                     </div>
@@ -240,14 +240,14 @@ export default function TopicDetailPage() {
 
                                 <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-4">
                                     <span className="flex items-center gap-2 text-sm text-gray-500">
-                                        <ChatCircle weight="bold" /> {post.comments.length} ความเห็น
+                                        <MessageCircle /> {post.comments.length} ความเห็น
                                     </span>
                                     <div className="flex items-center gap-2">
                                         <button className="text-gray-400 hover:text-blue-500 p-2 rounded-full hover:bg-blue-50 transition">
-                                            <ShareNetwork weight="bold" />
+                                            <Share2 />
                                         </button>
                                         <button className="text-gray-400 hover:text-yellow-500 p-2 rounded-full hover:bg-yellow-50 transition">
-                                            <BookmarkSimple weight="bold" />
+                                            <Bookmark />
                                         </button>
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@ export default function TopicDetailPage() {
                                 >
                                     {comment.isBestAnswer && (
                                         <div className="absolute -top-3 left-6 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                                            <CheckCircle weight="fill" /> คำตอบที่ดีที่สุด
+                                            <CheckCircle fill="currentColor" /> คำตอบที่ดีที่สุด
                                         </div>
                                     )}
                                     <div className={comment.isBestAnswer ? 'bg-white rounded-xl p-5' : 'p-5'}>
@@ -279,7 +279,7 @@ export default function TopicDetailPage() {
                                             <div>
                                                 <span className="font-bold text-gray-800 text-sm flex items-center gap-1">
                                                     {comment.author.fullName}
-                                                    {comment.isBestAnswer && <SealCheck weight="fill" className="text-blue-500 text-xs" />}
+                                                    {comment.isBestAnswer && <BadgeCheck fill="currentColor" className="text-blue-500 text-xs" />}
                                                 </span>
                                                 <span className="text-xs text-gray-400">{timeAgo(comment.createdAt)}</span>
                                             </div>
@@ -357,7 +357,7 @@ export default function TopicDetailPage() {
                                         disabled={sending || !replyContent.trim()}
                                         className="bg-primary text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-900/10 hover:bg-opacity-90 transition disabled:opacity-60 flex items-center gap-2"
                                     >
-                                        {sending ? <SpinnerGap className="animate-spin" size={16} /> : null}
+                                        {sending ? <Loader2 className="animate-spin" size={16} /> : null}
                                         ส่งคำตอบ
                                     </button>
                                 </div>
@@ -406,7 +406,7 @@ export default function TopicDetailPage() {
                     className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg"
                     onClick={() => document.getElementById('reply-box')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                    <PaperPlaneRight weight="bold" />
+                    <Send />
                 </button>
             </div>
         </div>

@@ -3,20 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-    Scales,
-    Trash,
+    Scale,
+    Trash2,
     Plus,
-    CalendarBlank,
+    Calendar,
     Gauge,
-    GasPump,
+    Fuel,
     MapPin,
-    Image as ImageIcon,
+    ImageIcon,
     ArrowLeft,
-    Lightning,
+    Zap,
     Users,
-    GearFine,
+    Settings,
     X,
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 
 interface CompareItem extends WishlistItem {
@@ -47,11 +47,11 @@ const getTransmissionLabel = (t?: string | null) => {
 // Spec row definition
 const specRows = [
     { label: 'ราคา', icon: <span className="text-accent font-bold text-sm">฿</span>, getValue: (item: CompareItem) => `฿${formatPrice(item.price)}`, highlight: true },
-    { label: 'ปี', icon: <CalendarBlank size={16} className="text-primary" />, getValue: (item: CompareItem) => String(item.year || '-') },
+    { label: 'ปี', icon: <Calendar size={16} className="text-primary" />, getValue: (item: CompareItem) => String(item.year || '-') },
     { label: 'เลขไมล์', icon: <Gauge size={16} className="text-primary" />, getValue: (item: CompareItem) => item.mileage ? `${item.mileage.toLocaleString()} กม.` : '-' },
-    { label: 'เชื้อเพลิง', icon: <GasPump size={16} className="text-primary" />, getValue: (item: CompareItem) => getFuelTypeLabel(item.fuelType) },
-    { label: 'เกียร์', icon: <GearFine size={16} className="text-primary" />, getValue: (item: CompareItem) => getTransmissionLabel(item.transmission) },
-    { label: 'เครื่องยนต์', icon: <Lightning size={16} className="text-primary" />, getValue: (item: CompareItem) => item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-' },
+    { label: 'เชื้อเพลิง', icon: <Fuel size={16} className="text-primary" />, getValue: (item: CompareItem) => getFuelTypeLabel(item.fuelType) },
+    { label: 'เกียร์', icon: <Settings size={16} className="text-primary" />, getValue: (item: CompareItem) => getTransmissionLabel(item.transmission) },
+    { label: 'เครื่องยนต์', icon: <Zap size={16} className="text-primary" />, getValue: (item: CompareItem) => item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-' },
     { label: 'ที่นั่ง', icon: <Users size={16} className="text-primary" />, getValue: (item: CompareItem) => item.seats ? `${item.seats} ที่นั่ง` : '-' },
     { label: 'จังหวัด', icon: <MapPin size={16} className="text-primary" />, getValue: (item: CompareItem) => item.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : item.province || '-' },
 ];
@@ -97,7 +97,7 @@ export default function ComparePage() {
             <div className="bg-surface min-h-screen flex items-center justify-center px-4">
                 <div className="text-center max-w-sm">
                     <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                        <Scales size={40} weight="thin" className="text-gray-300" />
+                        <Scale size={40} strokeWidth={1} className="text-gray-300" />
                     </div>
                     <h1 className="text-xl font-bold text-gray-700 mb-2">ยังไม่มีรายการเปรียบเทียบ</h1>
                     <p className="text-gray-500 text-sm mb-6">กดปุ่ม ⚖️ บนรายการรถที่สนใจเพื่อเพิ่มในรายการเปรียบเทียบ</p>
@@ -125,11 +125,11 @@ export default function ComparePage() {
                     </div>
                     <div className="flex items-center gap-2">
                         <Link href="/buy" className="text-xs font-bold text-primary bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
-                            <Plus size={14} weight="bold" /> เพิ่ม
+                            <Plus size={14} /> เพิ่ม
                         </Link>
                         {compareItems.length > 0 && (
                             <button onClick={() => setShowClearConfirm(true)} className="text-xs text-red-500 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition">
-                                <Trash size={16} />
+                                <Trash2 size={16} />
                             </button>
                         )}
                     </div>
@@ -142,7 +142,7 @@ export default function ComparePage() {
                     <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
                         <div className="p-6 text-center">
                             <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash size={28} className="text-red-500" />
+                                <Trash2 size={28} className="text-red-500" />
                             </div>
                             <h3 className="text-lg font-bold text-gray-800 mb-2">ล้างรายการเปรียบเทียบ?</h3>
                             <p className="text-sm text-gray-500">รายการเปรียบเทียบทั้งหมดจะถูกลบ</p>
@@ -178,12 +178,12 @@ export default function ComparePage() {
                                                             <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center">
-                                                                <ImageIcon size={20} weight="thin" className="text-gray-300" />
+                                                                <ImageIcon size={20} strokeWidth={1} className="text-gray-300" />
                                                             </div>
                                                         )}
                                                     </div>
                                                     <button onClick={() => removeFromCompare(item.id)} className="absolute -top-1 -right-1 bg-red-500 text-white p-0.5 rounded-full">
-                                                        <X size={10} weight="bold" />
+                                                        <X size={10} />
                                                     </button>
                                                 </div>
                                                 <p className="text-[10px] font-bold text-gray-700 mt-1 line-clamp-2 leading-tight">{item.title}</p>
@@ -193,7 +193,7 @@ export default function ComparePage() {
                                         {compareItems.length < maxCompareItems && (
                                             <th className="p-2 min-w-[80px] bg-white sticky top-0 z-10">
                                                 <Link href="/buy" className="flex flex-col items-center justify-center h-16 border-2 border-dashed border-gray-200 rounded-lg hover:border-primary transition">
-                                                    <Plus size={16} weight="bold" className="text-gray-300" />
+                                                    <Plus size={16} className="text-gray-300" />
                                                     <span className="text-[9px] font-bold text-gray-400 mt-0.5">เพิ่ม</span>
                                                 </Link>
                                             </th>
@@ -239,12 +239,12 @@ export default function ComparePage() {
                                                             <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center">
-                                                                <ImageIcon size={40} weight="thin" className="text-gray-300" />
+                                                                <ImageIcon size={40} strokeWidth={1} className="text-gray-300" />
                                                             </div>
                                                         )}
                                                     </div>
                                                     <button onClick={() => removeFromCompare(item.id)} className="absolute top-1 right-1 bg-white/80 p-1 rounded-full text-gray-400 hover:text-red-500 transition">
-                                                        <Trash size={14} weight="bold" />
+                                                        <Trash2 size={14} />
                                                     </button>
                                                 </div>
                                                 <p className="text-sm font-bold text-gray-800 mt-2 line-clamp-2 h-[40px]">{item.title}</p>
@@ -256,7 +256,7 @@ export default function ComparePage() {
                                         {compareItems.length < maxCompareItems && (
                                             <th className="p-4 text-center min-w-[180px] align-top">
                                                 <Link href="/buy" className="flex flex-col items-center justify-center aspect-4/3 border-2 border-dashed border-gray-200 rounded-xl hover:border-primary hover:bg-blue-50 transition group">
-                                                    <Plus size={24} weight="bold" className="text-gray-300 group-hover:text-primary" />
+                                                    <Plus size={24} className="text-gray-300 group-hover:text-primary" />
                                                     <span className="text-xs font-bold text-gray-400 group-hover:text-primary mt-2">เพิ่มรถอีกคัน</span>
                                                 </Link>
                                             </th>

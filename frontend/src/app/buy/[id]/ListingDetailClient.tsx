@@ -7,32 +7,32 @@ import {
     ArrowLeft,
     Heart,
     MapPin,
-    CalendarBlank,
+    Calendar,
     Gauge,
-    GasPump,
-    GearFine,
+    Fuel,
+    Settings,
     Car,
-    Motorcycle,
+    Bike,
     Palette,
     User,
     Eye,
     Clock,
-    CaretLeft,
-    CaretRight,
-    WarningCircle,
+    ChevronLeft,
+    ChevronRight,
+    AlertCircle,
     XCircle,
-    Scales,
-    AddressBook,
-    Lightning,
+    Scale,
+    BookUser,
+    Zap,
     Users,
     Phone,
     Crown,
-    Fire,
-    SealCheck,
-    Storefront,
-    ChatsCircle,
-    ChatCircle,
-} from '@phosphor-icons/react';
+    Flame,
+    BadgeCheck,
+    Store,
+    MessagesSquare,
+    MessageCircle,
+} from 'lucide-react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
@@ -294,7 +294,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                         onClick={() => router.back()}
                         className="flex items-center gap-2 text-gray-500 hover:text-primary transition"
                     >
-                        <ArrowLeft weight="bold" size={20} />
+                        <ArrowLeft size={20} />
                         <span className="font-medium">ย้อนกลับ</span>
                     </button>
                 </div>
@@ -333,9 +333,9 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">
                                         {listing.vehicleType === 'CAR' ? (
-                                            <Car size={80} weight="thin" />
+                                            <Car size={80} strokeWidth={1} />
                                         ) : (
-                                            <Motorcycle size={80} weight="thin" />
+                                            <Bike size={80} strokeWidth={1} />
                                         )}
                                     </div>
                                 )}
@@ -347,13 +347,13 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                             onClick={(e) => { e.stopPropagation(); prevImage(); }}
                                             className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
                                         >
-                                            <CaretLeft weight="bold" className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
+                                            <ChevronLeft className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); nextImage(); }}
                                             className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
                                         >
-                                            <CaretRight weight="bold" className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
+                                            <ChevronRight className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
                                         </button>
                                     </>
                                 )}
@@ -367,7 +367,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
 
                                 {/* Province Badge */}
                                 <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1.5">
-                                    <MapPin size={14} weight="fill" />
+                                    <MapPin size={14} fill="currentColor" />
                                     {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
                                 </div>
                             </div>
@@ -402,7 +402,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             <h2 className="text-lg font-bold text-primary mb-4">ข้อมูลจำเพาะ</h2>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <CalendarBlank size={24} className="text-primary mx-auto mb-2" />
+                                    <Calendar size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">ปีที่ผลิต</p>
                                     <p className="font-bold text-gray-800">{listing.year}</p>
                                 </div>
@@ -412,12 +412,12 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     <p className="font-bold text-gray-800">{listing.mileage ? `${formatPrice(listing.mileage)} กม.` : '-'}</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <GasPump size={24} className="text-primary mx-auto mb-2" />
+                                    <Fuel size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">เชื้อเพลิง</p>
                                     <p className="font-bold text-gray-800">{getFuelTypeLabel(listing.fuelType)}</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <GearFine size={24} className="text-primary mx-auto mb-2" />
+                                    <Settings size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">เกียร์</p>
                                     <p className="font-bold text-gray-800">{getTransmissionLabel(listing.transmission)}</p>
                                 </div>
@@ -427,7 +427,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     <p className="font-bold text-gray-800">{listing.color}</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <Lightning size={24} className="text-primary mx-auto mb-2" />
+                                    <Zap size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">ขนาดเครื่องยนต์</p>
                                     <p className="font-bold text-gray-800">{listing.engineSize ? `${formatPrice(listing.engineSize)} CC` : '-'}</p>
                                 </div>
@@ -463,7 +463,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     onClick={() => setShowContactModal(true)}
                                     className="w-full bg-accent text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-orange-600 transition shadow-lg shadow-orange-100"
                                 >
-                                    <AddressBook weight="bold" size={20} /> ข้อมูลการติดต่อ
+                                    <BookUser size={20} /> ข้อมูลการติดต่อ
                                 </button>
                             </div>
 
@@ -475,7 +475,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                         : 'border-gray-200 text-gray-500 hover:border-red-200 hover:text-red-500'
                                         }`}
                                 >
-                                    <Heart weight={isFavorite ? 'fill' : 'regular'} size={18} />
+                                    <Heart fill={isFavorite ? 'currentColor' : 'none'} size={18} />
                                     บันทึก
                                 </button>
                                 <button
@@ -485,7 +485,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                         : 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary'
                                         }`}
                                 >
-                                    <Scales weight={isCompared ? 'fill' : 'regular'} size={18} />
+                                    <Scale fill={isCompared ? 'currentColor' : 'none'} size={18} />
                                     เปรียบเทียบ
                                 </button>
                             </div>
@@ -495,7 +495,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 href={`/community/create?listingId=${listing.id}&brand=${encodeURIComponent(listing.brand)}&model=${encodeURIComponent(listing.model)}&year=${listing.year}`}
                                 className="w-full mt-2 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition border-2 border-blue-200 text-primary hover:bg-blue-50"
                             >
-                                <ChatsCircle weight="fill" size={18} />
+                                <MessagesSquare fill="currentColor" size={18} />
                                 ขอความเห็นชุมชน
                             </Link>
 
@@ -517,7 +517,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-base font-bold text-primary flex items-center gap-2">
-                                        <ChatsCircle weight="fill" className="text-blue-400" size={20} />
+                                        <MessagesSquare fill="currentColor" className="text-blue-400" size={20} />
                                         ถามในชุมชน
                                     </h3>
                                     <Link href={`/community?listingId=${listing.id}`} className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
@@ -527,7 +527,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                         <Link key={p.id} href={`/community/topic/${p.id}`} className="block group">
                                             <p className="text-sm text-gray-700 group-hover:text-primary transition line-clamp-2 leading-snug">{p.title}</p>
                                             <div className="flex items-center gap-3 text-xs text-gray-400 mt-1">
-                                                <span className="flex items-center gap-1"><ChatCircle size={11} /> {p.commentCount}</span>
+                                                <span className="flex items-center gap-1"><MessageCircle size={11} /> {p.commentCount}</span>
                                                 <span>{p.score > 0 ? `+${p.score}` : p.score} votes</span>
                                             </div>
                                         </Link>
@@ -537,7 +537,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     href={`/community/create?listingId=${listing.id}&brand=${encodeURIComponent(listing.brand)}&model=${encodeURIComponent(listing.model)}&year=${listing.year}`}
                                     className="mt-4 w-full py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-2 border border-blue-200 text-primary hover:bg-blue-50 transition"
                                 >
-                                    <ChatsCircle size={16} /> ตั้งคำถามเพิ่ม
+                                    <MessagesSquare size={16} /> ตั้งคำถามเพิ่ม
                                 </Link>
                             </div>
                         )}
@@ -574,15 +574,15 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                                 listing.badge === 'Hot Deal' ? 'bg-orange-500' :
                                                 'bg-blue-500'
                                             }`}>
-                                                {listing.badge === 'Premium Choice' && <Crown size={10} weight="fill" />}
-                                                {listing.badge === 'Hot Deal' && <Fire size={10} weight="fill" />}
-                                                {listing.badge === 'Verified Seller' && <SealCheck size={10} weight="fill" />}
+                                                {listing.badge === 'Premium Choice' && <Crown size={10} fill="currentColor" />}
+                                                {listing.badge === 'Hot Deal' && <Flame size={10} fill="currentColor" />}
+                                                {listing.badge === 'Verified Seller' && <BadgeCheck size={10} fill="currentColor" />}
                                                 {listing.badge}
                                             </span>
                                         )}
                                         {(listing as any).user?.sellerProfile?.isVerified && (
                                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-green-500">
-                                                <SealCheck size={10} weight="fill" />
+                                                <BadgeCheck size={10} fill="currentColor" />
                                                 ยืนยันตัวตน
                                             </span>
                                         )}
@@ -598,7 +598,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     href={`/sellers/${listing.user.id}`}
                                     className="mt-4 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary/5 text-primary font-bold text-sm rounded-xl hover:bg-primary/10 transition"
                                 >
-                                    <Storefront size={18} weight="bold" />
+                                    <Store size={18} />
                                     ดูโปรไฟล์ร้าน
                                 </a>
                             )}
@@ -613,20 +613,20 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                         className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition ${isFavorite ? 'border-red-200 bg-red-50 text-red-500' : 'border-gray-200 text-gray-400'
                             }`}
                     >
-                        <Heart weight={isFavorite ? 'fill' : 'regular'} size={22} />
+                        <Heart fill={isFavorite ? 'currentColor' : 'none'} size={22} />
                     </button>
                     <button
                         onClick={handleCompareClick}
                         className={`w-12 h-12 rounded-xl flex items-center justify-center border-2 transition ${isCompared ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-400'
                             }`}
                     >
-                        <Scales weight={isCompared ? 'fill' : 'regular'} size={22} />
+                        <Scale fill={isCompared ? 'currentColor' : 'none'} size={22} />
                     </button>
                     <button
                         onClick={() => setShowContactModal(true)}
                         className="flex-1 bg-accent text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-orange-100"
                     >
-                        <AddressBook weight="bold" size={20} /> ข้อมูลการติดต่อ
+                        <BookUser size={20} /> ข้อมูลการติดต่อ
                     </button>
                 </div>
             </div>
@@ -664,7 +664,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 onClick={() => setShowContactModal(false)}
                                 className="text-gray-400 hover:text-gray-600 transition"
                             >
-                                <XCircle size={28} weight="fill" />
+                                <XCircle size={28} fill="currentColor" />
                             </button>
                         </div>
 
@@ -686,7 +686,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 className="flex items-center gap-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition group"
                             >
                                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                                    <Phone size={24} className="text-white" weight="fill" />
+                                    <Phone size={24} className="text-white" fill="currentColor" />
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm text-gray-500">เบอร์โทรศัพท์</p>
@@ -776,7 +776,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             onClick={() => setShowFullscreenGallery(false)}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition backdrop-blur-sm"
                         >
-                            <XCircle size={28} weight="fill" />
+                            <XCircle size={28} fill="currentColor" />
                         </button>
                     </div>
 
@@ -796,13 +796,13 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     onClick={prevImage}
                                     className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/30 hover:bg-black/50 backdrop-blur rounded-full items-center justify-center text-white transition-all opacity-0 group-hover:opacity-100"
                                 >
-                                    <CaretLeft weight="bold" size={24} />
+                                    <ChevronLeft size={24} />
                                 </button>
                                 <button
                                     onClick={nextImage}
                                     className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/30 hover:bg-black/50 backdrop-blur rounded-full items-center justify-center text-white transition-all opacity-0 group-hover:opacity-100"
                                 >
-                                    <CaretRight weight="bold" size={24} />
+                                    <ChevronRight size={24} />
                                 </button>
                             </>
                         )}

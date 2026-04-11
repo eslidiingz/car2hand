@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CircleNotch, CheckCircle, WarningCircle } from '@phosphor-icons/react';
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -65,9 +65,8 @@ export default function LineCallbackPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 max-w-md w-full mx-4 text-center">
                 {status === 'loading' && (
                     <>
-                        <CircleNotch
-                            weight="bold"
-                            className="animate-spin text-5xl text-[#06C755] mx-auto mb-4"
+                        <Loader2
+                                                       className="animate-spin text-5xl text-[#06C755] mx-auto mb-4"
                         />
                         <h2 className="text-xl font-bold text-gray-800 mb-2">
                             กำลังเชื่อมต่อ LINE...
@@ -81,7 +80,7 @@ export default function LineCallbackPage() {
                 {status === 'success' && (
                     <>
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CheckCircle weight="fill" className="text-4xl text-green-500" />
+                            <CheckCircle fill="currentColor" className="text-4xl text-green-500" />
                         </div>
                         <h2 className="text-xl font-bold text-gray-800 mb-2">
                             เชื่อมต่อ LINE สำเร็จ
@@ -89,9 +88,8 @@ export default function LineCallbackPage() {
                         <p className="text-sm text-gray-500 mb-4">
                             บัญชี LINE ของคุณถูกเชื่อมต่อเรียบร้อยแล้ว กำลังกลับไปหน้าตั้งค่า...
                         </p>
-                        <CircleNotch
-                            weight="bold"
-                            className="animate-spin text-xl text-gray-300 mx-auto"
+                        <Loader2
+                                                       className="animate-spin text-xl text-gray-300 mx-auto"
                         />
                     </>
                 )}
@@ -99,7 +97,7 @@ export default function LineCallbackPage() {
                 {status === 'error' && (
                     <>
                         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <WarningCircle weight="fill" className="text-4xl text-red-500" />
+                            <AlertCircle fill="currentColor" className="text-4xl text-red-500" />
                         </div>
                         <h2 className="text-xl font-bold text-gray-800 mb-2">
                             การเชื่อมต่อล้มเหลว

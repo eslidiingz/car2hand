@@ -4,19 +4,19 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-    SquaresFour,
-    Garage,
-    CarProfile,
+    LayoutGrid,
+    Warehouse,
+    Car,
     Heart,
-    ChatCircleDots,
-    Gear,
-    SignOut,
+    MessageCircleMore,
+    Settings,
+    LogOut,
     User,
-    CaretRight,
-    CircleNotch,
+    ChevronRight,
+    Loader2,
     Package,
     Bell
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import ProfileSidebar from '@/components/ProfileSidebar';
 
 interface UserData {
@@ -110,14 +110,14 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     };
 
     const menuItems = [
-        { name: 'ภาพรวมบัญชี', href: '/profile/dashboard', icon: <SquaresFour weight={pathname === '/profile/dashboard' ? 'fill' : 'bold'} /> },
-        { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <CarProfile weight={pathname === '/profile/listings' ? 'fill' : 'bold'} /> },
-        { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Garage weight={pathname === '/profile/garage' ? 'fill' : 'bold'} /> },
-        { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart weight={pathname === '/profile/wishlist' ? 'fill' : 'bold'} /> },
-        // { name: 'กล่องข้อความ', href: '/profile/messages', icon: <ChatCircleDots weight={pathname === '/profile/messages' ? 'fill' : 'bold'} />, badge: 3 },
-        { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package weight={pathname === '/profile/packages' ? 'fill' : 'bold'} /> },
-        { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell weight={pathname === '/profile/notifications' ? 'fill' : 'bold'} /> },
-        { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Gear weight={pathname === '/profile/settings' ? 'fill' : 'bold'} /> },
+        { name: 'ภาพรวมบัญชี', href: '/profile/dashboard', icon: <LayoutGrid size={20} {...(pathname === '/profile/dashboard' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <Car size={20} {...(pathname === '/profile/listings' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Warehouse size={20} {...(pathname === '/profile/garage' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart size={20} {...(pathname === '/profile/wishlist' ? { fill: 'currentColor' } : {})} /> },
+        // { name: 'กล่องข้อความ', href: '/profile/messages', icon: <MessageCircleMore size={20} /> , badge: 3 },
+        { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} {...(pathname === '/profile/packages' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell size={20} {...(pathname === '/profile/notifications' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Settings size={20} {...(pathname === '/profile/settings' ? { fill: 'currentColor' } : {})} /> },
     ];
 
     // Show loading state while checking authentication
@@ -125,7 +125,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         return (
             <div className="bg-surface min-h-screen pt-20 pb-12 flex items-center justify-center">
                 <div className="text-center">
-                    <CircleNotch weight="bold" className="animate-spin text-4xl text-primary mx-auto mb-4" />
+                    <Loader2 className="animate-spin text-4xl text-primary mx-auto mb-4" />
                     <p className="text-gray-500">กำลังโหลด...</p>
                 </div>
             </div>
@@ -139,14 +139,14 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                     <Link href="/" className="hover:text-primary">หน้าแรก</Link>
-                    <CaretRight weight="bold" className="text-xs" />
+                    <ChevronRight className="text-xs" />
                     {(() => {
                         const currentPage = menuItems.find(item => pathname === item.href || pathname.startsWith(item.href + '/'));
                         if (currentPage) {
                             return (
                                 <>
                                     <Link href="/profile/dashboard" className="hover:text-primary">บัญชีของฉัน</Link>
-                                    <CaretRight weight="bold" className="text-xs" />
+                                    <ChevronRight className="text-xs" />
                                     <span className="text-gray-800">{currentPage.name}</span>
                                 </>
                             );
@@ -182,7 +182,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                     <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10 transform transition-all">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <SignOut weight="bold" className="text-3xl text-red-500" />
+                                <LogOut className="text-3xl text-red-500" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-2">ออกจากระบบ</h3>
                             <p className="text-gray-500 text-sm mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>

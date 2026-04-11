@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { User, SignOut } from '@phosphor-icons/react';
+import { User, LogOut } from 'lucide-react';
 
 interface ProfileSidebarProps {
     user: {
@@ -45,7 +45,7 @@ export default function ProfileSidebar({
                             </div>
                         )}
                         <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white">
-                            <User weight="bold" size={24} />
+                            <User size={24} />
                         </div>
                     </div>
                     <h3 className="font-bold text-lg text-white">{user?.fullName || 'ผู้ใช้'}</h3>
@@ -85,7 +85,7 @@ export default function ProfileSidebar({
 
                     <div className="p-4 border-t border-gray-100 mt-2">
                         <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition font-bold text-sm">
-                            <SignOut weight="bold" className="text-xl" /> ออกจากระบบ
+                            <LogOut className="text-xl" /> ออกจากระบบ
                         </button>
                     </div>
                 </div>

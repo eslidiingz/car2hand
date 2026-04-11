@@ -7,13 +7,13 @@ import {
     Clock,
     Globe,
     MapPin,
-    FacebookLogo,
-    InstagramLogo,
-    ChatCircle,
-    Storefront,
+    Facebook,
+    Instagram,
+    MessageCircle,
+    Store,
     ShieldCheck,
-    CaretLeft,
-} from '@phosphor-icons/react';
+    ChevronLeft,
+} from 'lucide-react';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -119,14 +119,14 @@ function NotFoundState() {
     return (
         <div className="min-h-screen bg-surface flex items-center justify-center">
             <div className="text-center space-y-4">
-                <Storefront size={64} className="mx-auto text-gray-300" />
+                <Store size={64} className="mx-auto text-gray-300" />
                 <h1 className="text-2xl font-bold text-gray-700">ไม่พบโปรไฟล์ร้าน</h1>
                 <p className="text-gray-500">ร้านค้าที่คุณกำลังมองหาอาจถูกลบหรือไม่มีอยู่</p>
                 <Link
                     href="/"
                     className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
                 >
-                    <CaretLeft size={18} weight="bold" />
+                    <ChevronLeft size={18} />
                     กลับหน้าแรก
                 </Link>
             </div>
@@ -251,59 +251,61 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
 
             {/* ===== Content ===== */}
             <div className="max-w-5xl mx-auto px-4 pb-12">
-                {/* --- Header --- */}
-                <div className="relative -mt-10 flex items-end gap-4">
-                    {/* Logo */}
-                    <div className="w-20 h-20 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center overflow-hidden shrink-0">
-                        {profile.shopLogo ? (
-                            <img src={profile.shopLogo} alt={profile.shopName} className="w-full h-full object-cover" />
-                        ) : (
-                            <span className="text-3xl font-bold text-primary">
-                                {profile.shopName.charAt(0)}
-                            </span>
-                        )}
-                    </div>
-
-                    {/* Name & badges */}
-                    <div className="pb-1 min-w-0">
-                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 truncate">
-                            {profile.shopName}
-                        </h1>
-                        <div className="flex flex-wrap items-center gap-2 mt-1">
-                            {showroomBadge && (
-                                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${showroomBadge.color}`}>
-                                    {showroomBadge.label}
-                                </span>
-                            )}
-                            {profile.packageName && (
-                                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-accent/10 text-accent">
-                                    {profile.packageName}
-                                </span>
-                            )}
-                            {profile.isVerified && (
-                                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
-                                    <ShieldCheck size={14} weight="fill" />
-                                    ยืนยันตัวตน
+                {/* --- Header Card --- */}
+                <div className="bg-white rounded-3xl shadow-sm p-5 mt-4">
+                    <div className="flex items-center gap-4">
+                        {/* Logo — square rounded like cards */}
+                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl border-2 border-gray-100 bg-white flex items-center justify-center overflow-hidden shrink-0">
+                            {profile.shopLogo ? (
+                                <img src={profile.shopLogo} alt={profile.shopName} className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-2xl md:text-3xl font-bold text-primary">
+                                    {profile.shopName.charAt(0)}
                                 </span>
                             )}
                         </div>
-                        {profile.shopEstablishedYear && (
-                            <p className="text-xs text-gray-400 mt-1">
-                                เปิดกิจการตั้งแต่ พ.ศ. {profile.shopEstablishedYear}
-                            </p>
-                        )}
-                    </div>
-                </div>
 
-                {/* --- Stats Bar --- */}
-                <div className="grid grid-cols-2 gap-3 mt-6">
-                    <div className="bg-white rounded-3xl shadow-sm text-center py-4 px-2">
-                        <p className="text-2xl font-bold text-primary">{stats.activeListings}</p>
-                        <p className="text-xs text-gray-500 mt-1">รถที่ขายอยู่ (คัน)</p>
+                        {/* Name & badges */}
+                        <div className="min-w-0 flex-1">
+                            <h1 className="text-xl md:text-2xl font-bold text-gray-900 truncate">
+                                {profile.shopName}
+                            </h1>
+                            <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                                {showroomBadge && (
+                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${showroomBadge.color}`}>
+                                        {showroomBadge.label}
+                                    </span>
+                                )}
+                                {profile.packageName && (
+                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent/10 text-accent">
+                                        {profile.packageName}
+                                    </span>
+                                )}
+                                {profile.isVerified && (
+                                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
+                                        <ShieldCheck size={12} fill="currentColor" />
+                                        ยืนยันตัวตน
+                                    </span>
+                                )}
+                            </div>
+                            {profile.shopEstablishedYear && (
+                                <p className="text-xs text-gray-400 mt-1">
+                                    เปิดกิจการตั้งแต่ พ.ศ. {profile.shopEstablishedYear}
+                                </p>
+                            )}
+                        </div>
                     </div>
-                    <div className="bg-white rounded-3xl shadow-sm text-center py-4 px-2">
-                        <p className="text-2xl font-bold text-primary">{stats.totalViews?.toLocaleString() || '0'}</p>
-                        <p className="text-xs text-gray-500 mt-1">ยอดเข้าชมทั้งหมด</p>
+
+                    {/* Stats — inside same card */}
+                    <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-gray-100">
+                        <div className="text-center">
+                            <p className="text-2xl font-bold text-primary">{stats.activeListings}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">รถที่ขายอยู่</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-2xl font-bold text-primary">{stats.totalViews?.toLocaleString() || '0'}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">ยอดเข้าชมทั้งหมด</p>
+                        </div>
                     </div>
                 </div>
 
@@ -363,7 +365,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                                                 className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#1877F2] hover:text-white transition"
                                                 title="Facebook"
                                             >
-                                                <FacebookLogo size={20} />
+                                                <Facebook size={20} />
                                             </a>
                                         )}
                                         {social?.line && (
@@ -374,7 +376,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                                                 className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#06C755] hover:text-white transition"
                                                 title="LINE"
                                             >
-                                                <ChatCircle size={20} />
+                                                <MessageCircle size={20} />
                                             </a>
                                         )}
                                         {social?.instagram && (
@@ -385,7 +387,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                                                 className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#E4405F] hover:text-white transition"
                                                 title="Instagram"
                                             >
-                                                <InstagramLogo size={20} />
+                                                <Instagram size={20} />
                                             </a>
                                         )}
                                     </div>
@@ -409,7 +411,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
 
                                 {profile.shopAddress && (
                                     <div className="flex items-start gap-3 text-sm text-gray-600">
-                                        <Storefront size={20} className="text-primary shrink-0 mt-0.5" />
+                                        <Store size={20} className="text-primary shrink-0 mt-0.5" />
                                         <span>{profile.shopAddress}</span>
                                     </div>
                                 )}
@@ -421,7 +423,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline mt-2"
                                     >
-                                        <MapPin size={16} weight="fill" />
+                                        <MapPin size={16} fill="currentColor" />
                                         ดูแผนที่ Google Maps
                                     </a>
                                 )}
@@ -459,7 +461,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                     ) : (
                         !loading && (
                             <div className="bg-white rounded-3xl shadow-sm p-10 text-center">
-                                <Storefront size={48} className="mx-auto text-gray-300 mb-3" />
+                                <Store size={48} className="mx-auto text-gray-300 mb-3" />
                                 <p className="text-gray-500">ยังไม่มีรถที่กำลังขายอยู่ตอนนี้</p>
                             </div>
                         )

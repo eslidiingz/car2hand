@@ -4,19 +4,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
     ArrowLeft,
-    Certificate,
-    ClipboardText,
+    Award,
+    ClipboardList,
     Clock,
     Check,
     MapPin,
-    NavigationArrow,
-    LockKey,
-    Question,
-    CaretDown,
-    SpinnerGap,
+    Navigation,
+    Lock,
+    HelpCircle,
+    ChevronDown,
+    Loader2,
     CheckCircle,
-    WarningCircle,
-} from '@phosphor-icons/react';
+    AlertCircle,
+} from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -89,9 +89,8 @@ function FAQItem({ q, a }: { q: string; a: string }) {
                 className="w-full flex items-center justify-between py-4 text-left gap-3"
             >
                 <span className="font-bold text-sm text-gray-800">{q}</span>
-                <CaretDown
-                    weight="bold"
-                    className={`text-gray-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+                <ChevronDown
+                                       className={`text-gray-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
                 />
             </button>
             {open && <p className="text-sm text-gray-500 pb-4 leading-relaxed">{a}</p>}
@@ -268,14 +267,14 @@ export default function InspectionPage() {
             <div className="bg-surface text-gray-800 min-h-screen">
                 <nav className="bg-white shadow-sm fixed w-full z-50 top-0 border-b border-gray-100">
                     <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-2">
-                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft weight="bold" className="text-xl" /></Link>
+                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft className="text-xl" /></Link>
                         <span className="font-bold text-xl text-primary">จองคิวตรวจสภาพ</span>
                     </div>
                 </nav>
 
                 <div className="pt-28 pb-16 max-w-lg mx-auto px-4 text-center">
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                        <CheckCircle weight="fill" className="text-green-500 text-6xl mx-auto mb-4" />
+                        <CheckCircle fill="currentColor" className="text-green-500 text-6xl mx-auto mb-4" />
                         <h1 className="text-2xl font-bold text-gray-800 mb-2">จองสำเร็จ!</h1>
                         <p className="text-gray-500 mb-6">ทีมงานจะติดต่อกลับเพื่อยืนยันนัดหมาย</p>
 
@@ -344,7 +343,7 @@ export default function InspectionPage() {
     const FieldError = ({ msg }: { msg?: string }) =>
         msg ? (
             <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
-                <WarningCircle weight="fill" className="shrink-0" /> {msg}
+                <AlertCircle fill="currentColor" className="shrink-0" /> {msg}
             </p>
         ) : null;
 
@@ -356,7 +355,7 @@ export default function InspectionPage() {
             <nav className="bg-white shadow-sm fixed w-full z-50 top-0 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft weight="bold" className="text-xl" /></Link>
+                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft className="text-xl" /></Link>
                         <span className="font-bold text-xl text-primary">จองคิวตรวจสภาพ</span>
                     </div>
                     <div className="hidden md:flex items-center gap-4 text-sm">
@@ -388,15 +387,15 @@ export default function InspectionPage() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 md:gap-12 opacity-90">
                     <div className="flex items-center gap-2">
-                        <Certificate weight="fill" className="text-accent text-2xl" />
+                        <Award fill="currentColor" className="text-accent text-2xl" />
                         <span className="text-sm font-bold">ช่างรับรองมาตรฐาน</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <ClipboardText weight="fill" className="text-accent text-2xl" />
+                        <ClipboardList fill="currentColor" className="text-accent text-2xl" />
                         <span className="text-sm font-bold">รายงานผล Digital</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Clock weight="fill" className="text-accent text-2xl" />
+                        <Clock fill="currentColor" className="text-accent text-2xl" />
                         <span className="text-sm font-bold">รู้ผลใน 60 นาที</span>
                     </div>
                 </div>
@@ -417,7 +416,7 @@ export default function InspectionPage() {
 
                         {loadingPackages ? (
                             <div className="flex items-center justify-center py-12 text-gray-400 gap-2">
-                                <SpinnerGap weight="bold" className="animate-spin text-2xl" />
+                                <Loader2 className="animate-spin text-2xl" />
                                 <span className="text-sm">กำลังโหลดแพ็กเกจ...</span>
                             </div>
                         ) : packages.length === 0 ? (
@@ -442,7 +441,7 @@ export default function InspectionPage() {
                                                 </div>
                                             )}
                                             <div className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 transition flex items-center justify-center ${isSelected ? `border-${accentColor} bg-${accentColor}` : 'border-gray-300'}`}>
-                                                <Check weight="bold" className={`text-white text-xs ${isSelected ? 'opacity-100' : 'opacity-0'}`} />
+                                                <Check className={`text-white text-xs ${isSelected ? 'opacity-100' : 'opacity-0'}`} />
                                             </div>
 
                                             <h3 className="font-bold text-lg text-gray-800 mb-1">{pkg.name}</h3>
@@ -455,7 +454,7 @@ export default function InspectionPage() {
                                             <ul className="text-sm text-gray-500 space-y-2 mb-4">
                                                 {pkg.features.map((f, i) => (
                                                     <li key={i} className="flex items-start gap-3">
-                                                        <Check weight="bold" className="text-green-500 mt-0.5 shrink-0" /> {f}
+                                                        <Check className="text-green-500 mt-0.5 shrink-0" /> {f}
                                                     </li>
                                                 ))}
                                             </ul>
@@ -479,7 +478,7 @@ export default function InspectionPage() {
                                 <label className="block text-sm font-bold text-gray-700 mb-1">ยี่ห้อรถ <span className="text-red-500">*</span></label>
                                 {loadingBrands ? (
                                     <div className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-400 text-sm flex items-center gap-2">
-                                        <SpinnerGap weight="bold" className="animate-spin" /> กำลังโหลด...
+                                        <Loader2 className="animate-spin" /> กำลังโหลด...
                                     </div>
                                 ) : (
                                     <select
@@ -501,7 +500,7 @@ export default function InspectionPage() {
                                 <label className="block text-sm font-bold text-gray-700 mb-1">รุ่นรถ</label>
                                 {loadingModels ? (
                                     <div className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-400 text-sm flex items-center gap-2">
-                                        <SpinnerGap weight="bold" className="animate-spin" /> กำลังโหลด...
+                                        <Loader2 className="animate-spin" /> กำลังโหลด...
                                     </div>
                                 ) : (
                                     <select
@@ -523,7 +522,7 @@ export default function InspectionPage() {
                         <div className="mb-6">
                             <label className="block text-sm font-bold text-gray-700 mb-1">สถานที่ตรวจรถ <span className="text-red-500">*</span></label>
                             <div className="relative">
-                                <MapPin weight="bold" className="absolute left-3 top-3.5 text-gray-400" />
+                                <MapPin className="absolute left-3 top-3.5 text-gray-400" />
                                 <input
                                     type="text"
                                     value={location}
@@ -546,7 +545,7 @@ export default function InspectionPage() {
                                     }}
                                     className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded border border-blue-100 hover:bg-blue-100 flex items-center gap-1"
                                 >
-                                    <NavigationArrow weight="bold" /> ใช้ตำแหน่งปัจจุบัน
+                                    <Navigation /> ใช้ตำแหน่งปัจจุบัน
                                 </button>
                             </div>
                         </div>
@@ -624,7 +623,7 @@ export default function InspectionPage() {
                     {/* ── FAQ Section ─────────────────────────────────────── */}
                     <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <Question weight="fill" className="text-blue-400 text-2xl" />
+                            <HelpCircle fill="currentColor" className="text-blue-400 text-2xl" />
                             คำถามที่พบบ่อย
                         </h2>
                         <div className="divide-y divide-gray-100">
@@ -686,7 +685,7 @@ export default function InspectionPage() {
 
                             {submitError && (
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-sm text-red-600 flex items-start gap-2">
-                                    <WarningCircle weight="fill" className="shrink-0 mt-0.5" />
+                                    <AlertCircle fill="currentColor" className="shrink-0 mt-0.5" />
                                     {submitError}
                                 </div>
                             )}
@@ -698,19 +697,19 @@ export default function InspectionPage() {
                             >
                                 {submitting ? (
                                     <>
-                                        <SpinnerGap weight="bold" className="animate-spin" />
+                                        <Loader2 className="animate-spin" />
                                         กำลังจอง...
                                     </>
                                 ) : (
                                     <>
-                                        ยืนยันการจอง <ArrowLeft weight="bold" className="rotate-180" />
+                                        ยืนยันการจอง <ArrowLeft className="rotate-180" />
                                     </>
                                 )}
                             </button>
 
                             <div className="text-center">
                                 <span className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
-                                    <LockKey weight="fill" /> ชำระเงินปลอดภัยผ่าน QR / บัตรเครดิต
+                                    <Lock fill="currentColor" /> ชำระเงินปลอดภัยผ่าน QR / บัตรเครดิต
                                 </span>
                             </div>
                         </div>

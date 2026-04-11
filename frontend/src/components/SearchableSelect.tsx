@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { CaretDown, MagnifyingGlass, Check, X, Plus } from '@phosphor-icons/react';
+import { ChevronDown, Search, Check, X, Plus } from 'lucide-react';
 
 export interface SelectOption {
     id: string;
@@ -153,7 +153,7 @@ export default function SearchableSelect({
                             <X size={14} className="text-gray-400" />
                         </span>
                     )}
-                    <CaretDown
+                    <ChevronDown
                         size={16}
                         className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                     />
@@ -166,7 +166,7 @@ export default function SearchableSelect({
                     {/* Search Input */}
                     <div className="p-2 border-b border-gray-100">
                         <div className="relative">
-                            <MagnifyingGlass
+                            <Search
                                 size={18}
                                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                             />
@@ -195,7 +195,7 @@ export default function SearchableSelect({
                                 onClick={() => handleSelect({ id: `custom:${search}`, label: search })}
                                 className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-blue-50 transition border-b border-gray-100 text-primary font-medium"
                             >
-                                <Plus size={18} weight="bold" />
+                                <Plus size={18} />
                                 <span>{customLabel.replace('{search}', search)}</span>
                             </button>
                         )}
@@ -206,7 +206,7 @@ export default function SearchableSelect({
                                 onClick={() => { inputRef.current?.focus(); }}
                                 className="w-full px-4 py-3 text-left flex items-center gap-2 hover:bg-blue-50 transition border-b border-gray-100 text-gray-500"
                             >
-                                <Plus size={18} weight="bold" className="text-primary" />
+                                <Plus size={18} className="text-primary" />
                                 <span className="text-sm">เพิ่มรุ่นเอง (พิมพ์ชื่อในช่องค้นหา)</span>
                             </button>
                         )}
@@ -251,7 +251,7 @@ export default function SearchableSelect({
                                                 </div>
                                             </div>
                                             {value === option.id && (
-                                                <Check size={18} weight="bold" className="text-primary flex-shrink-0" />
+                                                <Check size={18} className="text-primary flex-shrink-0" />
                                             )}
                                         </button>
                                     ))}

@@ -4,14 +4,14 @@ import React from 'react';
 import {
     Heart,
     Gauge,
-    GasPump,
-    Motorcycle,
+    Fuel,
+    Bike,
     MapPin,
-    CalendarBlank,
-    Image as ImageIcon,
-    Scales,
+    Calendar,
+    ImageIcon,
+    Scale,
     Eye,
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 
 interface PreviewCardProps {
     title?: string;
@@ -76,20 +76,20 @@ export default function PreviewCard({
                     />
                 ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-                        <ImageIcon size={48} weight="thin" />
+                        <ImageIcon size={48} strokeWidth={1} />
                     </div>
                 )}
 
                 {/* Vehicle Type Badge */}
                 {vehicleType === 'MOTORCYCLE' && (
                     <div className="absolute top-3 left-3 bg-primary text-white p-1.5 rounded-full">
-                        <Motorcycle weight="bold" size={14} />
+                        <Bike size={14} />
                     </div>
                 )}
 
                 {/* Compare Button (decorative) */}
                 <div className="absolute top-3 right-12 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-400">
-                    <Scales size={18} />
+                    <Scale size={18} />
                 </div>
 
                 {/* Favorite Button (decorative) */}
@@ -100,7 +100,7 @@ export default function PreviewCard({
                 {/* Province Badge */}
                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                     <span className="text-white text-[10px] font-medium bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1 w-fit">
-                        <MapPin size={10} weight="fill" />
+                        <MapPin size={10} fill="currentColor" />
                         {province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : province}
                     </span>
                 </div>
@@ -115,7 +115,7 @@ export default function PreviewCard({
                 {/* Specs — 2x2 grid (matching ListingCard) */}
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-500 mb-3">
                     <span className="flex items-center gap-1.5">
-                        <CalendarBlank size={14} className="text-gray-400" />
+                        <Calendar size={14} className="text-gray-400" />
                         <span className="font-medium">{year}</span>
                     </span>
                     <span className="flex items-center gap-1.5">
@@ -123,7 +123,7 @@ export default function PreviewCard({
                         <span className="font-medium">{mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-'}</span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <GasPump size={14} className="text-gray-400" />
+                        <Fuel size={14} className="text-gray-400" />
                         <span className="font-medium">{getFuelTypeLabel(fuelType)}</span>
                     </span>
                     <span className="flex items-center gap-1.5">

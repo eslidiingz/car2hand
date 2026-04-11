@@ -612,6 +612,262 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
         });
 
         return { slots, maxPerSlot, autoBump, unassigned };
+    })
+
+    // ===== Price Estimation =====
+    .post("/estimate", async ({ body }) => {
+        const { brand, model, subModel, year, mileage, condition, vehicleType, fuelType, transmission } = body as any;
+
+        if (!brand || !model || !year) {
+            return { error: "brand, model, year are required" };
+        }
+
+        const inputYear = Number(year);
+        const inputMileage = mileage ? Number(mileage) : null;
+
+        // Step 1: Find matching listings with progressive fallback
+        const baseWhere = {
+            status: { in: ['ACTIVE', 'SOLD'] as any },
+            ...(vehicleType ? { vehicleType } : {}),
+        };
+
+        // Try exact match first: brand + model + year ±2
+        let matchedListings = await prisma.vehicleListing.findMany({
+            where: {
+                ...baseWhere,
+                brand: { equals: brand, mode: 'insensitive' as any },
+                model: { equals: model, mode: 'insensitive' as any },
+                year: { gte: inputYear - 2, lte: inputYear + 2 },
+            },
+            select: {
+                id: true, title: true, price: true, year: true, mileage: true,
+                brand: true, model: true, subModel: true, status: true,
+                condition: true, fuelType: true, transmission: true, color: true,
+                viewCount: true, createdAt: true, updatedAt: true, publishedAt: true,
+                images: { where: { isPrimary: true }, take: 1 },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 200,
+        });
+
+        let matchLevel: 'exact' | 'model' | 'brand' = 'exact';
+
+        // Fallback 1: brand + model (any year)
+        if (matchedListings.length < 5) {
+            matchedListings = await prisma.vehicleListing.findMany({
+                where: {
+                    ...baseWhere,
+                    brand: { equals: brand, mode: 'insensitive' as any },
+                    model: { equals: model, mode: 'insensitive' as any },
+                },
+                select: {
+                    id: true, title: true, price: true, year: true, mileage: true,
+                    brand: true, model: true, subModel: true, status: true,
+                    condition: true, fuelType: true, transmission: true, color: true,
+                    viewCount: true, createdAt: true, updatedAt: true, publishedAt: true,
+                    images: { where: { isPrimary: true }, take: 1 },
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 200,
+            });
+            matchLevel = 'model';
+        }
+
+        // Fallback 2: brand only
+        if (matchedListings.length < 3) {
+            matchedListings = await prisma.vehicleListing.findMany({
+                where: {
+                    ...baseWhere,
+                    brand: { equals: brand, mode: 'insensitive' as any },
+                },
+                select: {
+                    id: true, title: true, price: true, year: true, mileage: true,
+                    brand: true, model: true, subModel: true, status: true,
+                    condition: true, fuelType: true, transmission: true, color: true,
+                    viewCount: true, createdAt: true, updatedAt: true, publishedAt: true,
+                    images: { where: { isPrimary: true }, take: 1 },
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 200,
+            });
+            matchLevel = 'brand';
+        }
+
+        // Not enough data
+        if (matchedListings.length < 1) {
+            return {
+                estimatedPrice: null,
+                sampleSize: 0,
+                confidence: 0,
+                message: "ข้อมูลไม่เพียงพอสำหรับการประเมินราคา",
+                vehicleInfo: { brand, model, year: inputYear },
+            };
+        }
+
+        // Filter out listings with invalid data (Buddhist year, zero price, etc.)
+        matchedListings = matchedListings.filter(l => {
+            const price = Number(l.price);
+            if (price <= 0) return false;
+            if (l.year > 2100 || l.year < 1970) return false; // filter Buddhist year entries
+            return true;
+        });
+
+        if (matchedListings.length < 1) {
+            return {
+                estimatedPrice: null,
+                sampleSize: 0,
+                confidence: 0,
+                message: "ข้อมูลไม่เพียงพอสำหรับการประเมินราคา",
+                vehicleInfo: { brand, model, year: inputYear },
+            };
+        }
+
+        // Step 2: Calculate price statistics
+        const prices = matchedListings.map(l => Number(l.price)).sort((a, b) => a - b);
+        const sampleSize = prices.length;
+
+        const median = (arr: number[]) => {
+            const mid = Math.floor(arr.length / 2);
+            return arr.length % 2 !== 0 ? arr[mid] : (arr[mid - 1] + arr[mid]) / 2;
+        };
+
+        const medianPrice = median(prices);
+        const p25 = median(prices.slice(0, Math.floor(prices.length / 2)));
+        const p75 = median(prices.slice(Math.ceil(prices.length / 2)));
+        const avgPrice = prices.reduce((a, b) => a + b, 0) / sampleSize;
+
+        // Step 3: Mileage adjustment
+        let mileageAdjustment = 0;
+        if (inputMileage !== null) {
+            const mileages = matchedListings.filter(l => l.mileage > 0).map(l => l.mileage);
+            if (mileages.length > 0) {
+                const avgMileage = mileages.reduce((a, b) => a + b, 0) / mileages.length;
+                const diff = avgMileage - inputMileage; // positive = lower mileage = higher price
+                // ~0.5 baht per km difference (approximate)
+                const depreciationPerKm = medianPrice * 0.000005;
+                mileageAdjustment = diff * depreciationPerKm;
+            }
+        }
+
+        // Step 4: Year adjustment (for fallback matches with wider year range)
+        let yearAdjustment = 0;
+        if (matchLevel !== 'exact') {
+            const avgYear = matchedListings.reduce((a, l) => a + l.year, 0) / sampleSize;
+            const yearDiff = inputYear - avgYear;
+            // ~3-5% per year difference
+            yearAdjustment = medianPrice * yearDiff * 0.04;
+        }
+
+        // Cap total adjustments to ±20% of median price
+        const maxAdjustment = medianPrice * 0.2;
+        const totalAdjustment = Math.max(-maxAdjustment, Math.min(maxAdjustment, mileageAdjustment + yearAdjustment));
+        mileageAdjustment = totalAdjustment * (mileageAdjustment / (Math.abs(mileageAdjustment) + Math.abs(yearAdjustment) || 1));
+        yearAdjustment = totalAdjustment - mileageAdjustment;
+
+        const basePrice = medianPrice + totalAdjustment;
+
+        // Step 5: Condition factors
+        const conditionFactors: Record<string, number> = {
+            EXCELLENT: 1.05,
+            GOOD: 1.0,
+            FAIR: 0.95,
+            POOR: 0.90,
+        };
+
+        const inputCondition = condition || 'GOOD';
+        const condFactor = conditionFactors[inputCondition] || 1.0;
+        const adjustedPrice = Math.round(basePrice * condFactor);
+
+        // Price range: p25 to p75 adjusted (ensure positive)
+        const priceLow = Math.max(10000, Math.round((p25 + totalAdjustment) * condFactor / 10000) * 10000);
+        const priceHigh = Math.max(10000, Math.round((p75 + totalAdjustment) * condFactor / 10000) * 10000);
+        const priceMedian = Math.max(10000, Math.round(adjustedPrice / 10000) * 10000);
+
+        // priceByCondition
+        const priceByCondition: Record<string, { low: number; high: number }> = {};
+        for (const [cond, factor] of Object.entries(conditionFactors)) {
+            if (cond === 'POOR') continue;
+            priceByCondition[cond] = {
+                low: Math.max(10000, Math.round((p25 + totalAdjustment) * factor / 10000) * 10000),
+                high: Math.max(10000, Math.round((p75 + totalAdjustment) * factor / 10000) * 10000),
+            };
+        }
+
+        // Step 6: Demand level
+        const activeCount = matchedListings.filter(l => l.status === 'ACTIVE').length;
+        const soldCount = matchedListings.filter(l => l.status === 'SOLD').length;
+        let demandLevel: 'HIGH' | 'MEDIUM' | 'LOW' = 'MEDIUM';
+        if (sampleSize >= 3) {
+            const soldRatio = soldCount / sampleSize;
+            if (soldRatio > 0.5) demandLevel = 'HIGH';
+            else if (soldRatio < 0.2) demandLevel = 'LOW';
+        }
+
+        // Step 7: Avg days to sell
+        const soldListings = matchedListings.filter(l => l.status === 'SOLD' && l.publishedAt);
+        let avgDaysToSell = 0;
+        if (soldListings.length > 0) {
+            const totalDays = soldListings.reduce((sum, l) => {
+                const pub = new Date(l.publishedAt!).getTime();
+                const upd = new Date(l.updatedAt).getTime();
+                return sum + Math.max(1, Math.round((upd - pub) / (1000 * 60 * 60 * 24)));
+            }, 0);
+            avgDaysToSell = Math.round(totalDays / soldListings.length);
+        }
+
+        // Step 8: Market trend
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+        const recentPrices = matchedListings.filter(l => new Date(l.createdAt) > thirtyDaysAgo).map(l => Number(l.price));
+        const olderPrices = matchedListings.filter(l => new Date(l.createdAt) > sixtyDaysAgo && new Date(l.createdAt) <= thirtyDaysAgo).map(l => Number(l.price));
+
+        let marketTrend: 'RISING' | 'STABLE' | 'FALLING' = 'STABLE';
+        if (recentPrices.length >= 2 && olderPrices.length >= 2) {
+            const recentAvg = recentPrices.reduce((a, b) => a + b, 0) / recentPrices.length;
+            const olderAvg = olderPrices.reduce((a, b) => a + b, 0) / olderPrices.length;
+            const changePercent = ((recentAvg - olderAvg) / olderAvg) * 100;
+            if (changePercent > 3) marketTrend = 'RISING';
+            else if (changePercent < -3) marketTrend = 'FALLING';
+        }
+
+        // Step 9: Confidence
+        let confidence = Math.min(0.95, 0.3 + sampleSize * 0.013);
+        if (matchLevel === 'brand') confidence *= 0.6;
+        else if (matchLevel === 'model') confidence *= 0.8;
+        confidence = Math.round(confidence * 100) / 100;
+
+        // Step 10: Similar active listings (top 5)
+        const similarListings = matchedListings
+            .filter(l => l.status === 'ACTIVE')
+            .sort((a, b) => Math.abs(a.year - inputYear) - Math.abs(b.year - inputYear))
+            .slice(0, 5)
+            .map(l => ({
+                id: l.id,
+                title: l.title,
+                price: Number(l.price),
+                year: l.year,
+                mileage: l.mileage,
+                brand: l.brand,
+                model: l.model,
+                subModel: l.subModel,
+                fuelType: l.fuelType,
+                transmission: l.transmission,
+                image: l.images[0]?.url || null,
+            }));
+
+        return {
+            estimatedPrice: { low: priceLow, high: priceHigh, median: priceMedian },
+            sampleSize,
+            demandLevel,
+            avgDaysToSell: avgDaysToSell || null,
+            priceByCondition,
+            similarListings,
+            marketTrend,
+            confidence,
+            matchLevel,
+            vehicleInfo: { brand, model, subModel: subModel || null, year: inputYear },
+        };
     });
 
 // ===== Protected write routes (authGuard required) =====

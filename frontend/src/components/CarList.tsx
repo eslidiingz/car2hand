@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CircleNotch, CaretRight } from '@phosphor-icons/react';
+import { Loader2, ChevronRight } from 'lucide-react';
 import ListingCard, { VehicleListing } from './ListingCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -49,14 +49,14 @@ export default function CarList() {
                     href="/buy"
                     className="text-accent font-bold text-sm flex items-center gap-1 hover:underline"
                 >
-                    ดูทั้งหมด <CaretRight weight="bold" />
+                    ดูทั้งหมด <ChevronRight />
                 </Link>
             </div>
 
             {loading ? (
                 <div className="flex items-center justify-center py-20">
                     <div className="text-center">
-                        <CircleNotch size={48} className="animate-spin text-primary mx-auto mb-4" />
+                        <Loader2 size={48} className="animate-spin text-primary mx-auto mb-4" />
                         <p className="text-gray-500">กำลังโหลด...</p>
                     </div>
                 </div>

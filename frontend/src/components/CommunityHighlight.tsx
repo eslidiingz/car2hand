@@ -4,15 +4,15 @@ import Link from 'next/link';
 import {
     ArrowRight,
     Wrench,
-    ChatCircle,
+    MessageCircle,
     Eye,
     Star,
-    Image as ImageIcon,
-    SealCheck,
+    ImageIcon,
+    BadgeCheck,
     Heart,
-    ChatsCircle,
-    Fire
-} from '@phosphor-icons/react';
+    MessagesSquare,
+    Flame
+} from 'lucide-react';
 
 export default function CommunityHighlight() {
     return (
@@ -25,7 +25,7 @@ export default function CommunityHighlight() {
                     <p className="text-gray-500 mt-1">พื้นที่พูดคุย ปรึกษาปัญหา และรีวิวจากผู้ใช้งานจริงกว่า 50,000 คน</p>
                 </div>
                 <Link href="/community" className="text-accent font-bold hover:text-orange-600 transition flex items-center gap-1 group">
-                    ไปหน้าบอร์ดรวม <ArrowRight weight="bold" className="group-hover:translate-x-1 transition" />
+                    ไปหน้าบอร์ดรวม <ArrowRight className="group-hover:translate-x-1 transition" />
                 </Link>
             </div>
 
@@ -35,7 +35,7 @@ export default function CommunityHighlight() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition duration-300 cursor-pointer flex flex-col h-full">
                     <div className="flex items-center gap-2 mb-3">
                         <span className="bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-full border border-orange-100 flex items-center gap-1">
-                            <Wrench weight="fill" /> ปัญหาช่าง
+                            <Wrench fill="currentColor" /> ปัญหาช่าง
                         </span>
                         <span className="text-[10px] text-gray-400">2 ชม. ที่แล้ว</span>
                     </div>
@@ -55,8 +55,8 @@ export default function CommunityHighlight() {
                             </div>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-gray-400">
-                            <span className="flex items-center gap-1 hover:text-primary"><ChatCircle weight="bold" /> 24</span>
-                            <span className="flex items-center gap-1"><Eye weight="bold" /> 1.2k</span>
+                            <span className="flex items-center gap-1 hover:text-primary"><MessageCircle /> 24</span>
+                            <span className="flex items-center gap-1"><Eye /> 1.2k</span>
                         </div>
                     </div>
                 </div>
@@ -65,7 +65,7 @@ export default function CommunityHighlight() {
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition duration-300 cursor-pointer flex flex-col h-full">
                     <div className="flex items-center gap-2 mb-3">
                         <span className="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-1 rounded-full border border-green-100 flex items-center gap-1">
-                            <Star weight="fill" /> User Review
+                            <Star fill="currentColor" /> User Review
                         </span>
                         <span className="text-[10px] text-gray-400">เมื่อวานนี้</span>
                     </div>
@@ -73,7 +73,7 @@ export default function CommunityHighlight() {
                     <div className="h-32 bg-gray-200 rounded-xl mb-3 overflow-hidden relative group">
                         <img src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=400" className="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="Car" />
                         <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm flex items-center gap-1">
-                            <ImageIcon weight="fill" /> +4 รูป
+                            <ImageIcon fill="currentColor" /> +4 รูป
                         </div>
                     </div>
 
@@ -85,13 +85,13 @@ export default function CommunityHighlight() {
                         <div className="flex items-center gap-2">
                             <img src="https://i.pravatar.cc/150?img=3" className="w-8 h-8 rounded-full border border-white shadow-sm ring-2 ring-blue-100" alt="Guru" />
                             <div className="text-xs">
-                                <div className="font-bold text-gray-700 flex items-center gap-1">Guru_Keng <SealCheck weight="fill" className="text-blue-500" /></div>
+                                <div className="font-bold text-gray-700 flex items-center gap-1">Guru_Keng <BadgeCheck fill="currentColor" className="text-blue-500" /></div>
                                 <div className="text-accent font-bold">Top Contributor</div>
                             </div>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-gray-400">
-                            <span className="flex items-center gap-1 hover:text-primary"><ChatCircle weight="bold" /> 56</span>
-                            <span className="flex items-center gap-1"><Heart weight="bold" /> 128</span>
+                            <span className="flex items-center gap-1 hover:text-primary"><MessageCircle /> 56</span>
+                            <span className="flex items-center gap-1"><Heart /> 128</span>
                         </div>
                     </div>
                 </div>
@@ -103,10 +103,10 @@ export default function CommunityHighlight() {
                     <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center gap-2 mb-3">
                             <span className="bg-blue-50 text-primary text-[10px] font-bold px-2 py-1 rounded-full border border-blue-100 flex items-center gap-1">
-                                <ChatsCircle weight="fill" /> พูดคุยทั่วไป
+                                <MessagesSquare fill="currentColor" /> พูดคุยทั่วไป
                             </span>
                             <span className="bg-red-50 text-red-500 text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 animate-pulse">
-                                <Fire weight="fill" /> Hot Topic
+                                <Flame fill="currentColor" /> Hot Topic
                             </span>
                         </div>
                         <h3 className="font-bold text-lg text-gray-800 mb-2 leading-snug hover:text-primary transition">
@@ -142,7 +142,7 @@ export default function CommunityHighlight() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 text-xs text-gray-400">
-                                <span className="flex items-center gap-1 hover:text-primary"><ChatCircle weight="bold" /> 89</span>
+                                <span className="flex items-center gap-1 hover:text-primary"><MessageCircle /> 89</span>
                             </div>
                         </div>
                     </div>

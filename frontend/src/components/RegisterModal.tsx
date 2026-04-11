@@ -5,19 +5,19 @@ import { useRouter } from 'next/navigation';
 import {
     X,
     Tag,
-    MagicWand,
-    ChatsCircle,
-    FacebookLogo,
-    Envelope,
-    LockKey,
+    Wand2,
+    MessageSquare,
+    Facebook,
+    Mail,
+    Lock,
     Eye,
-    EyeSlash,
-    CircleNotch,
+    EyeOff,
+    Loader2,
     CheckCircle,
-    WarningCircle,
+    AlertCircle,
     Phone,
     User
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 
 interface RegisterModalProps {
     isOpen: boolean;
@@ -169,7 +169,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                     onClick={onClose}
                     className="absolute top-4 right-4 z-20 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition"
                 >
-                    <X weight="bold" />
+                    <X />
                 </button>
 
                 {/* Content */}
@@ -183,7 +183,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                         {/* Error Message */}
                         {error && (
                             <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
-                                <WarningCircle weight="bold" className="text-lg flex-shrink-0" />
+                                <AlertCircle className="text-lg flex-shrink-0" />
                                 <span>{error}</span>
                             </div>
                         )}
@@ -191,7 +191,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                         {/* Success Message */}
                         {success && (
                             <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl text-green-600 text-sm">
-                                <CheckCircle weight="bold" className="text-lg flex-shrink-0" />
+                                <CheckCircle className="text-lg flex-shrink-0" />
                                 <span>สมัครสมาชิกสำเร็จ! กำลังนำคุณไปหน้าเข้าสู่ระบบ...</span>
                             </div>
                         )}
@@ -200,7 +200,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                             <div>
                                 <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">ชื่อ-นามสกุล <span className="text-red-500">*</span></label>
                                 <div className="relative">
-                                    <User weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                     <input
                                         type="text"
                                         name="fullName"
@@ -215,7 +215,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                             <div>
                                 <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">เบอร์โทรศัพท์ <span className="text-red-500">*</span></label>
                                 <div className="relative">
-                                    <Phone weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                     <input
                                         type="tel"
                                         inputMode="numeric"
@@ -234,7 +234,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                         <div>
                             <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">อีเมล <span className="text-red-500">*</span></label>
                             <div className="relative">
-                                <Envelope weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type="email"
                                     name="email"
@@ -250,7 +250,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                         <div>
                             <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">รหัสผ่าน <span className="text-red-500">*</span></label>
                             <div className="relative">
-                                <LockKey weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
@@ -265,7 +265,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                 >
-                                    {showPassword ? <Eye weight="bold" /> : <EyeSlash weight="bold" />}
+                                    {showPassword ? <Eye /> : <EyeOff />}
                                 </button>
                             </div>
 
@@ -303,7 +303,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin, redire
                         >
                             {isLoading ? (
                                 <>
-                                    <CircleNotch weight="bold" className="animate-spin" />
+                                    <Loader2 className="animate-spin" />
                                     <span>กำลังสมัครสมาชิก...</span>
                                 </>
                             ) : (

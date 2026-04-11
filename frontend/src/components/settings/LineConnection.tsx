@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { CheckCircle, CircleNotch, LinkBreak, ChatCircleDots } from '@phosphor-icons/react';
+import { CheckCircle, Loader2, Unlink, MessageCircleMore } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -95,7 +95,7 @@ export default function LineConnection() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <CircleNotch weight="bold" className="animate-spin text-3xl text-primary" />
+                <Loader2 className="animate-spin text-3xl text-primary" />
                 <span className="ml-3 text-gray-500">กำลังตรวจสอบสถานะ LINE...</span>
             </div>
         );
@@ -108,7 +108,7 @@ export default function LineConnection() {
                 <div className="flex items-start gap-4">
                     {/* LINE Icon */}
                     <div className="w-12 h-12 bg-[#06C755] rounded-xl flex items-center justify-center flex-shrink-0">
-                        <ChatCircleDots weight="fill" className="text-white text-2xl" />
+                        <MessageCircleMore fill="currentColor" className="text-white text-2xl" />
                     </div>
 
                     <div className="flex-1 min-w-0">
@@ -116,7 +116,7 @@ export default function LineConnection() {
                             <h3 className="font-bold text-gray-800 text-lg">LINE</h3>
                             {status?.connected && (
                                 <span className="inline-flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                                    <CheckCircle weight="fill" size={14} />
+                                    <CheckCircle fill="currentColor" size={14} />
                                     เชื่อมต่อแล้ว
                                 </span>
                             )}
@@ -151,9 +151,9 @@ export default function LineConnection() {
                                     className="inline-flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {disconnecting ? (
-                                        <CircleNotch weight="bold" className="animate-spin" size={16} />
+                                        <Loader2 className="animate-spin" size={16} />
                                     ) : (
-                                        <LinkBreak weight="bold" size={16} />
+                                        <Unlink size={16} />
                                     )}
                                     {disconnecting ? 'กำลังยกเลิก...' : 'ยกเลิกการเชื่อมต่อ'}
                                 </button>
@@ -171,7 +171,7 @@ export default function LineConnection() {
                                     onClick={handleConnect}
                                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#06C755] text-white rounded-lg text-sm font-bold hover:bg-[#05b34c] transition shadow-sm"
                                 >
-                                    <ChatCircleDots weight="fill" size={18} />
+                                    <MessageCircleMore fill="currentColor" size={18} />
                                     เชื่อมต่อ LINE
                                 </button>
                             </>
@@ -192,15 +192,15 @@ export default function LineConnection() {
                 <h4 className="font-bold text-gray-700 text-sm mb-3">การแจ้งเตือนที่คุณจะได้รับผ่าน LINE</h4>
                 <ul className="space-y-2 text-sm text-gray-500">
                     <li className="flex items-center gap-2">
-                        <CheckCircle weight="fill" size={16} className="text-green-500 flex-shrink-0" />
+                        <CheckCircle fill="currentColor" size={16} className="text-green-500 flex-shrink-0" />
                         สถานะประกาศขายรถ (อนุมัติ / ไม่อนุมัติ / หมดอายุ)
                     </li>
                     <li className="flex items-center gap-2">
-                        <CheckCircle weight="fill" size={16} className="text-green-500 flex-shrink-0" />
+                        <CheckCircle fill="currentColor" size={16} className="text-green-500 flex-shrink-0" />
                         แจ้งเตือนเมื่อมีผู้สนใจรถของคุณ
                     </li>
                     <li className="flex items-center gap-2">
-                        <CheckCircle weight="fill" size={16} className="text-green-500 flex-shrink-0" />
+                        <CheckCircle fill="currentColor" size={16} className="text-green-500 flex-shrink-0" />
                         ข่าวสารและโปรโมชั่นจาก Car2Hand
                     </li>
                 </ul>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, CalendarPlus, Calculator, Coins } from '@phosphor-icons/react';
+import { ArrowRight, ShieldCheck, CalendarPlus, Calculator, Coins } from 'lucide-react';
 
 export default function ServiceShortcuts() {
     return (
@@ -13,7 +13,7 @@ export default function ServiceShortcuts() {
                 {/* Car Inspection */}
                 <Link href="/services/inspection" className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00C851] to-[#007E33] text-white shadow-lg group cursor-pointer hover:shadow-xl transition duration-300 hover:-translate-y-1 block">
                     <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 translate-y-4 group-hover:rotate-12 transition duration-500">
-                        <ShieldCheck weight="fill" className="text-9xl" />
+                        <ShieldCheck fill="currentColor" className="text-9xl" />
                     </div>
 
                     <div className="p-8 relative z-10 flex flex-col h-full justify-between">
@@ -28,7 +28,7 @@ export default function ServiceShortcuts() {
                         </div>
                         <div className="mt-6">
                             <div className="bg-white text-green-700 px-6 py-3 rounded-xl font-bold text-sm w-fit hover:bg-gray-100 transition flex items-center gap-2">
-                                จองคิวตรวจ <CalendarPlus weight="bold" />
+                                จองคิวตรวจ <CalendarPlus />
                             </div>
                         </div>
                     </div>
@@ -37,7 +37,7 @@ export default function ServiceShortcuts() {
                 {/* Finance & Insurance */}
                 <Link href="/services/finance" className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F3460] to-[#16213E] text-white shadow-lg group cursor-pointer hover:shadow-xl transition duration-300 hover:-translate-y-1 block">
                     <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-10 -translate-y-5 group-hover:scale-110 transition duration-500">
-                        <Coins weight="fill" className="text-9xl" />
+                        <Coins fill="currentColor" className="text-9xl" />
                     </div>
 
                     <div className="p-8 relative z-10 flex flex-col h-full justify-between">
@@ -52,7 +52,7 @@ export default function ServiceShortcuts() {
                         </div>
                         <div className="mt-6">
                             <div className="bg-white text-primary px-6 py-3 rounded-xl font-bold text-sm w-fit hover:bg-gray-100 transition flex items-center gap-2">
-                                คำนวณค่างวด <Calculator weight="bold" />
+                                คำนวณค่างวด <Calculator />
                             </div>
                         </div>
                     </div>

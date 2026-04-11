@@ -5,17 +5,17 @@ import Link from 'next/link';
 import {
     Eye,
     Heart,
-    PencilSimple,
+    Pencil,
     Megaphone,
     Trash,
     CheckCircle,
-    DotsThreeVertical,
-    Lightning,
+    MoreVertical,
+    Zap,
     Phone,
-    ArrowClockwise,
+    RotateCcw,
     Clock,
-    ArrowSquareOut
-} from '@phosphor-icons/react';
+    ExternalLink
+} from 'lucide-react';
 
 export interface VehicleListing {
     id: string;
@@ -99,7 +99,7 @@ export default function ProfileListingCard({
                         />
                         {isBoosted && (
                             <div className="absolute top-2 left-2 bg-[#FF7A50] text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm uppercase tracking-wider">
-                                <Lightning weight="fill" size={10} />
+                                <Zap fill="currentColor" size={10} />
                                 Boosted
                             </div>
                         )}
@@ -119,7 +119,7 @@ export default function ProfileListingCard({
                                     }}
                                     className="text-gray-300 hover:text-gray-500 transition-colors p-1"
                                 >
-                                    <DotsThreeVertical weight="bold" size={24} />
+                                    <MoreVertical size={24} />
                                 </button>
 
                                 {isActive && (
@@ -137,7 +137,7 @@ export default function ProfileListingCard({
                                                         onClick={() => onToggleMenu(null)}
                                                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
                                                     >
-                                                        <ArrowSquareOut weight="bold" />
+                                                        <ExternalLink />
                                                         ดูประกาศ
                                                     </Link>
                                                     <button
@@ -147,7 +147,7 @@ export default function ProfileListingCard({
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-sm hover:bg-emerald-50 flex items-center gap-2 transition font-medium text-emerald-600"
                                                     >
-                                                        <ArrowClockwise weight="bold" />
+                                                        <RotateCcw />
                                                         ต่ออายุ / รีประกาศ
                                                     </button>
                                                     <div className="border-t border-gray-50 my-1"></div>
@@ -158,7 +158,7 @@ export default function ProfileListingCard({
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition font-medium"
                                                     >
-                                                        <Trash weight="bold" />
+                                                        <Trash />
                                                         ลบประกาศ
                                                     </button>
                                                 </>
@@ -170,7 +170,7 @@ export default function ProfileListingCard({
                                                         onClick={() => onToggleMenu(null)}
                                                         className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
                                                     >
-                                                        <ArrowSquareOut weight="bold" />
+                                                        <ExternalLink />
                                                         ดูประกาศ
                                                     </Link>
                                                     <Link
@@ -178,7 +178,7 @@ export default function ProfileListingCard({
                                                         onClick={() => onToggleMenu(null)}
                                                         className="w-full text-left px-4 py-2 text-sm hover:bg-orange-50 flex items-center gap-2 transition font-medium text-orange-500"
                                                     >
-                                                        <PencilSimple weight="bold" />
+                                                        <Pencil />
                                                         แก้ไขประกาศ
                                                     </Link>
                                                     <button
@@ -188,7 +188,7 @@ export default function ProfileListingCard({
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 flex items-center gap-2 transition font-medium text-blue-600"
                                                     >
-                                                        <Lightning weight="bold" />
+                                                        <Zap />
                                                         ดันโพส
                                                     </button>
                                                     {onSetSlot && (
@@ -199,7 +199,7 @@ export default function ProfileListingCard({
                                                             }}
                                                             className="w-full text-left px-4 py-2 text-sm hover:bg-purple-50 flex items-center gap-2 transition font-medium text-purple-600"
                                                         >
-                                                            <Clock weight="bold" />
+                                                            <Clock />
                                                             ตั้งเวลาดันอัตโนมัติ
                                                         </button>
                                                     )}
@@ -211,7 +211,7 @@ export default function ProfileListingCard({
                                                         }}
                                                         className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition font-medium"
                                                     >
-                                                        <Trash weight="bold" />
+                                                        <Trash />
                                                         ลบประกาศ
                                                     </button>
                                                 </>
@@ -228,10 +228,10 @@ export default function ProfileListingCard({
 
                         <div className="flex flex-wrap items-center gap-y-1 gap-x-3 text-[11px] md:text-xs text-gray-400 font-medium">
                             <span className="flex items-center gap-1">
-                                <Eye weight="bold" size={14} className="text-blue-500" /> {listing.viewCount} วิว
+                                <Eye size={14} className="text-blue-500" /> {listing.viewCount} วิว
                             </span>
                             <span className="flex items-center gap-1">
-                                <Heart weight="bold" size={14} className="text-red-400" /> {listing.favoriteCount} ถูกใจ
+                                <Heart size={14} className="text-red-400" /> {listing.favoriteCount} ถูกใจ
                             </span>
                         </div>
                     </div>
@@ -243,7 +243,7 @@ export default function ProfileListingCard({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 ${status.bgColor} ${status.textColor}`}>
-                            <CheckCircle weight="fill" size={12} />
+                            <CheckCircle fill="currentColor" size={12} />
                             {status.label}
                         </span>
                         {daysLeft !== null && (
@@ -259,13 +259,13 @@ export default function ProfileListingCard({
                 </div>
                 {hasPendingRenewal && listing.status === 'EXPIRED' && (
                     <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-lg border border-amber-100">
-                        <Clock weight="fill" size={14} className="text-amber-500" />
+                        <Clock fill="currentColor" size={14} className="text-amber-500" />
                         <span className="text-xs font-bold text-amber-700">คำขอต่ออายุกำลังรอตรวจสอบ</span>
                     </div>
                 )}
                 {listing.status === 'ACTIVE' && slotSchedules && slotSchedules.length > 0 && (
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 bg-purple-50 text-purple-600 w-fit">
-                        <Lightning weight="fill" size={12} />
+                        <Zap fill="currentColor" size={12} />
                         {listing.autoBumpSlot !== null && listing.autoBumpSlot !== undefined
                             ? `ดันอัตโนมัติ ${slotSchedules[listing.autoBumpSlot] || ''} น.`
                             : 'ดันอัตโนมัติ (auto)'
