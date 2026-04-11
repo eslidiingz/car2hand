@@ -5,14 +5,14 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
-    FacebookLogo,
+    Facebook,
     Clock,
-    SealCheck,
+    BadgeCheck,
     Eye,
-    CaretRight,
-    Chats,
+    ChevronRight,
+    MessagesSquare,
     Link as LinkIcon
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 
 import { useState, useEffect, use as useReact } from 'react';
 
@@ -139,13 +139,13 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
                     <Link href="/" className="hover:text-primary">หน้าแรก</Link>
-                    <CaretRight weight="bold" className="text-xs" />
+                    <ChevronRight className="text-xs" />
                     <Link href="/articles" className="hover:text-primary">คลังความรู้</Link>
-                    <CaretRight weight="bold" className="text-xs" />
+                    <ChevronRight className="text-xs" />
                     {article.category?.slug && (
                         <>
                             <Link href={`/articles?category=${article.category.slug}`} className="hover:text-primary">{categoryName}</Link>
-                            <CaretRight weight="bold" className="text-xs" />
+                            <ChevronRight className="text-xs" />
                         </>
                     )}
                     <span className="text-gray-400 line-clamp-1">{article.title}</span>
@@ -156,9 +156,9 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                     {/* Social Share (Desktop Sticky) */}
                     <div className="hidden lg:block lg:col-span-1">
                         <div className="sticky top-24 flex flex-col gap-4 items-center">
-                            <button onClick={handleShareFacebook} title="แชร์ไปยัง Facebook" className="w-10 h-10 rounded-full bg-white text-blue-600 shadow-sm flex items-center justify-center hover:scale-110 transition"><FacebookLogo weight="fill" className="text-xl" /></button>
-                            <button onClick={handleShareLine} title="แชร์ไปยัง LINE" className="w-10 h-10 rounded-full bg-white text-green-500 shadow-sm flex items-center justify-center hover:scale-110 transition"><Chats weight="fill" className="text-xl" /></button>
-                            <button onClick={handleCopyLink} title={copied ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'} className={`w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:scale-110 transition ${copied ? 'text-green-500' : 'text-gray-400'}`}><LinkIcon weight="bold" className="text-xl" /></button>
+                            <button onClick={handleShareFacebook} title="แชร์ไปยัง Facebook" className="w-10 h-10 rounded-full bg-white text-blue-600 shadow-sm flex items-center justify-center hover:scale-110 transition"><Facebook fill="currentColor" className="text-xl" /></button>
+                            <button onClick={handleShareLine} title="แชร์ไปยัง LINE" className="w-10 h-10 rounded-full bg-white text-green-500 shadow-sm flex items-center justify-center hover:scale-110 transition"><MessagesSquare fill="currentColor" className="text-xl" /></button>
+                            <button onClick={handleCopyLink} title={copied ? 'คัดลอกแล้ว!' : 'คัดลอกลิงก์'} className={`w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center hover:scale-110 transition ${copied ? 'text-green-500' : 'text-gray-400'}`}><LinkIcon className="text-xl" /></button>
                         </div>
                     </div>
 
@@ -168,7 +168,7 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                         <header className="mb-8">
                             <div className="flex gap-2 mb-4">
                                 <span className="bg-blue-50 text-primary text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">{categoryName}</span>
-                                <span className="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"><Clock weight="bold" /> {readTime} นาทีอ่าน</span>
+                                <span className="bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1"><Clock /> {readTime} นาทีอ่าน</span>
                             </div>
                             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
                                 {article.title}
@@ -180,12 +180,12 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                                         {article.author?.fullName?.charAt(0) || 'A'}
                                     </div>
                                     <div>
-                                        <div className="font-bold text-gray-800 text-sm flex items-center gap-1">{article.author?.fullName || 'ทีมงาน Car2Hand'} <SealCheck weight="fill" className="text-blue-500" /></div>
+                                        <div className="font-bold text-gray-800 text-sm flex items-center gap-1">{article.author?.fullName || 'ทีมงาน Car2Hand'} <BadgeCheck fill="currentColor" className="text-blue-500" /></div>
                                         <div className="text-xs text-gray-500">Guru ช่างยนต์ &bull; {new Date(article.updatedAt || article.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1 text-gray-400 text-sm">
-                                    <Eye weight="fill" /> {article.viewCount?.toLocaleString()} Views
+                                    <Eye fill="currentColor" /> {article.viewCount?.toLocaleString()} Views
                                 </div>
                             </div>
                         </header>
@@ -263,7 +263,7 @@ export default function ArticlePage({ params }: { params: Promise<{ articleId: s
                                                         {related.category?.name || 'ทั่วไป'}
                                                     </span>
                                                     <span className="text-xs text-gray-400 flex items-center gap-0.5">
-                                                        <Eye weight="fill" size={10} /> {related.viewCount?.toLocaleString() || 0}
+                                                        <Eye fill="currentColor" size={10} /> {related.viewCount?.toLocaleString() || 0}
                                                     </span>
                                                 </div>
                                             </div>

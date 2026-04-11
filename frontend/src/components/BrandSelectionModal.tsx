@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MagnifyingGlass, Star, ArrowRight } from '@phosphor-icons/react';
+import { X, Search, Star, ArrowRight } from 'lucide-react';
 
 interface Brand {
     id: string;
@@ -114,17 +114,17 @@ export default function BrandSelectionModal({
                         onClick={onClose}
                         className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition"
                     >
-                        <X weight="bold" />
+                        <X />
                     </button>
                 </div>
 
                 {/* Search Bar */}
                 <div className="p-4 bg-white sticky top-[72px] sm:top-[88px] z-20 shadow-sm border-b border-gray-50">
                     <div className="relative">
-                        <MagnifyingGlass
+                        <Search
                             className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
                             size={20}
-                            weight="bold"
+                           
                         />
                         <input
                             ref={searchInputRef}
@@ -147,7 +147,7 @@ export default function BrandSelectionModal({
                     ) : (filteredBrands.length === 0) ? (
                         <div className="text-center py-20 px-6">
                             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <MagnifyingGlass size={32} className="text-gray-300" />
+                                <Search size={32} className="text-gray-300" />
                             </div>
                             <h3 className="text-lg font-bold text-gray-800 mb-1">ไม่พบยี่ห้อ "{search}"</h3>
                             <p className="text-gray-500">ลองค้นด้วยชื่ออื่นหรือเลือดยี่ห้อที่มีอยู่ในรายการ</p>
@@ -158,7 +158,7 @@ export default function BrandSelectionModal({
                             {popularBrands.length > 0 && !search && (
                                 <div>
                                     <div className="flex items-center gap-2 mb-4 px-2">
-                                        <Star weight="fill" className="text-amber-400" size={18} />
+                                        <Star fill="currentColor" className="text-amber-400" size={18} />
                                         <h3 className="font-bold text-gray-900 uppercase tracking-wider text-xs">ยี่ห้อยอดนิยม</h3>
                                     </div>
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">

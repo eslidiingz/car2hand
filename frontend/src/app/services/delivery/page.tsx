@@ -7,15 +7,15 @@ import {
     Truck,
     ShieldCheck,
     MapPin,
-    Path,
+    Route,
     CheckCircle,
-    SpinnerGap,
+    Loader2,
     Phone,
     User,
-    NotePencil,
-    NavigationArrow,
-    Warning
-} from '@phosphor-icons/react';
+    PenLine,
+    Navigation,
+    AlertTriangle
+} from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -43,8 +43,8 @@ const pricingData = [
 const features = [
     { icon: ShieldCheck, title: 'ปลอดภัย 100%', description: 'ทีมงานมืออาชีพ พร้อมอุปกรณ์ครบครัน' },
     { icon: ShieldCheck, title: 'ประกันความเสียหาย', description: 'คุ้มครองระหว่างการขนส่งทุกกรณี' },
-    { icon: NavigationArrow, title: 'ส่งทั่วไทย', description: 'ครอบคลุมทุกจังหวัดทั่วประเทศ' },
-    { icon: Path, title: 'ติดตามสถานะได้', description: 'อัปเดตตำแหน่งรถแบบ Real-time' },
+    { icon: Navigation, title: 'ส่งทั่วไทย', description: 'ครอบคลุมทุกจังหวัดทั่วประเทศ' },
+    { icon: Route, title: 'ติดตามสถานะได้', description: 'อัปเดตตำแหน่งรถแบบ Real-time' },
 ];
 
 export default function DeliveryPage() {
@@ -117,14 +117,14 @@ export default function DeliveryPage() {
             <div className="bg-surface text-gray-800 min-h-screen">
                 <nav className="bg-white shadow-sm fixed w-full z-50 top-0 border-b border-gray-100">
                     <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-2">
-                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft weight="bold" className="text-xl" /></Link>
+                        <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft className="text-xl" /></Link>
                         <span className="font-bold text-xl text-primary">บริการรถสไลด์/ส่งมอบ</span>
                     </div>
                 </nav>
                 <div className="pt-32 pb-20 flex flex-col items-center justify-center px-4">
                     <div className="bg-white rounded-3xl p-10 shadow-lg border border-gray-100 max-w-md w-full text-center">
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <CheckCircle weight="fill" className="text-green-500 text-5xl" />
+                            <CheckCircle fill="currentColor" className="text-green-500 text-5xl" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-3">ส่งข้อมูลสำเร็จ!</h2>
                         <p className="text-gray-500 mb-8">เจ้าหน้าที่จะติดต่อกลับภายใน 30 นาที เพื่อแจ้งรายละเอียดและราคาค่าบริการ</p>
@@ -143,7 +143,7 @@ export default function DeliveryPage() {
             {/* Nav */}
             <nav className="bg-white shadow-sm fixed w-full z-50 top-0 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-2">
-                    <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft weight="bold" className="text-xl" /></Link>
+                    <Link href="/services" className="text-gray-500 hover:text-primary"><ArrowLeft className="text-xl" /></Link>
                     <span className="font-bold text-xl text-primary">บริการรถสไลด์/ส่งมอบ</span>
                 </div>
             </nav>
@@ -154,7 +154,7 @@ export default function DeliveryPage() {
             }}>
                 <div className="relative z-10">
                     <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Truck weight="fill" className="text-5xl text-white" />
+                        <Truck fill="currentColor" className="text-5xl text-white" />
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold mb-4">บริการรถสไลด์/ส่งมอบรถ</h1>
                     <p className="text-purple-100 text-lg max-w-2xl mx-auto mb-8">
@@ -172,7 +172,7 @@ export default function DeliveryPage() {
                     {features.map((feat, i) => (
                         <div key={i} className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100 text-center group hover:-translate-y-1 transition">
                             <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mx-auto mb-3 text-purple-600 group-hover:scale-110 transition">
-                                <feat.icon weight="fill" className="text-2xl" />
+                                <feat.icon fill="currentColor" className="text-2xl" />
                             </div>
                             <h3 className="font-bold text-gray-800 text-sm mb-1">{feat.title}</h3>
                             <p className="text-xs text-gray-500">{feat.description}</p>
@@ -191,7 +191,7 @@ export default function DeliveryPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">
-                                            <User weight="bold" className="inline mr-1" />ชื่อ
+                                            <User className="inline mr-1" />ชื่อ
                                         </label>
                                         <input
                                             type="text"
@@ -205,7 +205,7 @@ export default function DeliveryPage() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">
-                                            <Phone weight="bold" className="inline mr-1" />เบอร์โทร
+                                            <Phone className="inline mr-1" />เบอร์โทร
                                         </label>
                                         <input
                                             type="tel"
@@ -221,7 +221,7 @@ export default function DeliveryPage() {
 
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                                        <MapPin weight="bold" className="inline mr-1" />ต้นทาง
+                                        <MapPin className="inline mr-1" />ต้นทาง
                                     </label>
                                     <input
                                         type="text"
@@ -236,7 +236,7 @@ export default function DeliveryPage() {
 
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                                        <MapPin weight="bold" className="inline mr-1" />ปลายทาง
+                                        <MapPin className="inline mr-1" />ปลายทาง
                                     </label>
                                     <input
                                         type="text"
@@ -251,7 +251,7 @@ export default function DeliveryPage() {
 
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">
-                                        <NotePencil weight="bold" className="inline mr-1" />หมายเหตุ
+                                        <PenLine className="inline mr-1" />หมายเหตุ
                                     </label>
                                     <textarea
                                         name="note"
@@ -265,7 +265,7 @@ export default function DeliveryPage() {
 
                                 {submitError && (
                                     <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2 text-red-600 text-sm">
-                                        <Warning weight="fill" /> {submitError}
+                                        <AlertTriangle fill="currentColor" /> {submitError}
                                     </div>
                                 )}
 
@@ -275,7 +275,7 @@ export default function DeliveryPage() {
                                     className="w-full bg-purple-600 text-white py-3 rounded-xl font-bold hover:bg-purple-700 transition shadow-lg shadow-purple-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
                                     {isSubmitting ? (
-                                        <><SpinnerGap weight="bold" className="animate-spin" /> กำลังส่ง...</>
+                                        <><Loader2 className="animate-spin" /> กำลังส่ง...</>
                                     ) : (
                                         <>ส่งข้อมูล</>
                                     )}
@@ -308,7 +308,7 @@ export default function DeliveryPage() {
                                 <h4 className="font-bold mb-2">ต้องการความช่วยเหลือ?</h4>
                                 <p className="text-purple-100 text-sm mb-4">โทรหาเราได้เลย เจ้าหน้าที่พร้อมให้คำปรึกษา</p>
                                 <a href="tel:021234567" className="bg-white text-purple-600 px-4 py-2 rounded-lg font-bold text-sm inline-flex items-center gap-2 hover:bg-purple-50 transition">
-                                    <Phone weight="fill" /> 02-123-4567
+                                    <Phone fill="currentColor" /> 02-123-4567
                                 </a>
                             </div>
                         </div>

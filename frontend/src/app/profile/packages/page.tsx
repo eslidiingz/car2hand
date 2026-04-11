@@ -4,19 +4,19 @@ import React, { useState, useEffect } from 'react';
 import {
     Crown,
     Star,
-    Lightning,
+    Zap,
     Rocket,
     Check,
     ArrowRight,
     CreditCard,
     Upload,
     Clock,
-    Warning,
+    AlertTriangle,
     X,
-    Image as ImageIcon,
-    ArrowsClockwise,
+    ImageIcon,
+    RotateCcw,
     ArrowUp,
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -75,10 +75,10 @@ interface CurrentPackage {
 
 // Icon/color maps by slug
 const packageIcons: Record<string, React.ReactNode> = {
-    basic: <Lightning weight="fill" className="text-gray-400" size={28} />,
-    standard: <Star weight="fill" className="text-blue-500" size={28} />,
-    professional: <Rocket weight="fill" className="text-orange-500" size={28} />,
-    premium: <Crown weight="fill" className="text-yellow-500" size={28} />,
+    basic: <Zap fill="currentColor" className="text-gray-400" size={28} />,
+    standard: <Star fill="currentColor" className="text-blue-500" size={28} />,
+    professional: <Rocket fill="currentColor" className="text-orange-500" size={28} />,
+    premium: <Crown fill="currentColor" className="text-yellow-500" size={28} />,
 };
 
 const packageColors: Record<string, { bg: string; btn: string }> = {
@@ -89,7 +89,7 @@ const packageColors: Record<string, { bg: string; btn: string }> = {
 };
 
 function getIcon(slug: string) {
-    return packageIcons[slug] || <Lightning weight="fill" className="text-gray-400" size={28} />;
+    return packageIcons[slug] || <Zap fill="currentColor" className="text-gray-400" size={28} />;
 }
 function getColor(slug: string) {
     return packageColors[slug] || packageColors.basic;
@@ -301,25 +301,25 @@ export default function PackagesPage() {
             {/* Success Banner */}
             {successMsg && (
                 <div className="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3">
-                    <Check weight="bold" className="text-green-600 text-xl flex-shrink-0" />
+                    <Check className="text-green-600 text-xl flex-shrink-0" />
                     <p className="text-green-800 font-bold text-sm">{successMsg}</p>
-                    <button onClick={() => setSuccessMsg('')} className="ml-auto text-green-500 hover:text-green-700"><X weight="bold" /></button>
+                    <button onClick={() => setSuccessMsg('')} className="ml-auto text-green-500 hover:text-green-700"><X /></button>
                 </div>
             )}
 
             {/* Error Banner */}
             {errorMsg && (
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3">
-                    <Warning weight="bold" className="text-red-600 text-xl flex-shrink-0" />
+                    <AlertTriangle className="text-red-600 text-xl flex-shrink-0" />
                     <p className="text-red-800 font-bold text-sm">{errorMsg}</p>
-                    <button onClick={() => setErrorMsg('')} className="ml-auto text-red-500 hover:text-red-700"><X weight="bold" /></button>
+                    <button onClick={() => setErrorMsg('')} className="ml-auto text-red-500 hover:text-red-700"><X /></button>
                 </div>
             )}
 
             {/* Pending Transaction Banner */}
             {hasPendingTransaction && !successMsg && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
-                    <Clock weight="fill" className="text-amber-500 text-xl flex-shrink-0" />
+                    <Clock fill="currentColor" className="text-amber-500 text-xl flex-shrink-0" />
                     <div>
                         <p className="text-amber-800 font-bold text-sm">มีคำขออัพเกรดรอตรวจสอบ</p>
                         <p className="text-amber-600 text-xs mt-0.5">ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง</p>
@@ -380,7 +380,7 @@ export default function PackagesPage() {
                             onClick={() => openUpgradeModal(currentFullPkg, true)}
                             className="w-full flex items-center justify-center gap-2 py-3 bg-primary hover:bg-primary/90 text-white rounded-xl text-sm font-bold transition shadow-sm"
                         >
-                            <ArrowsClockwise weight="bold" size={16} />
+                            <RotateCcw size={16} />
                             ต่ออายุแพ็กเกจ
                         </button>
                     );
@@ -406,7 +406,7 @@ export default function PackagesPage() {
                                 <div key={tx.id} className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 mb-2 last:mb-0">
                                     <div className="flex items-center gap-2 min-w-0">
                                         <div className={`p-1 rounded-md ${getColor(tx.package.slug).bg}`}>
-                                            {React.cloneElement(getIcon(tx.package.slug) as React.ReactElement, { size: 16 })}
+                                            {React.cloneElement(getIcon(tx.package.slug) as React.ReactElement<any>, { size: 16 })}
                                         </div>
                                         <div className="min-w-0">
                                             <p className="text-xs font-bold text-gray-700 truncate flex items-center gap-1.5">
@@ -500,7 +500,7 @@ export default function PackagesPage() {
                                             onClick={() => openUpgradeModal(pkg, false)}
                                             className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition shadow-sm ${color.btn}`}
                                         >
-                                            อัพเกรด <ArrowRight weight="bold" size={14} />
+                                            อัพเกรด <ArrowRight size={14} />
                                         </button>
                                     )}
                                 </div>
@@ -519,7 +519,7 @@ export default function PackagesPage() {
                         {/* Header */}
                         <div className={`p-6 ${getColor(selectedPackage.slug).bg} border-b border-gray-100`}>
                             <button onClick={() => setShowUpgradeModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                                <X weight="bold" size={24} />
+                                <X size={24} />
                             </button>
                             <div className="flex items-center gap-4">
                                 <div className="p-3 rounded-xl bg-white shadow-sm">
@@ -585,7 +585,7 @@ export default function PackagesPage() {
                             {/* Payment Info */}
                             <div>
                                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                    <CreditCard weight="bold" className="text-primary" /> ข้อมูลการชำระเงิน
+                                    <CreditCard className="text-primary" /> ข้อมูลการชำระเงิน
                                 </h4>
                                 <div className="bg-blue-50 rounded-xl p-4 space-y-3 text-sm">
                                     <p className="font-bold text-blue-800">โอนเงินผ่านบัญชีธนาคาร</p>
@@ -628,7 +628,7 @@ export default function PackagesPage() {
                             {/* Slip Upload */}
                             <div>
                                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                    <Upload weight="bold" className="text-primary" /> แนบหลักฐานการโอนเงิน
+                                    <Upload className="text-primary" /> แนบหลักฐานการโอนเงิน
                                 </h4>
                                 {slipPreview ? (
                                     <div className="relative">
@@ -637,7 +637,7 @@ export default function PackagesPage() {
                                             onClick={() => { setSlipFile(null); setSlipPreview(null); }}
                                             className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition"
                                         >
-                                            <X weight="bold" size={14} />
+                                            <X size={14} />
                                         </button>
                                     </div>
                                 ) : (
@@ -656,7 +656,7 @@ export default function PackagesPage() {
                                             }
                                         }}
                                     >
-                                        <ImageIcon weight="thin" className={`text-4xl transition ${dragOverSlip ? 'text-primary' : 'text-gray-300 group-hover:text-primary'}`} />
+                                        <ImageIcon strokeWidth={1} className={`text-4xl transition ${dragOverSlip ? 'text-primary' : 'text-gray-300 group-hover:text-primary'}`} />
                                         <span className={`text-sm font-bold transition ${dragOverSlip ? 'text-primary' : 'text-gray-500 group-hover:text-primary'}`}>{dragOverSlip ? 'วางรูปที่นี่' : 'คลิกหรือลากสลิปมาวาง'}</span>
                                         <span className="text-xs text-gray-400">รองรับไฟล์ JPG, PNG, WebP</span>
                                         <input type="file" accept="image/*" onChange={handleSlipChange} className="hidden" />
@@ -664,9 +664,9 @@ export default function PackagesPage() {
                                 )}
                             </div>
 
-                            {/* Warning */}
+                            {/* AlertTriangle */}
                             <div className="flex items-start gap-3 bg-yellow-50 rounded-xl p-4">
-                                <Warning weight="fill" className="text-yellow-500 text-xl flex-shrink-0 mt-0.5" />
+                                <AlertTriangle fill="currentColor" className="text-yellow-500 text-xl flex-shrink-0 mt-0.5" />
                                 <p className="text-xs text-yellow-700">
                                     หลังจากส่งหลักฐานการโอนเงิน ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง
                                     แพ็กเกจจะเริ่มใช้งานได้ทันทีหลังอนุมัติ
@@ -689,7 +689,7 @@ export default function PackagesPage() {
                                     </>
                                 ) : (
                                     <>
-                                        {isRenewal ? 'ส่งคำขอต่ออายุ' : 'ส่งคำขออัพเกรด'} <ArrowRight weight="bold" />
+                                        {isRenewal ? 'ส่งคำขอต่ออายุ' : 'ส่งคำขออัพเกรด'} <ArrowRight />
                                     </>
                                 )}
                             </button>

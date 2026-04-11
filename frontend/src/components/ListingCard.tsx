@@ -5,18 +5,18 @@ import Link from 'next/link';
 import {
     Heart,
     Gauge,
-    GasPump,
-    Motorcycle,
+    Fuel,
+    Bike,
     MapPin,
-    CalendarBlank,
-    Image as ImageIcon,
+    Calendar,
+    ImageIcon,
     Trash,
-    Scales,
+    Scale,
     Crown,
-    Fire,
-    SealCheck,
+    Flame,
+    BadgeCheck,
     Eye,
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import Toast from '@/components/Toast';
 
@@ -53,9 +53,9 @@ export interface VehicleListing {
 
 // Badge config
 const BADGE_CONFIG: Record<string, { bg: string; icon: React.ReactNode; label: string }> = {
-    'Premium Choice': { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} weight="fill" />, label: 'Premium Choice' },
-    'Hot Deal': { bg: 'bg-orange-500', icon: <Fire size={10} weight="fill" />, label: 'Hot Deal' },
-    'Verified Seller': { bg: 'bg-blue-500', icon: <SealCheck size={10} weight="fill" />, label: 'Verified Seller' },
+    'Premium Choice': { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} fill="currentColor" />, label: 'Premium Choice' },
+    'Hot Deal': { bg: 'bg-orange-500', icon: <Flame size={10} fill="currentColor" />, label: 'Hot Deal' },
+    'Verified Seller': { bg: 'bg-blue-500', icon: <BadgeCheck size={10} fill="currentColor" />, label: 'Verified Seller' },
 };
 
 interface ListingCardProps {
@@ -167,14 +167,14 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         />
                     ) : (
                         <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-                            <ImageIcon size={48} weight="thin" />
+                            <ImageIcon size={48} strokeWidth={1} />
                         </div>
                     )}
 
                     {/* Vehicle Type Badge */}
                     {listing.vehicleType === 'MOTORCYCLE' && (
                         <div className="absolute top-3 left-3 bg-primary text-white p-1.5 rounded-full">
-                            <Motorcycle weight="bold" size={14} />
+                            <Bike size={14} />
                         </div>
                     )}
 
@@ -197,7 +197,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                             className="absolute top-3 right-3 w-8 h-8 backdrop-blur rounded-full flex items-center justify-center transition duration-200 bg-red-500 text-white hover:bg-red-600"
                             title="ลบออกจากรายการโปรด"
                         >
-                            <Trash size={18} weight="fill" />
+                            <Trash size={18} fill="currentColor" />
                         </button>
                     ) : (
                         <button
@@ -208,7 +208,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                                 }`}
                             title={isFavorited ? 'ลบออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
                         >
-                            <Heart size={18} weight={isFavorited ? 'fill' : 'regular'} />
+                            <Heart size={18} {...(isFavorited ? { fill: 'currentColor' } : {})} />
                         </button>
                     )}
 
@@ -222,14 +222,14 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                                 }`}
                             title={isCompared ? 'ลบออกจากรายการเปรียบเทียบ' : `เพิ่มในรายการเปรียบเทียบ (${compareList.length}/${maxCompareItems})`}
                         >
-                            <Scales size={18} weight={isCompared ? 'fill' : 'regular'} />
+                            <Scale size={18} {...(isCompared ? { fill: 'currentColor' } : {})} />
                         </button>
                     )}
 
                     {/* Province Badge */}
                     <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                         <span className="text-white text-[10px] font-medium bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1 w-fit">
-                            <MapPin size={10} weight="fill" />
+                            <MapPin size={10} fill="currentColor" />
                             {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
                         </span>
                     </div>
@@ -244,7 +244,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                     {/* Specs — 2x2 grid */}
                     <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-gray-500 mb-3">
                         <span className="flex items-center gap-1.5">
-                            <CalendarBlank size={14} className="text-gray-400" />
+                            <Calendar size={14} className="text-gray-400" />
                             <span className="font-medium">{listing.year}</span>
                         </span>
                         <span className="flex items-center gap-1.5">
@@ -252,7 +252,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                             <span className="font-medium">{listing.mileage ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : '-'}</span>
                         </span>
                         <span className="flex items-center gap-1.5">
-                            <GasPump size={14} className="text-gray-400" />
+                            <Fuel size={14} className="text-gray-400" />
                             <span className="font-medium">{getFuelTypeLabel(listing.fuelType)}</span>
                         </span>
                         <span className="flex items-center gap-1.5">

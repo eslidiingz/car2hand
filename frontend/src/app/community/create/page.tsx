@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, PencilSimple, X, SpinnerGap, LinkSimple } from '@phosphor-icons/react';
+import { ArrowLeft, Pencil, X, Loader2, Link as LinkIcon } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -21,7 +21,15 @@ interface Category {
     icon: string;
 }
 
-export default function CreateTopicPage() {
+export default function CreateTopicPageWrapper() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+            <CreateTopicPage />
+        </Suspense>
+    );
+}
+
+function CreateTopicPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const linkedListingId = searchParams.get('listingId');
@@ -123,14 +131,14 @@ export default function CreateTopicPage() {
 
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                        <PencilSimple weight="fill" className="text-accent" />
+                        <Pencil fill="currentColor" className="text-accent" />
                         ตั้งกระทู้ใหม่
                     </h1>
 
                     {/* Linked listing badge */}
                     {linkedListingId && linkedBrand && linkedModel && (
                         <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 text-primary text-sm px-4 py-3 rounded-xl mb-5">
-                            <LinkSimple weight="bold" size={16} className="flex-shrink-0" />
+                            <LinkIcon size={16} className="flex-shrink-0" />
                             <span>กระทู้นี้เชื่อมกับประกาศ <strong>{linkedBrand} {linkedModel}{linkedYear ? ` ปี ${linkedYear}` : ''}</strong></span>
                             <Link href={`/buy/${linkedListingId}`} className="ml-auto text-xs underline hover:text-accent whitespace-nowrap">ดูประกาศ</Link>
                         </div>
@@ -235,9 +243,9 @@ export default function CreateTopicPage() {
                                 className="flex-1 bg-accent text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition disabled:opacity-60 flex items-center justify-center gap-2 text-sm"
                             >
                                 {submitting ? (
-                                    <><SpinnerGap className="animate-spin" size={18} /> กำลังโพสต์...</>
+                                    <><Loader2 className="animate-spin" size={18} /> กำลังโพสต์...</>
                                 ) : (
-                                    <><PencilSimple weight="bold" size={18} /> ตั้งกระทู้</>
+                                    <><Pencil size={18} /> ตั้งกระทู้</>
                                 )}
                             </button>
                         </div>

@@ -4,16 +4,16 @@ import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
-  MagnifyingGlass,
+  Search,
   Star,
   ArrowRight,
   ArrowLeft,
   Calculator,
   Eye,
-  CaretDown,
-  NewspaperClipping,
-  SortAscending,
-} from '@phosphor-icons/react';
+  ChevronDown,
+  Newspaper,
+  ArrowUpNarrowWide,
+} from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -81,7 +81,7 @@ function ArticleCard({ article }: { article: Article }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">
-            <NewspaperClipping size={48} />
+            <Newspaper size={48} />
           </div>
         )}
       </div>
@@ -155,7 +155,7 @@ function LoanCalculator() {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
-        <Calculator weight="fill" className="text-accent" size={24} /> คำนวณค่างวด
+        <Calculator fill="currentColor" className="text-accent" size={24} /> คำนวณค่างวด
       </h3>
       <div className="space-y-4">
         <div>
@@ -362,7 +362,7 @@ function ArticlesContent() {
 
           {/* Search bar */}
           <div className="bg-white p-2 rounded-2xl shadow-xl flex items-center max-w-2xl mx-auto transform hover:scale-[1.01] transition duration-300">
-            <MagnifyingGlass size={24} className="text-gray-400 ml-3" />
+            <Search size={24} className="text-gray-400 ml-3" />
             <input
               type="text"
               value={searchInput}
@@ -406,7 +406,7 @@ function ArticlesContent() {
         {!isFeaturedLoading && featuredArticle && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
-              <Star weight="fill" className="text-yellow-500" /> บทความแนะนำ
+              <Star fill="currentColor" className="text-yellow-500" /> บทความแนะนำ
             </h2>
             <Link
               href={`/articles/${featuredArticle.slug}`}
@@ -421,7 +421,7 @@ function ArticlesContent() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300">
-                    <NewspaperClipping size={80} />
+                    <Newspaper size={80} />
                   </div>
                 )}
                 {featuredArticle.category && (
@@ -445,7 +445,7 @@ function ArticlesContent() {
                   {featuredArticle.excerpt || featuredArticle.content.substring(0, 200)}
                 </p>
                 <span className="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                  อ่านต่อ <ArrowRight weight="bold" />
+                  อ่านต่อ <ArrowRight />
                 </span>
               </div>
             </Link>
@@ -459,7 +459,7 @@ function ArticlesContent() {
             {/* Header with sort */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-                <NewspaperClipping weight="fill" className="text-blue-500" />
+                <Newspaper fill="currentColor" className="text-blue-500" />
                 {currentSearch
                   ? `ผลค้นหา "${currentSearch}"`
                   : currentCategory
@@ -478,7 +478,7 @@ function ArticlesContent() {
                     </option>
                   ))}
                 </select>
-                <SortAscending
+                <ArrowUpNarrowWide
                   size={16}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
                 />
@@ -515,7 +515,7 @@ function ArticlesContent() {
             {/* Empty state */}
             {!isLoading && articles.length === 0 && (
               <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-                <NewspaperClipping size={64} className="mx-auto text-gray-300 mb-4" />
+                <Newspaper size={64} className="mx-auto text-gray-300 mb-4" />
                 <h3 className="text-lg font-bold text-gray-600 mb-2">ไม่พบบทความ</h3>
                 <p className="text-sm text-gray-400 mb-4">
                   {currentSearch
@@ -597,7 +597,7 @@ function ArticlesContent() {
             {popularArticles.length > 0 && (
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
-                  <Star weight="fill" className="text-yellow-500" size={20} /> บทความยอดนิยม
+                  <Star fill="currentColor" className="text-yellow-500" size={20} /> บทความยอดนิยม
                 </h3>
                 <div className="space-y-4">
                   {popularArticles.map((article, index) => (

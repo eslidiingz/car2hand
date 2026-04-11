@@ -1,38 +1,38 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     ArrowLeft,
-    CarProfile,
-    GearFine,
+    Car as CarIcon,
+    Settings,
     GitCommit,
     Gauge,
-    Robot,
-    MagicWand,
+    Bot,
+    Wand2,
     ArrowRight,
     Lightbulb,
     CheckCircle,
-    Image as ImageIcon,
+    ImageIcon,
     Plus,
     X,
-    CurrencyCircleDollar,
+    CircleDollarSign,
     MapPin,
-    CircleNotch,
+    Loader2,
     Check,
-    Motorcycle,
+    Bike,
     Car,
-    Drop,
+    Droplet,
     Palette,
     FileText,
-    WarningCircle,
-    AddressBook
-} from '@phosphor-icons/react';
+    AlertCircle,
+    BookUser
+} from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
-import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError } from '@/contexts/ListingContext';
+import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
 
 // Thai provinces list
 const PROVINCES = [
@@ -107,8 +107,17 @@ function getAuthToken(): string | null {
     try { return JSON.parse(stored).token || null; } catch { return null; }
 }
 
-export default function CreateListingPage() {
+export default function CreateListingPageWrapper() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+            <CreateListingPage />
+        </Suspense>
+    );
+}
+
+function CreateListingPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { formData, updateFormData, currentStep, setCurrentStep, listingId, setListingId, isSubmitting, setIsSubmitting } = useListingForm();
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
@@ -203,6 +212,26 @@ export default function CreateListingPage() {
             }
         }).catch(() => {});
     }, [router]);
+
+    // Pre-fill from estimate page query params
+    useEffect(() => {
+        const brand = searchParams.get('brand');
+        const model = searchParams.get('model');
+        const year = searchParams.get('year');
+        const price = searchParams.get('price');
+        const mileageParam = searchParams.get('mileage');
+
+        const updates: Partial<ListingFormData> = {};
+        if (brand && !formData.brand) updates.brand = brand;
+        if (model && !formData.model) updates.model = model;
+        if (year && !formData.year) updates.year = parseInt(year);
+        if (price && !formData.price) updates.price = parseInt(price);
+        if (mileageParam && !formData.mileage) updates.mileage = parseInt(mileageParam);
+
+        if (Object.keys(updates).length > 0) {
+            updateFormData(updates);
+        }
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchBrands = async () => {
@@ -572,7 +601,7 @@ export default function CreateListingPage() {
                                             ? 'bg-primary text-white shadow-lg shadow-blue-200 ring-4 ring-blue-100'
                                             : 'bg-white border-2 border-gray-300 text-gray-400'
                                         }`}>
-                                        {currentStep > step.num ? <Check weight="bold" size={20} /> : step.num}
+                                        {currentStep > step.num ? <Check size={20} /> : step.num}
                                     </div>
                                     <span className={`text-xs font-bold transition-colors ${currentStep >= step.num ? 'text-primary' : 'text-gray-400'
                                         }`}>
@@ -603,7 +632,7 @@ export default function CreateListingPage() {
                 {/* Error Message */}
                 {error && (
                     <div ref={errorRef} className="mb-6 flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
-                        <WarningCircle weight="bold" className="text-xl flex-shrink-0" />
+                        <AlertCircle className="text-xl flex-shrink-0" />
                         <span>{error}</span>
                     </div>
                 )}
@@ -616,7 +645,7 @@ export default function CreateListingPage() {
                             {currentStep === 1 && (
                                 <>
                                     <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <Car size={24} weight="fill" className="text-accent" /> ระบุข้อมูลรถของคุณ
+                                        <Car size={24} fill="currentColor" className="text-accent" /> ระบุข้อมูลรถของคุณ
                                     </h2>
 
                                     {/* Vehicle Type Toggle */}
@@ -628,14 +657,14 @@ export default function CreateListingPage() {
                                                 onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: '' })}
                                                 className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
-                                                <Car size={20} weight="fill" /> รถยนต์
+                                                <Car size={20} fill="currentColor" /> รถยนต์
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: '' })}
                                                 className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
-                                                <Motorcycle size={20} weight="fill" /> มอเตอร์ไซค์
+                                                <Bike size={20} fill="currentColor" /> มอเตอร์ไซค์
                                             </button>
                                         </div>
                                     </div>
@@ -680,7 +709,7 @@ export default function CreateListingPage() {
                                                     )}
                                                 </div>
                                                 <div className={`p-2 rounded-xl group-hover:bg-blue-50 transition-colors ${formData.brand ? 'text-primary' : 'text-gray-300'}`}>
-                                                    <ArrowRight size={20} weight="bold" />
+                                                    <ArrowRight size={20} />
                                                 </div>
                                             </button>
 
@@ -868,7 +897,7 @@ export default function CreateListingPage() {
                                                 onClick={() => updateFormData({ transmission: 'AUTOMATIC' })}
                                                 className={`form-button ${formData.transmission === 'AUTOMATIC' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
-                                                <GearFine size={20} /> อัตโนมัติ
+                                                <Settings size={20} /> อัตโนมัติ
                                             </button>
                                             <button
                                                 type="button"
@@ -937,7 +966,7 @@ export default function CreateListingPage() {
 
                                     {/* Vehicle Extras */}
                                     <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                        <Lightbulb size={24} weight="fill" className="text-accent" /> ข้อมูลเพิ่มเติม
+                                        <Lightbulb size={24} fill="currentColor" className="text-accent" /> ข้อมูลเพิ่มเติม
                                     </h3>
                                     <p className="text-sm text-gray-500 mb-4">ข้อมูลเหล่านี้ช่วยให้ผู้ซื้อตัดสินใจได้ง่ายขึ้น</p>
 
@@ -1126,7 +1155,7 @@ export default function CreateListingPage() {
                             {currentStep === 2 && (
                                 <>
                                     <h2 ref={imagesRef} className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <ImageIcon size={24} weight="fill" className="text-accent" /> อัพโหลดรูปภาพ
+                                        <ImageIcon size={24} fill="currentColor" className="text-accent" /> อัพโหลดรูปภาพ
                                         <span className="ml-auto text-sm font-medium text-gray-400">
                                             {formData.images.length}/{maxPhotos} รูป
                                         </span>
@@ -1156,7 +1185,7 @@ export default function CreateListingPage() {
                                                     onClick={() => removeImage(index)}
                                                     className="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
                                                 >
-                                                    <X weight="bold" size={14} />
+                                                    <X size={14} />
                                                 </button>
                                             </div>
                                         ))}
@@ -1178,7 +1207,7 @@ export default function CreateListingPage() {
 
                                     <div className="bg-blue-50 p-4 rounded-xl mb-8">
                                         <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
-                                            <Lightbulb weight="fill" className="text-yellow-500" /> เคล็ดลับถ่ายรูปให้ขายได้เร็ว
+                                            <Lightbulb fill="currentColor" className="text-yellow-500" /> เคล็ดลับถ่ายรูปให้ขายได้เร็ว
                                         </h4>
                                         <ul className="text-sm text-gray-600 space-y-1">
                                             <li>• ถ่ายรูปด้านหน้า, หลัง, ข้างซ้าย, ข้างขวา</li>
@@ -1261,7 +1290,7 @@ export default function CreateListingPage() {
                             {currentStep === 3 && (
                                 <>
                                     <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <CurrencyCircleDollar size={24} weight="fill" className="text-accent" /> หัวข้อและราคา
+                                        <CircleDollarSign size={24} fill="currentColor" className="text-accent" /> หัวข้อและราคา
                                     </h2>
 
                                     <div className="mb-6">
@@ -1345,7 +1374,7 @@ export default function CreateListingPage() {
 
                                     {/* Contact Information */}
                                     <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                        <AddressBook size={24} weight="fill" className="text-accent" /> ข้อมูลติดต่อ
+                                        <BookUser size={24} fill="currentColor" className="text-accent" /> ข้อมูลติดต่อ
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                         <div ref={contactNameRef}>
@@ -1414,7 +1443,7 @@ export default function CreateListingPage() {
                                         onClick={goToPrevStep}
                                         className="flex-1 h-14 border-2 border-gray-100 rounded-2xl font-bold text-gray-400 hover:text-primary hover:border-primary hover:bg-blue-50 transition-all flex items-center justify-center gap-2 group"
                                     >
-                                        <ArrowLeft weight="bold" className="group-hover:-translate-x-1 transition-transform" />
+                                        <ArrowLeft className="group-hover:-translate-x-1 transition-transform" />
                                         <span>ย้อนกลับ</span>
                                     </button>
                                 )}
@@ -1426,7 +1455,7 @@ export default function CreateListingPage() {
                                         className={`flex-1 h-14 bg-accent text-white rounded-2xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 group transform active:scale-[0.98] ${currentStep === 1 ? 'w-full' : ''}`}
                                     >
                                         <span>ไปต่อ</span>
-                                        <ArrowRight weight="bold" className="group-hover:translate-x-1 transition-transform" />
+                                        <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                                     </button>
                                 ) : (
                                     <button
@@ -1437,12 +1466,12 @@ export default function CreateListingPage() {
                                     >
                                         {isSubmitting ? (
                                             <>
-                                                <CircleNotch weight="bold" className="animate-spin" />
+                                                <Loader2 className="animate-spin" />
                                                 <span>กำลังลงประกาศ...</span>
                                             </>
                                         ) : (
                                             <>
-                                                <CheckCircle weight="bold" size={22} />
+                                                <CheckCircle size={22} />
                                                 <span>ลงประกาศ</span>
                                             </>
                                         )}
@@ -1459,7 +1488,7 @@ export default function CreateListingPage() {
                             {/* Preview Card Header */}
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-3 flex items-center gap-2">
-                                    <ImageIcon size={18} weight="fill" />
+                                    <ImageIcon size={18} fill="currentColor" />
                                     <span className="font-bold text-sm">ตัวอย่างประกาศ</span>
                                 </div>
                             </div>
@@ -1480,19 +1509,19 @@ export default function CreateListingPage() {
                             {/* Tips */}
                             <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100">
                                 <h3 className="font-bold text-primary mb-3 flex items-center gap-2 text-sm">
-                                    <Lightbulb weight="fill" className="text-yellow-500" size={18} /> Tips ขายไว
+                                    <Lightbulb fill="currentColor" className="text-yellow-500" size={18} /> Tips ขายไว
                                 </h3>
                                 <ul className="space-y-3 text-xs text-gray-600">
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle weight="fill" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ระบุเลขไมล์ตามจริง</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle weight="fill" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">อัพโหลดรูปภาพคุณภาพดี</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle weight="fill" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ตั้งราคาที่เหมาะสม</span>
                                     </li>
                                 </ul>

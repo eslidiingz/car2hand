@@ -3,29 +3,28 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import {
-    PencilSimple,
-    ChatsCircle,
+    Pencil,
+    MessageCircle,
     Wrench,
     Star,
-    Lightning,
+    Zap,
     ShoppingCart,
     ShieldCheck,
     Tag,
     FileText,
-    Motorcycle,
+    Bike,
     MapPin,
-    CaretUp,
-    CaretDown,
+    ChevronUp,
+    ChevronDown,
     Check,
-    ChatCircle,
     Eye,
-    SealCheck,
+    BadgeCheck,
     Trophy,
     Medal,
-    UsersThree,
-    MagnifyingGlass,
-    SpinnerGap,
-} from '@phosphor-icons/react';
+    Users,
+    Search,
+    Loader2,
+} from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -78,16 +77,16 @@ interface TagEntry {
 // ─── Icon map ─────────────────────────────────────────────────────────────────
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-    ChatsCircle: <ChatsCircle weight="fill" className="text-2xl" />,
-    Wrench: <Wrench weight="fill" className="text-2xl" />,
-    Star: <Star weight="fill" className="text-2xl" />,
-    Lightning: <Lightning weight="fill" className="text-2xl" />,
-    ShoppingCart: <ShoppingCart weight="fill" className="text-2xl" />,
-    ShieldCheck: <ShieldCheck weight="fill" className="text-2xl" />,
-    Tag: <Tag weight="fill" className="text-2xl" />,
-    FileText: <FileText weight="fill" className="text-2xl" />,
-    Motorcycle: <Motorcycle weight="fill" className="text-2xl" />,
-    MapPin: <MapPin weight="fill" className="text-2xl" />,
+    ChatsCircle: <MessageCircle fill="currentColor" className="text-2xl" />,
+    Wrench: <Wrench fill="currentColor" className="text-2xl" />,
+    Star: <Star fill="currentColor" className="text-2xl" />,
+    Lightning: <Zap fill="currentColor" className="text-2xl" />,
+    ShoppingCart: <ShoppingCart fill="currentColor" className="text-2xl" />,
+    ShieldCheck: <ShieldCheck fill="currentColor" className="text-2xl" />,
+    Tag: <Tag fill="currentColor" className="text-2xl" />,
+    FileText: <FileText fill="currentColor" className="text-2xl" />,
+    Motorcycle: <Bike fill="currentColor" className="text-2xl" />,
+    MapPin: <MapPin fill="currentColor" className="text-2xl" />,
 };
 
 const COLOR_MAP: Record<string, { bg: string; hover: string; border: string; text: string }> = {
@@ -112,11 +111,11 @@ function PostCard({ post }: { post: Post }) {
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
                 <div className="flex items-start gap-4">
                     <div className="flex flex-col items-center gap-1 min-w-[40px]">
-                        <CaretUp weight="bold" className="text-xl text-gray-300" />
+                        <ChevronUp className="text-xl text-gray-300" />
                         <span className={`font-bold ${post.score > 0 ? 'text-primary' : 'text-gray-500'}`}>
                             {post.score}
                         </span>
-                        <CaretDown weight="bold" className="text-xl text-gray-300" />
+                        <ChevronDown className="text-xl text-gray-300" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -125,7 +124,7 @@ function PostCard({ post }: { post: Post }) {
                             </span>
                             {post.isSolved && (
                                 <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    <Check weight="bold" /> แก้ไขแล้ว
+                                    <Check /> แก้ไขแล้ว
                                 </span>
                             )}
                             {post.isPinned && (
@@ -165,8 +164,8 @@ function PostCard({ post }: { post: Post }) {
                                 <span>• {new Date(post.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                             <div className="flex items-center gap-4 flex-shrink-0">
-                                <span className="flex items-center gap-1"><ChatCircle weight="bold" /> {post.commentCount}</span>
-                                <span className="flex items-center gap-1"><Eye weight="bold" /> {post.viewCount >= 1000 ? `${(post.viewCount / 1000).toFixed(1)}k` : post.viewCount}</span>
+                                <span className="flex items-center gap-1"><MessageCircle /> {post.commentCount}</span>
+                                <span className="flex items-center gap-1"><Eye /> {post.viewCount >= 1000 ? `${(post.viewCount / 1000).toFixed(1)}k` : post.viewCount}</span>
                             </div>
                         </div>
                     </div>
@@ -258,7 +257,7 @@ export default function CommunityPage() {
                         </div>
                         <div className="flex gap-3 w-full md:w-auto">
                             <div className="relative flex-1 md:w-64">
-                                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
@@ -270,7 +269,7 @@ export default function CommunityPage() {
                                 href="/community/create"
                                 className="bg-accent text-white px-5 py-2.5 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-100 flex items-center gap-2 whitespace-nowrap"
                             >
-                                <PencilSimple weight="bold" size={18} /> ตั้งกระทู้
+                                <Pencil size={18} /> ตั้งกระทู้
                             </Link>
                         </div>
                     </div>
@@ -286,7 +285,7 @@ export default function CommunityPage() {
                                     onClick={() => handleCategoryClick(cat.slug)}
                                     className={`${isActive ? `${colors.bg} ring-2 ring-primary` : `bg-white ${colors.hover}`} border ${colors.border} p-3 rounded-xl cursor-pointer transition flex flex-col items-center gap-1.5 text-center group`}
                                 >
-                                    <span className={colors.text}>{CATEGORY_ICONS[cat.icon] ?? <ChatsCircle weight="fill" className="text-2xl" />}</span>
+                                    <span className={colors.text}>{CATEGORY_ICONS[cat.icon] ?? <MessageCircle fill="currentColor" className="text-2xl" />}</span>
                                     <span className="text-[11px] font-bold text-gray-700 leading-tight">{cat.name}</span>
                                 </button>
                             );
@@ -323,11 +322,11 @@ export default function CommunityPage() {
                     {/* Posts */}
                     {loading ? (
                         <div className="flex justify-center py-16">
-                            <SpinnerGap weight="bold" className="animate-spin text-primary text-4xl" />
+                            <Loader2 className="animate-spin text-primary text-4xl" />
                         </div>
                     ) : filtered.length === 0 ? (
                         <div className="text-center py-16 text-gray-400">
-                            <ChatsCircle size={48} className="mx-auto mb-3 opacity-30" />
+                            <MessageCircle size={48} className="mx-auto mb-3 opacity-30" />
                             <p className="font-medium">ยังไม่มีกระทู้ในหมวดนี้</p>
                             <p className="text-sm">เป็นคนแรกที่ตั้งกระทู้!</p>
                         </div>
@@ -366,7 +365,7 @@ export default function CommunityPage() {
                     <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-bold text-primary flex items-center gap-2">
-                                <Trophy weight="fill" className="text-yellow-500 text-xl" /> Top Gurus
+                                <Trophy fill="currentColor" className="text-yellow-500 text-xl" /> Top Gurus
                             </h3>
                             <Link href="/community/leaderboard" className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
                         </div>
@@ -385,11 +384,11 @@ export default function CommunityPage() {
                                         <div className="flex-1 min-w-0">
                                             <h4 className="text-sm font-bold text-gray-800 truncate flex items-center gap-1">
                                                 {g.fullName}
-                                                {g.rank <= 3 && <SealCheck weight="fill" className="text-blue-500 text-xs flex-shrink-0" />}
+                                                {g.rank <= 3 && <BadgeCheck fill="currentColor" className="text-blue-500 text-xs flex-shrink-0" />}
                                             </h4>
                                             <span className="text-[10px] text-gray-500">{g.points.toLocaleString()} คะแนน</span>
                                         </div>
-                                        {g.rank === 1 && <Medal weight="fill" className="text-yellow-400 text-lg flex-shrink-0" />}
+                                        {g.rank === 1 && <Medal fill="currentColor" className="text-yellow-400 text-lg flex-shrink-0" />}
                                     </div>
                                 ))}
                             </div>
@@ -399,7 +398,7 @@ export default function CommunityPage() {
                     {/* Stats */}
                     <div className="bg-primary text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <UsersThree weight="fill" className="text-8xl" />
+                            <Users fill="currentColor" className="text-8xl" />
                         </div>
                         <h3 className="font-bold text-lg mb-4 relative z-10">สถิติชุมชน</h3>
                         <div className="grid grid-cols-2 gap-4 relative z-10">

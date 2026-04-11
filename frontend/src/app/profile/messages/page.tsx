@@ -2,21 +2,21 @@
 
 import React, { useState } from 'react';
 import {
-    MagnifyingGlass,
-    PaperPlaneRight,
-    DotsThree,
+    Search,
+    Send,
+    MoreHorizontal,
     Check,
-    Checks,
-    Image as ImageIcon,
+    CheckCheck,
+    ImageIcon,
     Paperclip
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 
 export default function MessagesPage() {
     const [activeChat, setActiveChat] = useState(1);
 
     const contacts = [
         { id: 1, name: 'Somchai_K', message: 'รถยังอยู่ไหมครับ สนใจดูรถวันเสาร์นี้', time: '10:30', unread: 2, avatar: 'https://i.pravatar.cc/150?img=68' },
-        { id: 2, name: 'Garage_Pro', message: 'โอเคครับ เดี๋ยวผมส่งโลเคชั่นให้', time: 'เมื่อวาน', unread: 0, avatar: 'https://i.pravatar.cc/150?img=33' },
+        { id: 2, name: 'Warehouse_Pro', message: 'โอเคครับ เดี๋ยวผมส่งโลเคชั่นให้', time: 'เมื่อวาน', unread: 0, avatar: 'https://i.pravatar.cc/150?img=33' },
         { id: 3, name: 'Alice_Wonder', message: 'ขอบคุณค่ะ', time: '2 วันที่แล้ว', unread: 0, avatar: 'https://i.pravatar.cc/150?img=45' },
     ];
 
@@ -35,7 +35,7 @@ export default function MessagesPage() {
                 <div className="p-4 border-b border-gray-100">
                     <h2 className="font-bold text-gray-800 text-lg mb-3">กล่องข้อความ</h2>
                     <div className="relative">
-                        <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input type="text" placeholder="ค้นหา..." className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-transparent focus:border-gray-200 rounded-xl text-sm outline-none transition" />
                     </div>
                 </div>
@@ -74,7 +74,7 @@ export default function MessagesPage() {
                             <span className="text-xs text-green-500 flex items-center gap-1"><span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span> ออนไลน์</span>
                         </div>
                     </div>
-                    <button className="text-gray-400 hover:text-gray-600"><DotsThree weight="bold" size={24} /></button>
+                    <button className="text-gray-400 hover:text-gray-600"><MoreHorizontal size={24} /></button>
                 </div>
 
                 {/* Messages List */}
@@ -88,7 +88,7 @@ export default function MessagesPage() {
                                 <p>{msg.text}</p>
                                 <div className={`text-[10px] mt-1 flex items-center justify-end gap-1 ${msg.sender === 'me' ? 'text-blue-200' : 'text-gray-400'}`}>
                                     {msg.time}
-                                    {msg.sender === 'me' && <Checks weight="bold" />}
+                                    {msg.sender === 'me' && <CheckCheck />}
                                 </div>
                             </div>
                         </div>
@@ -98,13 +98,13 @@ export default function MessagesPage() {
                 {/* Input Area */}
                 <div className="p-4 bg-white border-t border-gray-100">
                     <div className="flex items-center gap-2">
-                        <button className="p-2 text-gray-400 hover:text-primary hover:bg-gray-100 rounded-full transition"><Paperclip weight="bold" size={20} /></button>
-                        <button className="p-2 text-gray-400 hover:text-primary hover:bg-gray-100 rounded-full transition"><ImageIcon weight="bold" size={20} /></button>
+                        <button className="p-2 text-gray-400 hover:text-primary hover:bg-gray-100 rounded-full transition"><Paperclip size={20} /></button>
+                        <button className="p-2 text-gray-400 hover:text-primary hover:bg-gray-100 rounded-full transition"><ImageIcon size={20} /></button>
                         <div className="flex-1 relative">
                             <input type="text" placeholder="พิมพ์ข้อความ..." className="w-full bg-gray-100 text-gray-800 rounded-full pl-4 pr-10 py-2.5 text-sm outline-none focus:ring-1 focus:ring-primary transition" />
                         </div>
                         <button className="p-2.5 bg-primary text-white rounded-full hover:bg-opacity-90 transition shadow-lg shadow-blue-900/10">
-                            <PaperPlaneRight weight="fill" size={20} />
+                            <Send size={20} />
                         </button>
                     </div>
                 </div>

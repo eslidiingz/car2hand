@@ -5,16 +5,16 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     X,
-    CarProfile,
-    FacebookLogo,
-    ChatCircleDots,
+    Car,
+    Facebook,
+    MessageCircleMore,
     Phone,
-    LockKey,
+    Lock,
     Eye,
-    EyeSlash,
-    CircleNotch,
-    WarningCircle
-} from '@phosphor-icons/react';
+    EyeOff,
+    Loader2,
+    AlertCircle
+} from 'lucide-react';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -138,7 +138,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                     onClick={onClose}
                     className="absolute top-4 right-4 z-20 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition"
                 >
-                    <X weight="bold" />
+                    <X />
                 </button>
 
                 {/* Content */}
@@ -152,7 +152,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                         {/* Error Message */}
                         {error && (
                             <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
-                                <WarningCircle weight="bold" className="text-lg flex-shrink-0" />
+                                <AlertCircle className="text-lg flex-shrink-0" />
                                 <span>{error}</span>
                             </div>
                         )}
@@ -160,7 +160,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                         <div>
                             <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">เบอร์โทรศัพท์</label>
                             <div className="relative">
-                                <Phone weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type="tel"
                                     inputMode="numeric"
@@ -178,7 +178,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                         <div>
                             <label className="block text-xs font-bold text-gray-600 mb-1 ml-1">รหัสผ่าน</label>
                             <div className="relative">
-                                <LockKey weight="bold" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     name="password"
@@ -193,7 +193,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                 >
-                                    {showPassword ? <Eye weight="bold" /> : <EyeSlash weight="bold" />}
+                                    {showPassword ? <Eye /> : <EyeOff />}
                                 </button>
                             </div>
                         </div>
@@ -219,7 +219,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                         >
                             {isLoading ? (
                                 <>
-                                    <CircleNotch weight="bold" className="animate-spin" />
+                                    <Loader2 className="animate-spin" />
                                     <span>กำลังเข้าสู่ระบบ...</span>
                                 </>
                             ) : (

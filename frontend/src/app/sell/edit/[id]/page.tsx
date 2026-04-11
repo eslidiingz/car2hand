@@ -5,30 +5,30 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
     Car,
-    Motorcycle,
-    GearFine,
+    Bike,
+    Settings,
     GitCommit,
     Gauge,
-    Image as ImageIcon,
-    CurrencyDollar,
+    ImageIcon,
+    DollarSign,
     MapPin,
     ArrowLeft,
-    FloppyDisk,
-    CircleNotch,
-    WarningCircle,
+    Save,
+    Loader2,
+    AlertCircle,
     CheckCircle,
-    Trash,
+    Trash2,
     Plus,
-    Drop,
+    Droplet,
     Palette,
     Lightbulb,
-    AddressBook,
+    BookUser,
     Star,
     X,
     ArrowUp,
     ArrowDown,
     Camera
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect from '@/components/SearchableSelect';
 
@@ -791,7 +791,7 @@ export default function EditListingPage() {
         return (
             <div className="min-h-screen bg-surface flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <CircleNotch size={48} className="animate-spin text-primary" />
+                    <Loader2 size={48} className="animate-spin text-primary" />
                     <p className="text-gray-500">กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
@@ -802,7 +802,7 @@ export default function EditListingPage() {
         return (
             <div className="min-h-screen bg-surface flex items-center justify-center">
                 <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full text-center">
-                    <WarningCircle size={64} className="text-red-500 mx-auto mb-4" />
+                    <AlertCircle size={64} className="text-red-500 mx-auto mb-4" />
                     <h2 className="text-xl font-bold text-gray-800 mb-2">เกิดข้อผิดพลาด</h2>
                     <p className="text-gray-500 mb-6">{error}</p>
                     <Link href="/profile/listings" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition">
@@ -867,7 +867,7 @@ export default function EditListingPage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <Link href="/profile/listings" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
-                                <ArrowLeft size={20} weight="bold" />
+                                <ArrowLeft size={20} />
                             </Link>
                             <div>
                                 <h1 className="text-xl font-bold text-gray-800">แก้ไขประกาศ</h1>
@@ -881,12 +881,12 @@ export default function EditListingPage() {
                         >
                             {saving ? (
                                 <>
-                                    <CircleNotch size={20} className="animate-spin" />
+                                    <Loader2 size={20} className="animate-spin" />
                                     กำลังบันทึก...
                                 </>
                             ) : (
                                 <>
-                                    <FloppyDisk size={20} weight="bold" />
+                                    <Save size={20} />
                                     บันทึก
                                 </>
                             )}
@@ -899,7 +899,7 @@ export default function EditListingPage() {
             {success && (
                 <div className="max-w-7xl mx-auto px-4 mt-4">
                     <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700">
-                        <CheckCircle size={24} weight="bold" />
+                        <CheckCircle size={24} />
                         <span className="font-medium">บันทึกการเปลี่ยนแปลงสำเร็จ! กำลังกลับไปหน้ารายการ...</span>
                     </div>
                 </div>
@@ -909,7 +909,7 @@ export default function EditListingPage() {
             {error && listing && (
                 <div ref={errorRef} className="max-w-7xl mx-auto px-4 mt-4">
                     <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
-                        <WarningCircle size={24} weight="bold" />
+                        <AlertCircle size={24} />
                         <span className="font-medium">{error}</span>
                     </div>
                 </div>
@@ -924,7 +924,7 @@ export default function EditListingPage() {
                             {/* Image Management Section */}
                             <div className="mb-8">
                                 <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                    <Camera size={24} weight="fill" className="text-accent" /> จัดการรูปภาพ
+                                    <Camera size={24} fill="currentColor" className="text-accent" /> จัดการรูปภาพ
                                     <span className="ml-auto text-sm font-medium text-gray-400">
                                         {displayImages.length}/{maxPhotos} รูป
                                     </span>
@@ -986,7 +986,7 @@ export default function EditListingPage() {
                                                         className="absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-white text-red-500 hover:text-red-600 rounded-full flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
                                                         title="ลบรูปภาพ"
                                                     >
-                                                        <Trash size={16} weight="bold" />
+                                                        <Trash2 size={16} />
                                                     </button>
 
                                                     {/* Order Number */}
@@ -1053,7 +1053,7 @@ export default function EditListingPage() {
 
                             {/* Vehicle Info Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <Car size={24} weight="fill" className="text-accent" /> ข้อมูลรถของคุณ
+                                <Car size={24} fill="currentColor" className="text-accent" /> ข้อมูลรถของคุณ
                             </h3>
 
                             {/* Vehicle Type */}
@@ -1065,14 +1065,14 @@ export default function EditListingPage() {
                                         onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: 'SEDAN' })}
                                         className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
                                     >
-                                        <Car size={20} weight="fill" /> รถยนต์
+                                        <Car size={20} fill="currentColor" /> รถยนต์
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: 'STANDARD' })}
                                         className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
                                     >
-                                        <Motorcycle size={20} weight="fill" /> มอเตอร์ไซค์
+                                        <Bike size={20} fill="currentColor" /> มอเตอร์ไซค์
                                     </button>
                                 </div>
                             </div>
@@ -1279,7 +1279,7 @@ export default function EditListingPage() {
                                         onClick={() => updateFormData({ transmission: 'AUTOMATIC' })}
                                         className={`form-button ${formData.transmission === 'AUTOMATIC' ? 'form-button-active' : 'form-button-inactive'}`}
                                     >
-                                        <GearFine size={20} /> อัตโนมัติ
+                                        <Settings size={20} /> อัตโนมัติ
                                     </button>
                                     <button
                                         type="button"
@@ -1350,7 +1350,7 @@ export default function EditListingPage() {
 
                             {/* Price Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <CurrencyDollar size={24} weight="fill" className="text-accent" /> หัวข้อและราคา
+                                <DollarSign size={24} fill="currentColor" className="text-accent" /> หัวข้อและราคา
                             </h3>
 
                             {/* Title & Description */}
@@ -1429,7 +1429,7 @@ export default function EditListingPage() {
 
                             {/* Contact Info Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <AddressBook size={24} weight="fill" className="text-accent" /> ข้อมูลติดต่อ
+                                <BookUser size={24} fill="currentColor" className="text-accent" /> ข้อมูลติดต่อ
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -1488,7 +1488,7 @@ export default function EditListingPage() {
 
                             {/* Vehicle Extras Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <Lightbulb size={24} weight="fill" className="text-accent" /> ข้อมูลเพิ่มเติม
+                                <Lightbulb size={24} fill="currentColor" className="text-accent" /> ข้อมูลเพิ่มเติม
                             </h3>
 
                             <div className="space-y-4 mb-8">
@@ -1686,12 +1686,12 @@ export default function EditListingPage() {
                                 >
                                     {saving ? (
                                         <>
-                                            <CircleNotch size={20} className="animate-spin" />
+                                            <Loader2 size={20} className="animate-spin" />
                                             กำลังบันทึก...
                                         </>
                                     ) : (
                                         <>
-                                            <FloppyDisk size={20} weight="bold" />
+                                            <Save size={20} />
                                             บันทึก
                                         </>
                                     )}
@@ -1706,7 +1706,7 @@ export default function EditListingPage() {
                             {/* Preview Card Header */}
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-3 flex items-center gap-2">
-                                    <ImageIcon size={18} weight="fill" />
+                                    <ImageIcon size={18} fill="currentColor" />
                                     <span className="font-bold text-sm">ตัวอย่างประกาศ</span>
                                 </div>
                             </div>
@@ -1729,19 +1729,19 @@ export default function EditListingPage() {
                             {/* Tips */}
                             <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100">
                                 <h3 className="font-bold text-primary mb-3 flex items-center gap-2 text-sm">
-                                    <Lightbulb weight="fill" className="text-yellow-500" size={18} /> Tips ขายไว
+                                    <Lightbulb fill="currentColor" className="text-yellow-500" size={18} /> Tips ขายไว
                                 </h3>
                                 <ul className="space-y-3 text-xs text-gray-600">
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle weight="fill" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ระบุเลขไมล์ตามจริง</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle weight="fill" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">อัพโหลดรูปภาพคุณภาพดี</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle weight="fill" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ตั้งราคาที่เหมาะสม</span>
                                     </li>
                                 </ul>

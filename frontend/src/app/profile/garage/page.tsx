@@ -3,21 +3,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
     Plus,
-    CarProfile,
+    Car,
     Wrench,
-    Warning,
+    AlertTriangle,
     Trash,
-    PencilSimple,
+    Pencil,
     Clock,
-    CurrencyDollar,
+    DollarSign,
     MapPin,
-    CalendarBlank,
-    GasPump,
+    Calendar,
+    Fuel,
     CheckCircle,
     X,
-    DotsThreeVertical,
-    Speedometer,
-} from '@phosphor-icons/react';
+    MoreVertical,
+    Gauge as SpeedometerIcon,
+} from 'lucide-react';
 import Toast from '@/components/Toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -102,7 +102,7 @@ const emptyAddForm = { nickname: '', brand: '', model: '', year: '', color: '', 
 const emptyServiceForm = { title: '', description: '', mileage: '', cost: '', serviceDate: '', shopName: '' };
 const emptyReminderForm = { title: '', type: 'DATE', dueDate: '', dueMileage: '' };
 
-export default function GaragePage() {
+export default function WarehousePage() {
     const [userId, setUserId] = useState<string | null>(null);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [loading, setLoading] = useState(true);
@@ -276,7 +276,7 @@ export default function GaragePage() {
         setShowReminderForm(false);
         try {
             const token = getAuthToken();
-            const authHeaders = token ? { 'Authorization': `Bearer ${token}` } : {};
+            const authHeaders: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
             const [sRes, rRes] = await Promise.all([
                 fetch(`${API_URL}/garage/${vehicle.id}/services`, { headers: authHeaders }),
                 fetch(`${API_URL}/garage/${vehicle.id}/reminders`, { headers: authHeaders }),
@@ -477,14 +477,14 @@ export default function GaragePage() {
                     onClick={() => { setAddForm(emptyAddForm); setShowAddModal(true); }}
                     className="bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-opacity-90 transition shadow-sm"
                 >
-                    <Plus weight="bold" /> เพิ่มรถ
+                    <Plus /> เพิ่มรถ
                 </button>
             </div>
 
             {/* Vehicle Grid */}
             {vehicles.length === 0 && !loading ? (
                 <div className="text-center py-16">
-                    <CarProfile size={64} className="mx-auto text-gray-300 mb-4" />
+                    <Car size={64} className="mx-auto text-gray-300 mb-4" />
                     <p className="text-gray-400 font-medium">ยังไม่มีรถในโรงรถ</p>
                     <button
                         onClick={() => { setAddForm(emptyAddForm); setShowAddModal(true); }}
@@ -508,7 +508,7 @@ export default function GaragePage() {
                                         <img src={car.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt={car.nickname} />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
-                                            <CarProfile size={80} className="text-gray-300" />
+                                            <Car size={80} className="text-gray-300" />
                                         </div>
                                     )}
                                     {car.licensePlate && (
@@ -518,7 +518,7 @@ export default function GaragePage() {
                                     )}
                                     {urgentReminders.length > 0 && (
                                         <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
-                                            <Warning weight="fill" size={14} /> {urgentReminders.length} แจ้งเตือน
+                                            <AlertTriangle fill="currentColor" size={14} /> {urgentReminders.length} แจ้งเตือน
                                         </div>
                                     )}
                                 </div>
@@ -535,7 +535,7 @@ export default function GaragePage() {
                                                 onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === car.id ? null : car.id); }}
                                                 className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition"
                                             >
-                                                <DotsThreeVertical weight="bold" size={20} />
+                                                <MoreVertical size={20} />
                                             </button>
                                             {menuOpenId === car.id && (
                                                 <div className="absolute right-0 top-10 bg-white border border-gray-100 rounded-xl shadow-lg z-20 w-36 overflow-hidden">
@@ -543,7 +543,7 @@ export default function GaragePage() {
                                                         onClick={(e) => { e.stopPropagation(); startEdit(car); }}
                                                         className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 flex items-center gap-2 text-gray-700"
                                                     >
-                                                        <PencilSimple size={16} /> แก้ไข
+                                                        <Pencil size={16} /> แก้ไข
                                                     </button>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); setDeleteConfirm({ type: 'vehicle', id: car.id, title: car.nickname }); }}
@@ -558,7 +558,7 @@ export default function GaragePage() {
 
                                     {/* Mileage - inline edit */}
                                     <div className="flex items-center gap-2 mb-4">
-                                        <GasPump size={16} className="text-gray-400" />
+                                        <Fuel size={16} className="text-gray-400" />
                                         {editingMileageId === car.id ? (
                                             <div className="flex items-center gap-2 flex-1">
                                                 <input
@@ -579,7 +579,7 @@ export default function GaragePage() {
                                                 className="text-sm text-gray-600 hover:text-primary transition flex items-center gap-1"
                                             >
                                                 {car.currentMileage.toLocaleString()} กม.
-                                                <PencilSimple size={12} className="text-gray-400" />
+                                                <Pencil size={12} className="text-gray-400" />
                                             </button>
                                         )}
                                     </div>
@@ -596,7 +596,7 @@ export default function GaragePage() {
                                             {urgentReminders.slice(0, 2).map(r => (
                                                 <div key={r.id} className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 border border-red-100 text-red-700">
                                                     <div className="flex items-center gap-2">
-                                                        <Warning weight="fill" size={16} />
+                                                        <AlertTriangle fill="currentColor" size={16} />
                                                         <span className="text-xs font-medium">{r.title}</span>
                                                     </div>
                                                     <span className="text-xs font-bold">
@@ -637,7 +637,7 @@ export default function GaragePage() {
                         className="border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center p-12 text-gray-400 hover:bg-gray-50 hover:border-gray-300 transition gap-4 min-h-[300px]"
                     >
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-primary">
-                            <Plus weight="bold" size={32} />
+                            <Plus size={32} />
                         </div>
                         <span className="font-bold">เพิ่มรถคันใหม่</span>
                     </button>
@@ -746,7 +746,7 @@ export default function GaragePage() {
                                         onClick={() => { setServiceForm(emptyServiceForm); setShowServiceForm(!showServiceForm); }}
                                         className="w-full py-2.5 rounded-xl border-2 border-dashed border-gray-200 text-sm font-bold text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition flex items-center justify-center gap-2"
                                     >
-                                        <Plus size={16} weight="bold" /> เพิ่มประวัติซ่อม
+                                        <Plus size={16} /> เพิ่มประวัติซ่อม
                                     </button>
 
                                     {/* Add service form */}
@@ -782,9 +782,9 @@ export default function GaragePage() {
                                                 </button>
                                             </div>
                                             <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-500">
-                                                <span className="flex items-center gap-1"><CalendarBlank size={14} /> {formatDate(s.serviceDate)}</span>
-                                                {s.mileage != null && <span className="flex items-center gap-1"><Speedometer size={14} /> {s.mileage.toLocaleString()} กม.</span>}
-                                                {s.cost != null && <span className="flex items-center gap-1"><CurrencyDollar size={14} /> {formatCurrency(Number(s.cost))} บาท</span>}
+                                                <span className="flex items-center gap-1"><Calendar size={14} /> {formatDate(s.serviceDate)}</span>
+                                                {s.mileage != null && <span className="flex items-center gap-1"><SpeedometerIcon size={14} /> {s.mileage.toLocaleString()} กม.</span>}
+                                                {s.cost != null && <span className="flex items-center gap-1"><DollarSign size={14} /> {formatCurrency(Number(s.cost))} บาท</span>}
                                                 {s.shopName && <span className="flex items-center gap-1"><MapPin size={14} /> {s.shopName}</span>}
                                             </div>
                                         </div>
@@ -797,7 +797,7 @@ export default function GaragePage() {
                                         onClick={() => { setReminderForm(emptyReminderForm); setShowReminderForm(!showReminderForm); }}
                                         className="w-full py-2.5 rounded-xl border-2 border-dashed border-gray-200 text-sm font-bold text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition flex items-center justify-center gap-2"
                                     >
-                                        <Plus size={16} weight="bold" /> เพิ่มแจ้งเตือน
+                                        <Plus size={16} /> เพิ่มแจ้งเตือน
                                     </button>
 
                                     {/* Add reminder form */}
@@ -811,13 +811,13 @@ export default function GaragePage() {
                                                         onClick={() => setReminderForm(f => ({ ...f, type: 'DATE' }))}
                                                         className={`flex-1 py-2 rounded-lg text-sm font-bold border transition ${reminderForm.type === 'DATE' ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600'}`}
                                                     >
-                                                        <CalendarBlank size={14} className="inline mr-1" /> ตามวันที่
+                                                        <Calendar size={14} className="inline mr-1" /> ตามวันที่
                                                     </button>
                                                     <button
                                                         onClick={() => setReminderForm(f => ({ ...f, type: 'MILEAGE' }))}
                                                         className={`flex-1 py-2 rounded-lg text-sm font-bold border transition ${reminderForm.type === 'MILEAGE' ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-600'}`}
                                                     >
-                                                        <Speedometer size={14} className="inline mr-1" /> ตามไมล์
+                                                        <SpeedometerIcon size={14} className="inline mr-1" /> ตามไมล์
                                                     </button>
                                                 </div>
                                             </div>
@@ -843,21 +843,21 @@ export default function GaragePage() {
                                                 <div className="flex justify-between items-start">
                                                     <div className="flex items-center gap-3 flex-1">
                                                         <button onClick={() => handleToggleReminder(r)} className={`shrink-0 ${r.isCompleted ? 'text-green-500' : 'text-gray-300 hover:text-primary'} transition`}>
-                                                            <CheckCircle size={24} weight={r.isCompleted ? 'fill' : 'regular'} />
+                                                            <CheckCircle size={24} {...(r.isCompleted ? { fill: 'currentColor' } : {})} />
                                                         </button>
                                                         <div>
                                                             <h4 className={`font-bold text-sm ${r.isCompleted ? 'line-through text-gray-400' : urgent ? 'text-red-700' : 'text-gray-800'}`}>{r.title}</h4>
                                                             <p className="text-xs text-gray-500 mt-0.5">
                                                                 {r.type === 'DATE' ? (
-                                                                    <span className="flex items-center gap-1"><CalendarBlank size={12} /> {r.dueDate ? formatDate(r.dueDate) : 'ไม่ระบุ'}</span>
+                                                                    <span className="flex items-center gap-1"><Calendar size={12} /> {r.dueDate ? formatDate(r.dueDate) : 'ไม่ระบุ'}</span>
                                                                 ) : (
-                                                                    <span className="flex items-center gap-1"><Speedometer size={12} /> {r.dueMileage ? `${r.dueMileage.toLocaleString()} กม.` : 'ไม่ระบุ'}</span>
+                                                                    <span className="flex items-center gap-1"><SpeedometerIcon size={12} /> {r.dueMileage ? `${r.dueMileage.toLocaleString()} กม.` : 'ไม่ระบุ'}</span>
                                                                 )}
                                                             </p>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-1">
-                                                        {urgent && !r.isCompleted && <Warning weight="fill" size={18} className="text-red-500" />}
+                                                        {urgent && !r.isCompleted && <AlertTriangle fill="currentColor" size={18} className="text-red-500" />}
                                                         <button onClick={() => setDeleteConfirm({ type: 'reminder', id: r.id, title: r.title })} className="p-1 text-gray-300 hover:text-red-500 transition">
                                                             <Trash size={16} />
                                                         </button>

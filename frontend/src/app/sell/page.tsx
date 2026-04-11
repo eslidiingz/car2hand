@@ -2,26 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import SearchableSelect, { type SelectOption } from '@/components/SearchableSelect';
 import {
     Car,
-    MagicWand,
+    Wand2,
     CheckCircle,
     ShieldCheck,
     Camera,
     Handshake,
     Star,
-    CaretDown,
-    Lightning,
+    ChevronDown,
+    Zap,
     Rocket,
     Crown,
     Check,
-    ChartLineUp,
+    TrendingUp,
     Eye,
     Images,
     Timer,
-    CurrencyCircleDollar,
+    CircleDollarSign,
     Megaphone,
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
 
@@ -46,10 +47,10 @@ interface PackageData {
 }
 
 const packageStyles: Record<string, { icon: React.ReactNode; bg: string; iconColor: string; border: string }> = {
-    basic: { icon: <Lightning weight="duotone" size={28} />, bg: 'bg-gray-50', iconColor: 'text-gray-400', border: 'border-gray-200' },
-    standard: { icon: <Star weight="duotone" size={28} />, bg: 'bg-blue-50', iconColor: 'text-blue-500', border: 'border-blue-200' },
-    professional: { icon: <Rocket weight="duotone" size={28} />, bg: 'bg-orange-50', iconColor: 'text-orange-500', border: 'border-orange-400' },
-    premium: { icon: <Crown weight="duotone" size={28} />, bg: 'bg-yellow-50', iconColor: 'text-yellow-500', border: 'border-yellow-400' },
+    basic: { icon: <Zap size={28} />, bg: 'bg-gray-50', iconColor: 'text-gray-400', border: 'border-gray-200' },
+    standard: { icon: <Star size={28} />, bg: 'bg-blue-50', iconColor: 'text-blue-500', border: 'border-blue-200' },
+    professional: { icon: <Rocket size={28} />, bg: 'bg-orange-50', iconColor: 'text-orange-500', border: 'border-orange-400' },
+    premium: { icon: <Crown size={28} />, bg: 'bg-yellow-50', iconColor: 'text-yellow-500', border: 'border-yellow-400' },
 };
 
 function getStyle(slug: string) {
@@ -61,20 +62,41 @@ function formatSearchPriority(p: string) {
     return map[p] || p;
 }
 
+interface Brand {
+    id: string;
+    name: string;
+    nameTh: string | null;
+    logo?: string | null;
+    isPopular?: boolean;
+}
+
+interface VehicleModel {
+    id: string;
+    name: string;
+    nameTh?: string | null;
+}
+
 export default function SellPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [stats, setStats] = useState({ activeListings: 0, soldListings: 0, totalSellers: 0 });
     const [packages, setPackages] = useState<PackageData[]>([]);
     const [pendingRedirect, setPendingRedirect] = useState<string>('/sell/create');
+
+    // Brand/Model selection for estimate
+    const [brands, setBrands] = useState<Brand[]>([]);
+    const [models, setModels] = useState<VehicleModel[]>([]);
+    const [selectedBrandId, setSelectedBrandId] = useState('');
+    const [selectedBrandName, setSelectedBrandName] = useState('');
+    const [selectedModelId, setSelectedModelId] = useState('');
+    const [selectedModelName, setSelectedModelName] = useState('');
 
     useEffect(() => {
         const user = localStorage.getItem('user') || sessionStorage.getItem('user');
         setIsLoggedIn(!!user);
 
-        // Fetch stats + packages
+        // Fetch stats + packages + brands
         fetch(`${API_URL}/listings/stats/public`)
             .then(r => r.json())
             .then(d => setStats(d))
@@ -84,7 +106,27 @@ export default function SellPage() {
             .then(r => r.json())
             .then(d => setPackages(d.packages || []))
             .catch(() => {});
+
+        fetch(`${API_URL}/master-data/brands?vehicleType=CAR`)
+            .then(r => r.json())
+            .then(d => { if (d.success) setBrands(d.brands); })
+            .catch(() => {});
     }, []);
+
+    // Fetch models when brand changes
+    useEffect(() => {
+        if (!selectedBrandId) { setModels([]); return; }
+        fetch(`${API_URL}/master-data/brands/${selectedBrandId}/models`)
+            .then(r => r.json())
+            .then(d => { if (d.success) setModels(d.models); })
+            .catch(() => {});
+        setSelectedModelId('');
+        setSelectedModelName('');
+    }, [selectedBrandId]);
+
+    const estimateUrl = selectedBrandName && selectedModelName
+        ? `/sell/estimate?brandId=${selectedBrandId}&brand=${encodeURIComponent(selectedBrandName)}&modelId=${selectedModelId}&model=${encodeURIComponent(selectedModelName)}`
+        : '/sell/estimate';
 
     const handleSellClick = (e: React.MouseEvent) => {
         if (!isLoggedIn) {
@@ -125,22 +167,48 @@ export default function SellPage() {
                     </p>
 
                     <div className="bg-white p-4 rounded-2xl shadow-2xl max-w-3xl mx-auto flex flex-col md:flex-row gap-3">
-                        <div className="flex-1 text-left relative">
-                            <label className="text-xs text-gray-500 ml-1 mb-1 block">ยี่ห้อ / รุ่นรถของคุณ</label>
-                            <input
-                                type="text"
-                                placeholder="เช่น Honda Civic 2020"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-white p-3 rounded-xl outline-none border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition font-medium"
+                        <div className="flex-1 text-left">
+                            <label className="text-xs text-gray-500 ml-1 mb-1 block">ยี่ห้อ</label>
+                            <SearchableSelect
+                                options={brands.map(b => ({
+                                    id: b.id,
+                                    label: b.name,
+                                    subLabel: b.nameTh || undefined,
+                                    image: b.logo || `/brands/cars/${b.name}-300x300.png`,
+                                    isPopular: b.isPopular || false,
+                                }))}
+                                value={selectedBrandId}
+                                onChange={(val, opt) => {
+                                    setSelectedBrandId(val);
+                                    setSelectedBrandName(opt?.label || '');
+                                }}
+                                placeholder="เลือกยี่ห้อ"
+                                searchPlaceholder="ค้นหายี่ห้อ..."
                             />
-                            <Car className="ph ph-car absolute right-4 top-9 text-gray-400" size={24} />
+                        </div>
+                        <div className="flex-1 text-left">
+                            <label className="text-xs text-gray-500 ml-1 mb-1 block">รุ่น</label>
+                            <SearchableSelect
+                                options={models.map(m => ({
+                                    id: m.id,
+                                    label: m.name,
+                                    subLabel: m.nameTh || undefined,
+                                }))}
+                                value={selectedModelId}
+                                onChange={(val, opt) => {
+                                    setSelectedModelId(val);
+                                    setSelectedModelName(opt?.label || '');
+                                }}
+                                placeholder="เลือกรุ่น"
+                                searchPlaceholder="ค้นหารุ่น..."
+                                disabled={!selectedBrandId}
+                            />
                         </div>
                         <Link
-                            href={`/sell/estimate${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ''}`}
+                            href={estimateUrl}
                             className="bg-accent text-white px-8 py-3 rounded-xl font-bold text-lg hover:bg-orange-600 transition shadow-lg shadow-orange-200 flex items-center justify-center gap-2 md:mt-5"
                         >
-                            เช็คราคาขาย <MagicWand weight="bold" />
+                            เช็คราคาขาย <Wand2 />
                         </Link>
                     </div>
                     <p className="text-gray-400 text-xs mt-4">*ประเมินราคาฟรี ไม่มีค่าใช้จ่ายแอบแฝง</p>
@@ -195,7 +263,7 @@ export default function SellPage() {
                             {
                                 label: 'ราคาขาย',
                                 c2h: 'สูง (ตามราคาตลาด)',
-                                c2hIcon: <CheckCircle weight="fill" className="text-green-400 text-xl" />,
+                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
                                 others1: 'ต่ำ (มักโดนกดราคา)',
                                 others1Color: 'text-red-400',
                                 others2: 'สูง (ตั้งเองได้)',
@@ -204,7 +272,7 @@ export default function SellPage() {
                             {
                                 label: 'ความรวดเร็ว',
                                 c2h: 'ปานกลาง - เร็วมาก',
-                                c2hIcon: <CheckCircle weight="fill" className="text-green-400 text-xl" />,
+                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
                                 others1: 'เร็วมาก (รับเงินทันที)',
                                 others1Color: 'text-green-600',
                                 others2: 'ช้ามาก (ขึ้นอยู่กับดวง)',
@@ -213,7 +281,7 @@ export default function SellPage() {
                             {
                                 label: 'ความปลอดภัย',
                                 c2h: 'ปลอดภัยสูงสุด',
-                                c2hIcon: <ShieldCheck weight="fill" className="text-green-400 text-xl" />,
+                                c2hIcon: <ShieldCheck fill="currentColor" className="text-green-400 text-xl" />,
                                 others1: 'ปานกลาง',
                                 others1Color: 'text-gray-500',
                                 others2: 'ต่ำ (เสี่ยงมิจฉาชีพ)',
@@ -222,7 +290,7 @@ export default function SellPage() {
                             {
                                 label: 'ค่าใช้จ่าย',
                                 c2h: 'ลงฟรี (มีแพ็กเกจเสริม)',
-                                c2hIcon: <CheckCircle weight="fill" className="text-green-400 text-xl" />,
+                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
                                 others1: 'หักค่าคอม 5-15%',
                                 others1Color: 'text-red-400',
                                 others2: 'ฟรี แต่ต้องทำเอง',
@@ -231,7 +299,7 @@ export default function SellPage() {
                             {
                                 label: 'ระบบดันประกาศ',
                                 c2h: 'ดันอัตโนมัติ',
-                                c2hIcon: <CheckCircle weight="fill" className="text-green-400 text-xl" />,
+                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
                                 others1: 'ไม่มี',
                                 others1Color: 'text-gray-400',
                                 others2: 'ต้องโพสต์ซ้ำเอง',
@@ -240,7 +308,7 @@ export default function SellPage() {
                             {
                                 label: 'จำนวนรูปภาพ',
                                 c2h: 'สูงสุด 40 รูป',
-                                c2hIcon: <CheckCircle weight="fill" className="text-green-400 text-xl" />,
+                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
                                 others1: 'จำกัด 5-10 รูป',
                                 others1Color: 'text-gray-400',
                                 others2: 'ไม่จำกัด',
@@ -279,7 +347,7 @@ export default function SellPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                         <div className="flex flex-col items-center text-center group">
                             <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
-                                <Camera weight="duotone" className="text-4xl text-primary" />
+                                <Camera className="text-4xl text-primary" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-3">1. ถ่ายรูปและลงข้อมูล</h3>
                             <p className="text-gray-500">กรอกข้อมูลรถของคุณ และอัปโหลดรูปภาพ</p>
@@ -287,7 +355,7 @@ export default function SellPage() {
                         <div className="flex flex-col items-center text-center group relative">
                             <div className="hidden md:block absolute top-10 -left-1/2 w-full h-[2px] bg-gray-200 -z-10"></div>
                             <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
-                                <MagicWand weight="duotone" className="text-4xl text-accent" />
+                                <Wand2 className="text-4xl text-accent" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-3">2. ตั้งราคา</h3>
                             <p className="text-gray-500">ระบบช่วยประเมินราคากลางให้ เพื่อให้คุณตั้งราคาได้เหมาะสม</p>
@@ -295,7 +363,7 @@ export default function SellPage() {
                         <div className="flex flex-col items-center text-center group relative">
                             <div className="hidden md:block absolute top-10 -left-1/2 w-full h-[2px] bg-gray-200 -z-10"></div>
                             <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
-                                <Handshake weight="duotone" className="text-4xl text-green-600" />
+                                <Handshake className="text-4xl text-green-600" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-3">3. ปิดการขายรับเงิน</h3>
                             <p className="text-gray-500">นัดดูรถ และปิดการขายได้เลย เรามีสัญญาซื้อขายให้โหลดฟรี</p>
@@ -354,31 +422,31 @@ export default function SellPage() {
                                         {/* Features */}
                                         <div className="px-6 py-4 flex-1 space-y-3 text-sm">
                                             <div className="flex items-center gap-2">
-                                                <Check weight="bold" className="text-green-500 flex-shrink-0" size={16} />
+                                                <Check className="text-green-500 flex-shrink-0" size={16} />
                                                 <span>{pkg.maxListings === -1 ? 'ไม่จำกัดประกาศ' : `${pkg.maxListings} ประกาศ`}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Images weight="bold" className="text-green-500 flex-shrink-0" size={16} />
+                                                <Images className="text-green-500 flex-shrink-0" size={16} />
                                                 <span>สูงสุด {pkg.maxPhotosPerListing} รูป/ประกาศ</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Timer weight="bold" className="text-green-500 flex-shrink-0" size={16} />
+                                                <Timer className="text-green-500 flex-shrink-0" size={16} />
                                                 <span>{pkg.listingDurationDays === -1 ? 'ไม่มีหมดอายุ' : `${pkg.listingDurationDays} วัน/ประกาศ`}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <ChartLineUp weight="bold" className={`flex-shrink-0 ${pkg.autoBumpPerDay > 0 ? 'text-green-500' : 'text-gray-300'}`} size={16} />
+                                                <TrendingUp className={`flex-shrink-0 ${pkg.autoBumpPerDay > 0 ? 'text-green-500' : 'text-gray-300'}`} size={16} />
                                                 <span className={pkg.autoBumpPerDay > 0 ? '' : 'text-gray-400'}>
                                                     {pkg.autoBumpPerDay > 0 ? `ดันอัตโนมัติ ${pkg.autoBumpPerDay} ครั้ง/วัน` : 'ดันเอง (Manual)'}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Eye weight="bold" className={`flex-shrink-0 ${pkg.badge ? 'text-green-500' : 'text-gray-300'}`} size={16} />
+                                                <Eye className={`flex-shrink-0 ${pkg.badge ? 'text-green-500' : 'text-gray-300'}`} size={16} />
                                                 <span className={pkg.badge ? '' : 'text-gray-400'}>
                                                     {pkg.badge ? `ป้าย "${pkg.badge}"` : 'ไม่มีป้ายพิเศษ'}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Megaphone weight="bold" className={`flex-shrink-0 ${pkg.searchPriority !== 'normal' ? 'text-green-500' : 'text-gray-300'}`} size={16} />
+                                                <Megaphone className={`flex-shrink-0 ${pkg.searchPriority !== 'normal' ? 'text-green-500' : 'text-gray-300'}`} size={16} />
                                                 <span className={pkg.searchPriority !== 'normal' ? '' : 'text-gray-400'}>
                                                     ลำดับค้นหา: {formatSearchPriority(pkg.searchPriority)}
                                                 </span>
@@ -438,7 +506,7 @@ export default function SellPage() {
                     ].map((t, i) => (
                         <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg transition">
                             <div className="flex text-yellow-400 mb-4 gap-1">
-                                {[1, 2, 3, 4, 5].map((s) => <Star key={s} weight="fill" />)}
+                                {[1, 2, 3, 4, 5].map((s) => <Star key={s} fill="currentColor" />)}
                             </div>
                             <p className="text-gray-600 mb-6">{t.review}</p>
                             <div className="flex items-center gap-3">
@@ -465,7 +533,7 @@ export default function SellPage() {
                         <details className="bg-white p-5 rounded-2xl shadow-sm cursor-pointer group">
                             <summary className="font-bold text-gray-800 flex justify-between items-center list-none">
                                 ลงขายมีค่าใช้จ่ายไหม?
-                                <CaretDown weight="bold" className="group-open:rotate-180 transition" />
+                                <ChevronDown className="group-open:rotate-180 transition" />
                             </summary>
                             <p className="text-gray-600 mt-3 pt-3 border-t border-gray-100">
                                 สำหรับรถคันแรก ลงขายฟรีไม่มีค่าใช้จ่าย! หากต้องการลงขายมากกว่า 1 คัน หรือต้องการโปรโมทให้เห็นมากขึ้น เรามีแพ็กเกจให้เลือกเริ่มต้นเพียง 299 บาท/เดือน
@@ -474,7 +542,7 @@ export default function SellPage() {
                         <details className="bg-white p-5 rounded-2xl shadow-sm cursor-pointer group">
                             <summary className="font-bold text-gray-800 flex justify-between items-center list-none">
                                 ต้องเตรียมเอกสารอะไรบ้าง?
-                                <CaretDown weight="bold" className="group-open:rotate-180 transition" />
+                                <ChevronDown className="group-open:rotate-180 transition" />
                             </summary>
                             <p className="text-gray-600 mt-3 pt-3 border-t border-gray-100">
                                 เบื้องต้นใช้เพียงรูปถ่ายรถที่ชัดเจน และสำเนาเล่มทะเบียนรถ (หน้าที่มีชื่อเจ้าของ) เพื่อยืนยันว่าเป็นเจ้าของรถจริง
@@ -483,7 +551,7 @@ export default function SellPage() {
                         <details className="bg-white p-5 rounded-2xl shadow-sm cursor-pointer group">
                             <summary className="font-bold text-gray-800 flex justify-between items-center list-none">
                                 ระบบแนะนำราคากลางทำงานอย่างไร?
-                                <CaretDown weight="bold" className="group-open:rotate-180 transition" />
+                                <ChevronDown className="group-open:rotate-180 transition" />
                             </summary>
                             <p className="text-gray-600 mt-3 pt-3 border-t border-gray-100">
                                 ระบบของเราใช้ข้อมูลราคากลางจากตลาดรถมือสองเพื่อแนะนำราคาที่เหมาะสม โดยอ้างอิงจากยี่ห้อ รุ่น ปี และเลขไมล์ เพื่อช่วยให้คุณตั้งราคาได้ยุติธรรม
@@ -492,7 +560,7 @@ export default function SellPage() {
                         <details className="bg-white p-5 rounded-2xl shadow-sm cursor-pointer group">
                             <summary className="font-bold text-gray-800 flex justify-between items-center list-none">
                                 แพ็กเกจต่างกันอย่างไร?
-                                <CaretDown weight="bold" className="group-open:rotate-180 transition" />
+                                <ChevronDown className="group-open:rotate-180 transition" />
                             </summary>
                             <p className="text-gray-600 mt-3 pt-3 border-t border-gray-100">
                                 แพ็กเกจ Basic ลงขายฟรี 1 รายการ เหมาะกับคนขายรถส่วนตัว แพ็กเกจที่สูงขึ้นจะได้จำนวนประกาศมากขึ้น ระบบดันโพสต์อัตโนมัติ ป้ายพิเศษบนประกาศ และลำดับการค้นหาที่ดีกว่า
@@ -501,7 +569,7 @@ export default function SellPage() {
                         <details className="bg-white p-5 rounded-2xl shadow-sm cursor-pointer group">
                             <summary className="font-bold text-gray-800 flex justify-between items-center list-none">
                                 ลงขายแล้วจะมีคนเห็นไหม?
-                                <CaretDown weight="bold" className="group-open:rotate-180 transition" />
+                                <ChevronDown className="group-open:rotate-180 transition" />
                             </summary>
                             <p className="text-gray-600 mt-3 pt-3 border-t border-gray-100">
                                 ทุกประกาศจะแสดงในหน้าซื้อรถทันที (ยกเว้น Basic ต้องรออนุมัติ) และสามารถค้นหาได้จากยี่ห้อ รุ่น หรือจังหวัด สำหรับแพ็กเกจที่สูงขึ้นจะมีระบบดันโพสต์อัตโนมัติ ทำให้ประกาศของคุณอยู่ด้านบนและมีคนเห็นมากขึ้น

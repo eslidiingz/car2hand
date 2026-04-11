@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Trophy, Medal, Star, ChatCircle, SealCheck } from '@phosphor-icons/react';
+import { ArrowLeft, Trophy, Medal, Star, MessageCircle, BadgeCheck } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -44,7 +44,7 @@ export default function LeaderboardPage() {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                     <div className="bg-primary text-white p-6">
                         <h1 className="text-2xl font-bold flex items-center gap-3">
-                            <Trophy weight="fill" className="text-yellow-400 text-3xl" />
+                            <Trophy fill="currentColor" className="text-yellow-400 text-3xl" />
                             Top Gurus Leaderboard
                         </h1>
                         <p className="text-blue-200 text-sm mt-1">ผู้เชี่ยวชาญที่ช่วยตอบคำถามในชุมชน</p>
@@ -66,14 +66,14 @@ export default function LeaderboardPage() {
                             </div>
                             {/* 1st */}
                             <div className="flex flex-col items-center gap-2 -translate-y-4">
-                                <Medal weight="fill" className="text-yellow-400 text-2xl" />
+                                <Medal fill="currentColor" className="text-yellow-400 text-2xl" />
                                 <div className="w-16 h-16 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center text-2xl font-bold border-4 border-yellow-400">
                                     {gurus[0].fullName.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="text-center">
                                     <p className="text-sm font-bold text-gray-800 truncate max-w-[90px] flex items-center gap-1 justify-center">
                                         {gurus[0].fullName}
-                                        <SealCheck weight="fill" className="text-blue-500 text-xs flex-shrink-0" />
+                                        <BadgeCheck fill="currentColor" className="text-blue-500 text-xs flex-shrink-0" />
                                     </p>
                                     <p className="text-xs text-gray-500">{gurus[0].points.toLocaleString()} คะแนน</p>
                                 </div>
@@ -115,10 +115,10 @@ export default function LeaderboardPage() {
                                     <div className="flex-1 min-w-0">
                                         <p className="font-bold text-gray-800 text-sm truncate flex items-center gap-1">
                                             {g.fullName}
-                                            {g.rank <= 3 && <SealCheck weight="fill" className="text-blue-500 text-xs flex-shrink-0" />}
+                                            {g.rank <= 3 && <BadgeCheck fill="currentColor" className="text-blue-500 text-xs flex-shrink-0" />}
                                         </p>
                                         <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
-                                            <span className="flex items-center gap-1"><ChatCircle size={12} /> {g.totalPosts} กระทู้</span>
+                                            <span className="flex items-center gap-1"><MessageCircle size={12} /> {g.totalPosts} กระทู้</span>
                                             <span className="flex items-center gap-1"><Star size={12} /> {g.totalAnswers} best answers</span>
                                         </div>
                                     </div>

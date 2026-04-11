@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { Bell, Check, Circle } from '@phosphor-icons/react';
+import { Bell, Check, Circle } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -183,7 +183,7 @@ export default function NotificationBell() {
             >
                 <Bell
                     size={22}
-                    weight={unreadCount > 0 ? 'fill' : 'regular'}
+                    {...(unreadCount > 0 ? { fill: 'currentColor' } : {})}
                     className={unreadCount > 0 ? 'text-primary' : 'text-gray-500 group-hover:text-primary'}
                 />
                 {unreadCount > 0 && (
@@ -204,7 +204,7 @@ export default function NotificationBell() {
                                 onClick={markAllAsRead}
                                 className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
                             >
-                                <Check weight="bold" size={12} />
+                                <Check size={12} />
                                 อ่านทั้งหมด
                             </button>
                         )}
@@ -218,7 +218,7 @@ export default function NotificationBell() {
                             </div>
                         ) : notifications.length === 0 ? (
                             <div className="p-6 text-center">
-                                <Bell weight="thin" size={40} className="text-gray-200 mx-auto mb-2" />
+                                <Bell strokeWidth={1} size={40} className="text-gray-200 mx-auto mb-2" />
                                 <p className="text-gray-400 text-sm">ไม่มีการแจ้งเตือน</p>
                             </div>
                         ) : (
@@ -233,7 +233,7 @@ export default function NotificationBell() {
                                     {/* Unread dot */}
                                     <div className="pt-1.5 flex-shrink-0">
                                         {!n.isRead ? (
-                                            <Circle weight="fill" size={8} className="text-blue-500" />
+                                            <Circle fill="currentColor" size={8} className="text-blue-500" />
                                         ) : (
                                             <div className="w-2" />
                                         )}

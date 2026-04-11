@@ -6,22 +6,22 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
     Eye,
     Heart,
-    PencilSimple,
+    Pencil,
     Megaphone,
-    CurrencyCircleDollar,
+    CircleDollarSign,
     Trash,
-    CircleNotch,
-    DotsThreeVertical,
-    Lightning,
-    CarProfile,
-    WarningCircle,
+    Loader2,
+    MoreVertical,
+    Zap,
+    Car,
+    AlertCircle,
     Crown,
     ArrowRight,
     Upload,
-    Image as ImageIcon,
+    ImageIcon,
     X,
-    Warning,
-} from '@phosphor-icons/react';
+    AlertTriangle,
+} from 'lucide-react';
 import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
 import Toast from '@/components/Toast';
 
@@ -379,7 +379,7 @@ export default function MyListingsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <CircleNotch weight="bold" className="text-4xl text-primary animate-spin" />
+                <Loader2 className="text-4xl text-primary animate-spin" />
             </div>
         );
     }
@@ -417,7 +417,7 @@ export default function MyListingsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                                <Crown weight="fill" className={`text-lg ${isAtLimit ? 'text-orange-500' : 'text-blue-500'}`} />
+                                <Crown fill="currentColor" className={`text-lg ${isAtLimit ? 'text-orange-500' : 'text-blue-500'}`} />
                                 <span className="font-bold text-gray-700 text-sm">
                                     {packageInfo.currentPackage?.nameTh || 'แพ็กเกจพื้นฐาน'}
                                 </span>
@@ -446,7 +446,7 @@ export default function MyListingsPage() {
                                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 whitespace-nowrap"
                             >
                                 อัพเกรดแพ็กเกจ
-                                <ArrowRight weight="bold" className="text-sm" />
+                                <ArrowRight className="text-sm" />
                             </Link>
                         )}
                     </div>
@@ -483,7 +483,7 @@ export default function MyListingsPage() {
 
             {error && (
                 <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
-                    <WarningCircle weight="bold" className="text-xl flex-shrink-0" />
+                    <AlertCircle className="text-xl flex-shrink-0" />
                     <span>{error}</span>
                 </div>
             )}
@@ -491,7 +491,7 @@ export default function MyListingsPage() {
             {listings.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
                     <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CarProfile weight="duotone" className="text-4xl text-gray-400" />
+                        <Car className="text-4xl text-gray-400" />
                     </div>
                     <h3 className="text-lg font-bold text-gray-800 mb-2">ยังไม่มีรถที่ลงขาย</h3>
                     <p className="text-gray-500 mb-6">เริ่มลงขายรถของคุณได้เลย!</p>
@@ -545,7 +545,7 @@ export default function MyListingsPage() {
                     <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
                         <div className="text-center">
                             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash weight="bold" className="text-3xl text-red-500" />
+                                <Trash className="text-3xl text-red-500" />
                             </div>
                             <h3 className="text-xl font-bold text-gray-800 mb-2">ลบประกาศ</h3>
                             <p className="text-gray-500 text-sm mb-6">คุณต้องการลบประกาศนี้ใช่หรือไม่?</p>
@@ -563,7 +563,7 @@ export default function MyListingsPage() {
                                     className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition flex items-center justify-center gap-2"
                                 >
                                     {deleting ? (
-                                        <CircleNotch weight="bold" className="animate-spin" />
+                                        <Loader2 className="animate-spin" />
                                     ) : (
                                         'ลบประกาศ'
                                     )}
@@ -583,7 +583,7 @@ export default function MyListingsPage() {
                     ></div>
                     <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
                         <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
-                            <Crown weight="fill" className="text-4xl text-white" />
+                            <Crown fill="currentColor" className="text-4xl text-white" />
                         </div>
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
@@ -597,7 +597,7 @@ export default function MyListingsPage() {
                                 className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
                             >
                                 ดูแพ็กเกจ
-                                <ArrowRight weight="bold" className="text-sm" />
+                                <ArrowRight className="text-sm" />
                             </Link>
                             <button
                                 onClick={() => setShowUpgradeModal(false)}
@@ -625,7 +625,7 @@ export default function MyListingsPage() {
                                 onClick={() => { if (!renewLoading) { setRenewId(null); setRenewSlipPreview(null); setRenewSlipData(null); } }}
                                 className="p-1.5 hover:bg-gray-100 rounded-lg transition"
                             >
-                                <X weight="bold" size={18} />
+                                <X size={18} />
                             </button>
                         </div>
 
@@ -657,7 +657,7 @@ export default function MyListingsPage() {
                             {/* Slip Upload */}
                             <div>
                                 <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2 text-sm">
-                                    <Upload weight="bold" className="text-emerald-600" /> แนบหลักฐานการโอนเงิน
+                                    <Upload className="text-emerald-600" /> แนบหลักฐานการโอนเงิน
                                 </h4>
                                 {renewSlipPreview ? (
                                     <div className="relative">
@@ -666,7 +666,7 @@ export default function MyListingsPage() {
                                             onClick={() => { setRenewSlipPreview(null); setRenewSlipData(null); }}
                                             className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition"
                                         >
-                                            <X weight="bold" size={14} />
+                                            <X size={14} />
                                         </button>
                                     </div>
                                 ) : (
@@ -683,7 +683,7 @@ export default function MyListingsPage() {
                                             reader.readAsDataURL(file);
                                         }}
                                     >
-                                        <ImageIcon weight="thin" size={40} className={`transition ${dragOverSlip ? 'text-emerald-500' : 'text-gray-300 group-hover:text-emerald-500'}`} />
+                                        <ImageIcon strokeWidth={1} size={40} className={`transition ${dragOverSlip ? 'text-emerald-500' : 'text-gray-300 group-hover:text-emerald-500'}`} />
                                         <span className={`text-sm font-bold transition ${dragOverSlip ? 'text-emerald-600' : 'text-gray-500 group-hover:text-emerald-600'}`}>{dragOverSlip ? 'วางรูปที่นี่' : 'คลิกหรือลากสลิปมาวาง'}</span>
                                         <span className="text-xs text-gray-400">รองรับไฟล์ JPG, PNG, WebP</span>
                                         <input
@@ -705,9 +705,9 @@ export default function MyListingsPage() {
                                 )}
                             </div>
 
-                            {/* Warning */}
+                            {/* AlertTriangle */}
                             <div className="flex items-start gap-3 bg-yellow-50 rounded-xl p-3">
-                                <Warning weight="fill" className="text-yellow-500 flex-shrink-0 mt-0.5" size={18} />
+                                <AlertTriangle fill="currentColor" className="text-yellow-500 flex-shrink-0 mt-0.5" size={18} />
                                 <p className="text-xs text-yellow-700">
                                     หลังจากส่งหลักฐาน ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง
                                 </p>
@@ -716,7 +716,7 @@ export default function MyListingsPage() {
                             {/* Error */}
                             {renewError && (
                                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
-                                    <Warning weight="fill" className="text-red-500 flex-shrink-0" size={18} />
+                                    <AlertTriangle fill="currentColor" className="text-red-500 flex-shrink-0" size={18} />
                                     <p className="text-sm text-red-700 font-medium">{renewError}</p>
                                 </div>
                             )}
@@ -733,12 +733,12 @@ export default function MyListingsPage() {
                             >
                                 {renewLoading ? (
                                     <>
-                                        <CircleNotch weight="bold" className="animate-spin" size={16} />
+                                        <Loader2 className="animate-spin" size={16} />
                                         กำลังส่งคำขอ...
                                     </>
                                 ) : (
                                     <>
-                                        ส่งคำขอต่ออายุ <ArrowRight weight="bold" size={14} />
+                                        ส่งคำขอต่ออายุ <ArrowRight size={14} />
                                     </>
                                 )}
                             </button>

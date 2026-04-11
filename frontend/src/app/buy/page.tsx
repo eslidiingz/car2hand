@@ -3,18 +3,18 @@
 import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
-    Faders,
+    SlidersHorizontal,
     X,
-    CircleNotch,
-    MagnifyingGlass,
+    Loader2,
+    Search,
     Car,
-    Motorcycle,
+    Bike,
     Gauge,
     MapPin,
-    CaretDown,
+    ChevronDown,
     Plus,
     Minus
-} from '@phosphor-icons/react';
+} from 'lucide-react';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
@@ -264,7 +264,7 @@ function BuyContent() {
                     <div className="bg-white p-5 rounded-2xl shadow-sm sticky top-24 border border-gray-100 h-[calc(100vh-120px)] flex flex-col">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg text-primary flex items-center gap-2">
-                                <Faders size={20} /> ตัวกรอง
+                                <SlidersHorizontal size={20} /> ตัวกรอง
                             </h3>
                             {hasActiveFilters && (
                                 <button onClick={clearFilters} className="text-xs text-accent hover:underline">ล้างค่า</button>
@@ -284,7 +284,7 @@ function BuyContent() {
                                         className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
                                             }`}
                                     >
-                                        <Car weight="bold" size={24} />
+                                        <Car size={24} />
                                         <span className="text-xs font-medium">รถยนต์</span>
                                     </button>
                                     <button
@@ -292,7 +292,7 @@ function BuyContent() {
                                         className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
                                             }`}
                                     >
-                                        <Motorcycle weight="bold" size={24} />
+                                        <Bike size={24} />
                                         <span className="text-xs font-medium">มอเตอร์ไซค์</span>
                                     </button>
                                 </div>
@@ -357,7 +357,7 @@ function BuyContent() {
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer p-1"
                                         onClick={() => setShowProvinceDropdown(!showProvinceDropdown)}
                                     >
-                                        <CaretDown size={14} weight="bold" className={`transition-transform duration-200 ${showProvinceDropdown ? 'rotate-180' : ''}`} />
+                                        <ChevronDown size={14} className={`transition-transform duration-200 ${showProvinceDropdown ? 'rotate-180' : ''}`} />
                                     </div>
 
                                     {selectedProvince && !showProvinceDropdown && (
@@ -365,7 +365,7 @@ function BuyContent() {
                                             onClick={() => setSelectedProvince('')}
                                             className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500"
                                         >
-                                            <X size={12} weight="bold" />
+                                            <X size={12} />
                                         </button>
                                     )}
                                 </div>
@@ -603,7 +603,7 @@ function BuyContent() {
 
                                 {/* Brand Search Input */}
                                 <div className="relative mb-3">
-                                    <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                     <input
                                         type="text"
                                         placeholder="ค้นหายี่ห้อ..."
@@ -671,9 +671,9 @@ function BuyContent() {
                                                             className="w-full py-2 text-xs font-bold text-primary hover:text-accent transition-colors flex items-center justify-center gap-1 mt-1 border-t border-gray-50"
                                                         >
                                                             {showAllBrands ? (
-                                                                <>แสดงน้อยลง <CaretDown size={14} className="rotate-180" /></>
+                                                                <>แสดงน้อยลง <ChevronDown size={14} className="rotate-180" /></>
                                                             ) : (
-                                                                <>ดูยี่ห้อทั้งหมด ({filteredBrands.length}) <CaretDown size={14} /></>
+                                                                <>ดูยี่ห้อทั้งหมด ({filteredBrands.length}) <ChevronDown size={14} /></>
                                                             )}
                                                         </button>
                                                     )}
@@ -722,7 +722,7 @@ function BuyContent() {
                                     onClick={() => setShowMobileFilters(true)}
                                     className="lg:hidden flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-100 active:scale-95 transition-all"
                                 >
-                                    <Faders size={18} weight="bold" />
+                                    <SlidersHorizontal size={18} />
                                     <span>ตัวกรอง</span>
                                 </button>
                             </div>
@@ -830,14 +830,14 @@ function BuyContent() {
                     {loading ? (
                         <div className="flex items-center justify-center py-20">
                             <div className="text-center">
-                                <CircleNotch size={48} className="animate-spin text-primary mx-auto mb-4" />
+                                <Loader2 size={48} className="animate-spin text-primary mx-auto mb-4" />
                                 <p className="text-gray-500">กำลังโหลด...</p>
                             </div>
                         </div>
                     ) : listings.length === 0 ? (
                         /* Empty State */
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                            <MagnifyingGlass size={64} className="text-gray-300 mx-auto mb-4" />
+                            <Search size={64} className="text-gray-300 mx-auto mb-4" />
                             <h3 className="text-xl font-bold text-gray-700 mb-2">ไม่พบรายการ</h3>
                             <p className="text-gray-500 mb-4">ลองเปลี่ยนตัวกรองหรือค้นหาใหม่</p>
                             {hasActiveFilters && (
@@ -919,7 +919,7 @@ function BuyContent() {
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-gray-100">
                         <h3 className="font-bold text-lg text-primary flex items-center gap-2">
-                            <Faders size={20} /> ตัวกรอง
+                            <SlidersHorizontal size={20} /> ตัวกรอง
                         </h3>
                         <div className="flex items-center gap-4">
                             {hasActiveFilters && (
@@ -929,7 +929,7 @@ function BuyContent() {
                                 onClick={() => setShowMobileFilters(false)}
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             >
-                                <X size={24} weight="bold" />
+                                <X size={24} />
                             </button>
                         </div>
                     </div>
@@ -945,14 +945,14 @@ function BuyContent() {
                                     onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
                                     className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'}`}
                                 >
-                                    <Car weight="bold" size={24} />
+                                    <Car size={24} />
                                     <span className="text-xs font-medium">รถยนต์</span>
                                 </button>
                                 <button
                                     onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
                                     className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'}`}
                                 >
-                                    <Motorcycle weight="bold" size={24} />
+                                    <Bike size={24} />
                                     <span className="text-xs font-medium">มอเตอร์ไซค์</span>
                                 </button>
                             </div>
@@ -1017,11 +1017,11 @@ function BuyContent() {
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer p-1"
                                     onClick={() => setShowProvinceDropdown(!showProvinceDropdown)}
                                 >
-                                    <CaretDown size={14} weight="bold" className={`transition-transform duration-200 ${showProvinceDropdown ? 'rotate-180' : ''}`} />
+                                    <ChevronDown size={14} className={`transition-transform duration-200 ${showProvinceDropdown ? 'rotate-180' : ''}`} />
                                 </div>
                                 {selectedProvince && !showProvinceDropdown && (
                                     <button onClick={() => setSelectedProvince('')} className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500">
-                                        <X size={12} weight="bold" />
+                                        <X size={12} />
                                     </button>
                                 )}
                             </div>
@@ -1061,7 +1061,7 @@ function BuyContent() {
                                 </label>
                             </div>
                             <div className="relative mb-3">
-                                <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input
                                     type="text"
                                     placeholder="ค้นหายี่ห้อ..."
@@ -1238,7 +1238,7 @@ export default function BuyPage() {
     return (
         <Suspense fallback={
             <div className="flex items-center justify-center min-h-screen">
-                <CircleNotch size={48} className="animate-spin text-primary" />
+                <Loader2 size={48} className="animate-spin text-primary" />
             </div>
         }>
             <BuyContent />

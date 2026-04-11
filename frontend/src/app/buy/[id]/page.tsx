@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import ListingDetailClient, { VehicleListing } from './ListingDetailClient';
-import { ArrowLeft, WarningCircle, ClockCountdown } from '@phosphor-icons/react/dist/ssr';
+import { ArrowLeft, AlertCircle, Timer } from 'lucide-react';
 import Link from 'next/link';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -54,11 +54,11 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
             <div className="bg-surface min-h-screen pt-8 pb-12">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                        <ClockCountdown size={64} weight="duotone" className="text-orange-400 mx-auto mb-4" />
+                        <Timer size={64} className="text-orange-400 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-gray-700 mb-2">ประกาศนี้หมดอายุแล้ว</h2>
                         <p className="text-gray-500 mb-6">ประกาศนี้ไม่สามารถแสดงผลได้ในขณะนี้ เนื่องจากหมดอายุแล้ว</p>
                         <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
-                            <ArrowLeft weight="bold" /> กลับไปหน้ารายการ
+                            <ArrowLeft /> กลับไปหน้ารายการ
                         </Link>
                     </div>
                 </div>
@@ -72,11 +72,11 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
             <div className="bg-surface min-h-screen pt-8 pb-12">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                        <WarningCircle size={64} className="text-red-400 mx-auto mb-4" />
+                        <AlertCircle size={64} className="text-red-400 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-gray-700 mb-2">ไม่พบประกาศ</h2>
                         <p className="text-gray-500 mb-6">ประกาศนี้อาจถูกลบหรือไม่มีอยู่</p>
                         <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
-                            <ArrowLeft weight="bold" /> กลับไปหน้ารายการ
+                            <ArrowLeft /> กลับไปหน้ารายการ
                         </Link>
                     </div>
                 </div>
