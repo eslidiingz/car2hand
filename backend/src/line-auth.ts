@@ -6,6 +6,7 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { getLineSettings } from "./line";
+import { authGuard } from "./jwt";
 
 export const lineAuthRoutes = new Elysia({ prefix: "/auth/line" })
     // สร้าง LINE Login URL
@@ -74,18 +75,23 @@ export const lineAuthRoutes = new Elysia({ prefix: "/auth/line" })
         })
     })
 
-    // ยกเลิกการเชื่อมต่อ
-    .delete("/disconnect", async ({ query, set }) => {
-        const { userId } = query;
-        if (!userId) { set.status = 400; return { message: "Missing userId" }; }
+    // ยกเลิกการเชื่อมต่อ (ต้อง login + ใช้ userId จาก token เท่านั้น)
+    .group("/disconnect", (app) => authGuard(app)
+        .onBeforeHandle(({ auth, set }: any) => {
+            if (!auth || !auth.userId) {
+                set.status = 401;
+                return { error: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
+            }
+        })
+        .delete("/", async ({ auth, set }: any) => {
+            await prisma.user.update({
+                where: { id: auth.userId },
+                data: { lineUserId: null },
+            });
 
-        await prisma.user.update({
-            where: { id: userId },
-            data: { lineUserId: null },
-        });
-
-        return { message: "ยกเลิกการเชื่อมต่อ LINE สำเร็จ" };
-    })
+            return { message: "ยกเลิกการเชื่อมต่อ LINE สำเร็จ" };
+        })
+    )
 
     // เช็คสถานะการเชื่อมต่อ
     .get("/status", async ({ query, set }) => {

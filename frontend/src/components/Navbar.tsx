@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import NotificationBell from './NotificationBell';
-import { User, ChevronDown, LogOut, Warehouse, Car, Heart, Settings, Scale, List, X, Package } from 'lucide-react';
+import { User, ChevronDown, LogOut, Warehouse, Car, Heart, Settings, Scale, Menu, X, Package } from 'lucide-react';
 import { useWishlist } from '@/contexts/WishlistContext';
 
 interface UserData {
@@ -342,7 +342,7 @@ export default function Navbar() {
                                 }}
                                 className="p-2 -mr-2 text-gray-600 hover:text-primary transition lg:hidden"
                             >
-                                {showMobileMenu ? <X size={26} /> : <List size={26} />}
+                                {showMobileMenu ? <X size={26} /> : <Menu size={26} />}
                             </button>
                         </div>
                     </div>

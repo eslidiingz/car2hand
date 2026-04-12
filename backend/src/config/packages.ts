@@ -24,7 +24,7 @@ export interface PackageData {
 // Default limits สำหรับ user ที่ไม่มี package (= Basic free tier)
 const DEFAULT_LIMITS = {
     maxListings: 1,
-    maxPhotosPerListing: 10,
+    maxPhotosPerListing: 15,
     listingDurationDays: 30,
     manualBumpPerDay: 1,
     autoBumpPerDay: 0,

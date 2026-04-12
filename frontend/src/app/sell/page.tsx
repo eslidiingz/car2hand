@@ -150,7 +150,7 @@ export default function SellPage() {
         <div className="bg-surface text-gray-800 min-h-screen">
             {/* Hero Section */}
             <header
-                className="relative min-h-[600px] flex items-center justify-center pt-20 px-4 overflow-hidden"
+                className="relative min-h-[600px] flex items-center justify-center pt-20 px-4 overflow-visible"
                 style={{
                     backgroundImage: `linear-gradient(rgba(15, 52, 96, 0.9), rgba(15, 52, 96, 0.8)), url('https://images.unsplash.com/photo-1560252829-804f1aedf1be?q=80&w=2000&auto=format&fit=crop')`,
                     backgroundSize: 'cover',
@@ -166,7 +166,7 @@ export default function SellPage() {
                         อย่าเพิ่งขายเต็นท์ถ้ายังไม่ได้เช็คราคาที่นี่! ลงขายฟรี ระบบช่วยดันประกาศ และช่วยแนะนำราคากลางที่ยุติธรรมที่สุด
                     </p>
 
-                    <div className="bg-white p-4 rounded-2xl shadow-2xl max-w-3xl mx-auto flex flex-col md:flex-row gap-3">
+                    <div className="bg-white p-4 rounded-2xl shadow-2xl max-w-3xl mx-auto flex flex-col md:flex-row gap-3 relative z-20">
                         <div className="flex-1 text-left">
                             <label className="text-xs text-gray-500 ml-1 mb-1 block">ยี่ห้อ</label>
                             <SearchableSelect
@@ -229,10 +229,6 @@ export default function SellPage() {
                         <span className="block text-3xl font-bold text-primary">{stats.totalSellers.toLocaleString()}+</span>
                         <span className="text-sm text-gray-500">ผู้ขายที่ลงทะเบียน</span>
                     </div>
-                    <div>
-                        <span className="block text-3xl font-bold text-primary">{stats.soldListings.toLocaleString()}+</span>
-                        <span className="text-sm text-gray-500">คันที่ขายสำเร็จแล้ว</span>
-                    </div>
                 </div>
             </div>
 
@@ -263,7 +259,7 @@ export default function SellPage() {
                             {
                                 label: 'ราคาขาย',
                                 c2h: 'สูง (ตามราคาตลาด)',
-                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
+                                c2hIcon: <TrendingUp size={20} className="text-primary" />,
                                 others1: 'ต่ำ (มักโดนกดราคา)',
                                 others1Color: 'text-red-400',
                                 others2: 'สูง (ตั้งเองได้)',
@@ -272,7 +268,7 @@ export default function SellPage() {
                             {
                                 label: 'ความรวดเร็ว',
                                 c2h: 'ปานกลาง - เร็วมาก',
-                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
+                                c2hIcon: <Zap size={20} className="text-primary" />,
                                 others1: 'เร็วมาก (รับเงินทันที)',
                                 others1Color: 'text-green-600',
                                 others2: 'ช้ามาก (ขึ้นอยู่กับดวง)',
@@ -281,7 +277,7 @@ export default function SellPage() {
                             {
                                 label: 'ความปลอดภัย',
                                 c2h: 'ปลอดภัยสูงสุด',
-                                c2hIcon: <ShieldCheck fill="currentColor" className="text-green-400 text-xl" />,
+                                c2hIcon: <ShieldCheck size={20} className="text-primary" />,
                                 others1: 'ปานกลาง',
                                 others1Color: 'text-gray-500',
                                 others2: 'ต่ำ (เสี่ยงมิจฉาชีพ)',
@@ -290,7 +286,7 @@ export default function SellPage() {
                             {
                                 label: 'ค่าใช้จ่าย',
                                 c2h: 'ลงฟรี (มีแพ็กเกจเสริม)',
-                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
+                                c2hIcon: <CircleDollarSign size={20} className="text-primary" />,
                                 others1: 'หักค่าคอม 5-15%',
                                 others1Color: 'text-red-400',
                                 others2: 'ฟรี แต่ต้องทำเอง',
@@ -299,7 +295,7 @@ export default function SellPage() {
                             {
                                 label: 'ระบบดันประกาศ',
                                 c2h: 'ดันอัตโนมัติ',
-                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
+                                c2hIcon: <Rocket size={20} className="text-primary" />,
                                 others1: 'ไม่มี',
                                 others1Color: 'text-gray-400',
                                 others2: 'ต้องโพสต์ซ้ำเอง',
@@ -308,7 +304,7 @@ export default function SellPage() {
                             {
                                 label: 'จำนวนรูปภาพ',
                                 c2h: 'สูงสุด 40 รูป',
-                                c2hIcon: <CheckCircle fill="currentColor" className="text-green-400 text-xl" />,
+                                c2hIcon: <Camera size={20} className="text-primary" />,
                                 others1: 'จำกัด 5-10 รูป',
                                 others1Color: 'text-gray-400',
                                 others2: 'ไม่จำกัด',
@@ -319,16 +315,14 @@ export default function SellPage() {
                                 <div className={`col-span-1 py-6 px-8 flex items-center font-bold text-gray-700 border-t border-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
                                     {row.label}
                                 </div>
-                                <div className={`col-span-1 py-8 px-6 bg-blue-900/5 flex items-center justify-center gap-3 font-bold text-primary text-center border-x-4 border-primary/5 border-t border-primary/5`}>
-                                    <div className="flex flex-col items-center gap-2">
-                                        {row.c2hIcon}
-                                        <span className="text-sm md:text-base">{row.c2h}</span>
-                                    </div>
+                                <div className={`col-span-1 py-6 px-6 bg-blue-900/5 flex items-center justify-center gap-2 font-bold text-primary text-center border-x-4 border-primary/5 border-t border-primary/5`}>
+                                    {row.c2hIcon}
+                                    <span className="text-sm md:text-base">{row.c2h}</span>
                                 </div>
-                                <div className={`col-span-1 py-8 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 ${row.others1Color} ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
+                                <div className={`col-span-1 py-6 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 ${row.others1Color} ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
                                     {row.others1}
                                 </div>
-                                <div className={`col-span-1 py-8 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 ${row.others2Color} ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
+                                <div className={`col-span-1 py-6 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 ${row.others2Color} ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
                                     {row.others2}
                                 </div>
                             </React.Fragment>

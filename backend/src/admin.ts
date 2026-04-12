@@ -12,6 +12,29 @@ import { getUserPackage, getListingExpiryDate } from "./config/packages";
 import { testLineConnection } from "./line";
 import { getAndBroadcastPendingCounts, pushNotification } from "./admin-sse";
 
+// Reusable admin auth derive — verifies JWT AND confirms userId is an admin
+async function verifyAdminToken(jwt: any, headers: Record<string, string | undefined>, set: any) {
+    const authHeader = headers['authorization'];
+    if (!authHeader?.startsWith('Bearer ')) {
+        set.status = 401;
+        return { adminId: null as string | null };
+    }
+    const token = authHeader.slice(7).trim();
+    const payload = await jwt.verify(token);
+    if (!payload) {
+        set.status = 401;
+        return { adminId: null as string | null };
+    }
+    const userId = (payload as any).userId;
+    // Critical: verify the token belongs to an admin, not a regular user
+    const admin = await prisma.admin.findUnique({ where: { id: userId } });
+    if (!admin) {
+        set.status = 403;
+        return { adminId: null as string | null };
+    }
+    return { adminId: userId as string | null };
+}
+
 export const adminRoutes = new Elysia({ prefix: "/admin" })
     .use(jwtPlugin())
     .use(authRateLimiter)
@@ -79,24 +102,11 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
 
     // Dashboard Stats
     .group("/dashboard", (app) => app
-        .derive(async ({ jwt, headers, set }) => {
-            const authHeader = headers['authorization'];
-            if (!authHeader?.startsWith('Bearer ')) {
-                set.status = 401;
-                return { authError: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ' };
-            }
-            const token = authHeader.slice(7).trim();
-            const payload = await jwt.verify(token);
-            if (!payload) {
-                set.status = 401;
-                return { authError: 'Invalid Token', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
-            }
-            return { adminId: (payload as any).userId };
-        })
+        .derive(async ({ jwt, headers, set }) => verifyAdminToken(jwt, headers, set))
         .onBeforeHandle(({ adminId, set }) => {
             if (!adminId) {
-                set.status = 401;
-                return { error: 'Unauthorized', message: 'Token ไม่ถูกต้องหรือหมดอายุ' };
+                if (set.status !== 403) set.status = 401;
+                return { error: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ Admin' };
             }
         })
         .get("/", async () => {

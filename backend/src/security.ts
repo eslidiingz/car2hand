@@ -42,8 +42,8 @@ const getClientIP = (request: Request): string => {
  * Rate Limiter
  */
 export const rateLimiter = (maxRequests: number = RATE_LIMIT_MAX_REQUESTS) => {
-    return new Elysia({ name: 'rate-limiter' })
-        .derive(({ request, set }) => {
+    return new Elysia({ name: `rate-limiter-${maxRequests}` })
+        .onBeforeHandle(({ request, set }) => {
             const ip = getClientIP(request);
             const key = `${ip}:${new URL(request.url).pathname}`;
             const now = Date.now();
@@ -70,8 +70,6 @@ export const rateLimiter = (maxRequests: number = RATE_LIMIT_MAX_REQUESTS) => {
                     retryAfter: Math.ceil((record.resetAt - now) / 1000)
                 };
             }
-
-            return {};
         });
 };
 
@@ -79,7 +77,7 @@ export const rateLimiter = (maxRequests: number = RATE_LIMIT_MAX_REQUESTS) => {
  * Security Headers (OWASP recommended)
  */
 export const securityHeaders = new Elysia({ name: 'security-headers' })
-    .onBeforeHandle(({ set }) => {
+    .onRequest(({ set }) => {
         // Prevent XSS attacks
         set.headers['X-Content-Type-Options'] = 'nosniff';
         set.headers['X-XSS-Protection'] = '1; mode=block';
@@ -129,6 +127,35 @@ export const requestLogger = new Elysia({ name: 'request-logger' })
  * Auth Rate Limiter (stricter for login/register)
  */
 export const authRateLimiter = rateLimiter(AUTH_RATE_LIMIT_MAX);
+
+/**
+ * Check rate limit inline — returns error response if exceeded, null if OK
+ */
+export function checkRateLimit(request: Request, maxRequests: number = AUTH_RATE_LIMIT_MAX): { status: number; body: object } | null {
+    const ip = getClientIP(request);
+    const key = `auth:${ip}`;
+    const now = Date.now();
+
+    let record = rateLimitStore.get(key);
+    if (!record || record.resetAt < now) {
+        record = { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS };
+        rateLimitStore.set(key, record);
+    } else {
+        record.count++;
+    }
+
+    if (record.count > maxRequests) {
+        return {
+            status: 429,
+            body: {
+                error: 'Too Many Requests',
+                message: 'คุณส่งคำขอมากเกินไป กรุณารอสักครู่',
+                retryAfter: Math.ceil((record.resetAt - now) / 1000)
+            }
+        };
+    }
+    return null;
+}
 
 /**
  * Input Sanitizer - Remove potential XSS
