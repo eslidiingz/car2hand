@@ -2,19 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader2, ChevronRight } from 'lucide-react';
+import { Loader2, ChevronRight, ChevronDown } from 'lucide-react';
 import ListingCard, { VehicleListing } from './ListingCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export default function CarList() {
-    const [listings, setListings] = useState<VehicleListing[]>([]);
+    const [allListings, setAllListings] = useState<VehicleListing[]>([]);
+    const [displayCount, setDisplayCount] = useState(8);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                // Fetch both featured and all listings, then exclude featured from the general list
                 const [featuredRes, listingsRes] = await Promise.all([
                     fetch(`${API_URL}/listings/featured`),
                     fetch(`${API_URL}/listings?status=ACTIVE&limit=20`),
@@ -26,10 +26,10 @@ export default function CarList() {
                 const featuredIds = new Set((featuredData.listings || []).map((l: VehicleListing) => l.id));
                 const filtered = (listingsData.listings || []).filter((l: VehicleListing) => !featuredIds.has(l.id));
 
-                setListings(filtered.slice(0, 8));
+                setAllListings(filtered.slice(0, 16));
             } catch (error) {
                 console.error('Error fetching listings:', error);
-                setListings([]);
+                setAllListings([]);
             } finally {
                 setLoading(false);
             }
@@ -37,6 +37,10 @@ export default function CarList() {
 
         fetchListings();
     }, []);
+
+    const visibleListings = allListings.slice(0, displayCount);
+    const hasMore = allListings.length > displayCount;
+    const isFullyExpanded = displayCount >= 16 || displayCount >= allListings.length;
 
     return (
         <section className="max-w-7xl mx-auto px-4 pt-12 pb-16">
@@ -60,7 +64,7 @@ export default function CarList() {
                         <p className="text-gray-500">กำลังโหลด...</p>
                     </div>
                 </div>
-            ) : listings.length === 0 ? (
+            ) : visibleListings.length === 0 ? (
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 text-center">
                     <p className="text-gray-500">ยังไม่มีรถลงขายในขณะนี้</p>
                     <Link href="/sell" className="mt-4 inline-block bg-accent text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition">
@@ -68,11 +72,30 @@ export default function CarList() {
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {listings.map((listing) => (
-                        <ListingCard key={`${listing.id}`} listing={listing} />
-                    ))}
-                </div>
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {visibleListings.map((listing) => (
+                            <ListingCard key={`${listing.id}`} listing={listing} />
+                        ))}
+                    </div>
+                    <div className="text-center mt-6">
+                        {hasMore && !isFullyExpanded ? (
+                            <button
+                                onClick={() => setDisplayCount(16)}
+                                className="text-accent font-bold hover:underline inline-flex items-center gap-1"
+                            >
+                                ดูเพิ่มเติม <ChevronDown size={16} />
+                            </button>
+                        ) : (
+                            <Link
+                                href="/buy"
+                                className="text-accent font-bold hover:underline inline-flex items-center gap-1"
+                            >
+                                ดูรถทั้งหมด <ChevronRight size={16} />
+                            </Link>
+                        )}
+                    </div>
+                </>
             )}
         </section>
     );

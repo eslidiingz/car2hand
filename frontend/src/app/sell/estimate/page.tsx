@@ -240,6 +240,16 @@ function EstimatePricePage() {
         }
     }, [initialQuery]);
 
+    // Auto-estimate when pre-filled from /sell page params
+    const autoEstimatedRef = React.useRef(false);
+    useEffect(() => {
+        if (paramBrand && paramModel && selectedBrand && selectedModel && selectedYear && !autoEstimatedRef.current && !result) {
+            autoEstimatedRef.current = true;
+            // Small delay to let UI render first
+            setTimeout(() => handleEstimate(), 300);
+        }
+    }, [selectedBrand, selectedModel, selectedYear]);
+
     const canEstimate = selectedBrand && selectedModel && selectedYear;
 
     const handleEstimate = async () => {

@@ -10,7 +10,7 @@ import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { jwtPlugin, generateAccessToken, blacklistToken, authGuard } from "./jwt";
 import { registerSchema, loginSchema, validateInput } from "./validation";
-import { sanitizeObject, authRateLimiter, rateLimiter } from "./security";
+import { sanitizeObject, authRateLimiter, rateLimiter, checkRateLimit } from "./security";
 
 export const authRoutes = new Elysia({ prefix: "/auth" })
     .use(jwtPlugin())
@@ -107,7 +107,14 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     })
 
     // Login
-    .post("/login", async ({ body, set, jwt }) => {
+    .post("/login", async ({ body, set, jwt, request }) => {
+        // Inline rate limit check for auth endpoints
+        const rateLimitResult = checkRateLimit(request, 10);
+        if (rateLimitResult) {
+            set.status = rateLimitResult.status;
+            return rateLimitResult.body;
+        }
+
         try {
             // Validate input
             const validatedData = validateInput(loginSchema, body);
