@@ -48,6 +48,53 @@ export const loginSchema = z.object({
     rememberMe: z.boolean().optional().default(false)
 });
 /**
+ * Forgot Password Schema — request reset link by phone
+ */
+export const forgotPasswordSchema = z.object({
+    phoneNumber: z.string()
+        .regex(phoneRegex, 'เบอร์โทรศัพท์ไม่ถูกต้อง'),
+});
+
+/**
+ * Reset Password Schema — verify token and set new password
+ */
+export const resetPasswordSchema = z.object({
+    token: z.string()
+        .min(1, 'token ไม่ถูกต้อง')
+        .max(200, 'token ไม่ถูกต้อง'),
+
+    password: z.string()
+        .min(8, 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร')
+        .max(72, 'รหัสผ่านยาวเกินไป'),
+});
+
+/**
+ * Contact Form Schema — for /contact page submissions
+ */
+export const contactSchema = z.object({
+    name: z.string()
+        .min(2, 'ชื่อต้องมีอย่างน้อย 2 ตัวอักษร')
+        .max(100, 'ชื่อยาวเกินไป'),
+
+    email: z.string()
+        .email('อีเมลไม่ถูกต้อง')
+        .max(200, 'อีเมลยาวเกินไป'),
+
+    phoneNumber: z.string()
+        .max(20, 'เบอร์โทรยาวเกินไป')
+        .optional()
+        .or(z.literal('')),
+
+    subject: z.string()
+        .min(1, 'กรุณาเลือกหัวข้อ')
+        .max(100, 'หัวข้อยาวเกินไป'),
+
+    message: z.string()
+        .min(10, 'ข้อความต้องมีอย่างน้อย 10 ตัวอักษร')
+        .max(5000, 'ข้อความยาวเกินไป'),
+});
+
+/**
  * Admin Login Schema
  */
 export const adminLoginSchema = z.object({

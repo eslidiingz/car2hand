@@ -110,9 +110,16 @@ export const UserScalarFieldEnum = {
   email: 'email',
   phoneNumber: 'phoneNumber',
   password: 'password',
+  profileImage: 'profileImage',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   lineUserId: 'lineUserId',
+  googleUserId: 'googleUserId',
+  facebookUserId: 'facebookUserId',
+  passwordResetToken: 'passwordResetToken',
+  passwordResetExpiresAt: 'passwordResetExpiresAt',
+  deleteAccountCode: 'deleteAccountCode',
+  deleteAccountCodeExpiresAt: 'deleteAccountCodeExpiresAt',
   currentPackageId: 'currentPackageId',
   packageExpiresAt: 'packageExpiresAt'
 } as const

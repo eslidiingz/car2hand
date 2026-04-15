@@ -91,7 +91,7 @@ function ConfirmationContent() {
             <div className="pt-32 pb-20 flex flex-col items-center justify-center px-4">
                 <div className="bg-white rounded-3xl p-10 shadow-lg border border-gray-100 max-w-md w-full text-center">
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <AlertTriangle fill="currentColor" className="text-red-500 text-5xl" />
+                        <AlertTriangle className="text-red-500 text-5xl" />
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-3">ไม่พบข้อมูลการจอง</h2>
                     <p className="text-gray-500 mb-8">{error || 'เกิดข้อผิดพลาดบางอย่าง กรุณาลองใหม่อีกครั้ง'}</p>
@@ -116,7 +116,7 @@ function ConfirmationContent() {
                 {/* Success Header */}
                 <div className="text-center mb-8">
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-                        <CheckCircle fill="currentColor" className="text-green-500 text-6xl" />
+                        <CheckCircle className="text-green-500 text-6xl" />
                     </div>
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">จองคิวตรวจสภาพสำเร็จ!</h1>
                     <p className="text-gray-500">หมายเลขอ้างอิง: <span className="font-bold text-primary">{booking.referenceId}</span></p>
@@ -131,7 +131,7 @@ function ConfirmationContent() {
                     <div className="p-6 space-y-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary shrink-0">
-                                <Car fill="currentColor" className="text-xl" />
+                                <Car className="text-xl" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">แพ็กเกจ</p>
@@ -144,7 +144,7 @@ function ConfirmationContent() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary shrink-0">
-                                    <Calendar fill="currentColor" className="text-xl" />
+                                    <Calendar className="text-xl" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">วันที่</p>
@@ -153,7 +153,7 @@ function ConfirmationContent() {
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary shrink-0">
-                                    <Clock fill="currentColor" className="text-xl" />
+                                    <Clock className="text-xl" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">เวลา</p>
@@ -166,7 +166,7 @@ function ConfirmationContent() {
 
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary shrink-0">
-                                <MapPin fill="currentColor" className="text-xl" />
+                                <MapPin className="text-xl" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">สถานที่</p>
@@ -179,7 +179,7 @@ function ConfirmationContent() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary shrink-0">
-                                    <Phone fill="currentColor" className="text-xl" />
+                                    <Phone className="text-xl" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-400">ผู้ติดต่อ</p>
@@ -222,7 +222,7 @@ function ConfirmationContent() {
                             <div key={i} className="flex gap-4">
                                 <div className="flex flex-col items-center">
                                     <div className="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center shrink-0">
-                                        <item.icon fill="currentColor" className="text-xl" />
+                                        <item.icon className="text-xl" />
                                     </div>
                                     {i < nextSteps.length - 1 && (
                                         <div className="w-0.5 h-8 bg-green-200 my-1"></div>
@@ -251,7 +251,7 @@ function ConfirmationContent() {
                         href="/buy"
                         className="flex-1 bg-accent text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition text-center flex items-center justify-center gap-2"
                     >
-                        <Store fill="currentColor" /> ดูประกาศขายรถ
+                        <Store /> ดูประกาศขายรถ
                     </Link>
                 </div>
 

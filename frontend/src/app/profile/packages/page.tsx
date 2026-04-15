@@ -75,10 +75,10 @@ interface CurrentPackage {
 
 // Icon/color maps by slug
 const packageIcons: Record<string, React.ReactNode> = {
-    basic: <Zap fill="currentColor" className="text-gray-400" size={28} />,
-    standard: <Star fill="currentColor" className="text-blue-500" size={28} />,
-    professional: <Rocket fill="currentColor" className="text-orange-500" size={28} />,
-    premium: <Crown fill="currentColor" className="text-yellow-500" size={28} />,
+    basic: <Zap className="text-gray-400" size={28} />,
+    standard: <Star className="text-blue-500" size={28} />,
+    professional: <Rocket className="text-orange-500" size={28} />,
+    premium: <Crown className="text-yellow-500" size={28} />,
 };
 
 const packageColors: Record<string, { bg: string; btn: string }> = {
@@ -89,7 +89,7 @@ const packageColors: Record<string, { bg: string; btn: string }> = {
 };
 
 function getIcon(slug: string) {
-    return packageIcons[slug] || <Zap fill="currentColor" className="text-gray-400" size={28} />;
+    return packageIcons[slug] || <Zap className="text-gray-400" size={28} />;
 }
 function getColor(slug: string) {
     return packageColors[slug] || packageColors.basic;
@@ -319,7 +319,7 @@ export default function PackagesPage() {
             {/* Pending Transaction Banner */}
             {hasPendingTransaction && !successMsg && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
-                    <Clock fill="currentColor" className="text-amber-500 text-xl flex-shrink-0" />
+                    <Clock className="text-amber-500 text-xl flex-shrink-0" />
                     <div>
                         <p className="text-amber-800 font-bold text-sm">มีคำขออัพเกรดรอตรวจสอบ</p>
                         <p className="text-amber-600 text-xs mt-0.5">ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง</p>
@@ -666,7 +666,7 @@ export default function PackagesPage() {
 
                             {/* AlertTriangle */}
                             <div className="flex items-start gap-3 bg-yellow-50 rounded-xl p-4">
-                                <AlertTriangle fill="currentColor" className="text-yellow-500 text-xl flex-shrink-0 mt-0.5" />
+                                <AlertTriangle className="text-yellow-500 text-xl flex-shrink-0 mt-0.5" />
                                 <p className="text-xs text-yellow-700">
                                     หลังจากส่งหลักฐานการโอนเงิน ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง
                                     แพ็กเกจจะเริ่มใช้งานได้ทันทีหลังอนุมัติ

@@ -110,14 +110,14 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     };
 
     const menuItems = [
-        { name: 'ภาพรวมบัญชี', href: '/profile/dashboard', icon: <LayoutGrid size={20} {...(pathname === '/profile/dashboard' ? { fill: 'currentColor' } : {})} /> },
-        { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <Car size={20} {...(pathname === '/profile/listings' ? { fill: 'currentColor' } : {})} /> },
-        { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Warehouse size={20} {...(pathname === '/profile/garage' ? { fill: 'currentColor' } : {})} /> },
-        { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart size={20} {...(pathname === '/profile/wishlist' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'ภาพรวมบัญชี', href: '/profile/dashboard', icon: <LayoutGrid size={20} /> },
+        { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <Car size={20} /> },
+        { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Warehouse size={20} /> },
+        { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart size={20} /> },
         // { name: 'กล่องข้อความ', href: '/profile/messages', icon: <MessageCircleMore size={20} /> , badge: 3 },
-        { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} {...(pathname === '/profile/packages' ? { fill: 'currentColor' } : {})} /> },
-        { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell size={20} {...(pathname === '/profile/notifications' ? { fill: 'currentColor' } : {})} /> },
-        { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Settings size={20} {...(pathname === '/profile/settings' ? { fill: 'currentColor' } : {})} /> },
+        { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} /> },
+        { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell size={20} /> },
+        { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Settings size={20} /> },
     ];
 
     // Show loading state while checking authentication

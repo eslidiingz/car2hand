@@ -29,6 +29,8 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LineOASettings from "@/components/settings/LineOASettings";
+import GoogleOAuthSettings from "@/components/settings/GoogleOAuthSettings";
+import FacebookOAuthSettings from "@/components/settings/FacebookOAuthSettings";
 
 const THAI_BANKS = [
     { value: "kbank", label: "ธนาคารกสิกรไทย (KBank)" },
@@ -173,6 +175,8 @@ export default function SettingsPage() {
                 <TabsList>
                     <TabsTrigger value="payment">การชำระเงิน</TabsTrigger>
                     <TabsTrigger value="line-oa">LINE OA</TabsTrigger>
+                    <TabsTrigger value="google-oauth">Google OAuth</TabsTrigger>
+                    <TabsTrigger value="facebook-oauth">Facebook OAuth</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="payment">
@@ -377,6 +381,14 @@ export default function SettingsPage() {
 
                 <TabsContent value="line-oa">
                     <LineOASettings />
+                </TabsContent>
+
+                <TabsContent value="google-oauth">
+                    <GoogleOAuthSettings />
+                </TabsContent>
+
+                <TabsContent value="facebook-oauth">
+                    <FacebookOAuthSettings />
                 </TabsContent>
             </Tabs>
         </DashboardLayout>

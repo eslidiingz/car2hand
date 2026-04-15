@@ -53,9 +53,9 @@ export interface VehicleListing {
 
 // Badge config
 const BADGE_CONFIG: Record<string, { bg: string; icon: React.ReactNode; label: string }> = {
-    'Premium Choice': { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} fill="currentColor" />, label: 'Premium Choice' },
-    'Hot Deal': { bg: 'bg-orange-500', icon: <Flame size={10} fill="currentColor" />, label: 'Hot Deal' },
-    'Verified Seller': { bg: 'bg-blue-500', icon: <BadgeCheck size={10} fill="currentColor" />, label: 'Verified Seller' },
+    'Premium Choice': { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} />, label: 'Premium Choice' },
+    'Hot Deal': { bg: 'bg-orange-500', icon: <Flame size={10} />, label: 'Hot Deal' },
+    'Verified Seller': { bg: 'bg-blue-500', icon: <BadgeCheck size={10} />, label: 'Verified Seller' },
 };
 
 interface ListingCardProps {
@@ -197,7 +197,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                             className="absolute top-3 right-3 w-8 h-8 backdrop-blur rounded-full flex items-center justify-center transition duration-200 bg-red-500 text-white hover:bg-red-600"
                             title="ลบออกจากรายการโปรด"
                         >
-                            <Trash size={18} fill="currentColor" />
+                            <Trash size={18} />
                         </button>
                     ) : (
                         <button
@@ -229,7 +229,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                     {/* Province Badge */}
                     <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                         <span className="text-white text-[10px] font-medium bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1 w-fit">
-                            <MapPin size={10} fill="currentColor" />
+                            <MapPin size={10} />
                             {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
                         </span>
                     </div>

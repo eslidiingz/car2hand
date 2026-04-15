@@ -155,7 +155,7 @@ function LoanCalculator() {
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
-        <Calculator fill="currentColor" className="text-accent" size={24} /> คำนวณค่างวด
+        <Calculator className="text-accent" size={24} /> คำนวณค่างวด
       </h3>
       <div className="space-y-4">
         <div>
@@ -406,7 +406,7 @@ function ArticlesContent() {
         {!isFeaturedLoading && featuredArticle && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
-              <Star fill="currentColor" className="text-yellow-500" /> บทความแนะนำ
+              <Star className="text-yellow-500" /> บทความแนะนำ
             </h2>
             <Link
               href={`/articles/${featuredArticle.slug}`}
@@ -459,7 +459,7 @@ function ArticlesContent() {
             {/* Header with sort */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-                <Newspaper fill="currentColor" className="text-blue-500" />
+                <Newspaper className="text-blue-500" />
                 {currentSearch
                   ? `ผลค้นหา "${currentSearch}"`
                   : currentCategory
@@ -597,7 +597,7 @@ function ArticlesContent() {
             {popularArticles.length > 0 && (
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <h3 className="font-bold text-primary mb-4 flex items-center gap-2">
-                  <Star fill="currentColor" className="text-yellow-500" size={20} /> บทความยอดนิยม
+                  <Star className="text-yellow-500" size={20} /> บทความยอดนิยม
                 </h3>
                 <div className="space-y-4">
                   {popularArticles.map((article, index) => (

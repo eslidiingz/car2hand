@@ -100,7 +100,7 @@ export default function PreviewCard({
                 {/* Province Badge */}
                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                     <span className="text-white text-[10px] font-medium bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1 w-fit">
-                        <MapPin size={10} fill="currentColor" />
+                        <MapPin size={10} />
                         {province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : province}
                     </span>
                 </div>

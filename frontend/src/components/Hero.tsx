@@ -116,7 +116,7 @@ export default function Hero() {
                             <select
                                 value={budget}
                                 onChange={(e) => setBudget(e.target.value)}
-                                className="w-full outline-none font-bold text-slate-700 bg-transparent cursor-pointer text-base appearance-none relative z-10 pr-8"
+                                className="w-full outline-none font-bold text-slate-700 bg-transparent cursor-pointer text-base appearance-none relative z-10 pr-4"
                             >
                                 <option value="all">ทุกราคา</option>
                                 <option value="below-500k">ไม่เกิน 500,000</option>
@@ -124,7 +124,7 @@ export default function Hero() {
                                 <option value="1m-2m">1 ล้าน - 2 ล้าน</option>
                                 <option value="above-2m">2 ล้านขึ้นไป</option>
                             </select>
-                            <ChevronDown size={16} className="absolute right-0 text-slate-400 pointer-events-none group-focus-within:text-primary transition-colors" />
+                            <ChevronDown size={16} className="absolute right-0 text-gray-400 pointer-events-none group-focus-within:text-primary transition-colors" />
                         </div>
                     </div>
                 </div>

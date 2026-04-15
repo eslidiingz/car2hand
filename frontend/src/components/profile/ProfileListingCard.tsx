@@ -99,7 +99,7 @@ export default function ProfileListingCard({
                         />
                         {isBoosted && (
                             <div className="absolute top-2 left-2 bg-[#FF7A50] text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm uppercase tracking-wider">
-                                <Zap fill="currentColor" size={10} />
+                                <Zap size={10} />
                                 Boosted
                             </div>
                         )}
@@ -243,7 +243,7 @@ export default function ProfileListingCard({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 ${status.bgColor} ${status.textColor}`}>
-                            <CheckCircle fill="currentColor" size={12} />
+                            <CheckCircle size={12} />
                             {status.label}
                         </span>
                         {daysLeft !== null && (
@@ -259,13 +259,13 @@ export default function ProfileListingCard({
                 </div>
                 {hasPendingRenewal && listing.status === 'EXPIRED' && (
                     <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 rounded-lg border border-amber-100">
-                        <Clock fill="currentColor" size={14} className="text-amber-500" />
+                        <Clock size={14} className="text-amber-500" />
                         <span className="text-xs font-bold text-amber-700">คำขอต่ออายุกำลังรอตรวจสอบ</span>
                     </div>
                 )}
                 {listing.status === 'ACTIVE' && slotSchedules && slotSchedules.length > 0 && (
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 bg-purple-50 text-purple-600 w-fit">
-                        <Zap fill="currentColor" size={12} />
+                        <Zap size={12} />
                         {listing.autoBumpSlot !== null && listing.autoBumpSlot !== undefined
                             ? `ดันอัตโนมัติ ${slotSchedules[listing.autoBumpSlot] || ''} น.`
                             : 'ดันอัตโนมัติ (auto)'

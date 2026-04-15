@@ -283,7 +283,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                                 )}
                                 {profile.isVerified && (
                                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700 flex items-center gap-1">
-                                        <ShieldCheck size={12} fill="currentColor" />
+                                        <ShieldCheck size={12} />
                                         ยืนยันตัวตน
                                     </span>
                                 )}
@@ -423,7 +423,7 @@ export default function SellerProfileClient({ sellerId }: { sellerId: string }) 
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline mt-2"
                                     >
-                                        <MapPin size={16} fill="currentColor" />
+                                        <MapPin size={16} />
                                         ดูแผนที่ Google Maps
                                     </a>
                                 )}

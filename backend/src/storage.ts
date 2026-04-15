@@ -158,10 +158,10 @@ export async function uploadAvatar(
     userId: string,
     file: { buffer: Buffer; originalname: string; mimetype: string }
 ): Promise<string> {
-    // แปลงรูปเป็น WebP (ขนาดเล็กกว่าสำหรับ avatar)
+    // แปลงรูปเป็น WebP (ขนาดเล็กกว่าสำหรับ avatar — จำกัด 300x300)
     const webpBuffer = await processImage(file.buffer, {
-        maxWidth: 400,
-        maxHeight: 400
+        maxWidth: 300,
+        maxHeight: 300
     });
 
     const baseFilename = generateFilename(file.originalname);

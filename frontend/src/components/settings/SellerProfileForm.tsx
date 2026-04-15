@@ -529,7 +529,7 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                             onChange={(e) =>
                                 set("showroomType", e.target.value)
                             }
-                            className={INPUT_CLS}
+                            className="form-select"
                         >
                             {SHOWROOM_OPTIONS.map((o) => (
                                 <option key={o.value} value={o.value}>

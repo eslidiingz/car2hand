@@ -14,6 +14,7 @@ interface UserData {
     fullName: string;
     email: string;
     phoneNumber: string;
+    profileImage?: string | null;
 }
 
 export default function Navbar() {
@@ -26,13 +27,41 @@ export default function Navbar() {
     // Check for logged in user
     useEffect(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch {
-                setUser(null);
-            }
+        if (!storedUser) return;
+
+        let parsed: UserData & { token?: string };
+        try {
+            parsed = JSON.parse(storedUser);
+            setUser(parsed);
+        } catch {
+            setUser(null);
+            return;
         }
+
+        // Refresh from server so profileImage / fullName stays in sync
+        const token = parsed.token;
+        if (!token) return;
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+        fetch(`${API_URL}/users/me`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => {
+                if (!data?.user) return;
+                setUser((prev) => (prev ? { ...prev, ...data.user } : prev));
+                // Persist updated profileImage to whichever storage holds the user
+                for (const storage of [localStorage, sessionStorage]) {
+                    const raw = storage.getItem('user');
+                    if (raw) {
+                        try {
+                            const obj = JSON.parse(raw);
+                            storage.setItem(
+                                'user',
+                                JSON.stringify({ ...obj, profileImage: data.user.profileImage })
+                            );
+                        } catch { /* ignore */ }
+                    }
+                }
+            })
+            .catch(() => { /* ignore network errors */ });
     }, []);
 
     // Listen for storage changes (login/logout in other tabs)
@@ -51,7 +80,16 @@ export default function Navbar() {
         };
 
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        // Custom event for in-app updates (avatar change, profile edit, etc.)
+        const handleProfileUpdate = (e: Event) => {
+            const detail = (e as CustomEvent).detail || {};
+            setUser((prev) => (prev ? { ...prev, ...detail } : prev));
+        };
+        window.addEventListener('userProfileUpdate', handleProfileUpdate);
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('userProfileUpdate', handleProfileUpdate);
+        };
     }, []);
 
     const isActive = (path: string) => {
@@ -114,7 +152,7 @@ export default function Navbar() {
         return (
             <Link
                 href="/buy/compare"
-                className="relative p-2 rounded-full transition group"
+                className="relative inline-flex items-center justify-center p-2 rounded-full transition group"
                 title={`เปรียบเทียบ (${count}/${maxCompareItems} รายการ)`}
             >
                 <Scale
@@ -123,7 +161,7 @@ export default function Navbar() {
                     className={count > 0 ? 'text-primary' : 'text-gray-500 group-hover:text-primary'}
                 />
                 {count > 0 && (
-                    <span className="absolute top-0 right-0 w-4.5 h-4.5 bg-accent text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white translate-x-1/4 -translate-y-1/4 shadow-sm">
+                    <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white translate-x-1/4 -translate-y-1/4 shadow-sm">
                         {count}
                     </span>
                 )}
@@ -214,8 +252,17 @@ export default function Navbar() {
                                         }}
                                         className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 rounded-full hover:bg-gray-100 transition"
                                     >
-                                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm">
-                                            {getInitials(user.fullName)}
+                                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm overflow-hidden">
+                                            {user.profileImage ? (
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                    src={user.profileImage}
+                                                    alt={user.fullName}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                getInitials(user.fullName)
+                                            )}
                                         </div>
                                         <span className="hidden md:block font-medium text-gray-700 max-w-[120px] truncate">
                                             {user.fullName}
@@ -360,7 +407,11 @@ export default function Navbar() {
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="relative">
-                                        <Scale size={24} fill="currentColor" className="text-primary" />
+                                        <Scale
+                                            size={24}
+                                            {...(compareCount > 0 ? { fill: 'currentColor' } : {})}
+                                            className="text-primary"
+                                        />
                                         {compareCount > 0 && (
                                             <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                                                 {compareCount}

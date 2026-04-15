@@ -124,7 +124,7 @@ export default function DeliveryPage() {
                 <div className="pt-32 pb-20 flex flex-col items-center justify-center px-4">
                     <div className="bg-white rounded-3xl p-10 shadow-lg border border-gray-100 max-w-md w-full text-center">
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <CheckCircle fill="currentColor" className="text-green-500 text-5xl" />
+                            <CheckCircle className="text-green-500 text-5xl" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-3">ส่งข้อมูลสำเร็จ!</h2>
                         <p className="text-gray-500 mb-8">เจ้าหน้าที่จะติดต่อกลับภายใน 30 นาที เพื่อแจ้งรายละเอียดและราคาค่าบริการ</p>
@@ -154,7 +154,7 @@ export default function DeliveryPage() {
             }}>
                 <div className="relative z-10">
                     <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <Truck fill="currentColor" className="text-5xl text-white" />
+                        <Truck className="text-5xl text-white" />
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold mb-4">บริการรถสไลด์/ส่งมอบรถ</h1>
                     <p className="text-purple-100 text-lg max-w-2xl mx-auto mb-8">
@@ -172,7 +172,7 @@ export default function DeliveryPage() {
                     {features.map((feat, i) => (
                         <div key={i} className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100 text-center group hover:-translate-y-1 transition">
                             <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mx-auto mb-3 text-purple-600 group-hover:scale-110 transition">
-                                <feat.icon fill="currentColor" className="text-2xl" />
+                                <feat.icon className="text-2xl" />
                             </div>
                             <h3 className="font-bold text-gray-800 text-sm mb-1">{feat.title}</h3>
                             <p className="text-xs text-gray-500">{feat.description}</p>
@@ -265,7 +265,7 @@ export default function DeliveryPage() {
 
                                 {submitError && (
                                     <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2 text-red-600 text-sm">
-                                        <AlertTriangle fill="currentColor" /> {submitError}
+                                        <AlertTriangle /> {submitError}
                                     </div>
                                 )}
 
@@ -308,7 +308,7 @@ export default function DeliveryPage() {
                                 <h4 className="font-bold mb-2">ต้องการความช่วยเหลือ?</h4>
                                 <p className="text-purple-100 text-sm mb-4">โทรหาเราได้เลย เจ้าหน้าที่พร้อมให้คำปรึกษา</p>
                                 <a href="tel:021234567" className="bg-white text-purple-600 px-4 py-2 rounded-lg font-bold text-sm inline-flex items-center gap-2 hover:bg-purple-50 transition">
-                                    <Phone fill="currentColor" /> 02-123-4567
+                                    <Phone /> 02-123-4567
                                 </a>
                             </div>
                         </div>

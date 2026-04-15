@@ -47,10 +47,10 @@ interface PackageData {
 }
 
 const packageStyles: Record<string, { icon: React.ReactNode; bg: string; iconColor: string; border: string }> = {
-    basic: { icon: <Zap size={28} />, bg: 'bg-gray-50', iconColor: 'text-gray-400', border: 'border-gray-200' },
-    standard: { icon: <Star size={28} />, bg: 'bg-blue-50', iconColor: 'text-blue-500', border: 'border-blue-200' },
-    professional: { icon: <Rocket size={28} />, bg: 'bg-orange-50', iconColor: 'text-orange-500', border: 'border-orange-400' },
-    premium: { icon: <Crown size={28} />, bg: 'bg-yellow-50', iconColor: 'text-yellow-500', border: 'border-yellow-400' },
+    basic: { icon: <Zap size={28} fill="currentColor" />, bg: 'bg-gray-50', iconColor: 'text-gray-400', border: 'border-gray-200' },
+    standard: { icon: <Star size={28} fill="currentColor" />, bg: 'bg-blue-50', iconColor: 'text-blue-500', border: 'border-blue-200' },
+    professional: { icon: <Rocket size={28} fill="currentColor" />, bg: 'bg-orange-50', iconColor: 'text-orange-500', border: 'border-orange-400' },
+    premium: { icon: <Crown size={28} fill="currentColor" />, bg: 'bg-yellow-50', iconColor: 'text-yellow-500', border: 'border-yellow-400' },
 };
 
 function getStyle(slug: string) {
@@ -147,7 +147,7 @@ export default function SellPage() {
     };
 
     return (
-        <div className="bg-surface text-gray-800 min-h-screen">
+        <div className="bg-surface text-gray-800 min-h-screen overflow-x-hidden">
             {/* Hero Section */}
             <header
                 className="relative min-h-[600px] flex items-center justify-center pt-20 px-4 overflow-visible"

@@ -13,7 +13,7 @@ export default function ServiceShortcuts() {
                 {/* Car Inspection */}
                 <Link href="/services/inspection" className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00C851] to-[#007E33] text-white shadow-lg group cursor-pointer hover:shadow-xl transition duration-300 hover:-translate-y-1 block">
                     <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 translate-y-4 group-hover:rotate-12 transition duration-500">
-                        <ShieldCheck fill="currentColor" className="text-9xl" />
+                        <ShieldCheck className="text-9xl" />
                     </div>
 
                     <div className="p-8 relative z-10 flex flex-col h-full justify-between">
@@ -37,7 +37,7 @@ export default function ServiceShortcuts() {
                 {/* Finance & Insurance */}
                 <Link href="/services/finance" className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0F3460] to-[#16213E] text-white shadow-lg group cursor-pointer hover:shadow-xl transition duration-300 hover:-translate-y-1 block">
                     <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-10 -translate-y-5 group-hover:scale-110 transition duration-500">
-                        <Coins fill="currentColor" className="text-9xl" />
+                        <Coins className="text-9xl" />
                     </div>
 
                     <div className="p-8 relative z-10 flex flex-col h-full justify-between">

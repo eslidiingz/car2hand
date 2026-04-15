@@ -209,7 +209,7 @@ export default function TopicDetailPage() {
                                             <div className="flex items-center gap-2 text-xs text-gray-400">
                                                 <span>{timeAgo(post.createdAt)}</span>
                                                 <span>•</span>
-                                                <span className="flex items-center gap-1"><Eye fill="currentColor" /> {post.viewCount.toLocaleString()}</span>
+                                                <span className="flex items-center gap-1"><Eye /> {post.viewCount.toLocaleString()}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -270,7 +270,7 @@ export default function TopicDetailPage() {
                                 >
                                     {comment.isBestAnswer && (
                                         <div className="absolute -top-3 left-6 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
-                                            <CheckCircle fill="currentColor" /> คำตอบที่ดีที่สุด
+                                            <CheckCircle /> คำตอบที่ดีที่สุด
                                         </div>
                                     )}
                                     <div className={comment.isBestAnswer ? 'bg-white rounded-xl p-5' : 'p-5'}>
@@ -279,7 +279,7 @@ export default function TopicDetailPage() {
                                             <div>
                                                 <span className="font-bold text-gray-800 text-sm flex items-center gap-1">
                                                     {comment.author.fullName}
-                                                    {comment.isBestAnswer && <BadgeCheck fill="currentColor" className="text-blue-500 text-xs" />}
+                                                    {comment.isBestAnswer && <BadgeCheck className="text-blue-500 text-xs" />}
                                                 </span>
                                                 <span className="text-xs text-gray-400">{timeAgo(comment.createdAt)}</span>
                                             </div>

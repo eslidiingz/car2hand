@@ -100,7 +100,7 @@ export default function WishlistPage() {
             {/* AlertTriangle for old data */}
             {hasOldData && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                    <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" fill="currentColor" />
+                    <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                         <p className="text-amber-800 text-sm font-medium">บางรายการมีข้อมูลไม่ครบ</p>
                         <p className="text-amber-600 text-xs mt-1">

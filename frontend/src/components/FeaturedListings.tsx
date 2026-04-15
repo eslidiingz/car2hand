@@ -44,7 +44,7 @@ export default function FeaturedListings() {
         <section className="max-w-7xl mx-auto px-4 mt-12">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-                    <Sparkles fill="currentColor" className="text-amber-500" />
+                    <Sparkles className="text-amber-500" />
                     ประกาศแนะนำ
                     <span className="text-xs bg-amber-50 text-amber-600 px-2 py-1 rounded-full font-bold">Featured</span>
                 </h2>

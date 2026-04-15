@@ -131,7 +131,7 @@ function CreateTopicPage() {
 
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h1 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                        <Pencil fill="currentColor" className="text-accent" />
+                        <Pencil className="text-accent" />
                         ตั้งกระทู้ใหม่
                     </h1>
 

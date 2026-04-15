@@ -242,13 +242,13 @@ export default function FinancePage() {
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
-                                <CheckCircle fill="currentColor" className="text-green-500 text-xl" /> ดอกเบี้ยเริ่ม 2.79%
+                                <CheckCircle className="text-green-500 text-xl" /> ดอกเบี้ยเริ่ม 2.79%
                             </div>
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
-                                <CheckCircle fill="currentColor" className="text-green-500 text-xl" /> รู้ผลไว 24 ชม.
+                                <CheckCircle className="text-green-500 text-xl" /> รู้ผลไว 24 ชม.
                             </div>
                             <div className="flex items-center gap-2 text-sm font-bold text-gray-600">
-                                <CheckCircle fill="currentColor" className="text-green-500 text-xl" /> ไม่ต้องค้ำ*
+                                <CheckCircle className="text-green-500 text-xl" /> ไม่ต้องค้ำ*
                             </div>
                         </div>
                     </div>
@@ -258,7 +258,7 @@ export default function FinancePage() {
                         </div>
                         <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl flex items-center gap-3 animate-bounce">
                             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl">
-                                <Banknote fill="currentColor" />
+                                <Banknote />
                             </div>
                             <div>
                                 <div className="font-bold text-gray-800">อนุมัติไว</div>
@@ -275,7 +275,7 @@ export default function FinancePage() {
                 <div className="flex flex-col md:flex-row gap-12">
                     <div className="flex-1 bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-gray-100">
                         <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
-                            <Calculator fill="currentColor" className="text-accent" /> คำนวณค่างวด (Car Loan)
+                            <Calculator className="text-accent" /> คำนวณค่างวด (Car Loan)
                         </h2>
 
                         {/* Calc Type Toggle */}
@@ -494,7 +494,7 @@ export default function FinancePage() {
                         </div>
 
                         <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-sm text-blue-800 flex items-center gap-2">
-                            <Info fill="currentColor" />
+                            <Info />
                             <span>**เงื่อนไขเป็นไปตามที่ธนาคารกำหนด และขึ้นอยู่กับเครดิตของผู้เช่าซื้อ</span>
                         </div>
                     </div>
@@ -571,7 +571,7 @@ export default function FinancePage() {
                         {submitSuccess ? (
                             <div className="text-center py-8">
                                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <CheckCircle fill="currentColor" className="text-green-500 text-4xl" />
+                                    <CheckCircle className="text-green-500 text-4xl" />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">ส่งข้อมูลเรียบร้อยแล้ว</h3>
                                 <p className="text-gray-500 mb-6">เจ้าหน้าที่จะติดต่อกลับภายใน 1 วันทำการ</p>

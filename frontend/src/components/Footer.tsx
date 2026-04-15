@@ -6,8 +6,10 @@ import { usePathname } from 'next/navigation';
 export default function Footer() {
     const pathname = usePathname();
     
-    // Check if current path is a profile or sell page
-    const isMinimalFooter = pathname?.startsWith('/profile') || pathname?.startsWith('/sell');
+    // Use minimal footer on profile pages and sell sub-pages (forms),
+    // but show full footer on the /sell landing page itself.
+    const isMinimalFooter =
+        pathname?.startsWith('/profile') || pathname?.startsWith('/sell/');
 
     return (
         <footer className="bg-gray-800 text-white py-10 mt-auto">

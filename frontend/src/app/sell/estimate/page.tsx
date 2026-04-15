@@ -484,7 +484,7 @@ function EstimatePricePage() {
                             <div className="bg-white/5 backdrop-blur-sm rounded-[20px] p-6 md:p-10 text-center text-white relative z-10 border border-white/10">
 
                                 <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs font-bold text-blue-200 mb-6 border border-white/20">
-                                    <Sparkles fill="currentColor" className="text-yellow-400" size={14} />
+                                    <Sparkles className="text-yellow-400" size={14} />
                                     ความมั่นใจ: {Math.round(result.confidence * 100)}%
                                     {result.matchLevel !== 'exact' && (
                                         <span className="text-yellow-300 ml-1">
@@ -575,7 +575,7 @@ function EstimatePricePage() {
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
                                 <div>
                                     <h3 className="font-bold text-primary flex items-center gap-2 mb-2">
-                                        <Zap fill="currentColor" className="text-yellow-500" size={20} /> ความไวในการขาย
+                                        <Zap className="text-yellow-500" size={20} /> ความไวในการขาย
                                     </h3>
                                     <p className="text-gray-500 text-sm">
                                         {result.avgDaysToSell
@@ -598,7 +598,7 @@ function EstimatePricePage() {
                                 )}
 
                                 <div className="bg-yellow-50 text-yellow-800 text-xs p-3 rounded-lg border border-yellow-100 flex gap-2 items-start">
-                                    <Lightbulb fill="currentColor" className="mt-0.5 flex-shrink-0" size={14} />
+                                    <Lightbulb className="mt-0.5 flex-shrink-0" size={14} />
                                     <span>
                                         {result.demandLevel === 'HIGH'
                                             ? 'รถรุ่นนี้เป็นที่ต้องการสูง ลงขายตอนนี้มีโอกาสขายได้เร็ว!'

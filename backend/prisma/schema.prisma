@@ -20,11 +20,22 @@ model User {
   email       String   @unique
   phoneNumber String
   password    String
+  profileImage String? // URL รูปโปรไฟล์ (MinIO)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // LINE Integration
-  lineUserId String? @unique // LINE userId จาก LINE Login OAuth
+  // Social Login Integration
+  lineUserId     String? @unique // LINE userId จาก LINE Login OAuth
+  googleUserId   String? @unique // Google sub จาก Google OAuth
+  facebookUserId String? @unique // Facebook user ID จาก Facebook Login OAuth
+
+  // Password Reset
+  passwordResetToken     String?   @unique // Token สำหรับรีเซ็ตรหัสผ่าน
+  passwordResetExpiresAt DateTime? // วันหมดอายุของ reset token
+
+  // Delete Account verification (6-digit code sent to email)
+  deleteAccountCode          String?   // 6-digit code (hashed)
+  deleteAccountCodeExpiresAt DateTime? // วันหมดอายุของ code
 
   // Package
   currentPackageId String?
@@ -54,6 +65,8 @@ model User {
 
   @@index([currentPackageId])
   @@index([lineUserId])
+  @@index([googleUserId])
+  @@index([facebookUserId])
   @@map("users")
 }
 

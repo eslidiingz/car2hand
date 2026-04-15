@@ -102,13 +102,13 @@ export default function LineConnection() {
     }
 
     return (
-        <div className="space-y-6 max-w-2xl">
+        <div className="space-y-6">
             {/* LINE Connection Card */}
             <div className="border border-gray-100 rounded-xl p-6">
                 <div className="flex items-start gap-4">
                     {/* LINE Icon */}
                     <div className="w-12 h-12 bg-[#06C755] rounded-xl flex items-center justify-center flex-shrink-0">
-                        <MessageCircleMore fill="currentColor" className="text-white text-2xl" />
+                        <MessageCircleMore className="text-white text-2xl" />
                     </div>
 
                     <div className="flex-1 min-w-0">
@@ -116,7 +116,7 @@ export default function LineConnection() {
                             <h3 className="font-bold text-gray-800 text-lg">LINE</h3>
                             {status?.connected && (
                                 <span className="inline-flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                                    <CheckCircle fill="currentColor" size={14} />
+                                    <CheckCircle size={14} />
                                     เชื่อมต่อแล้ว
                                 </span>
                             )}
@@ -171,7 +171,7 @@ export default function LineConnection() {
                                     onClick={handleConnect}
                                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#06C755] text-white rounded-lg text-sm font-bold hover:bg-[#05b34c] transition shadow-sm"
                                 >
-                                    <MessageCircleMore fill="currentColor" size={18} />
+                                    <MessageCircleMore size={18} />
                                     เชื่อมต่อ LINE
                                 </button>
                             </>
@@ -188,20 +188,26 @@ export default function LineConnection() {
             )}
 
             {/* Info Section */}
-            <div className="bg-gray-50 rounded-xl p-5">
-                <h4 className="font-bold text-gray-700 text-sm mb-3">การแจ้งเตือนที่คุณจะได้รับผ่าน LINE</h4>
-                <ul className="space-y-2 text-sm text-gray-500">
-                    <li className="flex items-center gap-2">
-                        <CheckCircle fill="currentColor" size={16} className="text-green-500 flex-shrink-0" />
-                        สถานะประกาศขายรถ (อนุมัติ / ไม่อนุมัติ / หมดอายุ)
+            <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                <h4 className="font-bold text-gray-800 text-sm mb-4">การแจ้งเตือนที่คุณจะได้รับผ่าน LINE</h4>
+                <ul className="space-y-3 text-sm text-gray-600">
+                    <li className="flex items-start gap-3">
+                        <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+                            <CheckCircle size={14} strokeWidth={2.5} />
+                        </span>
+                        <span className="pt-0.5">สถานะประกาศขายรถ (อนุมัติ / ไม่อนุมัติ / หมดอายุ)</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                        <CheckCircle fill="currentColor" size={16} className="text-green-500 flex-shrink-0" />
-                        แจ้งเตือนเมื่อมีผู้สนใจรถของคุณ
+                    <li className="flex items-start gap-3">
+                        <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+                            <CheckCircle size={14} strokeWidth={2.5} />
+                        </span>
+                        <span className="pt-0.5">แจ้งเตือนเมื่อมีผู้สนใจรถของคุณ</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                        <CheckCircle fill="currentColor" size={16} className="text-green-500 flex-shrink-0" />
-                        ข่าวสารและโปรโมชั่นจาก Car2Hand
+                    <li className="flex items-start gap-3">
+                        <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0">
+                            <CheckCircle size={14} strokeWidth={2.5} />
+                        </span>
+                        <span className="pt-0.5">ข่าวสารและโปรโมชั่นจาก Car2Hand</span>
                     </li>
                 </ul>
             </div>

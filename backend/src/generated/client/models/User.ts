@@ -31,9 +31,16 @@ export type UserMinAggregateOutputType = {
   email: string | null
   phoneNumber: string | null
   password: string | null
+  profileImage: string | null
   createdAt: Date | null
   updatedAt: Date | null
   lineUserId: string | null
+  googleUserId: string | null
+  facebookUserId: string | null
+  passwordResetToken: string | null
+  passwordResetExpiresAt: Date | null
+  deleteAccountCode: string | null
+  deleteAccountCodeExpiresAt: Date | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
 }
@@ -45,9 +52,16 @@ export type UserMaxAggregateOutputType = {
   email: string | null
   phoneNumber: string | null
   password: string | null
+  profileImage: string | null
   createdAt: Date | null
   updatedAt: Date | null
   lineUserId: string | null
+  googleUserId: string | null
+  facebookUserId: string | null
+  passwordResetToken: string | null
+  passwordResetExpiresAt: Date | null
+  deleteAccountCode: string | null
+  deleteAccountCodeExpiresAt: Date | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
 }
@@ -59,9 +73,16 @@ export type UserCountAggregateOutputType = {
   email: number
   phoneNumber: number
   password: number
+  profileImage: number
   createdAt: number
   updatedAt: number
   lineUserId: number
+  googleUserId: number
+  facebookUserId: number
+  passwordResetToken: number
+  passwordResetExpiresAt: number
+  deleteAccountCode: number
+  deleteAccountCodeExpiresAt: number
   currentPackageId: number
   packageExpiresAt: number
   _all: number
@@ -75,9 +96,16 @@ export type UserMinAggregateInputType = {
   email?: true
   phoneNumber?: true
   password?: true
+  profileImage?: true
   createdAt?: true
   updatedAt?: true
   lineUserId?: true
+  googleUserId?: true
+  facebookUserId?: true
+  passwordResetToken?: true
+  passwordResetExpiresAt?: true
+  deleteAccountCode?: true
+  deleteAccountCodeExpiresAt?: true
   currentPackageId?: true
   packageExpiresAt?: true
 }
@@ -89,9 +117,16 @@ export type UserMaxAggregateInputType = {
   email?: true
   phoneNumber?: true
   password?: true
+  profileImage?: true
   createdAt?: true
   updatedAt?: true
   lineUserId?: true
+  googleUserId?: true
+  facebookUserId?: true
+  passwordResetToken?: true
+  passwordResetExpiresAt?: true
+  deleteAccountCode?: true
+  deleteAccountCodeExpiresAt?: true
   currentPackageId?: true
   packageExpiresAt?: true
 }
@@ -103,9 +138,16 @@ export type UserCountAggregateInputType = {
   email?: true
   phoneNumber?: true
   password?: true
+  profileImage?: true
   createdAt?: true
   updatedAt?: true
   lineUserId?: true
+  googleUserId?: true
+  facebookUserId?: true
+  passwordResetToken?: true
+  passwordResetExpiresAt?: true
+  deleteAccountCode?: true
+  deleteAccountCodeExpiresAt?: true
   currentPackageId?: true
   packageExpiresAt?: true
   _all?: true
@@ -190,9 +232,16 @@ export type UserGroupByOutputType = {
   email: string
   phoneNumber: string
   password: string
+  profileImage: string | null
   createdAt: Date
   updatedAt: Date
   lineUserId: string | null
+  googleUserId: string | null
+  facebookUserId: string | null
+  passwordResetToken: string | null
+  passwordResetExpiresAt: Date | null
+  deleteAccountCode: string | null
+  deleteAccountCodeExpiresAt: Date | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
   _count: UserCountAggregateOutputType | null
@@ -225,9 +274,16 @@ export type UserWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   phoneNumber?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   lineUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  googleUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  facebookUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  deleteAccountCode?: Prisma.StringNullableFilter<"User"> | string | null
+  deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
@@ -255,9 +311,16 @@ export type UserOrderByWithRelationInput = {
   email?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lineUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  googleUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  facebookUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleteAccountCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleteAccountCodeExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackage?: Prisma.PackageOrderByWithRelationInput
@@ -282,6 +345,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
   lineUserId?: string
+  googleUserId?: string
+  facebookUserId?: string
+  passwordResetToken?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -289,8 +355,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   isActive?: Prisma.BoolFilter<"User"> | boolean
   phoneNumber?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  passwordResetExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  deleteAccountCode?: Prisma.StringNullableFilter<"User"> | string | null
+  deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
@@ -309,7 +379,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   forumCommentVotes?: Prisma.ForumCommentVoteListRelationFilter
   reputation?: Prisma.XOR<Prisma.UserReputationNullableScalarRelationFilter, Prisma.UserReputationWhereInput> | null
   sellerProfile?: Prisma.XOR<Prisma.SellerProfileNullableScalarRelationFilter, Prisma.SellerProfileWhereInput> | null
-}, "id" | "email" | "lineUserId">
+}, "id" | "email" | "lineUserId" | "googleUserId" | "facebookUserId" | "passwordResetToken">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -318,9 +388,16 @@ export type UserOrderByWithAggregationInput = {
   email?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lineUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  googleUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  facebookUserId?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleteAccountCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleteAccountCodeExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -338,9 +415,16 @@ export type UserScalarWhereWithAggregatesInput = {
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   phoneNumber?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  profileImage?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   lineUserId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  googleUserId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  facebookUserId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  passwordResetToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  passwordResetExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  deleteAccountCode?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
@@ -352,9 +436,16 @@ export type UserCreateInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -381,9 +472,16 @@ export type UserUncheckedCreateInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -410,9 +508,16 @@ export type UserUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -439,9 +544,16 @@ export type UserUncheckedUpdateInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -468,9 +580,16 @@ export type UserCreateManyInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
 }
@@ -482,9 +601,16 @@ export type UserUpdateManyMutationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -495,9 +621,16 @@ export type UserUncheckedUpdateManyInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -509,9 +642,16 @@ export type UserCountOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lineUserId?: Prisma.SortOrder
+  googleUserId?: Prisma.SortOrder
+  facebookUserId?: Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrder
+  deleteAccountCode?: Prisma.SortOrder
+  deleteAccountCodeExpiresAt?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
 }
@@ -523,9 +663,16 @@ export type UserMaxOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lineUserId?: Prisma.SortOrder
+  googleUserId?: Prisma.SortOrder
+  facebookUserId?: Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrder
+  deleteAccountCode?: Prisma.SortOrder
+  deleteAccountCodeExpiresAt?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
 }
@@ -537,9 +684,16 @@ export type UserMinOrderByAggregateInput = {
   email?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  profileImage?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   lineUserId?: Prisma.SortOrder
+  googleUserId?: Prisma.SortOrder
+  facebookUserId?: Prisma.SortOrder
+  passwordResetToken?: Prisma.SortOrder
+  passwordResetExpiresAt?: Prisma.SortOrder
+  deleteAccountCode?: Prisma.SortOrder
+  deleteAccountCodeExpiresAt?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
 }
@@ -572,12 +726,12 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type DateTimeFieldUpdateOperationsInput = {
+  set?: Date | string
 }
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -847,9 +1001,16 @@ export type UserCreateWithoutSellerProfileInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -875,9 +1036,16 @@ export type UserUncheckedCreateWithoutSellerProfileInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -919,9 +1087,16 @@ export type UserUpdateWithoutSellerProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -947,9 +1122,16 @@ export type UserUncheckedUpdateWithoutSellerProfileInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -975,9 +1157,16 @@ export type UserCreateWithoutWishlistsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1003,9 +1192,16 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -1047,9 +1243,16 @@ export type UserUpdateWithoutWishlistsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -1075,9 +1278,16 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -1103,9 +1313,16 @@ export type UserCreateWithoutListingsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
@@ -1131,9 +1348,16 @@ export type UserUncheckedCreateWithoutListingsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
@@ -1175,9 +1399,16 @@ export type UserUpdateWithoutListingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
@@ -1203,9 +1434,16 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
@@ -1231,9 +1469,16 @@ export type UserCreateWithoutCurrentPackageInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
@@ -1259,9 +1504,16 @@ export type UserUncheckedCreateWithoutCurrentPackageInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
@@ -1316,9 +1568,16 @@ export type UserScalarWhereInput = {
   email?: Prisma.StringFilter<"User"> | string
   phoneNumber?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
+  profileImage?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   lineUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  googleUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  facebookUserId?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetToken?: Prisma.StringNullableFilter<"User"> | string | null
+  passwordResetExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  deleteAccountCode?: Prisma.StringNullableFilter<"User"> | string | null
+  deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
 }
@@ -1330,9 +1589,16 @@ export type UserCreateWithoutPackageTransactionsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1358,9 +1624,16 @@ export type UserUncheckedCreateWithoutPackageTransactionsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -1402,9 +1675,16 @@ export type UserUpdateWithoutPackageTransactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -1430,9 +1710,16 @@ export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -1458,9 +1745,16 @@ export type UserCreateWithoutListingRenewalsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1486,9 +1780,16 @@ export type UserUncheckedCreateWithoutListingRenewalsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -1530,9 +1831,16 @@ export type UserUpdateWithoutListingRenewalsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -1558,9 +1866,16 @@ export type UserUncheckedUpdateWithoutListingRenewalsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -1586,9 +1901,16 @@ export type UserCreateWithoutGarageVehiclesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1614,9 +1936,16 @@ export type UserUncheckedCreateWithoutGarageVehiclesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -1658,9 +1987,16 @@ export type UserUpdateWithoutGarageVehiclesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -1686,9 +2022,16 @@ export type UserUncheckedUpdateWithoutGarageVehiclesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -1714,9 +2057,16 @@ export type UserCreateWithoutNotificationsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1742,9 +2092,16 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -1786,9 +2143,16 @@ export type UserUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -1814,9 +2178,16 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -1842,9 +2213,16 @@ export type UserCreateWithoutBumpLogsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1870,9 +2248,16 @@ export type UserUncheckedCreateWithoutBumpLogsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -1914,9 +2299,16 @@ export type UserUpdateWithoutBumpLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -1942,9 +2334,16 @@ export type UserUncheckedUpdateWithoutBumpLogsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -1970,9 +2369,16 @@ export type UserCreateWithoutInspectionBookingsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -1998,9 +2404,16 @@ export type UserUncheckedCreateWithoutInspectionBookingsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2042,9 +2455,16 @@ export type UserUpdateWithoutInspectionBookingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2070,9 +2490,16 @@ export type UserUncheckedUpdateWithoutInspectionBookingsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2098,9 +2525,16 @@ export type UserCreateWithoutServiceInquiriesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -2126,9 +2560,16 @@ export type UserUncheckedCreateWithoutServiceInquiriesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2170,9 +2611,16 @@ export type UserUpdateWithoutServiceInquiriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2198,9 +2646,16 @@ export type UserUncheckedUpdateWithoutServiceInquiriesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2226,9 +2681,16 @@ export type UserCreateWithoutForumPostsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -2254,9 +2716,16 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2298,9 +2767,16 @@ export type UserUpdateWithoutForumPostsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2326,9 +2802,16 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2354,9 +2837,16 @@ export type UserCreateWithoutForumCommentsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -2382,9 +2872,16 @@ export type UserUncheckedCreateWithoutForumCommentsInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2426,9 +2923,16 @@ export type UserUpdateWithoutForumCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2454,9 +2958,16 @@ export type UserUncheckedUpdateWithoutForumCommentsInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2482,9 +2993,16 @@ export type UserCreateWithoutForumVotesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -2510,9 +3028,16 @@ export type UserUncheckedCreateWithoutForumVotesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2554,9 +3079,16 @@ export type UserUpdateWithoutForumVotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2582,9 +3114,16 @@ export type UserUncheckedUpdateWithoutForumVotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2610,9 +3149,16 @@ export type UserCreateWithoutForumCommentVotesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -2638,9 +3184,16 @@ export type UserUncheckedCreateWithoutForumCommentVotesInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2682,9 +3235,16 @@ export type UserUpdateWithoutForumCommentVotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2710,9 +3270,16 @@ export type UserUncheckedUpdateWithoutForumCommentVotesInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2738,9 +3305,16 @@ export type UserCreateWithoutReputationInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
@@ -2766,9 +3340,16 @@ export type UserUncheckedCreateWithoutReputationInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
@@ -2810,9 +3391,16 @@ export type UserUpdateWithoutReputationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
@@ -2838,9 +3426,16 @@ export type UserUncheckedUpdateWithoutReputationInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
@@ -2866,9 +3461,16 @@ export type UserCreateManyCurrentPackageInput = {
   email: string
   phoneNumber: string
   password: string
+  profileImage?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
 }
 
@@ -2879,9 +3481,16 @@ export type UserUpdateWithoutCurrentPackageInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
@@ -2907,9 +3516,16 @@ export type UserUncheckedUpdateWithoutCurrentPackageInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
@@ -2935,9 +3551,16 @@ export type UserUncheckedUpdateManyWithoutCurrentPackageInput = {
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
@@ -3087,9 +3710,16 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   email?: boolean
   phoneNumber?: boolean
   password?: boolean
+  profileImage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   lineUserId?: boolean
+  googleUserId?: boolean
+  facebookUserId?: boolean
+  passwordResetToken?: boolean
+  passwordResetExpiresAt?: boolean
+  deleteAccountCode?: boolean
+  deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
@@ -3118,9 +3748,16 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   phoneNumber?: boolean
   password?: boolean
+  profileImage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   lineUserId?: boolean
+  googleUserId?: boolean
+  facebookUserId?: boolean
+  passwordResetToken?: boolean
+  passwordResetExpiresAt?: boolean
+  deleteAccountCode?: boolean
+  deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
@@ -3133,9 +3770,16 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   email?: boolean
   phoneNumber?: boolean
   password?: boolean
+  profileImage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   lineUserId?: boolean
+  googleUserId?: boolean
+  facebookUserId?: boolean
+  passwordResetToken?: boolean
+  passwordResetExpiresAt?: boolean
+  deleteAccountCode?: boolean
+  deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
@@ -3148,14 +3792,21 @@ export type UserSelectScalar = {
   email?: boolean
   phoneNumber?: boolean
   password?: boolean
+  profileImage?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   lineUserId?: boolean
+  googleUserId?: boolean
+  facebookUserId?: boolean
+  passwordResetToken?: boolean
+  passwordResetExpiresAt?: boolean
+  deleteAccountCode?: boolean
+  deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "createdAt" | "updatedAt" | "lineUserId" | "currentPackageId" | "packageExpiresAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "profileImage" | "createdAt" | "updatedAt" | "lineUserId" | "googleUserId" | "facebookUserId" | "passwordResetToken" | "passwordResetExpiresAt" | "deleteAccountCode" | "deleteAccountCodeExpiresAt" | "currentPackageId" | "packageExpiresAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
@@ -3209,9 +3860,16 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     email: string
     phoneNumber: string
     password: string
+    profileImage: string | null
     createdAt: Date
     updatedAt: Date
     lineUserId: string | null
+    googleUserId: string | null
+    facebookUserId: string | null
+    passwordResetToken: string | null
+    passwordResetExpiresAt: Date | null
+    deleteAccountCode: string | null
+    deleteAccountCodeExpiresAt: Date | null
     currentPackageId: string | null
     packageExpiresAt: Date | null
   }, ExtArgs["result"]["user"]>
@@ -3659,9 +4317,16 @@ export interface UserFieldRefs {
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly phoneNumber: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly profileImage: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly lineUserId: Prisma.FieldRef<"User", 'String'>
+  readonly googleUserId: Prisma.FieldRef<"User", 'String'>
+  readonly facebookUserId: Prisma.FieldRef<"User", 'String'>
+  readonly passwordResetToken: Prisma.FieldRef<"User", 'String'>
+  readonly passwordResetExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly deleteAccountCode: Prisma.FieldRef<"User", 'String'>
+  readonly deleteAccountCodeExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly currentPackageId: Prisma.FieldRef<"User", 'String'>
   readonly packageExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
 }

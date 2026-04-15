@@ -274,7 +274,7 @@ export default function InspectionPage() {
 
                 <div className="pt-28 pb-16 max-w-lg mx-auto px-4 text-center">
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                        <CheckCircle fill="currentColor" className="text-green-500 text-6xl mx-auto mb-4" />
+                        <CheckCircle className="text-green-500 text-6xl mx-auto mb-4" />
                         <h1 className="text-2xl font-bold text-gray-800 mb-2">จองสำเร็จ!</h1>
                         <p className="text-gray-500 mb-6">ทีมงานจะติดต่อกลับเพื่อยืนยันนัดหมาย</p>
 
@@ -343,7 +343,7 @@ export default function InspectionPage() {
     const FieldError = ({ msg }: { msg?: string }) =>
         msg ? (
             <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
-                <AlertCircle fill="currentColor" className="shrink-0" /> {msg}
+                <AlertCircle className="shrink-0" /> {msg}
             </p>
         ) : null;
 
@@ -387,15 +387,15 @@ export default function InspectionPage() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 md:gap-12 opacity-90">
                     <div className="flex items-center gap-2">
-                        <Award fill="currentColor" className="text-accent text-2xl" />
+                        <Award className="text-accent text-2xl" />
                         <span className="text-sm font-bold">ช่างรับรองมาตรฐาน</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <ClipboardList fill="currentColor" className="text-accent text-2xl" />
+                        <ClipboardList className="text-accent text-2xl" />
                         <span className="text-sm font-bold">รายงานผล Digital</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Clock fill="currentColor" className="text-accent text-2xl" />
+                        <Clock className="text-accent text-2xl" />
                         <span className="text-sm font-bold">รู้ผลใน 60 นาที</span>
                     </div>
                 </div>
@@ -623,7 +623,7 @@ export default function InspectionPage() {
                     {/* ── FAQ Section ─────────────────────────────────────── */}
                     <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            <HelpCircle fill="currentColor" className="text-blue-400 text-2xl" />
+                            <HelpCircle className="text-blue-400 text-2xl" />
                             คำถามที่พบบ่อย
                         </h2>
                         <div className="divide-y divide-gray-100">
@@ -685,7 +685,7 @@ export default function InspectionPage() {
 
                             {submitError && (
                                 <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-sm text-red-600 flex items-start gap-2">
-                                    <AlertCircle fill="currentColor" className="shrink-0 mt-0.5" />
+                                    <AlertCircle className="shrink-0 mt-0.5" />
                                     {submitError}
                                 </div>
                             )}
@@ -709,7 +709,7 @@ export default function InspectionPage() {
 
                             <div className="text-center">
                                 <span className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
-                                    <Lock fill="currentColor" /> ชำระเงินปลอดภัยผ่าน QR / บัตรเครดิต
+                                    <Lock /> ชำระเงินปลอดภัยผ่าน QR / บัตรเครดิต
                                 </span>
                             </div>
                         </div>
