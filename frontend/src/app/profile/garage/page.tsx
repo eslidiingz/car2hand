@@ -518,7 +518,7 @@ export default function WarehousePage() {
                                     )}
                                     {urgentReminders.length > 0 && (
                                         <div className="absolute top-4 left-4 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
-                                            <AlertTriangle fill="currentColor" size={14} /> {urgentReminders.length} แจ้งเตือน
+                                            <AlertTriangle size={14} /> {urgentReminders.length} แจ้งเตือน
                                         </div>
                                     )}
                                 </div>
@@ -596,7 +596,7 @@ export default function WarehousePage() {
                                             {urgentReminders.slice(0, 2).map(r => (
                                                 <div key={r.id} className="flex items-center justify-between p-2.5 rounded-xl bg-red-50 border border-red-100 text-red-700">
                                                     <div className="flex items-center gap-2">
-                                                        <AlertTriangle fill="currentColor" size={16} />
+                                                        <AlertTriangle size={16} />
                                                         <span className="text-xs font-medium">{r.title}</span>
                                                     </div>
                                                     <span className="text-xs font-bold">
@@ -857,7 +857,7 @@ export default function WarehousePage() {
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-1">
-                                                        {urgent && !r.isCompleted && <AlertTriangle fill="currentColor" size={18} className="text-red-500" />}
+                                                        {urgent && !r.isCompleted && <AlertTriangle size={18} className="text-red-500" />}
                                                         <button onClick={() => setDeleteConfirm({ type: 'reminder', id: r.id, title: r.title })} className="p-1 text-gray-300 hover:text-red-500 transition">
                                                             <Trash size={16} />
                                                         </button>

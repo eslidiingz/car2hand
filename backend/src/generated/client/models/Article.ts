@@ -613,6 +613,10 @@ export type EnumPostStatusFieldUpdateOperationsInput = {
   set?: $Enums.PostStatus
 }
 
+export type ArticleUpdatetagsInput = {
+  set?: string[]
+  push?: string | string[]
+}
 
 export type ArticleCreateNestedManyWithoutCategoryInput = {
   create?: Prisma.XOR<Prisma.ArticleCreateWithoutCategoryInput, Prisma.ArticleUncheckedCreateWithoutCategoryInput> | Prisma.ArticleCreateWithoutCategoryInput[] | Prisma.ArticleUncheckedCreateWithoutCategoryInput[]

@@ -15,6 +15,9 @@ import { articleRoutes as publicArticleRoutes } from "./articles";
 import { packageRoutes } from "./packages";
 import { securityHeaders, requestLogger, rateLimiter } from "./security";
 import { lineAuthRoutes } from "./line-auth";
+import { googleAuthRoutes } from "./google-auth";
+import { facebookAuthRoutes } from "./facebook-auth";
+import { contactRoutes } from "./contact";
 import { lineWebhookRoutes } from "./line-webhook";
 import { notificationRoutes } from "./notifications";
 import { userNotificationRoutes } from "./user-notifications";
@@ -25,6 +28,7 @@ import { adminSSERoutes, userSSERoutes } from "./admin-sse";
 import { forumRoutes } from "./forum";
 import { sellerProfileRoutes } from "./seller-profile";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
+import { verifySmtpConnection } from "./email";
 
 // Allowed origins (update for production)
 const ALLOWED_ORIGINS = [
@@ -76,6 +80,9 @@ const app = new Elysia()
       .use(publicArticleRoutes)
       .use(packageRoutes)
       .use(lineAuthRoutes)
+      .use(googleAuthRoutes)
+      .use(facebookAuthRoutes)
+      .use(contactRoutes)
       .use(lineWebhookRoutes)
       .use(notificationRoutes)
       .use(userNotificationRoutes)
@@ -129,6 +136,19 @@ const app = new Elysia()
 
 // Start cron jobs
 startPackageExpiryCrons();
+
+// Verify SMTP connection (non-blocking, swallow any rejection)
+verifySmtpConnection().catch((err) => {
+  console.error("[EMAIL] SMTP startup verification threw:", err);
+});
+
+// Safety net: never let an unhandled SMTP/socket rejection crash the process
+process.on("unhandledRejection", (reason) => {
+  console.error("[unhandledRejection]", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("[uncaughtException]", err);
+});
 
 console.log(`
 🦊 Car2Hand API Server

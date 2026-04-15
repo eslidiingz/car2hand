@@ -367,7 +367,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
 
                                 {/* Province Badge */}
                                 <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1.5">
-                                    <MapPin size={14} fill="currentColor" />
+                                    <MapPin size={14} />
                                     {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
                                 </div>
                             </div>
@@ -495,7 +495,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 href={`/community/create?listingId=${listing.id}&brand=${encodeURIComponent(listing.brand)}&model=${encodeURIComponent(listing.model)}&year=${listing.year}`}
                                 className="w-full mt-2 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition border-2 border-blue-200 text-primary hover:bg-blue-50"
                             >
-                                <MessagesSquare fill="currentColor" size={18} />
+                                <MessagesSquare size={18} />
                                 ขอความเห็นชุมชน
                             </Link>
 
@@ -517,7 +517,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-base font-bold text-primary flex items-center gap-2">
-                                        <MessagesSquare fill="currentColor" className="text-blue-400" size={20} />
+                                        <MessagesSquare className="text-blue-400" size={20} />
                                         ถามในชุมชน
                                     </h3>
                                     <Link href={`/community?listingId=${listing.id}`} className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
@@ -574,15 +574,15 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                                 listing.badge === 'Hot Deal' ? 'bg-orange-500' :
                                                 'bg-blue-500'
                                             }`}>
-                                                {listing.badge === 'Premium Choice' && <Crown size={10} fill="currentColor" />}
-                                                {listing.badge === 'Hot Deal' && <Flame size={10} fill="currentColor" />}
-                                                {listing.badge === 'Verified Seller' && <BadgeCheck size={10} fill="currentColor" />}
+                                                {listing.badge === 'Premium Choice' && <Crown size={10} />}
+                                                {listing.badge === 'Hot Deal' && <Flame size={10} />}
+                                                {listing.badge === 'Verified Seller' && <BadgeCheck size={10} />}
                                                 {listing.badge}
                                             </span>
                                         )}
                                         {(listing as any).user?.sellerProfile?.isVerified && (
                                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-green-500">
-                                                <BadgeCheck size={10} fill="currentColor" />
+                                                <BadgeCheck size={10} />
                                                 ยืนยันตัวตน
                                             </span>
                                         )}
@@ -664,7 +664,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 onClick={() => setShowContactModal(false)}
                                 className="text-gray-400 hover:text-gray-600 transition"
                             >
-                                <XCircle size={28} fill="currentColor" />
+                                <XCircle size={28} />
                             </button>
                         </div>
 
@@ -686,7 +686,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 className="flex items-center gap-4 p-4 bg-green-50 rounded-xl hover:bg-green-100 transition group"
                             >
                                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                                    <Phone size={24} className="text-white" fill="currentColor" />
+                                    <Phone size={24} className="text-white" />
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm text-gray-500">เบอร์โทรศัพท์</p>
@@ -776,7 +776,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             onClick={() => setShowFullscreenGallery(false)}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition backdrop-blur-sm"
                         >
-                            <XCircle size={28} fill="currentColor" />
+                            <XCircle size={28} />
                         </button>
                     </div>
 

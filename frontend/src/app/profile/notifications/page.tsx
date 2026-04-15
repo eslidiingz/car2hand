@@ -44,19 +44,19 @@ function timeAgo(dateStr: string): string {
 function getTypeStyle(type: string) {
     switch (type) {
         case 'LISTING_APPROVED':
-            return { icon: <CheckCircle fill="currentColor" size={20} />, color: 'text-green-500', bg: 'bg-green-50' };
+            return { icon: <CheckCircle size={20} />, color: 'text-green-500', bg: 'bg-green-50' };
         case 'LISTING_REJECTED':
-            return { icon: <AlertTriangle fill="currentColor" size={20} />, color: 'text-red-500', bg: 'bg-red-50' };
+            return { icon: <AlertTriangle size={20} />, color: 'text-red-500', bg: 'bg-red-50' };
         case 'PACKAGE_APPROVED':
         case 'PACKAGE_REJECTED':
-            return { icon: <Package fill="currentColor" size={20} />, color: 'text-blue-500', bg: 'bg-blue-50' };
+            return { icon: <Package size={20} />, color: 'text-blue-500', bg: 'bg-blue-50' };
         case 'LISTING_EXPIRING':
         case 'LISTING_EXPIRED':
-            return { icon: <AlertTriangle fill="currentColor" size={20} />, color: 'text-amber-500', bg: 'bg-amber-50' };
+            return { icon: <AlertTriangle size={20} />, color: 'text-amber-500', bg: 'bg-amber-50' };
         case 'PROMOTION':
-            return { icon: <Megaphone fill="currentColor" size={20} />, color: 'text-purple-500', bg: 'bg-purple-50' };
+            return { icon: <Megaphone size={20} />, color: 'text-purple-500', bg: 'bg-purple-50' };
         default:
-            return { icon: <Bell fill="currentColor" size={20} />, color: 'text-primary', bg: 'bg-blue-50' };
+            return { icon: <Bell size={20} />, color: 'text-primary', bg: 'bg-blue-50' };
     }
 }
 
@@ -160,7 +160,7 @@ export default function NotificationsPage() {
             {/* Unread count badge */}
             {unreadCount > 0 && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 rounded-xl">
-                    <Circle fill="currentColor" size={8} className="text-blue-500" />
+                    <Circle size={8} className="text-blue-500" />
                     <span className="text-xs text-blue-700 font-medium">ยังไม่ได้อ่าน {unreadCount} รายการ</span>
                 </div>
             )}
@@ -204,7 +204,7 @@ export default function NotificationsPage() {
                                                 {n.title}
                                             </p>
                                             {!n.isRead && (
-                                                <Circle fill="currentColor" size={8} className="text-blue-500 flex-shrink-0 mt-1.5" />
+                                                <Circle size={8} className="text-blue-500 flex-shrink-0 mt-1.5" />
                                             )}
                                         </div>
                                         <p className={`text-xs mt-1 leading-relaxed ${!n.isRead ? 'text-gray-600' : 'text-gray-400'}`}>

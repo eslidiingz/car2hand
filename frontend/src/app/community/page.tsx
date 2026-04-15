@@ -77,16 +77,16 @@ interface TagEntry {
 // ─── Icon map ─────────────────────────────────────────────────────────────────
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-    ChatsCircle: <MessageCircle fill="currentColor" className="text-2xl" />,
-    Wrench: <Wrench fill="currentColor" className="text-2xl" />,
-    Star: <Star fill="currentColor" className="text-2xl" />,
-    Lightning: <Zap fill="currentColor" className="text-2xl" />,
-    ShoppingCart: <ShoppingCart fill="currentColor" className="text-2xl" />,
-    ShieldCheck: <ShieldCheck fill="currentColor" className="text-2xl" />,
-    Tag: <Tag fill="currentColor" className="text-2xl" />,
-    FileText: <FileText fill="currentColor" className="text-2xl" />,
-    Motorcycle: <Bike fill="currentColor" className="text-2xl" />,
-    MapPin: <MapPin fill="currentColor" className="text-2xl" />,
+    ChatsCircle: <MessageCircle className="text-2xl" />,
+    Wrench: <Wrench className="text-2xl" />,
+    Star: <Star className="text-2xl" />,
+    Lightning: <Zap className="text-2xl" />,
+    ShoppingCart: <ShoppingCart className="text-2xl" />,
+    ShieldCheck: <ShieldCheck className="text-2xl" />,
+    Tag: <Tag className="text-2xl" />,
+    FileText: <FileText className="text-2xl" />,
+    Motorcycle: <Bike className="text-2xl" />,
+    MapPin: <MapPin className="text-2xl" />,
 };
 
 const COLOR_MAP: Record<string, { bg: string; hover: string; border: string; text: string }> = {
@@ -285,7 +285,7 @@ export default function CommunityPage() {
                                     onClick={() => handleCategoryClick(cat.slug)}
                                     className={`${isActive ? `${colors.bg} ring-2 ring-primary` : `bg-white ${colors.hover}`} border ${colors.border} p-3 rounded-xl cursor-pointer transition flex flex-col items-center gap-1.5 text-center group`}
                                 >
-                                    <span className={colors.text}>{CATEGORY_ICONS[cat.icon] ?? <MessageCircle fill="currentColor" className="text-2xl" />}</span>
+                                    <span className={colors.text}>{CATEGORY_ICONS[cat.icon] ?? <MessageCircle className="text-2xl" />}</span>
                                     <span className="text-[11px] font-bold text-gray-700 leading-tight">{cat.name}</span>
                                 </button>
                             );
@@ -365,7 +365,7 @@ export default function CommunityPage() {
                     <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-bold text-primary flex items-center gap-2">
-                                <Trophy fill="currentColor" className="text-yellow-500 text-xl" /> Top Gurus
+                                <Trophy className="text-yellow-500 text-xl" /> Top Gurus
                             </h3>
                             <Link href="/community/leaderboard" className="text-xs text-accent hover:underline">ดูทั้งหมด</Link>
                         </div>
@@ -384,11 +384,11 @@ export default function CommunityPage() {
                                         <div className="flex-1 min-w-0">
                                             <h4 className="text-sm font-bold text-gray-800 truncate flex items-center gap-1">
                                                 {g.fullName}
-                                                {g.rank <= 3 && <BadgeCheck fill="currentColor" className="text-blue-500 text-xs flex-shrink-0" />}
+                                                {g.rank <= 3 && <BadgeCheck className="text-blue-500 text-xs flex-shrink-0" />}
                                             </h4>
                                             <span className="text-[10px] text-gray-500">{g.points.toLocaleString()} คะแนน</span>
                                         </div>
-                                        {g.rank === 1 && <Medal fill="currentColor" className="text-yellow-400 text-lg flex-shrink-0" />}
+                                        {g.rank === 1 && <Medal className="text-yellow-400 text-lg flex-shrink-0" />}
                                     </div>
                                 ))}
                             </div>
@@ -398,7 +398,7 @@ export default function CommunityPage() {
                     {/* Stats */}
                     <div className="bg-primary text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <Users fill="currentColor" className="text-8xl" />
+                            <Users className="text-8xl" />
                         </div>
                         <h3 className="font-bold text-lg mb-4 relative z-10">สถิติชุมชน</h3>
                         <div className="grid grid-cols-2 gap-4 relative z-10">

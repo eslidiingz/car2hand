@@ -120,7 +120,7 @@ export default function TransferPage() {
                 <div className="pt-32 pb-20 flex flex-col items-center justify-center px-4">
                     <div className="bg-white rounded-3xl p-10 shadow-lg border border-gray-100 max-w-md w-full text-center">
                         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <CheckCircle fill="currentColor" className="text-green-500 text-5xl" />
+                            <CheckCircle className="text-green-500 text-5xl" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-3">ส่งข้อมูลสำเร็จ!</h2>
                         <p className="text-gray-500 mb-8">เจ้าหน้าที่จะติดต่อกลับเพื่อแนะนำขั้นตอนและนัดรับเอกสาร</p>
@@ -150,7 +150,7 @@ export default function TransferPage() {
             }}>
                 <div className="relative z-10">
                     <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <FileStack fill="currentColor" className="text-5xl text-white" />
+                        <FileStack className="text-5xl text-white" />
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold mb-4">บริการโอนเล่มทะเบียน</h1>
                     <p className="text-gray-200 text-lg max-w-2xl mx-auto mb-8">
@@ -179,7 +179,7 @@ export default function TransferPage() {
                                 {documents.map((doc, i) => (
                                     <div key={i} className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
                                         <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-gray-600 shadow-sm shrink-0">
-                                            <doc.icon fill="currentColor" className="text-xl" />
+                                            <doc.icon className="text-xl" />
                                         </div>
                                         <span className="text-sm text-gray-700 font-medium">{doc.text}</span>
                                         <Check className="text-gray-300 ml-auto text-lg" />
@@ -272,7 +272,7 @@ export default function TransferPage() {
 
                                 {submitError && (
                                     <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center gap-2 text-red-600 text-sm">
-                                        <AlertTriangle fill="currentColor" /> {submitError}
+                                        <AlertTriangle /> {submitError}
                                     </div>
                                 )}
 
@@ -325,19 +325,19 @@ export default function TransferPage() {
                                 <h4 className="font-bold text-gray-700 text-sm mb-3">ทำไมต้องใช้บริการกับเรา?</h4>
                                 <ul className="space-y-2 text-sm text-gray-600">
                                     <li className="flex items-start gap-2">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 shrink-0" />
+                                        <CheckCircle className="text-green-500 mt-0.5 shrink-0" />
                                         <span>ไม่ต้องลางาน ไม่ต้องไปขนส่งเอง</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 shrink-0" />
+                                        <CheckCircle className="text-green-500 mt-0.5 shrink-0" />
                                         <span>ดำเนินการโดยทีมงานมืออาชีพ</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 shrink-0" />
+                                        <CheckCircle className="text-green-500 mt-0.5 shrink-0" />
                                         <span>อัปเดตสถานะให้ทราบทุกขั้นตอน</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 shrink-0" />
+                                        <CheckCircle className="text-green-500 mt-0.5 shrink-0" />
                                         <span>จัดส่งเล่มคืนถึงมือคุณ</span>
                                     </li>
                                 </ul>
@@ -347,7 +347,7 @@ export default function TransferPage() {
                                 <h4 className="font-bold mb-2">ต้องการความช่วยเหลือ?</h4>
                                 <p className="text-gray-300 text-sm mb-4">โทรหาเราได้เลย เจ้าหน้าที่พร้อมให้คำปรึกษา</p>
                                 <a href="tel:021234567" className="bg-white text-gray-700 px-4 py-2 rounded-lg font-bold text-sm inline-flex items-center gap-2 hover:bg-gray-100 transition">
-                                    <Phone fill="currentColor" /> 02-123-4567
+                                    <Phone /> 02-123-4567
                                 </a>
                             </div>
                         </div>

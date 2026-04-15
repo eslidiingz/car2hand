@@ -233,7 +233,7 @@ export default function NotificationBell() {
                                     {/* Unread dot */}
                                     <div className="pt-1.5 flex-shrink-0">
                                         {!n.isRead ? (
-                                            <Circle fill="currentColor" size={8} className="text-blue-500" />
+                                            <Circle size={8} className="text-blue-500" />
                                         ) : (
                                             <div className="w-2" />
                                         )}

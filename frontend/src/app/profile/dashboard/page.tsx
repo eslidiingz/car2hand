@@ -97,9 +97,9 @@ export default function DashboardPage() {
     };
 
     const stats = [
-        { label: 'ประกาศกำลังขาย', value: activeListings.length.toString(), icon: <Car fill="currentColor" className="text-blue-500" />, badge: null },
-        { label: 'ยอดเข้าชมทั้งหมด', value: totalViews.toLocaleString(), icon: <Eye fill="currentColor" className="text-emerald-500" />, badge: null },
-        { label: 'คนกดถูกใจ', value: totalFavorites.toLocaleString(), icon: <Heart fill="currentColor" className="text-red-500" />, badge: null },
+        { label: 'ประกาศกำลังขาย', value: activeListings.length.toString(), icon: <Car className="text-blue-500" />, badge: null },
+        { label: 'ยอดเข้าชมทั้งหมด', value: totalViews.toLocaleString(), icon: <Eye className="text-emerald-500" />, badge: null },
+        { label: 'คนกดถูกใจ', value: totalFavorites.toLocaleString(), icon: <Heart className="text-red-500" />, badge: null },
         { label: 'ประกาศหมดอายุ', value: expiredListings.length.toString(), icon: <Clock className="text-orange-500" />, badge: expiredListings.length > 0 ? 'ต้องดำเนินการ' : null },
     ];
 
@@ -302,7 +302,7 @@ export default function DashboardPage() {
                     ></div>
                     <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
                         <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
-                            <Crown size={40} fill="currentColor" className="text-white" />
+                            <Crown size={40} className="text-white" />
                         </div>
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
@@ -315,7 +315,7 @@ export default function DashboardPage() {
                                 onClick={() => router.push('/profile/packages')}
                                 className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
                             >
-                                <Crown size={20} fill="currentColor" />
+                                <Crown size={20} />
                                 ดูแพ็กเกจ
                             </button>
                             <button

@@ -924,7 +924,7 @@ export default function EditListingPage() {
                             {/* Image Management Section */}
                             <div className="mb-8">
                                 <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                    <Camera size={24} fill="currentColor" className="text-accent" /> จัดการรูปภาพ
+                                    <Camera size={24} className="text-accent" /> จัดการรูปภาพ
                                     <span className="ml-auto text-sm font-medium text-gray-400">
                                         {displayImages.length}/{maxPhotos} รูป
                                     </span>
@@ -1053,7 +1053,7 @@ export default function EditListingPage() {
 
                             {/* Vehicle Info Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <Car size={24} fill="currentColor" className="text-accent" /> ข้อมูลรถของคุณ
+                                <Car size={24} className="text-accent" /> ข้อมูลรถของคุณ
                             </h3>
 
                             {/* Vehicle Type */}
@@ -1065,14 +1065,14 @@ export default function EditListingPage() {
                                         onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: 'SEDAN' })}
                                         className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
                                     >
-                                        <Car size={20} fill="currentColor" /> รถยนต์
+                                        <Car size={20} /> รถยนต์
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: 'STANDARD' })}
                                         className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
                                     >
-                                        <Bike size={20} fill="currentColor" /> มอเตอร์ไซค์
+                                        <Bike size={20} /> มอเตอร์ไซค์
                                     </button>
                                 </div>
                             </div>
@@ -1350,7 +1350,7 @@ export default function EditListingPage() {
 
                             {/* Price Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <DollarSign size={24} fill="currentColor" className="text-accent" /> หัวข้อและราคา
+                                <DollarSign size={24} className="text-accent" /> หัวข้อและราคา
                             </h3>
 
                             {/* Title & Description */}
@@ -1429,7 +1429,7 @@ export default function EditListingPage() {
 
                             {/* Contact Info Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <BookUser size={24} fill="currentColor" className="text-accent" /> ข้อมูลติดต่อ
+                                <BookUser size={24} className="text-accent" /> ข้อมูลติดต่อ
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -1488,7 +1488,7 @@ export default function EditListingPage() {
 
                             {/* Vehicle Extras Section */}
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                <Lightbulb size={24} fill="currentColor" className="text-accent" /> ข้อมูลเพิ่มเติม
+                                <Lightbulb size={24} className="text-accent" /> ข้อมูลเพิ่มเติม
                             </h3>
 
                             <div className="space-y-4 mb-8">
@@ -1706,7 +1706,7 @@ export default function EditListingPage() {
                             {/* Preview Card Header */}
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-3 flex items-center gap-2">
-                                    <ImageIcon size={18} fill="currentColor" />
+                                    <ImageIcon size={18} />
                                     <span className="font-bold text-sm">ตัวอย่างประกาศ</span>
                                 </div>
                             </div>
@@ -1729,19 +1729,19 @@ export default function EditListingPage() {
                             {/* Tips */}
                             <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100">
                                 <h3 className="font-bold text-primary mb-3 flex items-center gap-2 text-sm">
-                                    <Lightbulb fill="currentColor" className="text-yellow-500" size={18} /> Tips ขายไว
+                                    <Lightbulb className="text-yellow-500" size={18} /> Tips ขายไว
                                 </h3>
                                 <ul className="space-y-3 text-xs text-gray-600">
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ระบุเลขไมล์ตามจริง</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">อัพโหลดรูปภาพคุณภาพดี</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ตั้งราคาที่เหมาะสม</span>
                                     </li>
                                 </ul>

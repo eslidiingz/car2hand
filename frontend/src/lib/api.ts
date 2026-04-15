@@ -11,7 +11,7 @@ function getAuthToken(): string | null {
     if (!stored) return null;
     try {
         const user = JSON.parse(stored);
-        return user?.accessToken || null;
+        return user?.token || user?.accessToken || null;
     } catch {
         return null;
     }
@@ -49,7 +49,7 @@ export async function apiFetch<T = unknown>(
 
     if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || 'เกิดข้อผิดพลาด');
+        throw new Error(error.message || error.error || 'เกิดข้อผิดพลาด');
     }
 
     return response.json();

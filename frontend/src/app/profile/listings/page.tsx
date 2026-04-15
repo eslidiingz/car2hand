@@ -417,7 +417,7 @@ export default function MyListingsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                                <Crown fill="currentColor" className={`text-lg ${isAtLimit ? 'text-orange-500' : 'text-blue-500'}`} />
+                                <Crown className={`text-lg ${isAtLimit ? 'text-orange-500' : 'text-blue-500'}`} />
                                 <span className="font-bold text-gray-700 text-sm">
                                     {packageInfo.currentPackage?.nameTh || 'แพ็กเกจพื้นฐาน'}
                                 </span>
@@ -583,7 +583,7 @@ export default function MyListingsPage() {
                     ></div>
                     <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 relative z-10 text-center">
                         <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg shadow-orange-200">
-                            <Crown fill="currentColor" className="text-4xl text-white" />
+                            <Crown className="text-4xl text-white" />
                         </div>
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
@@ -707,7 +707,7 @@ export default function MyListingsPage() {
 
                             {/* AlertTriangle */}
                             <div className="flex items-start gap-3 bg-yellow-50 rounded-xl p-3">
-                                <AlertTriangle fill="currentColor" className="text-yellow-500 flex-shrink-0 mt-0.5" size={18} />
+                                <AlertTriangle className="text-yellow-500 flex-shrink-0 mt-0.5" size={18} />
                                 <p className="text-xs text-yellow-700">
                                     หลังจากส่งหลักฐาน ทีมงานจะตรวจสอบและอนุมัติภายใน 24 ชั่วโมง
                                 </p>
@@ -716,7 +716,7 @@ export default function MyListingsPage() {
                             {/* Error */}
                             {renewError && (
                                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-2">
-                                    <AlertTriangle fill="currentColor" className="text-red-500 flex-shrink-0" size={18} />
+                                    <AlertTriangle className="text-red-500 flex-shrink-0" size={18} />
                                     <p className="text-sm text-red-700 font-medium">{renewError}</p>
                                 </div>
                             )}

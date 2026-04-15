@@ -80,7 +80,7 @@ export default function LineCallbackPage() {
                 {status === 'success' && (
                     <>
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <CheckCircle fill="currentColor" className="text-4xl text-green-500" />
+                            <CheckCircle className="text-4xl text-green-500" />
                         </div>
                         <h2 className="text-xl font-bold text-gray-800 mb-2">
                             เชื่อมต่อ LINE สำเร็จ
@@ -97,7 +97,7 @@ export default function LineCallbackPage() {
                 {status === 'error' && (
                     <>
                         <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <AlertCircle fill="currentColor" className="text-4xl text-red-500" />
+                            <AlertCircle className="text-4xl text-red-500" />
                         </div>
                         <h2 className="text-xl font-bold text-gray-800 mb-2">
                             การเชื่อมต่อล้มเหลว

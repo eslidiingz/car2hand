@@ -645,7 +645,7 @@ function CreateListingPage() {
                             {currentStep === 1 && (
                                 <>
                                     <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <Car size={24} fill="currentColor" className="text-accent" /> ระบุข้อมูลรถของคุณ
+                                        <Car size={24} className="text-accent" /> ระบุข้อมูลรถของคุณ
                                     </h2>
 
                                     {/* Vehicle Type Toggle */}
@@ -657,14 +657,14 @@ function CreateListingPage() {
                                                 onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: '' })}
                                                 className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
-                                                <Car size={20} fill="currentColor" /> รถยนต์
+                                                <Car size={20} /> รถยนต์
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: '' })}
                                                 className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
                                             >
-                                                <Bike size={20} fill="currentColor" /> มอเตอร์ไซค์
+                                                <Bike size={20} /> มอเตอร์ไซค์
                                             </button>
                                         </div>
                                     </div>
@@ -966,7 +966,7 @@ function CreateListingPage() {
 
                                     {/* Vehicle Extras */}
                                     <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                        <Lightbulb size={24} fill="currentColor" className="text-accent" /> ข้อมูลเพิ่มเติม
+                                        <Lightbulb size={24} className="text-accent" /> ข้อมูลเพิ่มเติม
                                     </h3>
                                     <p className="text-sm text-gray-500 mb-4">ข้อมูลเหล่านี้ช่วยให้ผู้ซื้อตัดสินใจได้ง่ายขึ้น</p>
 
@@ -1155,7 +1155,7 @@ function CreateListingPage() {
                             {currentStep === 2 && (
                                 <>
                                     <h2 ref={imagesRef} className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <ImageIcon size={24} fill="currentColor" className="text-accent" /> อัพโหลดรูปภาพ
+                                        <ImageIcon size={24} className="text-accent" /> อัพโหลดรูปภาพ
                                         <span className="ml-auto text-sm font-medium text-gray-400">
                                             {formData.images.length}/{maxPhotos} รูป
                                         </span>
@@ -1207,7 +1207,7 @@ function CreateListingPage() {
 
                                     <div className="bg-blue-50 p-4 rounded-xl mb-8">
                                         <h4 className="font-bold text-primary mb-2 flex items-center gap-2">
-                                            <Lightbulb fill="currentColor" className="text-yellow-500" /> เคล็ดลับถ่ายรูปให้ขายได้เร็ว
+                                            <Lightbulb className="text-yellow-500" /> เคล็ดลับถ่ายรูปให้ขายได้เร็ว
                                         </h4>
                                         <ul className="text-sm text-gray-600 space-y-1">
                                             <li>• ถ่ายรูปด้านหน้า, หลัง, ข้างซ้าย, ข้างขวา</li>
@@ -1290,7 +1290,7 @@ function CreateListingPage() {
                             {currentStep === 3 && (
                                 <>
                                     <h2 className="text-xl font-bold text-primary mb-6 flex items-center gap-2">
-                                        <CircleDollarSign size={24} fill="currentColor" className="text-accent" /> หัวข้อและราคา
+                                        <CircleDollarSign size={24} className="text-accent" /> หัวข้อและราคา
                                     </h2>
 
                                     <div className="mb-6">
@@ -1374,7 +1374,7 @@ function CreateListingPage() {
 
                                     {/* Contact Information */}
                                     <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                                        <BookUser size={24} fill="currentColor" className="text-accent" /> ข้อมูลติดต่อ
+                                        <BookUser size={24} className="text-accent" /> ข้อมูลติดต่อ
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                         <div ref={contactNameRef}>
@@ -1488,7 +1488,7 @@ function CreateListingPage() {
                             {/* Preview Card Header */}
                             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="bg-gradient-to-r from-primary to-blue-600 text-white px-4 py-3 flex items-center gap-2">
-                                    <ImageIcon size={18} fill="currentColor" />
+                                    <ImageIcon size={18} />
                                     <span className="font-bold text-sm">ตัวอย่างประกาศ</span>
                                 </div>
                             </div>
@@ -1509,19 +1509,19 @@ function CreateListingPage() {
                             {/* Tips */}
                             <div className="bg-blue-50 p-5 rounded-2xl border border-blue-100">
                                 <h3 className="font-bold text-primary mb-3 flex items-center gap-2 text-sm">
-                                    <Lightbulb fill="currentColor" className="text-yellow-500" size={18} /> Tips ขายไว
+                                    <Lightbulb className="text-yellow-500" size={18} /> Tips ขายไว
                                 </h3>
                                 <ul className="space-y-3 text-xs text-gray-600">
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ระบุเลขไมล์ตามจริง</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">อัพโหลดรูปภาพคุณภาพดี</span>
                                     </li>
                                     <li className="flex gap-2 items-start">
-                                        <CheckCircle fill="currentColor" className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
+                                        <CheckCircle className="text-green-500 mt-0.5 min-w-[14px]" size={14} />
                                         <span className="leading-snug">ตั้งราคาที่เหมาะสม</span>
                                     </li>
                                 </ul>
