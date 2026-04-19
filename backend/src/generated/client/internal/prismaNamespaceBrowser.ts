@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   SellerProfile: 'SellerProfile',
+  KycSubmission: 'KycSubmission',
   Admin: 'Admin',
   Article: 'Article',
   ArticleCategory: 'ArticleCategory',
@@ -71,8 +72,12 @@ export const ModelName = {
   ServiceRecord: 'ServiceRecord',
   MaintenanceReminder: 'MaintenanceReminder',
   UserNotification: 'UserNotification',
+  PushSubscription: 'PushSubscription',
   ListingBumpLog: 'ListingBumpLog',
   NotificationTemplate: 'NotificationTemplate',
+  ContactMessage: 'ContactMessage',
+  AdminAuditLog: 'AdminAuditLog',
+  AbuseReport: 'AbuseReport',
   NotificationLog: 'NotificationLog',
   ServicePartner: 'ServicePartner',
   InspectionPackage: 'InspectionPackage',
@@ -150,12 +155,37 @@ export const SellerProfileScalarFieldEnum = {
   totalSoldCount: 'totalSoldCount',
   isVerified: 'isVerified',
   verifiedAt: 'verifiedAt',
+  verificationLevel: 'verificationLevel',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
 } as const
 
 export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
+
+
+export const KycSubmissionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  status: 'status',
+  fullName: 'fullName',
+  idNumber: 'idNumber',
+  idCardImage: 'idCardImage',
+  selfieImage: 'selfieImage',
+  businessName: 'businessName',
+  taxId: 'taxId',
+  businessCertImage: 'businessCertImage',
+  addressProofImage: 'addressProofImage',
+  dealerAppointmentDoc: 'dealerAppointmentDoc',
+  requestedShowroom: 'requestedShowroom',
+  submittedAt: 'submittedAt',
+  reviewedAt: 'reviewedAt',
+  reviewedBy: 'reviewedBy',
+  reviewNote: 'reviewNote'
+} as const
+
+export type KycSubmissionScalarFieldEnum = (typeof KycSubmissionScalarFieldEnum)[keyof typeof KycSubmissionScalarFieldEnum]
 
 
 export const AdminScalarFieldEnum = {
@@ -475,6 +505,20 @@ export const UserNotificationScalarFieldEnum = {
 export type UserNotificationScalarFieldEnum = (typeof UserNotificationScalarFieldEnum)[keyof typeof UserNotificationScalarFieldEnum]
 
 
+export const PushSubscriptionScalarFieldEnum = {
+  id: 'id',
+  endpoint: 'endpoint',
+  p256dh: 'p256dh',
+  auth: 'auth',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt',
+  userId: 'userId'
+} as const
+
+export type PushSubscriptionScalarFieldEnum = (typeof PushSubscriptionScalarFieldEnum)[keyof typeof PushSubscriptionScalarFieldEnum]
+
+
 export const ListingBumpLogScalarFieldEnum = {
   id: 'id',
   type: 'type',
@@ -499,6 +543,59 @@ export const NotificationTemplateScalarFieldEnum = {
 } as const
 
 export type NotificationTemplateScalarFieldEnum = (typeof NotificationTemplateScalarFieldEnum)[keyof typeof NotificationTemplateScalarFieldEnum]
+
+
+export const ContactMessageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  subject: 'subject',
+  message: 'message',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  status: 'status',
+  isRead: 'isRead',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  readAt: 'readAt',
+  resolvedAt: 'resolvedAt',
+  resolvedBy: 'resolvedBy'
+} as const
+
+export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
+
+
+export const AdminAuditLogScalarFieldEnum = {
+  id: 'id',
+  adminId: 'adminId',
+  action: 'action',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  note: 'note',
+  metadata: 'metadata',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt'
+} as const
+
+export type AdminAuditLogScalarFieldEnum = (typeof AdminAuditLogScalarFieldEnum)[keyof typeof AdminAuditLogScalarFieldEnum]
+
+
+export const AbuseReportScalarFieldEnum = {
+  id: 'id',
+  reporterId: 'reporterId',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  reason: 'reason',
+  description: 'description',
+  status: 'status',
+  adminNote: 'adminNote',
+  createdAt: 'createdAt',
+  reviewedAt: 'reviewedAt',
+  reviewedBy: 'reviewedBy'
+} as const
+
+export type AbuseReportScalarFieldEnum = (typeof AbuseReportScalarFieldEnum)[keyof typeof AbuseReportScalarFieldEnum]
 
 
 export const NotificationLogScalarFieldEnum = {

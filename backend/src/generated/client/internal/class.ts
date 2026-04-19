@@ -195,6 +195,16 @@ export interface PrismaClient<
   get sellerProfile(): Prisma.SellerProfileDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
+   * `prisma.kycSubmission`: Exposes CRUD operations for the **KycSubmission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more KycSubmissions
+    * const kycSubmissions = await prisma.kycSubmission.findMany()
+    * ```
+    */
+  get kycSubmission(): Prisma.KycSubmissionDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
    * `prisma.admin`: Exposes CRUD operations for the **Admin** model.
     * Example usage:
     * ```ts
@@ -375,6 +385,16 @@ export interface PrismaClient<
   get userNotification(): Prisma.UserNotificationDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
+   * `prisma.pushSubscription`: Exposes CRUD operations for the **PushSubscription** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PushSubscriptions
+    * const pushSubscriptions = await prisma.pushSubscription.findMany()
+    * ```
+    */
+  get pushSubscription(): Prisma.PushSubscriptionDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
    * `prisma.listingBumpLog`: Exposes CRUD operations for the **ListingBumpLog** model.
     * Example usage:
     * ```ts
@@ -393,6 +413,36 @@ export interface PrismaClient<
     * ```
     */
   get notificationTemplate(): Prisma.NotificationTemplateDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.contactMessage`: Exposes CRUD operations for the **ContactMessage** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ContactMessages
+    * const contactMessages = await prisma.contactMessage.findMany()
+    * ```
+    */
+  get contactMessage(): Prisma.ContactMessageDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.adminAuditLog`: Exposes CRUD operations for the **AdminAuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdminAuditLogs
+    * const adminAuditLogs = await prisma.adminAuditLog.findMany()
+    * ```
+    */
+  get adminAuditLog(): Prisma.AdminAuditLogDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.abuseReport`: Exposes CRUD operations for the **AbuseReport** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AbuseReports
+    * const abuseReports = await prisma.abuseReport.findMany()
+    * ```
+    */
+  get abuseReport(): Prisma.AbuseReportDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
    * `prisma.notificationLog`: Exposes CRUD operations for the **NotificationLog** model.

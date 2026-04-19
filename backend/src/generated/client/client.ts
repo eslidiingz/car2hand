@@ -50,6 +50,11 @@ export type User = Prisma.UserModel
  */
 export type SellerProfile = Prisma.SellerProfileModel
 /**
+ * Model KycSubmission
+ * 
+ */
+export type KycSubmission = Prisma.KycSubmissionModel
+/**
  * Model Admin
  * 
  */
@@ -140,6 +145,11 @@ export type MaintenanceReminder = Prisma.MaintenanceReminderModel
  */
 export type UserNotification = Prisma.UserNotificationModel
 /**
+ * Model PushSubscription
+ * 
+ */
+export type PushSubscription = Prisma.PushSubscriptionModel
+/**
  * Model ListingBumpLog
  * 
  */
@@ -149,6 +159,21 @@ export type ListingBumpLog = Prisma.ListingBumpLogModel
  * 
  */
 export type NotificationTemplate = Prisma.NotificationTemplateModel
+/**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
+ * Model AdminAuditLog
+ * 
+ */
+export type AdminAuditLog = Prisma.AdminAuditLogModel
+/**
+ * Model AbuseReport
+ * 
+ */
+export type AbuseReport = Prisma.AbuseReportModel
 /**
  * Model NotificationLog
  * 
