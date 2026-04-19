@@ -94,8 +94,11 @@ describe("PUT /admin/users/:id", () => {
         const audit = db._store.auditLogs.find((l) => l.action === "USER_UPDATE" && l.targetId === "u-put-happy");
         expect(audit).toBeDefined();
         expect(audit!.targetType).toBe("USER");
-        const meta = audit!.metadata as { changedFields: string[] };
-        expect(meta.changedFields).toContain("email");
+        const meta = audit!.metadata as { changes: Record<string, { before: unknown; after: unknown }> };
+        expect(meta.changes).toBeDefined();
+        expect(meta.changes.email).toEqual({ before: "old@ex.com", after: "new@ex.com" });
+        expect(meta.changes.fullName.after).toBe("ใหม่");
+        expect(meta.changes.isActive.after).toBe(false);
     });
 
     test("400 when new email collides with another user", async () => {

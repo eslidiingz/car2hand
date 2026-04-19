@@ -88,6 +88,11 @@ export type Package = Prisma.PackageModel
  */
 export type SystemSetting = Prisma.SystemSettingModel
 /**
+ * Model StorageSetting
+ * 
+ */
+export type StorageSetting = Prisma.StorageSettingModel
+/**
  * Model PackageTransaction
  * 
  */

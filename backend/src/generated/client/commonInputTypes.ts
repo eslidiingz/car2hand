@@ -518,6 +518,23 @@ export type EnumListingStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumListingStatusFilter<$PrismaModel>
 }
 
+export type EnumStorageProviderTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.StorageProviderType | Prisma.EnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStorageProviderTypeFilter<$PrismaModel> | $Enums.StorageProviderType
+}
+
+export type EnumStorageProviderTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StorageProviderType | Prisma.EnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStorageProviderTypeWithAggregatesFilter<$PrismaModel> | $Enums.StorageProviderType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStorageProviderTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStorageProviderTypeFilter<$PrismaModel>
+}
+
 export type EnumPaymentStatusFilter<$PrismaModel = never> = {
   equals?: $Enums.PaymentStatus | Prisma.EnumPaymentStatusFieldRefInput<$PrismaModel>
   in?: $Enums.PaymentStatus[] | Prisma.ListEnumPaymentStatusFieldRefInput<$PrismaModel>
@@ -1220,6 +1237,23 @@ export type NestedEnumListingStatusWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumListingStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumListingStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumStorageProviderTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.StorageProviderType | Prisma.EnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStorageProviderTypeFilter<$PrismaModel> | $Enums.StorageProviderType
+}
+
+export type NestedEnumStorageProviderTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.StorageProviderType | Prisma.EnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.StorageProviderType[] | Prisma.ListEnumStorageProviderTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumStorageProviderTypeWithAggregatesFilter<$PrismaModel> | $Enums.StorageProviderType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumStorageProviderTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumStorageProviderTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumPaymentStatusFilter<$PrismaModel = never> = {

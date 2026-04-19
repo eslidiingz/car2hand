@@ -74,6 +74,7 @@ const protectedPackageRoutes = new Elysia({ prefix: "/packages" })
                 currentPackageId: true,
                 packageExpiresAt: true,
                 currentPackage: true,
+                bonusListingSlots: true,
                 _count: {
                     select: {
                         listings: {
@@ -92,6 +93,10 @@ const protectedPackageRoutes = new Elysia({ prefix: "/packages" })
         }
 
         const pkg = user.currentPackage;
+        const bonus = user.bonusListingSlots ?? 0;
+        const packageMax = pkg?.maxListings ?? 3; // Basic default
+        // -1 = unlimited → คงไว้ ไม่บวก bonus
+        const effectiveMax = packageMax === -1 ? -1 : packageMax + bonus;
 
         return {
             currentPackage: pkg ? {
@@ -104,9 +109,12 @@ const protectedPackageRoutes = new Elysia({ prefix: "/packages" })
                 listingDurationDays: pkg.listingDurationDays,
             } : null,
             packageExpiresAt: user.packageExpiresAt,
+            bonusListingSlots: bonus,
             usage: {
                 activeListings: user._count.listings,
-                maxListings: pkg?.maxListings ?? 1
+                packageMaxListings: packageMax,
+                bonusListingSlots: bonus,
+                maxListings: effectiveMax,
             }
         };
     })

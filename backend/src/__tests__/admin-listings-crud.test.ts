@@ -128,10 +128,11 @@ describe("PUT /admin/listings/:id", () => {
         expect(audit).toBeDefined();
         expect(audit!.adminId).toBe("admin-listings-test");
         expect(audit!.targetType).toBe("LISTING");
-        const meta = audit!.metadata as { changedFields: string[] };
-        expect(meta.changedFields).toContain("title");
-        expect(meta.changedFields).toContain("price");
-        expect(meta.changedFields).toContain("isFeatured");
+        const meta = audit!.metadata as { changes: Record<string, { before: unknown; after: unknown }> };
+        expect(meta.changes).toBeDefined();
+        expect(meta.changes.title).toEqual({ before: "เก่า", after: "ใหม่" });
+        expect(meta.changes.price.after).toBe(499000);
+        expect(meta.changes.isFeatured.after).toBe(true);
     });
 
     test("404 when listing missing", async () => {

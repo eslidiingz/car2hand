@@ -20,8 +20,18 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
+}
+
+export type UserAvgAggregateOutputType = {
+  bonusListingSlots: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  bonusListingSlots: number | null
 }
 
 export type UserMinAggregateOutputType = {
@@ -43,6 +53,7 @@ export type UserMinAggregateOutputType = {
   deleteAccountCodeExpiresAt: Date | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
+  bonusListingSlots: number | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -64,6 +75,7 @@ export type UserMaxAggregateOutputType = {
   deleteAccountCodeExpiresAt: Date | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
+  bonusListingSlots: number | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -85,9 +97,18 @@ export type UserCountAggregateOutputType = {
   deleteAccountCodeExpiresAt: number
   currentPackageId: number
   packageExpiresAt: number
+  bonusListingSlots: number
   _all: number
 }
 
+
+export type UserAvgAggregateInputType = {
+  bonusListingSlots?: true
+}
+
+export type UserSumAggregateInputType = {
+  bonusListingSlots?: true
+}
 
 export type UserMinAggregateInputType = {
   id?: true
@@ -108,6 +129,7 @@ export type UserMinAggregateInputType = {
   deleteAccountCodeExpiresAt?: true
   currentPackageId?: true
   packageExpiresAt?: true
+  bonusListingSlots?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -129,6 +151,7 @@ export type UserMaxAggregateInputType = {
   deleteAccountCodeExpiresAt?: true
   currentPackageId?: true
   packageExpiresAt?: true
+  bonusListingSlots?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -150,6 +173,7 @@ export type UserCountAggregateInputType = {
   deleteAccountCodeExpiresAt?: true
   currentPackageId?: true
   packageExpiresAt?: true
+  bonusListingSlots?: true
   _all?: true
 }
 
@@ -191,6 +215,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -221,6 +257,8 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
@@ -244,7 +282,10 @@ export type UserGroupByOutputType = {
   deleteAccountCodeExpiresAt: Date | null
   currentPackageId: string | null
   packageExpiresAt: Date | null
+  bonusListingSlots: number
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -286,10 +327,12 @@ export type UserWhereInput = {
   deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  bonusListingSlots?: Prisma.IntFilter<"User"> | number
   currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
   listings?: Prisma.VehicleListingListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
   packageTransactions?: Prisma.PackageTransactionListRelationFilter
+  slotPurchases?: Prisma.SlotPurchaseListRelationFilter
   listingRenewals?: Prisma.ListingRenewalListRelationFilter
   bumpLogs?: Prisma.ListingBumpLogListRelationFilter
   notifications?: Prisma.UserNotificationListRelationFilter
@@ -326,10 +369,12 @@ export type UserOrderByWithRelationInput = {
   deleteAccountCodeExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bonusListingSlots?: Prisma.SortOrder
   currentPackage?: Prisma.PackageOrderByWithRelationInput
   listings?: Prisma.VehicleListingOrderByRelationAggregateInput
   wishlists?: Prisma.WishlistOrderByRelationAggregateInput
   packageTransactions?: Prisma.PackageTransactionOrderByRelationAggregateInput
+  slotPurchases?: Prisma.SlotPurchaseOrderByRelationAggregateInput
   listingRenewals?: Prisma.ListingRenewalOrderByRelationAggregateInput
   bumpLogs?: Prisma.ListingBumpLogOrderByRelationAggregateInput
   notifications?: Prisma.UserNotificationOrderByRelationAggregateInput
@@ -369,10 +414,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  bonusListingSlots?: Prisma.IntFilter<"User"> | number
   currentPackage?: Prisma.XOR<Prisma.PackageNullableScalarRelationFilter, Prisma.PackageWhereInput> | null
   listings?: Prisma.VehicleListingListRelationFilter
   wishlists?: Prisma.WishlistListRelationFilter
   packageTransactions?: Prisma.PackageTransactionListRelationFilter
+  slotPurchases?: Prisma.SlotPurchaseListRelationFilter
   listingRenewals?: Prisma.ListingRenewalListRelationFilter
   bumpLogs?: Prisma.ListingBumpLogListRelationFilter
   notifications?: Prisma.UserNotificationListRelationFilter
@@ -409,9 +456,12 @@ export type UserOrderByWithAggregationInput = {
   deleteAccountCodeExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  bonusListingSlots?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -436,6 +486,7 @@ export type UserScalarWhereWithAggregatesInput = {
   deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  bonusListingSlots?: Prisma.IntWithAggregatesFilter<"User"> | number
 }
 
 export type UserCreateInput = {
@@ -456,10 +507,12 @@ export type UserCreateInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -496,9 +549,11 @@ export type UserUncheckedCreateInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -534,10 +589,12 @@ export type UserUpdateInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -574,9 +631,11 @@ export type UserUncheckedUpdateInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -613,6 +672,7 @@ export type UserCreateManyInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
 }
 
 export type UserUpdateManyMutationInput = {
@@ -633,6 +693,7 @@ export type UserUpdateManyMutationInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -654,6 +715,7 @@ export type UserUncheckedUpdateManyInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -675,6 +737,11 @@ export type UserCountOrderByAggregateInput = {
   deleteAccountCodeExpiresAt?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
+  bonusListingSlots?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  bonusListingSlots?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -696,6 +763,7 @@ export type UserMaxOrderByAggregateInput = {
   deleteAccountCodeExpiresAt?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
+  bonusListingSlots?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -717,6 +785,11 @@ export type UserMinOrderByAggregateInput = {
   deleteAccountCodeExpiresAt?: Prisma.SortOrder
   currentPackageId?: Prisma.SortOrder
   packageExpiresAt?: Prisma.SortOrder
+  bonusListingSlots?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  bonusListingSlots?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -757,6 +830,14 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type UserCreateNestedOneWithoutSellerProfileInput = {
@@ -869,6 +950,20 @@ export type UserUpdateOneRequiredWithoutPackageTransactionsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutPackageTransactionsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPackageTransactionsInput, Prisma.UserUpdateWithoutPackageTransactionsInput>, Prisma.UserUncheckedUpdateWithoutPackageTransactionsInput>
+}
+
+export type UserCreateNestedOneWithoutSlotPurchasesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSlotPurchasesInput, Prisma.UserUncheckedCreateWithoutSlotPurchasesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSlotPurchasesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSlotPurchasesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSlotPurchasesInput, Prisma.UserUncheckedCreateWithoutSlotPurchasesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSlotPurchasesInput
+  upsert?: Prisma.UserUpsertWithoutSlotPurchasesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSlotPurchasesInput, Prisma.UserUpdateWithoutSlotPurchasesInput>, Prisma.UserUncheckedUpdateWithoutSlotPurchasesInput>
 }
 
 export type UserCreateNestedOneWithoutListingRenewalsInput = {
@@ -1077,10 +1172,12 @@ export type UserCreateWithoutSellerProfileInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -1116,9 +1213,11 @@ export type UserUncheckedCreateWithoutSellerProfileInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1169,10 +1268,12 @@ export type UserUpdateWithoutSellerProfileInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -1208,9 +1309,11 @@ export type UserUncheckedUpdateWithoutSellerProfileInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1245,10 +1348,12 @@ export type UserCreateWithoutKycSubmissionsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -1284,9 +1389,11 @@ export type UserUncheckedCreateWithoutKycSubmissionsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1337,10 +1444,12 @@ export type UserUpdateWithoutKycSubmissionsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -1376,9 +1485,11 @@ export type UserUncheckedUpdateWithoutKycSubmissionsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1413,9 +1524,11 @@ export type UserCreateWithoutWishlistsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -1452,8 +1565,10 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1505,9 +1620,11 @@ export type UserUpdateWithoutWishlistsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -1544,8 +1661,10 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1581,9 +1700,11 @@ export type UserCreateWithoutListingsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -1620,8 +1741,10 @@ export type UserUncheckedCreateWithoutListingsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1673,9 +1796,11 @@ export type UserUpdateWithoutListingsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -1712,8 +1837,10 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1749,9 +1876,11 @@ export type UserCreateWithoutCurrentPackageInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -1787,9 +1916,11 @@ export type UserUncheckedCreateWithoutCurrentPackageInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1855,6 +1986,7 @@ export type UserScalarWhereInput = {
   deleteAccountCodeExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   currentPackageId?: Prisma.StringNullableFilter<"User"> | string | null
   packageExpiresAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  bonusListingSlots?: Prisma.IntFilter<"User"> | number
 }
 
 export type UserCreateWithoutPackageTransactionsInput = {
@@ -1875,9 +2007,11 @@ export type UserCreateWithoutPackageTransactionsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -1914,8 +2048,10 @@ export type UserUncheckedCreateWithoutPackageTransactionsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -1967,9 +2103,11 @@ export type UserUpdateWithoutPackageTransactionsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -2006,8 +2144,186 @@ export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSlotPurchasesInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
+  garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSlotPurchasesInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSlotPurchasesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSlotPurchasesInput, Prisma.UserUncheckedCreateWithoutSlotPurchasesInput>
+}
+
+export type UserUpsertWithoutSlotPurchasesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSlotPurchasesInput, Prisma.UserUncheckedUpdateWithoutSlotPurchasesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSlotPurchasesInput, Prisma.UserUncheckedCreateWithoutSlotPurchasesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSlotPurchasesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSlotPurchasesInput, Prisma.UserUncheckedUpdateWithoutSlotPurchasesInput>
+}
+
+export type UserUpdateWithoutSlotPurchasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSlotPurchasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -2043,10 +2359,12 @@ export type UserCreateWithoutListingRenewalsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
@@ -2082,9 +2400,11 @@ export type UserUncheckedCreateWithoutListingRenewalsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -2135,10 +2455,12 @@ export type UserUpdateWithoutListingRenewalsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
@@ -2174,9 +2496,11 @@ export type UserUncheckedUpdateWithoutListingRenewalsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -2211,10 +2535,12 @@ export type UserCreateWithoutGarageVehiclesInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -2250,9 +2576,11 @@ export type UserUncheckedCreateWithoutGarageVehiclesInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -2303,10 +2631,12 @@ export type UserUpdateWithoutGarageVehiclesInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -2342,9 +2672,11 @@ export type UserUncheckedUpdateWithoutGarageVehiclesInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -2379,10 +2711,12 @@ export type UserCreateWithoutNotificationsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
@@ -2418,9 +2752,11 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -2471,10 +2807,12 @@ export type UserUpdateWithoutNotificationsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
@@ -2510,9 +2848,11 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -2547,10 +2887,12 @@ export type UserCreateWithoutPushSubscriptionsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -2586,9 +2928,11 @@ export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -2639,10 +2983,12 @@ export type UserUpdateWithoutPushSubscriptionsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -2678,9 +3024,11 @@ export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -2715,10 +3063,12 @@ export type UserCreateWithoutBumpLogsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
@@ -2754,9 +3104,11 @@ export type UserUncheckedCreateWithoutBumpLogsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
@@ -2807,10 +3159,12 @@ export type UserUpdateWithoutBumpLogsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
@@ -2846,9 +3200,11 @@ export type UserUncheckedUpdateWithoutBumpLogsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
   pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
@@ -2883,10 +3239,12 @@ export type UserCreateWithoutAbuseReportsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -2922,9 +3280,11 @@ export type UserUncheckedCreateWithoutAbuseReportsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -2975,10 +3335,12 @@ export type UserUpdateWithoutAbuseReportsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -3014,9 +3376,11 @@ export type UserUncheckedUpdateWithoutAbuseReportsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -3051,10 +3415,12 @@ export type UserCreateWithoutInspectionBookingsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -3090,9 +3456,11 @@ export type UserUncheckedCreateWithoutInspectionBookingsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -3143,10 +3511,12 @@ export type UserUpdateWithoutInspectionBookingsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -3182,9 +3552,11 @@ export type UserUncheckedUpdateWithoutInspectionBookingsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -3219,10 +3591,12 @@ export type UserCreateWithoutServiceInquiriesInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -3258,9 +3632,11 @@ export type UserUncheckedCreateWithoutServiceInquiriesInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -3311,10 +3687,12 @@ export type UserUpdateWithoutServiceInquiriesInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -3350,9 +3728,11 @@ export type UserUncheckedUpdateWithoutServiceInquiriesInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -3387,10 +3767,12 @@ export type UserCreateWithoutForumPostsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -3426,9 +3808,11 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -3479,10 +3863,12 @@ export type UserUpdateWithoutForumPostsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -3518,9 +3904,11 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -3555,10 +3943,12 @@ export type UserCreateWithoutForumCommentsInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -3594,9 +3984,11 @@ export type UserUncheckedCreateWithoutForumCommentsInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -3647,10 +4039,12 @@ export type UserUpdateWithoutForumCommentsInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -3686,9 +4080,11 @@ export type UserUncheckedUpdateWithoutForumCommentsInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -3723,10 +4119,12 @@ export type UserCreateWithoutForumVotesInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -3762,9 +4160,11 @@ export type UserUncheckedCreateWithoutForumVotesInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -3815,10 +4215,12 @@ export type UserUpdateWithoutForumVotesInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -3854,9 +4256,11 @@ export type UserUncheckedUpdateWithoutForumVotesInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -3891,10 +4295,12 @@ export type UserCreateWithoutForumCommentVotesInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -3930,9 +4336,11 @@ export type UserUncheckedCreateWithoutForumCommentVotesInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -3983,10 +4391,12 @@ export type UserUpdateWithoutForumCommentVotesInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -4022,9 +4432,11 @@ export type UserUncheckedUpdateWithoutForumCommentVotesInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -4059,10 +4471,12 @@ export type UserCreateWithoutReputationInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
   listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
@@ -4098,9 +4512,11 @@ export type UserUncheckedCreateWithoutReputationInput = {
   deleteAccountCodeExpiresAt?: Date | string | null
   currentPackageId?: string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
   listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
@@ -4151,10 +4567,12 @@ export type UserUpdateWithoutReputationInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -4190,9 +4608,11 @@ export type UserUncheckedUpdateWithoutReputationInput = {
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -4227,6 +4647,7 @@ export type UserCreateManyCurrentPackageInput = {
   deleteAccountCode?: string | null
   deleteAccountCodeExpiresAt?: Date | string | null
   packageExpiresAt?: Date | string | null
+  bonusListingSlots?: number
 }
 
 export type UserUpdateWithoutCurrentPackageInput = {
@@ -4247,9 +4668,11 @@ export type UserUpdateWithoutCurrentPackageInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
@@ -4285,9 +4708,11 @@ export type UserUncheckedUpdateWithoutCurrentPackageInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
   listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  slotPurchases?: Prisma.SlotPurchaseUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -4323,6 +4748,7 @@ export type UserUncheckedUpdateManyWithoutCurrentPackageInput = {
   deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  bonusListingSlots?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -4334,6 +4760,7 @@ export type UserCountOutputType = {
   listings: number
   wishlists: number
   packageTransactions: number
+  slotPurchases: number
   listingRenewals: number
   bumpLogs: number
   notifications: number
@@ -4353,6 +4780,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   listings?: boolean | UserCountOutputTypeCountListingsArgs
   wishlists?: boolean | UserCountOutputTypeCountWishlistsArgs
   packageTransactions?: boolean | UserCountOutputTypeCountPackageTransactionsArgs
+  slotPurchases?: boolean | UserCountOutputTypeCountSlotPurchasesArgs
   listingRenewals?: boolean | UserCountOutputTypeCountListingRenewalsArgs
   bumpLogs?: boolean | UserCountOutputTypeCountBumpLogsArgs
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
@@ -4397,6 +4825,13 @@ export type UserCountOutputTypeCountWishlistsArgs<ExtArgs extends runtime.Types.
  */
 export type UserCountOutputTypeCountPackageTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.PackageTransactionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSlotPurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SlotPurchaseWhereInput
 }
 
 /**
@@ -4510,10 +4945,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
+  bonusListingSlots?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
   wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
   packageTransactions?: boolean | Prisma.User$packageTransactionsArgs<ExtArgs>
+  slotPurchases?: boolean | Prisma.User$slotPurchasesArgs<ExtArgs>
   listingRenewals?: boolean | Prisma.User$listingRenewalsArgs<ExtArgs>
   bumpLogs?: boolean | Prisma.User$bumpLogsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
@@ -4551,6 +4988,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
+  bonusListingSlots?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4573,6 +5011,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
+  bonusListingSlots?: boolean
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4595,14 +5034,16 @@ export type UserSelectScalar = {
   deleteAccountCodeExpiresAt?: boolean
   currentPackageId?: boolean
   packageExpiresAt?: boolean
+  bonusListingSlots?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "profileImage" | "createdAt" | "updatedAt" | "lineUserId" | "googleUserId" | "facebookUserId" | "passwordResetToken" | "passwordResetExpiresAt" | "deleteAccountCode" | "deleteAccountCodeExpiresAt" | "currentPackageId" | "packageExpiresAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fullName" | "isActive" | "email" | "phoneNumber" | "password" | "profileImage" | "createdAt" | "updatedAt" | "lineUserId" | "googleUserId" | "facebookUserId" | "passwordResetToken" | "passwordResetExpiresAt" | "deleteAccountCode" | "deleteAccountCodeExpiresAt" | "currentPackageId" | "packageExpiresAt" | "bonusListingSlots", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   currentPackage?: boolean | Prisma.User$currentPackageArgs<ExtArgs>
   listings?: boolean | Prisma.User$listingsArgs<ExtArgs>
   wishlists?: boolean | Prisma.User$wishlistsArgs<ExtArgs>
   packageTransactions?: boolean | Prisma.User$packageTransactionsArgs<ExtArgs>
+  slotPurchases?: boolean | Prisma.User$slotPurchasesArgs<ExtArgs>
   listingRenewals?: boolean | Prisma.User$listingRenewalsArgs<ExtArgs>
   bumpLogs?: boolean | Prisma.User$bumpLogsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
@@ -4634,6 +5075,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     listings: Prisma.$VehicleListingPayload<ExtArgs>[]
     wishlists: Prisma.$WishlistPayload<ExtArgs>[]
     packageTransactions: Prisma.$PackageTransactionPayload<ExtArgs>[]
+    slotPurchases: Prisma.$SlotPurchasePayload<ExtArgs>[]
     listingRenewals: Prisma.$ListingRenewalPayload<ExtArgs>[]
     bumpLogs: Prisma.$ListingBumpLogPayload<ExtArgs>[]
     notifications: Prisma.$UserNotificationPayload<ExtArgs>[]
@@ -4669,6 +5111,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     deleteAccountCodeExpiresAt: Date | null
     currentPackageId: string | null
     packageExpiresAt: Date | null
+    bonusListingSlots: number
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -5067,6 +5510,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   listings<T extends Prisma.User$listingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$listingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$VehicleListingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   wishlists<T extends Prisma.User$wishlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$wishlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packageTransactions<T extends Prisma.User$packageTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$packageTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PackageTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  slotPurchases<T extends Prisma.User$slotPurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$slotPurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SlotPurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   listingRenewals<T extends Prisma.User$listingRenewalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$listingRenewalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingRenewalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bumpLogs<T extends Prisma.User$bumpLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bumpLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingBumpLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5129,6 +5573,7 @@ export interface UserFieldRefs {
   readonly deleteAccountCodeExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly currentPackageId: Prisma.FieldRef<"User", 'String'>
   readonly packageExpiresAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly bonusListingSlots: Prisma.FieldRef<"User", 'Int'>
 }
     
 
@@ -5613,6 +6058,30 @@ export type User$packageTransactionsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.PackageTransactionScalarFieldEnum | Prisma.PackageTransactionScalarFieldEnum[]
+}
+
+/**
+ * User.slotPurchases
+ */
+export type User$slotPurchasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SlotPurchase
+   */
+  select?: Prisma.SlotPurchaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SlotPurchase
+   */
+  omit?: Prisma.SlotPurchaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SlotPurchaseInclude<ExtArgs> | null
+  where?: Prisma.SlotPurchaseWhereInput
+  orderBy?: Prisma.SlotPurchaseOrderByWithRelationInput | Prisma.SlotPurchaseOrderByWithRelationInput[]
+  cursor?: Prisma.SlotPurchaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SlotPurchaseScalarFieldEnum | Prisma.SlotPurchaseScalarFieldEnum[]
 }
 
 /**

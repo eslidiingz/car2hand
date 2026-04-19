@@ -16,7 +16,10 @@ import {
     ImageIcon,
     RotateCcw,
     ArrowUp,
+    Plus,
+    ShoppingBag,
 } from 'lucide-react';
+import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -98,7 +101,9 @@ function getColor(slug: string) {
 export default function PackagesPage() {
     const [packages, setPackages] = useState<PackageData[]>([]);
     const [currentPkg, setCurrentPkg] = useState<CurrentPackage | null>(null);
-    const [usage, setUsage] = useState({ activeListings: 0, maxListings: 1 });
+    const [usage, setUsage] = useState({ activeListings: 0, maxListings: 3, packageMaxListings: 3, bonusListingSlots: 0 });
+    const [showSlotModal, setShowSlotModal] = useState(false);
+    const [slotRefreshKey, setSlotRefreshKey] = useState(0);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [selectedPackage, setSelectedPackage] = useState<PackageData | null>(null);
@@ -113,6 +118,8 @@ export default function PackagesPage() {
     const [prorateInfo, setProrateInfo] = useState<ProrateInfo | null>(null);
     const [prorateLoading, setProrateLoading] = useState(false);
     const [showAllTx, setShowAllTx] = useState(false);
+    const [slotPurchases, setSlotPurchases] = useState<any[]>([]);
+    const [showAllSlotTx, setShowAllSlotTx] = useState(false);
 
     const getUserId = () => {
         const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -195,9 +202,25 @@ export default function PackagesPage() {
             .then(r => r.json())
             .then(data => {
                 setCurrentPkg(data.currentPackage || null);
-                setUsage(data.usage || { activeListings: 0, maxListings: 1 });
+                setUsage(data.usage || { activeListings: 0, maxListings: 3, packageMaxListings: 3, bonusListingSlots: 0 });
             })
             .catch(console.error);
+
+        fetch(`${API_URL}/slots/purchases`, {
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        })
+            .then(r => r.json())
+            .then(data => setSlotPurchases(data.purchases || []))
+            .catch(console.error);
+    // slotRefreshKey triggers refetch when slot purchase succeeds
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slotRefreshKey]);
+
+    useEffect(() => {
+        const userId = getUserId();
+        if (!userId) return;
+
+        const token = getAuthToken();
 
         fetch(`${API_URL}/packages/transactions`, {
             headers: token ? { 'Authorization': `Bearer ${token}` } : {}
@@ -350,6 +373,9 @@ export default function PackagesPage() {
                         <p className="text-[10px] text-gray-400">ประกาศที่ใช้งาน</p>
                         <p className="text-lg font-bold text-gray-800">
                             {usage.activeListings}/{usage.maxListings === -1 ? '∞' : usage.maxListings}
+                            {usage.bonusListingSlots > 0 && (
+                                <span className="text-xs text-emerald-600 font-bold ml-2">+{usage.bonusListingSlots} slot</span>
+                            )}
                         </p>
                     </div>
                     {currentPkg && currentPkg.expiresAt && (() => {
@@ -370,6 +396,25 @@ export default function PackagesPage() {
                         );
                     })()}
                 </div>
+                {/* Slot purchase — ซื้อ slot ประกาศเพิ่ม (99 บาท/slot, ถาวร) */}
+                {usage.maxListings !== -1 && (
+                    <div className="mb-3 p-3 rounded-xl border border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-orange-500 shrink-0">
+                            <ShoppingBag size={18} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-gray-800">ซื้อ slot ประกาศเพิ่ม</p>
+                            <p className="text-[11px] text-gray-500">฿99/slot · ใช้ได้ถาวร · สะสมข้ามแพ็กเกจ</p>
+                        </div>
+                        <button
+                            onClick={() => setShowSlotModal(true)}
+                            className="flex items-center gap-1 px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition shadow-sm shrink-0"
+                        >
+                            <Plus size={14} /> ซื้อเพิ่ม
+                        </button>
+                    </div>
+                )}
+
                 {/* Renewal button — แสดงเฉพาะเมื่อเหลือ ≤ 7 วัน */}
                 {currentPkg && currentPkg.slug !== 'basic' && (() => {
                     const currentFullPkg = packages.find(p => p.id === currentPkg.id || p.slug === currentPkg.slug);
@@ -383,6 +428,61 @@ export default function PackagesPage() {
                             <RotateCcw size={16} />
                             ต่ออายุแพ็กเกจ
                         </button>
+                    );
+                })()}
+
+                {/* Slot Purchase History */}
+                {slotPurchases.length > 0 && (() => {
+                    const latest = slotPurchases[0];
+                    return (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-between mb-2">
+                                <p className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
+                                    <ShoppingBag size={12} className="text-orange-500" /> ประวัติซื้อ slot
+                                </p>
+                                {slotPurchases.length > 1 && (
+                                    <button
+                                        onClick={() => setShowAllSlotTx(!showAllSlotTx)}
+                                        className="text-xs font-bold text-primary hover:underline"
+                                    >
+                                        {showAllSlotTx ? 'ซ่อน' : `ดูทั้งหมด (${slotPurchases.length})`}
+                                    </button>
+                                )}
+                            </div>
+                            {(showAllSlotTx ? slotPurchases : [latest]).map((sp: any) => (
+                                <div key={sp.id} className="flex items-center justify-between p-2.5 rounded-lg bg-orange-50/50 mb-2 last:mb-0">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <div className="p-1 rounded-md bg-white">
+                                            <ShoppingBag size={14} className="text-orange-500" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-bold text-gray-700 truncate flex items-center gap-1.5">
+                                                +{sp.quantity} slot
+                                                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-orange-100 text-orange-700">
+                                                    ซื้อเพิ่ม
+                                                </span>
+                                            </p>
+                                            <p className="text-[10px] text-gray-400">
+                                                {new Date(sp.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                {sp.adminNote && sp.status === 'REJECTED' && (
+                                                    <span className="text-rose-500 ml-2">· {sp.adminNote}</span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        <span className="text-xs font-medium text-gray-600">฿{Number(sp.totalAmount).toLocaleString()}</span>
+                                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
+                                            sp.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                                            sp.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                                            'bg-red-100 text-red-700'
+                                        }`}>
+                                            {sp.status === 'PENDING' ? 'รอ' : sp.status === 'APPROVED' ? '✓' : '✗'}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     );
                 })()}
 
@@ -699,6 +799,17 @@ export default function PackagesPage() {
                     </div>
                 </div>
             )}
+
+            {/* Slot Purchase Modal */}
+            <SlotPurchaseModal
+                open={showSlotModal}
+                onClose={() => setShowSlotModal(false)}
+                onSuccess={() => {
+                    setSuccessMsg('ส่งคำขอซื้อ slot สำเร็จ รอ admin ตรวจสอบ');
+                    setSlotRefreshKey(k => k + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+            />
         </div>
     );
 }

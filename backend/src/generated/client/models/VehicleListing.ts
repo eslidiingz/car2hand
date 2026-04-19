@@ -36,6 +36,7 @@ export type VehicleListingAvgAggregateOutputType = {
   contactCount: number | null
   favoriteCount: number | null
   autoBumpSlot: number | null
+  remainingDays: number | null
 }
 
 export type VehicleListingSumAggregateOutputType = {
@@ -48,6 +49,7 @@ export type VehicleListingSumAggregateOutputType = {
   contactCount: number | null
   favoriteCount: number | null
   autoBumpSlot: number | null
+  remainingDays: number | null
 }
 
 export type VehicleListingMinAggregateOutputType = {
@@ -101,6 +103,8 @@ export type VehicleListingMinAggregateOutputType = {
   expiredAt: Date | null
   bumpedAt: Date | null
   autoBumpSlot: number | null
+  pausedAt: Date | null
+  remainingDays: number | null
   userId: string | null
 }
 
@@ -155,6 +159,8 @@ export type VehicleListingMaxAggregateOutputType = {
   expiredAt: Date | null
   bumpedAt: Date | null
   autoBumpSlot: number | null
+  pausedAt: Date | null
+  remainingDays: number | null
   userId: string | null
 }
 
@@ -209,6 +215,8 @@ export type VehicleListingCountAggregateOutputType = {
   expiredAt: number
   bumpedAt: number
   autoBumpSlot: number
+  pausedAt: number
+  remainingDays: number
   userId: number
   _all: number
 }
@@ -224,6 +232,7 @@ export type VehicleListingAvgAggregateInputType = {
   contactCount?: true
   favoriteCount?: true
   autoBumpSlot?: true
+  remainingDays?: true
 }
 
 export type VehicleListingSumAggregateInputType = {
@@ -236,6 +245,7 @@ export type VehicleListingSumAggregateInputType = {
   contactCount?: true
   favoriteCount?: true
   autoBumpSlot?: true
+  remainingDays?: true
 }
 
 export type VehicleListingMinAggregateInputType = {
@@ -289,6 +299,8 @@ export type VehicleListingMinAggregateInputType = {
   expiredAt?: true
   bumpedAt?: true
   autoBumpSlot?: true
+  pausedAt?: true
+  remainingDays?: true
   userId?: true
 }
 
@@ -343,6 +355,8 @@ export type VehicleListingMaxAggregateInputType = {
   expiredAt?: true
   bumpedAt?: true
   autoBumpSlot?: true
+  pausedAt?: true
+  remainingDays?: true
   userId?: true
 }
 
@@ -397,6 +411,8 @@ export type VehicleListingCountAggregateInputType = {
   expiredAt?: true
   bumpedAt?: true
   autoBumpSlot?: true
+  pausedAt?: true
+  remainingDays?: true
   userId?: true
   _all?: true
 }
@@ -538,6 +554,8 @@ export type VehicleListingGroupByOutputType = {
   expiredAt: Date | null
   bumpedAt: Date | null
   autoBumpSlot: number | null
+  pausedAt: Date | null
+  remainingDays: number | null
   userId: string
   _count: VehicleListingCountAggregateOutputType | null
   _avg: VehicleListingAvgAggregateOutputType | null
@@ -615,6 +633,8 @@ export type VehicleListingWhereInput = {
   expiredAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
   bumpedAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
   autoBumpSlot?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
+  remainingDays?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   userId?: Prisma.StringFilter<"VehicleListing"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   images?: Prisma.VehicleImageListRelationFilter
@@ -675,6 +695,8 @@ export type VehicleListingOrderByWithRelationInput = {
   expiredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   bumpedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  remainingDays?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   images?: Prisma.VehicleImageOrderByRelationAggregateInput
@@ -738,6 +760,8 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   expiredAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
   bumpedAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
   autoBumpSlot?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
+  remainingDays?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   userId?: Prisma.StringFilter<"VehicleListing"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   images?: Prisma.VehicleImageListRelationFilter
@@ -798,6 +822,8 @@ export type VehicleListingOrderByWithAggregationInput = {
   expiredAt?: Prisma.SortOrderInput | Prisma.SortOrder
   bumpedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrderInput | Prisma.SortOrder
+  pausedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  remainingDays?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.VehicleListingCountOrderByAggregateInput
   _avg?: Prisma.VehicleListingAvgOrderByAggregateInput
@@ -860,6 +886,8 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   expiredAt?: Prisma.DateTimeNullableWithAggregatesFilter<"VehicleListing"> | Date | string | null
   bumpedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"VehicleListing"> | Date | string | null
   autoBumpSlot?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
+  pausedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"VehicleListing"> | Date | string | null
+  remainingDays?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
   userId?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
 }
 
@@ -914,6 +942,8 @@ export type VehicleListingCreateInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
@@ -973,6 +1003,8 @@ export type VehicleListingUncheckedCreateInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
@@ -1032,6 +1064,8 @@ export type VehicleListingUpdateInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
@@ -1091,6 +1125,8 @@ export type VehicleListingUncheckedUpdateInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
@@ -1150,6 +1186,8 @@ export type VehicleListingCreateManyInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
 }
 
@@ -1204,6 +1242,8 @@ export type VehicleListingUpdateManyMutationInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type VehicleListingUncheckedUpdateManyInput = {
@@ -1257,6 +1297,8 @@ export type VehicleListingUncheckedUpdateManyInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -1326,6 +1368,8 @@ export type VehicleListingCountOrderByAggregateInput = {
   expiredAt?: Prisma.SortOrder
   bumpedAt?: Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  remainingDays?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -1339,6 +1383,7 @@ export type VehicleListingAvgOrderByAggregateInput = {
   contactCount?: Prisma.SortOrder
   favoriteCount?: Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrder
+  remainingDays?: Prisma.SortOrder
 }
 
 export type VehicleListingMaxOrderByAggregateInput = {
@@ -1392,6 +1437,8 @@ export type VehicleListingMaxOrderByAggregateInput = {
   expiredAt?: Prisma.SortOrder
   bumpedAt?: Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  remainingDays?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -1446,6 +1493,8 @@ export type VehicleListingMinOrderByAggregateInput = {
   expiredAt?: Prisma.SortOrder
   bumpedAt?: Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrder
+  pausedAt?: Prisma.SortOrder
+  remainingDays?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -1459,6 +1508,7 @@ export type VehicleListingSumOrderByAggregateInput = {
   contactCount?: Prisma.SortOrder
   favoriteCount?: Prisma.SortOrder
   autoBumpSlot?: Prisma.SortOrder
+  remainingDays?: Prisma.SortOrder
 }
 
 export type VehicleListingNullableScalarRelationFilter = {
@@ -1667,6 +1717,8 @@ export type VehicleListingCreateWithoutUserInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
   renewals?: Prisma.ListingRenewalCreateNestedManyWithoutListingInput
@@ -1725,6 +1777,8 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
   renewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutListingInput
@@ -1812,6 +1866,8 @@ export type VehicleListingScalarWhereInput = {
   expiredAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
   bumpedAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
   autoBumpSlot?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
+  pausedAt?: Prisma.DateTimeNullableFilter<"VehicleListing"> | Date | string | null
+  remainingDays?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   userId?: Prisma.StringFilter<"VehicleListing"> | string
 }
 
@@ -1866,6 +1922,8 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
   renewals?: Prisma.ListingRenewalCreateNestedManyWithoutListingInput
@@ -1924,6 +1982,8 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
   renewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutListingInput
@@ -1998,6 +2058,8 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
   renewals?: Prisma.ListingRenewalUpdateManyWithoutListingNestedInput
@@ -2056,6 +2118,8 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
   renewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutListingNestedInput
@@ -2114,6 +2178,8 @@ export type VehicleListingCreateWithoutImagesInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
   renewals?: Prisma.ListingRenewalCreateNestedManyWithoutListingInput
@@ -2172,6 +2238,8 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
   renewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutListingInput
@@ -2246,6 +2314,8 @@ export type VehicleListingUpdateWithoutImagesInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
   renewals?: Prisma.ListingRenewalUpdateManyWithoutListingNestedInput
@@ -2304,6 +2374,8 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
   renewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutListingNestedInput
@@ -2362,6 +2434,8 @@ export type VehicleListingCreateWithoutRenewalsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
@@ -2420,6 +2494,8 @@ export type VehicleListingUncheckedCreateWithoutRenewalsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
@@ -2494,6 +2570,8 @@ export type VehicleListingUpdateWithoutRenewalsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
@@ -2552,6 +2630,8 @@ export type VehicleListingUncheckedUpdateWithoutRenewalsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
@@ -2610,6 +2690,8 @@ export type VehicleListingCreateWithoutBumpLogsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
@@ -2668,6 +2750,8 @@ export type VehicleListingUncheckedCreateWithoutBumpLogsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
@@ -2742,6 +2826,8 @@ export type VehicleListingUpdateWithoutBumpLogsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
@@ -2800,6 +2886,8 @@ export type VehicleListingUncheckedUpdateWithoutBumpLogsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
@@ -2858,6 +2946,8 @@ export type VehicleListingCreateWithoutForumPostsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   user: Prisma.UserCreateNestedOneWithoutListingsInput
   images?: Prisma.VehicleImageCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistCreateNestedManyWithoutListingInput
@@ -2916,6 +3006,8 @@ export type VehicleListingUncheckedCreateWithoutForumPostsInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
   userId: string
   images?: Prisma.VehicleImageUncheckedCreateNestedManyWithoutListingInput
   wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutListingInput
@@ -2990,6 +3082,8 @@ export type VehicleListingUpdateWithoutForumPostsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   user?: Prisma.UserUpdateOneRequiredWithoutListingsNestedInput
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
@@ -3048,6 +3142,8 @@ export type VehicleListingUncheckedUpdateWithoutForumPostsInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
@@ -3106,6 +3202,8 @@ export type VehicleListingCreateManyUserInput = {
   expiredAt?: Date | string | null
   bumpedAt?: Date | string | null
   autoBumpSlot?: number | null
+  pausedAt?: Date | string | null
+  remainingDays?: number | null
 }
 
 export type VehicleListingUpdateWithoutUserInput = {
@@ -3159,6 +3257,8 @@ export type VehicleListingUpdateWithoutUserInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   images?: Prisma.VehicleImageUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUpdateManyWithoutListingNestedInput
   renewals?: Prisma.ListingRenewalUpdateManyWithoutListingNestedInput
@@ -3217,6 +3317,8 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   images?: Prisma.VehicleImageUncheckedUpdateManyWithoutListingNestedInput
   wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutListingNestedInput
   renewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutListingNestedInput
@@ -3275,6 +3377,8 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   expiredAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   bumpedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   autoBumpSlot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  pausedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  remainingDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -3395,6 +3499,8 @@ export type VehicleListingSelect<ExtArgs extends runtime.Types.Extensions.Intern
   expiredAt?: boolean
   bumpedAt?: boolean
   autoBumpSlot?: boolean
+  pausedAt?: boolean
+  remainingDays?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
@@ -3456,6 +3562,8 @@ export type VehicleListingSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   expiredAt?: boolean
   bumpedAt?: boolean
   autoBumpSlot?: boolean
+  pausedAt?: boolean
+  remainingDays?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vehicleListing"]>
@@ -3511,6 +3619,8 @@ export type VehicleListingSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   expiredAt?: boolean
   bumpedAt?: boolean
   autoBumpSlot?: boolean
+  pausedAt?: boolean
+  remainingDays?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vehicleListing"]>
@@ -3566,10 +3676,12 @@ export type VehicleListingSelectScalar = {
   expiredAt?: boolean
   bumpedAt?: boolean
   autoBumpSlot?: boolean
+  pausedAt?: boolean
+  remainingDays?: boolean
   userId?: boolean
 }
 
-export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "registrationBookImage" | "status" | "adminNote" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "publishedAt" | "expiredAt" | "bumpedAt" | "autoBumpSlot" | "userId", ExtArgs["result"]["vehicleListing"]>
+export type VehicleListingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "vehicleType" | "title" | "description" | "price" | "brand" | "model" | "subModel" | "year" | "color" | "fuelType" | "transmission" | "engineSize" | "seats" | "mileage" | "bodyType" | "plateProvince" | "registrationType" | "condition" | "hasAccident" | "hasModified" | "hasWarranty" | "province" | "district" | "contactName" | "contactPhone" | "lineId" | "facebookUrl" | "taxPaid" | "registrationBookStatus" | "insuranceDetails" | "warrantyDetails" | "bsiDetails" | "gasType" | "hasSpareKey" | "serviceHistoryImage" | "registrationBookImage" | "status" | "adminNote" | "isFeatured" | "isPremium" | "viewCount" | "contactCount" | "favoriteCount" | "createdAt" | "updatedAt" | "publishedAt" | "expiredAt" | "bumpedAt" | "autoBumpSlot" | "pausedAt" | "remainingDays" | "userId", ExtArgs["result"]["vehicleListing"]>
 export type VehicleListingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   images?: boolean | Prisma.VehicleListing$imagesArgs<ExtArgs>
@@ -3647,6 +3759,8 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     expiredAt: Date | null
     bumpedAt: Date | null
     autoBumpSlot: number | null
+    pausedAt: Date | null
+    remainingDays: number | null
     userId: string
   }, ExtArgs["result"]["vehicleListing"]>
   composites: {}
@@ -4127,6 +4241,8 @@ export interface VehicleListingFieldRefs {
   readonly expiredAt: Prisma.FieldRef<"VehicleListing", 'DateTime'>
   readonly bumpedAt: Prisma.FieldRef<"VehicleListing", 'DateTime'>
   readonly autoBumpSlot: Prisma.FieldRef<"VehicleListing", 'Int'>
+  readonly pausedAt: Prisma.FieldRef<"VehicleListing", 'DateTime'>
+  readonly remainingDays: Prisma.FieldRef<"VehicleListing", 'Int'>
   readonly userId: Prisma.FieldRef<"VehicleListing", 'String'>
 }
     

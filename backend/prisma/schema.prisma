@@ -578,6 +578,24 @@ model SystemSetting {
   @@map("system_settings")
 }
 
+// =============================================
+// Storage Setting - ตั้งค่าผู้ให้บริการ Object Storage (singleton)
+// =============================================
+enum StorageProviderType {
+  MINIO
+  CLOUDFLARE_R2
+}
+
+model StorageSetting {
+  id        String              @id @default(cuid())
+  provider  StorageProviderType @default(MINIO)
+  config    Json                @default("{}")
+  updatedAt DateTime            @updatedAt
+  updatedBy String?
+
+  @@map("storage_settings")
+}
+
 // รายการอัพเกรด/ต่ออายุแพ็กเกจ
 model PackageTransaction {
   id              String        @id @default(cuid())

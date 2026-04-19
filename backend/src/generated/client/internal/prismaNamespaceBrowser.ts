@@ -65,6 +65,7 @@ export const ModelName = {
   VehicleImage: 'VehicleImage',
   Package: 'Package',
   SystemSetting: 'SystemSetting',
+  StorageSetting: 'StorageSetting',
   PackageTransaction: 'PackageTransaction',
   ListingRenewal: 'ListingRenewal',
   GarageVehicle: 'GarageVehicle',
@@ -395,6 +396,17 @@ export const SystemSettingScalarFieldEnum = {
 } as const
 
 export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
+
+
+export const StorageSettingScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  config: 'config',
+  updatedAt: 'updatedAt',
+  updatedBy: 'updatedBy'
+} as const
+
+export type StorageSettingScalarFieldEnum = (typeof StorageSettingScalarFieldEnum)[keyof typeof StorageSettingScalarFieldEnum]
 
 
 export const PackageTransactionScalarFieldEnum = {

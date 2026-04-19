@@ -557,7 +557,7 @@ export default function SellPage() {
                                 <ChevronDown className="group-open:rotate-180 transition" />
                             </summary>
                             <p className="text-gray-600 mt-3 pt-3 border-t border-gray-100">
-                                แพ็กเกจ Basic ลงขายฟรี 1 รายการ เหมาะกับคนขายรถส่วนตัว แพ็กเกจที่สูงขึ้นจะได้จำนวนประกาศมากขึ้น ระบบดันโพสต์อัตโนมัติ ป้ายพิเศษบนประกาศ และลำดับการค้นหาที่ดีกว่า
+                                แพ็กเกจ Basic ลงขายฟรีสูงสุด 3 รายการ เหมาะกับคนขายรถส่วนตัว แพ็กเกจที่สูงขึ้นจะได้จำนวนประกาศมากขึ้น ระบบดันโพสต์อัตโนมัติ ป้ายพิเศษบนประกาศ และลำดับการค้นหาที่ดีกว่า
                             </p>
                         </details>
                         <details className="bg-white p-5 rounded-2xl shadow-sm cursor-pointer group">

@@ -15,8 +15,10 @@ import {
     UserCircle,
     Clock,
     RotateCcw,
-    Crown
+    Crown,
+    ShoppingBag,
 } from 'lucide-react';
+import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -43,9 +45,10 @@ export default function DashboardPage() {
     const router = useRouter();
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
-    const [maxListings, setMaxListings] = useState<number>(1);
+    const [maxListings, setMaxListings] = useState<number>(3);
     const [packageName, setPackageName] = useState<string>('Basic');
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showSlotModal, setShowSlotModal] = useState(false);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -66,7 +69,7 @@ export default function DashboardPage() {
             .then(r => r.json())
             .then(data => {
                 if (data.currentPackage) {
-                    setMaxListings(data.currentPackage.maxListings ?? 1);
+                    setMaxListings(data.currentPackage.maxListings ?? 3);
                     setPackageName(data.currentPackage.name ?? 'Basic');
                 }
             })
@@ -307,20 +310,26 @@ export default function DashboardPage() {
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
                         <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                            แพ็กเกจ {packageName} ลงประกาศได้สูงสุด {maxListings} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม
+                            แพ็กเกจ {packageName} ลงประกาศได้สูงสุด {maxListings} รายการ เลือกซื้อ slot เพิ่ม (฿99/slot) หรืออัพเกรดแพ็กเกจ
                         </p>
 
                         <div className="flex flex-col gap-3">
                             <button
-                                onClick={() => router.push('/profile/packages')}
+                                onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
                                 className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
                             >
-                                <Crown size={20} />
+                                <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
+                            </button>
+                            <button
+                                onClick={() => router.push('/profile/packages')}
+                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                            >
+                                <Crown size={18} />
                                 ดูแพ็กเกจ
                             </button>
                             <button
                                 onClick={() => setShowUpgradeModal(false)}
-                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
+                                className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
                             >
                                 ปิด
                             </button>
@@ -328,6 +337,12 @@ export default function DashboardPage() {
                     </div>
                 </div>
             )}
+
+            <SlotPurchaseModal
+                open={showSlotModal}
+                onClose={() => setShowSlotModal(false)}
+                onSuccess={() => setShowUpgradeModal(false)}
+            />
         </div>
     );
 }

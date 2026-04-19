@@ -398,6 +398,7 @@ export const ModelName = {
   VehicleImage: 'VehicleImage',
   Package: 'Package',
   SystemSetting: 'SystemSetting',
+  StorageSetting: 'StorageSetting',
   PackageTransaction: 'PackageTransaction',
   ListingRenewal: 'ListingRenewal',
   GarageVehicle: 'GarageVehicle',
@@ -438,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "sellerProfile" | "kycSubmission" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "packageTransaction" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "pushSubscription" | "listingBumpLog" | "notificationTemplate" | "contactMessage" | "adminAuditLog" | "abuseReport" | "notificationLog" | "servicePartner" | "inspectionPackage" | "inspectionBooking" | "serviceInquiry" | "forumCategory" | "forumPost" | "forumComment" | "forumVote" | "forumCommentVote" | "forumTag" | "forumPostTag" | "userReputation"
+    modelProps: "user" | "sellerProfile" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "storageSetting" | "packageTransaction" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "listingBumpLog" | "notificationTemplate" | "notificationLog" | "servicePartner" | "inspectionPackage" | "inspectionBooking" | "serviceInquiry" | "forumCategory" | "forumPost" | "forumComment" | "forumVote" | "forumCommentVote" | "forumTag" | "forumPostTag" | "userReputation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1475,6 +1476,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SystemSettingCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SystemSettingCountAggregateOutputType> | number
+        }
+      }
+    }
+    StorageSetting: {
+      payload: Prisma.$StorageSettingPayload<ExtArgs>
+      fields: Prisma.StorageSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StorageSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StorageSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.StorageSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StorageSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>
+        }
+        findMany: {
+          args: Prisma.StorageSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>[]
+        }
+        create: {
+          args: Prisma.StorageSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>
+        }
+        createMany: {
+          args: Prisma.StorageSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StorageSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.StorageSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>
+        }
+        update: {
+          args: Prisma.StorageSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.StorageSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StorageSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StorageSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.StorageSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StorageSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.StorageSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStorageSetting>
+        }
+        groupBy: {
+          args: Prisma.StorageSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StorageSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StorageSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StorageSettingCountAggregateOutputType> | number
         }
       }
     }
@@ -3656,6 +3731,17 @@ export const SystemSettingScalarFieldEnum = {
 export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
 
 
+export const StorageSettingScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  config: 'config',
+  updatedAt: 'updatedAt',
+  updatedBy: 'updatedBy'
+} as const
+
+export type StorageSettingScalarFieldEnum = (typeof StorageSettingScalarFieldEnum)[keyof typeof StorageSettingScalarFieldEnum]
+
+
 export const PackageTransactionScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
@@ -4314,6 +4400,20 @@ export type ListEnumListingStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'StorageProviderType'
+ */
+export type EnumStorageProviderTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StorageProviderType'>
+    
+
+
+/**
+ * Reference to a field of type 'StorageProviderType[]'
+ */
+export type ListEnumStorageProviderTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StorageProviderType[]'>
+    
+
+
+/**
  * Reference to a field of type 'PaymentStatus'
  */
 export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
@@ -4547,6 +4647,7 @@ export type GlobalOmitConfig = {
   vehicleImage?: Prisma.VehicleImageOmit
   package?: Prisma.PackageOmit
   systemSetting?: Prisma.SystemSettingOmit
+  storageSetting?: Prisma.StorageSettingOmit
   packageTransaction?: Prisma.PackageTransactionOmit
   listingRenewal?: Prisma.ListingRenewalOmit
   garageVehicle?: Prisma.GarageVehicleOmit

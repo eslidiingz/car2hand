@@ -11,17 +11,17 @@ async function main() {
             description: 'แพ็กเกจฟรี สำหรับผู้ที่ต้องการลองใช้งาน',
             targetAudience: 'ขายคันเดียว (C2C)',
             price: 0,
-            maxListings: 1,
-            maxPhotosPerListing: 10,
-            listingDurationDays: 30,
+            maxListings: 3,
+            maxPhotosPerListing: 15,
+            listingDurationDays: 45,
             autoBumpPerDay: 0,
             manualBumpPerDay: 1,
             badge: null,
             searchPriority: 'normal',
             features: [
-                'ลงประกาศได้ 1 รายการ',
-                'รูปภาพสูงสุด 10 รูป',
-                'ระยะเวลาประกาศ 30 วัน',
+                'ลงประกาศได้สูงสุด 3 รายการ',
+                'รูปภาพสูงสุด 15 รูป',
+                'ระยะเวลาประกาศ 45 วัน',
                 'ดันโพสต์ด้วยตัวเอง 1 ครั้ง/คัน/วัน',
             ],
             sortOrder: 0,
@@ -33,7 +33,7 @@ async function main() {
             description: 'สำหรับพ่อค้าอิสระ ลงประกาศได้มากขึ้น',
             targetAudience: 'พ่อค้าอิสระ/รถบ้าน',
             price: 299,
-            maxListings: 5,
+            maxListings: 8,
             maxPhotosPerListing: 20,
             listingDurationDays: 60,
             autoBumpPerDay: 1,
@@ -43,7 +43,7 @@ async function main() {
             badge: null,
             searchPriority: 'higher',
             features: [
-                'ลงประกาศได้ 5 รายการ',
+                'ลงประกาศได้ 8 รายการ',
                 'รูปภาพสูงสุด 20 รูป',
                 'ระยะเวลาประกาศ 60 วัน',
                 'ดันโพสต์อัตโนมัติ 1 ครั้ง/วัน + ด้วยตัวเอง 1 ครั้ง/คัน/วัน',
@@ -57,7 +57,7 @@ async function main() {
             slug: 'professional',
             description: 'สำหรับเต็นท์รถขนาดเล็ก-กลาง',
             targetAudience: 'เต็นท์รถขนาดเล็ก',
-            price: 990,
+            price: 699,
             maxListings: 20,
             maxPhotosPerListing: 30,
             listingDurationDays: 90,
@@ -71,20 +71,21 @@ async function main() {
                 'ระยะเวลาประกาศ 90 วัน',
                 'ดันโพสต์อัตโนมัติ 3 ครั้ง/วัน + ด้วยตัวเอง 2 ครั้ง/คัน/วัน',
                 'ป้าย Hot Deal',
+                'AI ช่วยแนะนำราคา (AI Price Suggest)',
                 'อันดับการค้นหาลำดับต้นๆ',
             ],
             sortOrder: 2,
         },
         {
-            name: 'Premium (Elite)',
-            nameTh: 'แพ็กเกจพรีเมียม',
+            name: 'Dealer',
+            nameTh: 'แพ็กเกจดีลเลอร์',
             slug: 'premium',
             description: 'สำหรับโชว์รูมและเต็นท์ขนาดใหญ่',
             targetAudience: 'โชว์รูม/เต็นท์ใหญ่',
-            price: 2500,
+            price: 1990,
             maxListings: 100,
             maxPhotosPerListing: 40,
-            listingDurationDays: -1,
+            listingDurationDays: 180,
             autoBumpPerDay: 5,
             manualBumpPerDay: 3,
             badge: 'Premium Choice',
@@ -92,9 +93,13 @@ async function main() {
             features: [
                 'ลงประกาศสูงสุด 100 รายการ',
                 'รูปภาพสูงสุด 40 รูป/ประกาศ',
-                'ประกาศไม่มีหมดอายุ',
+                'ประกาศแสดงนาน 180 วัน',
                 'ดันโพสต์อัตโนมัติ 5 ครั้ง/วัน + ด้วยตัวเอง 3 ครั้ง/คัน/วัน',
                 'ป้าย Premium Choice',
+                'AI ช่วยแนะนำราคา (AI Price Suggest)',
+                'หน้า Showroom ของคุณเอง',
+                'อัปโหลดประกาศจำนวนมาก (Bulk Upload CSV)',
+                'ระบบวิเคราะห์ข้อมูล (Analytics)',
                 'อันดับการค้นหาบนสุด (Priority)',
             ],
             sortOrder: 3,
@@ -217,6 +222,27 @@ async function main() {
     for (const partner of servicePartners) {
         await prisma.servicePartner.create({ data: partner });
         console.log(`  ✓ ${partner.name}`);
+    }
+
+    // =============================================
+    // Seed Admin Settings (idempotent — only insert if missing)
+    // =============================================
+    console.log('⚙️  Seeding admin settings...');
+
+    const adminSettings: Array<{ key: string; value: unknown }> = [
+        { key: 'basicListingRequiresApproval', value: true },
+    ];
+
+    for (const s of adminSettings) {
+        const existing = await prisma.adminSetting.findUnique({ where: { key: s.key } });
+        if (!existing) {
+            await prisma.adminSetting.create({
+                data: { key: s.key, value: s.value as never },
+            });
+            console.log(`  ✓ ${s.key} = ${JSON.stringify(s.value)}`);
+        } else {
+            console.log(`  • ${s.key} (already set, skipped)`);
+        }
     }
 
     console.log('✅ Seeding complete!');

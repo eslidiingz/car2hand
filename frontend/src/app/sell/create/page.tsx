@@ -27,9 +27,11 @@ import {
     Palette,
     FileText,
     AlertCircle,
-    BookUser
+    BookUser,
+    ShoppingBag,
 } from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
+import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
 import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
@@ -122,6 +124,7 @@ function CreateListingPage() {
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showSlotModal, setShowSlotModal] = useState(false);
     const [upgradeMessage, setUpgradeMessage] = useState('');
     const [user, setUser] = useState<{ id: string; fullName?: string } | null>(null);
 
@@ -200,14 +203,17 @@ function CreateListingPage() {
             setMaxPhotos(pkg?.maxPhotosPerListing ?? 15);
             setIsBasicPackage(!pkg || pkg.slug === 'basic');
 
-            // Check listing limit
-            const maxAllowed = pkg?.maxListings ?? 1;
-            const activeCount = (listingsData.listings || []).filter(
+            // Check listing limit — ใช้ effective max (package + bonus slot) จาก usage
+            const packageMax = pkg?.maxListings ?? 3;
+            const bonusSlots = pkgData.usage?.bonusListingSlots ?? 0;
+            const effectiveMax = pkgData.usage?.maxListings ?? (packageMax === -1 ? -1 : packageMax + bonusSlots);
+            const activeCount = pkgData.usage?.activeListings ?? (listingsData.listings || []).filter(
                 (l: any) => ['ACTIVE', 'DRAFT', 'PENDING'].includes(l.status)
             ).length;
-            if (activeCount >= maxAllowed) {
+            if (effectiveMax !== -1 && activeCount >= effectiveMax) {
                 setLimitReached(true);
-                setUpgradeMessage(`แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${maxAllowed} รายการ กรุณาอัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม`);
+                const bonusText = bonusSlots > 0 ? ` (แพ็กเกจ ${packageMax} + slot ${bonusSlots})` : '';
+                setUpgradeMessage(`แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${effectiveMax} รายการ${bonusText} กรุณาอัพเกรดแพ็กเกจหรือซื้อ slot เพิ่มเพื่อลงประกาศเพิ่มเติม`);
                 setShowUpgradeModal(true);
             }
         }).catch(() => {});
@@ -1553,17 +1559,20 @@ function CreateListingPage() {
 
                         <div className="flex flex-col gap-3">
                             <button
-                                onClick={() => router.push('/profile/packages')}
+                                onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
                                 className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 256 256" fill="currentColor">
-                                    <path d="M152,224a8,8,0,0,1-8,8H112a8,8,0,0,1,0-16h32A8,8,0,0,1,152,224Zm74.69-184.34-27.75,110.4A16,16,0,0,1,183.45,164H72.55a16,16,0,0,1-15.45-11.94L29.34,41.66a4,4,0,0,1,5.72-4.55L83.51,63.48a4,4,0,0,0,5.06-1.46L122.78,11A12.11,12.11,0,0,1,128,7.12h0A12.11,12.11,0,0,1,133.22,11l34.21,51A4,4,0,0,0,172.49,63.48l48.45-26.37a4,4,0,0,1,5.72,4.55Z"/>
-                                </svg>
+                                <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
+                            </button>
+                            <button
+                                onClick={() => router.push('/profile/packages')}
+                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                            >
                                 ดูแพ็กเกจ
                             </button>
                             <button
                                 onClick={() => limitReached ? router.push('/profile/dashboard') : setShowUpgradeModal(false)}
-                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
+                                className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
                             >
                                 {limitReached ? 'กลับหน้าหลัก' : 'ปิด'}
                             </button>
@@ -1571,6 +1580,15 @@ function CreateListingPage() {
                     </div>
                 </div>
             )}
+
+            <SlotPurchaseModal
+                open={showSlotModal}
+                onClose={() => setShowSlotModal(false)}
+                onSuccess={() => {
+                    setLimitReached(false);
+                    setShowUpgradeModal(false);
+                }}
+            />
         </div>
     );
 }
