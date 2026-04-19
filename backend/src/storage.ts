@@ -57,6 +57,14 @@ export function buildSellerCoverPath(userId: string, filename: string): string {
     return `${userId}/seller/cover/${filename}`;
 }
 
+/**
+ * สร้าง path สำหรับรูปรถในโรงรถของผู้ใช้
+ * Structure: {userId}/garage/{vehicleId}/{filename}
+ */
+export function buildGarageVehiclePath(userId: string, vehicleId: string, filename: string): string {
+    return `${userId}/garage/${vehicleId}/${filename}`;
+}
+
 
 // =============================================
 // URL Builders
@@ -231,6 +239,39 @@ export async function uploadArticleImage(
     return uploadFile(objectPath, webpBuffer, 'image/webp');
 }
 
+
+/**
+ * อัพโหลดรูปรถในโรงรถส่วนตัว - แปลงเป็น WebP ขนาด 800x600
+ * ใช้สำหรับ GarageVehicle.imageUrl (ไม่ใส่ watermark — รถส่วนตัว)
+ * @returns URL ของรูป
+ */
+export async function uploadGarageVehicleImage(
+    userId: string,
+    vehicleId: string,
+    file: { buffer: Buffer; originalname: string; mimetype: string }
+): Promise<string> {
+    const webpBuffer = await processImage(file.buffer, {
+        maxWidth: 800,
+        maxHeight: 600,
+    });
+
+    const baseFilename = generateFilename(file.originalname);
+    const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
+    const objectPath = buildGarageVehiclePath(userId, vehicleId, webpFilename);
+
+    const url = await uploadFile(objectPath, webpBuffer, 'image/webp');
+
+    // ลบรูปเก่าของรถคันนี้ก่อน (รองรับการอัพใหม่แทนที่)
+    const prefix = `${userId}/garage/${vehicleId}/`;
+    const all = await listFiles(prefix);
+    for (const f of all) {
+        if (f.name !== objectPath) {
+            try { await deleteFile(f.name); } catch { }
+        }
+    }
+
+    return url;
+}
 
 /**
  * อัพโหลดหลายรูปสำหรับ Listing
@@ -428,6 +469,47 @@ export async function deleteOldFile(oldUrl: string | null | undefined): Promise<
         console.warn('Failed to delete old file:', objectPath, err);
         return false;
     }
+}
+
+/**
+ * ดึง URL รูปภาพทั้งหมดจาก markdown content ที่ถูกอัพโหลดเข้า MinIO bucket articles/
+ * รองรับทั้ง markdown image syntax `![alt](url)` และ HTML `<img src="url">`
+ * คืนเฉพาะ URL ที่อยู่ภายใต้ path articles/ เท่านั้น (ป้องกันการลบรูปจาก source อื่นโดยไม่ได้ตั้งใจ)
+ */
+export function extractArticleImageUrls(markdown: string | null | undefined): string[] {
+    if (!markdown) return [];
+    const urls = new Set<string>();
+    const mdRegex = /!\[[^\]]*\]\(([^)\s]+)/g;
+    const htmlRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+    let match: RegExpExecArray | null;
+    while ((match = mdRegex.exec(markdown)) !== null) urls.add(match[1]);
+    while ((match = htmlRegex.exec(markdown)) !== null) urls.add(match[1]);
+
+    return Array.from(urls).filter((url) => {
+        const path = extractObjectPath(url);
+        return path !== null && path.startsWith('articles/');
+    });
+}
+
+/**
+ * ลบรูปภาพใน article content ที่ถูกลบออกจาก content ใหม่
+ * คำนวณจาก diff ของ URL ใน old vs new content
+ */
+export async function deleteRemovedArticleImages(
+    oldContent: string | null | undefined,
+    newContent: string | null | undefined
+): Promise<number> {
+    const oldUrls = new Set(extractArticleImageUrls(oldContent));
+    const newUrls = new Set(extractArticleImageUrls(newContent));
+    const removed: string[] = [];
+    for (const url of oldUrls) {
+        if (!newUrls.has(url)) removed.push(url);
+    }
+    let deleted = 0;
+    for (const url of removed) {
+        if (await deleteOldFile(url)) deleted++;
+    }
+    return deleted;
 }
 
 export default minioClient;

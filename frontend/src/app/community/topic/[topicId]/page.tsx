@@ -45,9 +45,12 @@ function timeAgo(dateStr: string) {
     return new Date(dateStr).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
 }
 
-function Avatar({ name, size = 10 }: { name: string; size?: number }) {
+function Avatar({ name, size = 40 }: { name: string; size?: number }) {
     return (
-        <div className={`w-${size} h-${size} rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0`}>
+        <div
+            style={{ width: size, height: size, fontSize: Math.max(size * 0.35, 12) }}
+            className="rounded-full bg-primary text-white flex items-center justify-center font-bold flex-shrink-0"
+        >
             {name.charAt(0).toUpperCase()}
         </div>
     );
@@ -92,7 +95,7 @@ export default function TopicDetailPage() {
     useEffect(() => { fetchPost(); }, [fetchPost]);
 
     const handleVote = async (type: 'UP' | 'DOWN') => {
-        if (!userId) { router.push('/login'); return; }
+        if (!userId) { window.dispatchEvent(new Event('open-login-modal')); return; }
         const token = getAuthToken();
         const res = await fetch(`${API_BASE}/forum/posts/${topicId}/vote`, {
             method: 'POST',
@@ -166,7 +169,7 @@ export default function TopicDetailPage() {
     const isAuthor = userId === post.author.id;
 
     return (
-        <div className="bg-surface text-gray-800 min-h-screen pb-20 md:pb-0">
+        <div className="bg-surface text-gray-800 min-h-screen pb-8">
             <div className="pt-6 pb-4 max-w-7xl mx-auto px-4">
                 <div className="flex items-center gap-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap">
                     <Link href="/community" className="hover:text-primary flex items-center gap-1"><ArrowLeft size={14} /> ชุมชน</Link>
@@ -181,45 +184,42 @@ export default function TopicDetailPage() {
                 <main className="lg:col-span-3 space-y-6">
 
                     {/* Post */}
-                    <article className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div className="flex items-start gap-4">
+                    <article className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
+                        <div className="flex items-start gap-3 sm:gap-4">
                             {/* Vote column */}
-                            <div className="flex flex-col items-center gap-1 min-w-[40px]">
+                            <div className="flex flex-col items-center gap-0.5 min-w-[32px] sm:min-w-[40px]">
                                 <button
                                     onClick={() => handleVote('UP')}
                                     className={`p-1 rounded-lg transition ${myVote === 'UP' ? 'text-accent bg-orange-50' : 'text-gray-400 hover:text-accent'}`}
                                 >
-                                    <ChevronUp className="text-xl" />
+                                    <ChevronUp size={22} />
                                 </button>
                                 <span className={`font-bold text-lg ${score > 0 ? 'text-primary' : score < 0 ? 'text-red-500' : 'text-gray-500'}`}>{score}</span>
                                 <button
                                     onClick={() => handleVote('DOWN')}
                                     className={`p-1 rounded-lg transition ${myVote === 'DOWN' ? 'text-red-500 bg-red-50' : 'text-gray-400 hover:text-red-400'}`}
                                 >
-                                    <ChevronDown className="text-xl" />
+                                    <ChevronDown size={22} />
                                 </button>
                             </div>
 
                             <div className="flex-1 min-w-0">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="flex items-center gap-3">
-                                        <Avatar name={post.author.fullName} />
-                                        <div>
-                                            <h3 className="font-bold text-gray-800">{post.author.fullName}</h3>
-                                            <div className="flex items-center gap-2 text-xs text-gray-400">
-                                                <span>{timeAgo(post.createdAt)}</span>
-                                                <span>•</span>
-                                                <span className="flex items-center gap-1"><Eye /> {post.viewCount.toLocaleString()}</span>
-                                            </div>
+                                {/* Author info */}
+                                <div className="flex items-center gap-3 mb-3">
+                                    <Avatar name={post.author.fullName} size={36} />
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-bold text-gray-800 text-sm sm:text-base">{post.author.fullName}</h3>
+                                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                                            <span>{timeAgo(post.createdAt)}</span>
+                                            <span>•</span>
+                                            <span className="flex items-center gap-1"><Eye size={13} /> {post.viewCount.toLocaleString()}</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        {post.isSolved && (
-                                            <span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-                                                <Check /> แก้ไขแล้ว
-                                            </span>
-                                        )}
-                                    </div>
+                                    {post.isSolved && (
+                                        <span className="bg-green-100 text-green-700 text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 flex-shrink-0">
+                                            <Check size={12} /> แก้ไขแล้ว
+                                        </span>
+                                    )}
                                 </div>
 
                                 <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 leading-snug">{post.title}</h1>
@@ -242,14 +242,7 @@ export default function TopicDetailPage() {
                                     <span className="flex items-center gap-2 text-sm text-gray-500">
                                         <MessageCircle /> {post.comments.length} ความเห็น
                                     </span>
-                                    <div className="flex items-center gap-2">
-                                        <button className="text-gray-400 hover:text-blue-500 p-2 rounded-full hover:bg-blue-50 transition">
-                                            <Share2 />
-                                        </button>
-                                        <button className="text-gray-400 hover:text-yellow-500 p-2 rounded-full hover:bg-yellow-50 transition">
-                                            <Bookmark />
-                                        </button>
-                                    </div>
+                                    {/* TODO: Phase 2 — Share & Bookmark */}
                                 </div>
                             </div>
                         </div>
@@ -275,7 +268,7 @@ export default function TopicDetailPage() {
                                     )}
                                     <div className={comment.isBestAnswer ? 'bg-white rounded-xl p-5' : 'p-5'}>
                                         <div className="flex items-start gap-3 mb-3">
-                                            <Avatar name={comment.author.fullName} size={9} />
+                                            <Avatar name={comment.author.fullName} size={36} />
                                             <div>
                                                 <span className="font-bold text-gray-800 text-sm flex items-center gap-1">
                                                     {comment.author.fullName}
@@ -288,13 +281,18 @@ export default function TopicDetailPage() {
                                         <p className="text-gray-700 text-sm whitespace-pre-wrap mb-3">{comment.content}</p>
 
                                         <div className="flex items-center gap-4 text-xs text-gray-500">
-                                            <span className="font-medium">{comment.score > 0 ? `+${comment.score}` : comment.score}</span>
-                                            <button
-                                                onClick={() => setReplyTo({ id: comment.id, name: comment.author.fullName })}
-                                                className="hover:text-primary"
-                                            >
-                                                ตอบกลับ
-                                            </button>
+                                            {post.isSolved ? (
+                                                comment.replies.length > 0 && (
+                                                    <span className="font-medium text-gray-400">{comment.replies.length} ตอบกลับ</span>
+                                                )
+                                            ) : (
+                                                <button
+                                                    onClick={() => setReplyTo({ id: comment.id, name: comment.author.fullName })}
+                                                    className="hover:text-primary font-medium"
+                                                >
+                                                    {comment.replies.length > 0 ? `${comment.replies.length} ตอบกลับ` : 'ตอบกลับ'}
+                                                </button>
+                                            )}
                                             {isAuthor && !post.isSolved && (
                                                 <button
                                                     onClick={() => handleBestAnswer(comment.id)}
@@ -310,7 +308,7 @@ export default function TopicDetailPage() {
                                             <div className="mt-4 pl-4 border-l-2 border-gray-100 space-y-3">
                                                 {comment.replies.map((reply) => (
                                                     <div key={reply.id} className="flex items-start gap-3">
-                                                        <Avatar name={reply.author.fullName} size={7} />
+                                                        <Avatar name={reply.author.fullName} size={28} />
                                                         <div className="bg-gray-50 rounded-xl p-3 flex-1">
                                                             <span className="font-bold text-xs text-gray-800">{reply.author.fullName}</span>
                                                             <span className="text-xs text-gray-400 ml-2">{timeAgo(reply.createdAt)}</span>
@@ -326,8 +324,9 @@ export default function TopicDetailPage() {
                         </div>
                     )}
 
-                    {/* Reply box */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100" id="reply-box">
+                    {/* Reply box — hide when solved */}
+                    {!post.isSolved && (
+                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 lg:mb-12" id="reply-box">
                         <h3 className="font-bold text-gray-700 mb-4">
                             {replyTo ? (
                                 <span className="flex items-center gap-2">
@@ -339,9 +338,12 @@ export default function TopicDetailPage() {
                         {!userId ? (
                             <div className="text-center py-6 text-gray-500">
                                 <p className="mb-3">กรุณาเข้าสู่ระบบเพื่อตอบกระทู้</p>
-                                <Link href="/login" className="bg-primary text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-opacity-90 transition">
+                                <button
+                                    onClick={() => window.dispatchEvent(new Event('open-login-modal'))}
+                                    className="bg-primary text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-opacity-90 transition"
+                                >
                                     เข้าสู่ระบบ
-                                </Link>
+                                </button>
                             </div>
                         ) : (
                             <form onSubmit={handleReply}>
@@ -364,13 +366,14 @@ export default function TopicDetailPage() {
                             </form>
                         )}
                     </div>
+                    )}
 
                 </main>
 
                 {/* Sidebar */}
                 <aside className="hidden lg:block space-y-6">
                     <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-center">
-                        <Avatar name={post.author.fullName} size={16} />
+                        <Avatar name={post.author.fullName} size={64} />
                         <h3 className="font-bold text-gray-800 mt-3">{post.author.fullName}</h3>
                         <p className="text-xs text-gray-400 mt-1 mb-3">
                             {new Date(post.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -394,21 +397,6 @@ export default function TopicDetailPage() {
                 </aside>
             </div>
 
-            {/* Mobile reply bar */}
-            <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 p-3 md:hidden z-40 flex items-center gap-3">
-                <div
-                    className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-gray-400 text-sm cursor-text"
-                    onClick={() => document.getElementById('reply-box')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                    เขียนคำตอบ...
-                </div>
-                <button
-                    className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg"
-                    onClick={() => document.getElementById('reply-box')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                    <Send />
-                </button>
-            </div>
         </div>
     );
 }

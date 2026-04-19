@@ -11,6 +11,7 @@ import { authRateLimiter } from "./security";
 import { getUserPackage, getListingExpiryDate } from "./config/packages";
 import { testLineConnection } from "./line";
 import { getAndBroadcastPendingCounts, pushNotification } from "./admin-sse";
+import { logAdminAction, diffFields } from "./admin-p1";
 
 // Reusable admin auth derive — verifies JWT AND confirms userId is an admin
 async function verifyAdminToken(jwt: any, headers: Record<string, string | undefined>, set: any) {
@@ -551,7 +552,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
         .patch("/:id", async ({ params: { id }, body, set }) => {
             try {
                 const { articleSchema, validateInput } = await import("./validation");
-                const { uploadArticleImage, isValidImageType, isValidFileSize, deleteOldFile } = await import("./storage");
+                const { uploadArticleImage, isValidImageType, isValidFileSize, deleteOldFile, deleteRemovedArticleImages } = await import("./storage");
 
                 const existingPost = await prisma.article.findUnique({ where: { id } });
                 if (!existingPost) {
@@ -632,6 +633,11 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     await deleteOldFile(oldFeaturedImage);
                 }
 
+                // ลบรูปที่ถูกลบออกจาก content (inline images ใน markdown)
+                if (b.content !== undefined && existingPost.content !== b.content) {
+                    await deleteRemovedArticleImages(existingPost.content, b.content);
+                }
+
                 return post;
             } catch (error: any) {
                 if (error.status === 400) {
@@ -661,7 +667,7 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             try {
                 const article = await prisma.article.findUnique({
                     where: { id },
-                    select: { featuredImage: true }
+                    select: { featuredImage: true, content: true }
                 });
 
                 if (!article) {
@@ -669,9 +675,10 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Not Found', message: 'ไม่พบบทความที่ต้องการลบ' };
                 }
 
-                // ลบรูปจาก MinIO (ถ้ามี)
-                const { deleteOldFile } = await import("./storage");
+                // ลบรูปจาก MinIO (featured + รูปภายใน content)
+                const { deleteOldFile, deleteRemovedArticleImages } = await import("./storage");
                 await deleteOldFile(article.featuredImage);
+                await deleteRemovedArticleImages(article.content, "");
 
                 await prisma.article.delete({
                     where: { id }
@@ -988,6 +995,175 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 return { error: 'Server Error' };
             }
         })
+
+        // รายละเอียดประกาศเต็ม (admin view)
+        .get("/:id", async ({ params: { id }, set }) => {
+            try {
+                const listing = await prisma.vehicleListing.findUnique({
+                    where: { id },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                fullName: true,
+                                email: true,
+                                phoneNumber: true,
+                                profileImage: true,
+                                isActive: true,
+                                createdAt: true,
+                                currentPackage: { select: { id: true, name: true, nameTh: true, slug: true } },
+                                sellerProfile: {
+                                    select: {
+                                        id: true,
+                                        shopName: true,
+                                        showroomType: true,
+                                        isVerified: true,
+                                        verificationLevel: true,
+                                        totalSoldCount: true,
+                                        shopProvince: true,
+                                        shopDistrict: true,
+                                        shopLogo: true,
+                                    }
+                                }
+                            }
+                        },
+                        images: { orderBy: { order: 'asc' } },
+                        bumpLogs: {
+                            orderBy: { createdAt: 'desc' },
+                            take: 10,
+                        },
+                        renewals: {
+                            orderBy: { createdAt: 'desc' },
+                            take: 5,
+                            select: {
+                                id: true,
+                                amount: true,
+                                status: true,
+                                adminNote: true,
+                                reviewedAt: true,
+                                createdAt: true,
+                            }
+                        }
+                    }
+                });
+                if (!listing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบประกาศนี้' };
+                }
+                return { listing };
+            } catch (error) {
+                console.error('Get listing detail error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถดึงข้อมูลประกาศได้' };
+            }
+        })
+
+        // แก้ไขประกาศ (admin-editable fields only)
+        .put("/:id", async ({ params: { id }, body, adminId, set }) => {
+            try {
+                const existing = await prisma.vehicleListing.findUnique({ where: { id } });
+                if (!existing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบประกาศนี้' };
+                }
+
+                const b = body as {
+                    title?: string;
+                    description?: string;
+                    price?: number;
+                    mileage?: number;
+                    province?: string;
+                    district?: string;
+                    color?: string;
+                    condition?: string;
+                    adminNote?: string;
+                    isFeatured?: boolean;
+                    isPremium?: boolean;
+                };
+
+                const data: Record<string, unknown> = {};
+                if (b.title !== undefined) data.title = b.title;
+                if (b.description !== undefined) data.description = b.description;
+                if (b.price !== undefined) data.price = b.price;
+                if (b.mileage !== undefined) data.mileage = b.mileage;
+                if (b.province !== undefined) data.province = b.province;
+                if (b.district !== undefined) data.district = b.district;
+                if (b.color !== undefined) data.color = b.color;
+                if (b.condition !== undefined) data.condition = b.condition;
+                if (b.adminNote !== undefined) data.adminNote = b.adminNote;
+                if (b.isFeatured !== undefined) data.isFeatured = b.isFeatured;
+                if (b.isPremium !== undefined) data.isPremium = b.isPremium;
+
+                const updated = await prisma.vehicleListing.update({
+                    where: { id },
+                    data,
+                });
+
+                if (adminId) {
+                    await logAdminAction({
+                        adminId,
+                        action: 'LISTING_UPDATE',
+                        targetType: 'LISTING',
+                        targetId: id,
+                        note: `แก้ไขประกาศ "${existing.title}"`,
+                        metadata: { changes: diffFields(existing as unknown as Record<string, unknown>, data) },
+                    });
+                }
+
+                return { message: 'อัปเดตประกาศสำเร็จ', listing: updated };
+            } catch (error) {
+                console.error('Update listing error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอัปเดตประกาศได้' };
+            }
+        }, {
+            body: t.Object({
+                title: t.Optional(t.String()),
+                description: t.Optional(t.String()),
+                price: t.Optional(t.Number()),
+                mileage: t.Optional(t.Number()),
+                province: t.Optional(t.String()),
+                district: t.Optional(t.String()),
+                color: t.Optional(t.String()),
+                condition: t.Optional(t.String()),
+                adminNote: t.Optional(t.String()),
+                isFeatured: t.Optional(t.Boolean()),
+                isPremium: t.Optional(t.Boolean()),
+            })
+        })
+
+        // ลบประกาศ (hard delete — cascade ผ่าน schema)
+        .delete("/:id", async ({ params: { id }, adminId, set }) => {
+            try {
+                const existing = await prisma.vehicleListing.findUnique({
+                    where: { id },
+                    select: { id: true, title: true, userId: true }
+                });
+                if (!existing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบประกาศนี้' };
+                }
+
+                await prisma.vehicleListing.delete({ where: { id } });
+
+                if (adminId) {
+                    await logAdminAction({
+                        adminId,
+                        action: 'LISTING_DELETE',
+                        targetType: 'LISTING',
+                        targetId: id,
+                        note: `ลบประกาศ "${existing.title}"`,
+                        metadata: { ownerId: existing.userId, title: existing.title },
+                    });
+                }
+
+                return { message: 'ลบประกาศเรียบร้อย' };
+            } catch (error) {
+                console.error('Delete listing error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถลบประกาศได้' };
+            }
+        })
     )
 
     // User Management
@@ -1070,17 +1246,86 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         fullName: true,
                         email: true,
                         phoneNumber: true,
+                        profileImage: true,
                         isActive: true,
                         createdAt: true,
+                        updatedAt: true,
+                        lineUserId: true,
+                        googleUserId: true,
+                        facebookUserId: true,
+                        packageExpiresAt: true,
                         currentPackage: { select: { name: true, slug: true } },
-                        _count: { select: { listings: true } },
+                        sellerProfile: {
+                            select: {
+                                id: true,
+                                shopName: true,
+                                shopProvince: true,
+                                shopDistrict: true,
+                                showroomType: true,
+                                isVerified: true,
+                                verifiedAt: true,
+                                verificationLevel: true,
+                                totalSoldCount: true,
+                                shopLogo: true,
+                            }
+                        },
+                        kycSubmissions: {
+                            orderBy: { submittedAt: 'desc' },
+                            take: 1,
+                            select: {
+                                id: true,
+                                type: true,
+                                status: true,
+                                submittedAt: true,
+                                reviewedAt: true,
+                                reviewNote: true,
+                            }
+                        },
+                        _count: {
+                            select: {
+                                listings: true,
+                                packageTransactions: true,
+                                forumPosts: true,
+                                forumComments: true,
+                                wishlists: true,
+                                garageVehicles: true,
+                            }
+                        },
                     }
                 });
                 if (!user) {
                     set.status = 404;
                     return { error: 'Not Found', message: 'ไม่พบผู้ใช้งาน' };
                 }
-                return user;
+
+                const recentListings = await prisma.vehicleListing.findMany({
+                    where: { userId: id },
+                    orderBy: { createdAt: 'desc' },
+                    take: 5,
+                    select: {
+                        id: true,
+                        title: true,
+                        brand: true,
+                        model: true,
+                        year: true,
+                        price: true,
+                        status: true,
+                        createdAt: true,
+                        images: { take: 1, select: { url: true }, orderBy: { order: 'asc' } },
+                    }
+                });
+
+                const { lineUserId, googleUserId, facebookUserId, kycSubmissions, ...rest } = user;
+                return {
+                    ...rest,
+                    linkedProviders: {
+                        line: Boolean(lineUserId),
+                        google: Boolean(googleUserId),
+                        facebook: Boolean(facebookUserId),
+                    },
+                    latestKyc: kycSubmissions[0] ?? null,
+                    recentListings,
+                };
             } catch (error) {
                 set.status = 500;
                 return { error: 'Server Error', message: 'ไม่สามารถดึงข้อมูลผู้ใช้งานได้' };
@@ -1103,6 +1348,126 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             } catch (error) {
                 set.status = 500;
                 return { error: 'Server Error', message: 'ไม่สามารถเปลี่ยนสถานะได้' };
+            }
+        })
+
+        // แก้ไขข้อมูลผู้ใช้ (admin-editable fields only)
+        .put("/:id", async ({ params: { id }, body, adminId, set }) => {
+            try {
+                const existing = await prisma.user.findUnique({ where: { id } });
+                if (!existing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบผู้ใช้งาน' };
+                }
+
+                const b = body as {
+                    fullName?: string;
+                    email?: string;
+                    phoneNumber?: string;
+                    isActive?: boolean;
+                };
+
+                // ตรวจสอบ email ซ้ำ (ยกเว้นตัวเอง)
+                if (b.email && b.email !== existing.email) {
+                    const dup = await prisma.user.findFirst({
+                        where: { email: b.email, NOT: { id } },
+                        select: { id: true }
+                    });
+                    if (dup) {
+                        set.status = 400;
+                        return { error: 'Validation', message: 'อีเมลนี้ถูกใช้งานแล้ว' };
+                    }
+                }
+
+                const data: Record<string, unknown> = {};
+                if (b.fullName !== undefined) data.fullName = b.fullName;
+                if (b.email !== undefined) data.email = b.email;
+                if (b.phoneNumber !== undefined) data.phoneNumber = b.phoneNumber;
+                if (b.isActive !== undefined) data.isActive = b.isActive;
+
+                const updated = await prisma.user.update({
+                    where: { id },
+                    data,
+                    select: {
+                        id: true,
+                        fullName: true,
+                        email: true,
+                        phoneNumber: true,
+                        isActive: true,
+                        updatedAt: true,
+                    }
+                });
+
+                if (adminId) {
+                    await logAdminAction({
+                        adminId,
+                        action: 'USER_UPDATE',
+                        targetType: 'USER',
+                        targetId: id,
+                        note: `แก้ไขข้อมูลผู้ใช้ ${existing.fullName}`,
+                        metadata: { changes: diffFields(existing as unknown as Record<string, unknown>, data) },
+                    });
+                }
+
+                return { message: 'อัปเดตข้อมูลผู้ใช้สำเร็จ', user: updated };
+            } catch (error) {
+                console.error('Update user error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถอัปเดตข้อมูลผู้ใช้ได้' };
+            }
+        }, {
+            body: t.Object({
+                fullName: t.Optional(t.String()),
+                email: t.Optional(t.String({ format: 'email' })),
+                phoneNumber: t.Optional(t.String()),
+                isActive: t.Optional(t.Boolean()),
+            })
+        })
+
+        // ลบผู้ใช้ (soft delete + anonymize PII)
+        .delete("/:id", async ({ params: { id }, adminId, set }) => {
+            try {
+                const existing = await prisma.user.findUnique({
+                    where: { id },
+                    select: { id: true, fullName: true, email: true, isActive: true }
+                });
+                if (!existing) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบผู้ใช้งาน' };
+                }
+
+                await prisma.$transaction(async (tx) => {
+                    await tx.user.update({
+                        where: { id },
+                        data: {
+                            isActive: false,
+                            email: `deleted-${id}@deleted.local`,
+                            fullName: '[ผู้ใช้ถูกลบ]',
+                            phoneNumber: '0000000000',
+                            profileImage: null,
+                            lineUserId: null,
+                            googleUserId: null,
+                            facebookUserId: null,
+                        }
+                    });
+                });
+
+                if (adminId) {
+                    await logAdminAction({
+                        adminId,
+                        action: 'USER_DELETE',
+                        targetType: 'USER',
+                        targetId: id,
+                        note: `ลบบัญชีผู้ใช้ ${existing.fullName} (${existing.email})`,
+                        metadata: { originalEmail: existing.email, originalName: existing.fullName },
+                    });
+                }
+
+                return { message: 'ลบบัญชีผู้ใช้เรียบร้อย' };
+            } catch (error) {
+                console.error('Delete user error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถลบบัญชีผู้ใช้ได้' };
             }
         })
     )

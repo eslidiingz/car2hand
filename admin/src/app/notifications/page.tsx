@@ -871,7 +871,7 @@ export default function NotificationsPage() {
                 </div>
             </div>
 
-            <Tabs defaultValue="templates" className="space-y-6">
+            <Tabs defaultValue="templates" className="mb-6">
                 <TabsList>
                     <TabsTrigger value="templates">
                         <FileText size={14} className="mr-1.5" /> เทมเพลต

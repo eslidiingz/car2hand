@@ -4,6 +4,7 @@
  */
 
 import { Elysia, t } from "elysia";
+import prisma from "./db";
 import { contactSchema, validateInput } from "./validation";
 import { sanitizeObject, checkRateLimit } from "./security";
 import { sendEmail, renderContactMessageEmail } from "./email";
@@ -27,7 +28,7 @@ export const contactRoutes = new Elysia({ prefix: "/contact" })
                 process.env.CONTACT_INBOX ||
                 process.env.EMAIL_FROM ||
                 process.env.SMTP_USERNAME ||
-                "support@car2hand.com";
+                "support@car2hand.app";
 
             const { html, text } = renderContactMessageEmail({
                 name,
@@ -35,6 +36,25 @@ export const contactRoutes = new Elysia({ prefix: "/contact" })
                 phoneNumber,
                 subject,
                 message,
+            });
+
+            // Persist to DB first so admin can always see it even if email fails
+            const ipAddress = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+                || request.headers.get("x-real-ip")
+                || null;
+            const userAgent = request.headers.get("user-agent");
+
+            const record = await prisma.contactMessage.create({
+                data: {
+                    name,
+                    email,
+                    phoneNumber: phoneNumber || null,
+                    subject,
+                    message,
+                    ipAddress,
+                    userAgent,
+                },
+                select: { id: true },
             });
 
             const result = await sendEmail({
@@ -51,6 +71,7 @@ export const contactRoutes = new Elysia({ prefix: "/contact" })
             return {
                 message: "ส่งข้อความเรียบร้อยแล้ว เราจะติดต่อกลับภายใน 1-2 วันทำการ",
                 sent: result.sent,
+                id: record.id,
             };
         } catch (error: unknown) {
             if (

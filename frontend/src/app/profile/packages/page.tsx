@@ -455,14 +455,14 @@ export default function PackagesPage() {
                                 {/* Card Header */}
                                 <div className={`p-4 ${color.bg} flex items-center justify-between`}>
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-xl bg-white/80 shadow-sm">{getIcon(pkg.slug)}</div>
+                                        <div className="p-2 rounded-xl bg-white shadow-sm dark:bg-background/60 dark:backdrop-blur">{getIcon(pkg.slug)}</div>
                                         <div>
                                             <p className="font-bold text-gray-800 text-sm">{pkg.name}</p>
                                             <p className="text-xs text-gray-500">{pkg.nameTh}</p>
                                         </div>
                                     </div>
                                     {isCurrent && (
-                                        <span className="text-[10px] font-bold bg-primary text-white px-2.5 py-1 rounded-full">ปัจจุบัน</span>
+                                        <span className="text-[10px] font-bold bg-primary text-white px-2.5 py-1 rounded-full dark:bg-blue-500">ปัจจุบัน</span>
                                     )}
                                 </div>
 
@@ -494,7 +494,9 @@ export default function PackagesPage() {
                                             แพ็กเกจปัจจุบัน
                                         </div>
                                     ) : isLower ? (
-                                        <div className="w-full py-2.5 text-center text-sm text-gray-300 rounded-xl">—</div>
+                                        <div className="w-full py-2.5 text-center text-xs text-gray-400 rounded-xl bg-gray-50/60 dark:bg-muted/30">
+                                            แพ็กเกจต่ำกว่าปัจจุบัน
+                                        </div>
                                     ) : (
                                         <button
                                             onClick={() => openUpgradeModal(pkg, false)}

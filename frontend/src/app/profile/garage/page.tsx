@@ -17,6 +17,7 @@ import {
     X,
     MoreVertical,
     Gauge as SpeedometerIcon,
+    Upload,
 } from 'lucide-react';
 import Toast from '@/components/Toast';
 
@@ -128,6 +129,14 @@ export default function WarehousePage() {
     const [showReminderForm, setShowReminderForm] = useState(false);
     const [editForm, setEditForm] = useState(emptyAddForm);
 
+    // Image upload state (used by both add + edit modals)
+    const [addImageFile, setAddImageFile] = useState<File | null>(null);
+    const [addImagePreview, setAddImagePreview] = useState<string | null>(null);
+    const [editImageFile, setEditImageFile] = useState<File | null>(null);
+    const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
+    const [editImageRemoved, setEditImageRemoved] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
+
     // Inline mileage edit
     const [editingMileageId, setEditingMileageId] = useState<string | null>(null);
     const [mileageValue, setMileageValue] = useState('');
@@ -167,6 +176,70 @@ export default function WarehousePage() {
         return () => document.removeEventListener('click', handler);
     }, [menuOpenId]);
 
+    // === Image upload helpers ===
+    const uploadVehicleImage = async (vehicleId: string, file: File): Promise<void> => {
+        const token = getAuthToken();
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch(`${API_URL}/garage/${vehicleId}/image`, {
+            method: 'POST',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+            body: fd,
+        });
+        if (!res.ok) throw new Error('upload failed');
+    };
+
+    const deleteVehicleImage = async (vehicleId: string): Promise<void> => {
+        const token = getAuthToken();
+        await fetch(`${API_URL}/garage/${vehicleId}/image`, {
+            method: 'DELETE',
+            headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+    };
+
+    const pickAddImage = (file: File | null) => {
+        if (!file) {
+            setAddImageFile(null);
+            setAddImagePreview(null);
+            return;
+        }
+        if (!file.type.startsWith('image/')) { showToast('ไฟล์ต้องเป็นรูปภาพ', 'error'); return; }
+        if (file.size > 10 * 1024 * 1024) { showToast('ไฟล์ต้องไม่เกิน 10MB', 'error'); return; }
+        setAddImageFile(file);
+        const reader = new FileReader();
+        reader.onload = () => setAddImagePreview(reader.result as string);
+        reader.readAsDataURL(file);
+    };
+
+    const pickEditImage = (file: File | null) => {
+        if (!file) {
+            setEditImageFile(null);
+            setEditImagePreview(null);
+            return;
+        }
+        if (!file.type.startsWith('image/')) { showToast('ไฟล์ต้องเป็นรูปภาพ', 'error'); return; }
+        if (file.size > 10 * 1024 * 1024) { showToast('ไฟล์ต้องไม่เกิน 10MB', 'error'); return; }
+        setEditImageFile(file);
+        setEditImageRemoved(false);
+        const reader = new FileReader();
+        reader.onload = () => setEditImagePreview(reader.result as string);
+        reader.readAsDataURL(file);
+    };
+
+    const resetAddModal = () => {
+        setShowAddModal(false);
+        setAddForm(emptyAddForm);
+        setAddImageFile(null);
+        setAddImagePreview(null);
+    };
+
+    const resetEditModal = () => {
+        setEditingVehicle(null);
+        setEditImageFile(null);
+        setEditImagePreview(null);
+        setEditImageRemoved(false);
+    };
+
     // === Vehicle CRUD ===
     const handleAddVehicle = async () => {
         if (!userId || !addForm.nickname || !addForm.brand || !addForm.model) {
@@ -174,6 +247,7 @@ export default function WarehousePage() {
             return;
         }
         try {
+            setUploadingImage(!!addImageFile);
             const token = getAuthToken();
             const res = await fetch(`${API_URL}/garage`, {
                 method: 'POST',
@@ -192,16 +266,23 @@ export default function WarehousePage() {
                 }),
             });
             if (!res.ok) throw new Error();
+            const data = await res.json();
+            // Upload image if user picked one
+            if (addImageFile && data.vehicle?.id) {
+                try { await uploadVehicleImage(data.vehicle.id, addImageFile); }
+                catch { showToast('เพิ่มรถสำเร็จ แต่อัพโหลดรูปไม่สำเร็จ', 'error'); setUploadingImage(false); resetAddModal(); fetchVehicles(); return; }
+            }
             showToast('เพิ่มรถสำเร็จ');
-            setShowAddModal(false);
-            setAddForm(emptyAddForm);
+            resetAddModal();
             fetchVehicles();
         } catch { showToast('เพิ่มรถไม่สำเร็จ', 'error'); }
+        finally { setUploadingImage(false); }
     };
 
     const handleUpdateVehicle = async () => {
         if (!editingVehicle) return;
         try {
+            setUploadingImage(!!editImageFile);
             const token = getAuthToken();
             const res = await fetch(`${API_URL}/garage/${editingVehicle.id}`, {
                 method: 'PUT',
@@ -220,10 +301,22 @@ export default function WarehousePage() {
                 }),
             });
             if (!res.ok) throw new Error();
+
+            // Image changes: remove then replace (in that order)
+            if (editImageRemoved && !editImageFile) {
+                try { await deleteVehicleImage(editingVehicle.id); }
+                catch { showToast('ลบรูปไม่สำเร็จ', 'error'); }
+            }
+            if (editImageFile) {
+                try { await uploadVehicleImage(editingVehicle.id, editImageFile); }
+                catch { showToast('บันทึกสำเร็จ แต่อัพโหลดรูปไม่สำเร็จ', 'error'); setUploadingImage(false); resetEditModal(); fetchVehicles(); return; }
+            }
+
             showToast('อัปเดตสำเร็จ');
-            setEditingVehicle(null);
+            resetEditModal();
             fetchVehicles();
         } catch { showToast('อัปเดตไม่สำเร็จ', 'error'); }
+        finally { setUploadingImage(false); }
     };
 
     const handleDeleteVehicle = async (id: string) => {
@@ -512,7 +605,7 @@ export default function WarehousePage() {
                                         </div>
                                     )}
                                     {car.licensePlate && (
-                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold shadow-sm">
+                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold text-[#1f2937] shadow-sm">
                                             {car.licensePlate}
                                         </div>
                                     )}
@@ -646,13 +739,22 @@ export default function WarehousePage() {
 
             {/* ==================== ADD VEHICLE MODAL ==================== */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowAddModal(false)}>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={resetAddModal}>
                     <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center p-5 border-b border-gray-100">
                             <h2 className="text-lg font-bold text-gray-800">เพิ่มรถใหม่</h2>
-                            <button onClick={() => setShowAddModal(false)} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
+                            <button onClick={resetAddModal} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
                         </div>
                         <div className="p-5 space-y-4">
+                            {/* Image Upload */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">รูปรถ (ไม่บังคับ)</label>
+                                <VehicleImagePicker
+                                    previewUrl={addImagePreview}
+                                    onPick={pickAddImage}
+                                    onRemove={() => pickAddImage(null)}
+                                />
+                            </div>
                             <FormField label="ชื่อรถ *" value={addForm.nickname} onChange={v => setAddForm(f => ({ ...f, nickname: v }))} placeholder="เช่น รถคันโปรด" />
                             <div className="grid grid-cols-2 gap-3">
                                 <FormField label="ยี่ห้อ *" value={addForm.brand} onChange={v => setAddForm(f => ({ ...f, brand: v }))} placeholder="Toyota" />
@@ -666,8 +768,8 @@ export default function WarehousePage() {
                             <FormField label="เลขไมล์ปัจจุบัน" value={addForm.currentMileage} onChange={v => setAddForm(f => ({ ...f, currentMileage: v }))} placeholder="50000" type="number" />
                         </div>
                         <div className="p-5 border-t border-gray-100 flex gap-3">
-                            <button onClick={() => setShowAddModal(false)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition">ยกเลิก</button>
-                            <button onClick={handleAddVehicle} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-opacity-90 transition">เพิ่มรถ</button>
+                            <button onClick={resetAddModal} disabled={uploadingImage} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition disabled:opacity-50">ยกเลิก</button>
+                            <button onClick={handleAddVehicle} disabled={uploadingImage} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-opacity-90 transition disabled:opacity-50">{uploadingImage ? 'กำลังบันทึก...' : 'เพิ่มรถ'}</button>
                         </div>
                     </div>
                 </div>
@@ -675,13 +777,22 @@ export default function WarehousePage() {
 
             {/* ==================== EDIT VEHICLE MODAL ==================== */}
             {editingVehicle && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setEditingVehicle(null)}>
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={resetEditModal}>
                     <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl" onClick={e => e.stopPropagation()}>
                         <div className="flex justify-between items-center p-5 border-b border-gray-100">
                             <h2 className="text-lg font-bold text-gray-800">แก้ไขรถ</h2>
-                            <button onClick={() => setEditingVehicle(null)} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
+                            <button onClick={resetEditModal} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20} /></button>
                         </div>
                         <div className="p-5 space-y-4">
+                            {/* Image Upload */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">รูปรถ</label>
+                                <VehicleImagePicker
+                                    previewUrl={editImagePreview || (editImageRemoved ? null : editingVehicle.imageUrl)}
+                                    onPick={pickEditImage}
+                                    onRemove={() => { setEditImageFile(null); setEditImagePreview(null); setEditImageRemoved(true); }}
+                                />
+                            </div>
                             <FormField label="ชื่อรถ" value={editForm.nickname} onChange={v => setEditForm(f => ({ ...f, nickname: v }))} />
                             <div className="grid grid-cols-2 gap-3">
                                 <FormField label="ยี่ห้อ" value={editForm.brand} onChange={v => setEditForm(f => ({ ...f, brand: v }))} />
@@ -695,8 +806,8 @@ export default function WarehousePage() {
                             <FormField label="เลขไมล์ปัจจุบัน" value={editForm.currentMileage} onChange={v => setEditForm(f => ({ ...f, currentMileage: v }))} type="number" />
                         </div>
                         <div className="p-5 border-t border-gray-100 flex gap-3">
-                            <button onClick={() => setEditingVehicle(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition">ยกเลิก</button>
-                            <button onClick={handleUpdateVehicle} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-opacity-90 transition">บันทึก</button>
+                            <button onClick={resetEditModal} disabled={uploadingImage} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50 transition disabled:opacity-50">ยกเลิก</button>
+                            <button onClick={handleUpdateVehicle} disabled={uploadingImage} className="flex-1 py-2.5 rounded-xl bg-primary text-white text-sm font-bold hover:bg-opacity-90 transition disabled:opacity-50">{uploadingImage ? 'กำลังบันทึก...' : 'บันทึก'}</button>
                         </div>
                     </div>
                 </div>
@@ -884,16 +995,84 @@ function FormField({ label, value, onChange, placeholder, type = 'text' }: {
     placeholder?: string;
     type?: string;
 }) {
+    // Support "Label *" convention — render trailing "*" in red so required fields stand out
+    const isRequired = label.trim().endsWith('*');
+    const cleanLabel = isRequired ? label.replace(/\s*\*\s*$/, '') : label;
     return (
         <div>
-            <label className="block text-xs font-bold text-gray-600 mb-1">{label}</label>
+            <label className="block text-xs font-bold text-gray-600 mb-1">
+                {cleanLabel}
+                {isRequired && <span className="text-red-500 ml-0.5">*</span>}
+            </label>
             <input
                 type={type}
                 value={value}
                 onChange={e => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm bg-white dark:bg-background focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
             />
         </div>
+    );
+}
+
+// === Vehicle image picker (drag & drop / click) ===
+function VehicleImagePicker({ previewUrl, onPick, onRemove }: {
+    previewUrl: string | null;
+    onPick: (file: File) => void;
+    onRemove: () => void;
+}) {
+    const [dragOver, setDragOver] = useState(false);
+
+    if (previewUrl) {
+        return (
+            <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                <button
+                    type="button"
+                    onClick={onRemove}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition shadow-md"
+                    aria-label="ลบรูป"
+                >
+                    <X size={14} />
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <label
+            className={`flex flex-col items-center gap-2 p-6 border-2 border-dashed rounded-xl cursor-pointer transition group ${
+                dragOver
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-200 hover:border-primary hover:bg-primary/5'
+            }`}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+                const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/'));
+                if (file) onPick(file);
+            }}
+        >
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center transition ${dragOver ? 'bg-primary/15' : 'bg-gray-100 group-hover:bg-primary/10'}`}>
+                <Upload size={20} className={`transition ${dragOver ? 'text-primary' : 'text-gray-400 group-hover:text-primary'}`} />
+            </div>
+            <span className={`text-sm font-bold transition ${dragOver ? 'text-primary' : 'text-gray-600 group-hover:text-primary'}`}>
+                {dragOver ? 'วางรูปที่นี่' : 'คลิกหรือลากรูปมาวาง'}
+            </span>
+            <span className="text-xs text-gray-400">JPG, PNG, WebP — สูงสุด 10MB</span>
+            <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) onPick(file);
+                    e.target.value = '';
+                }}
+            />
+        </label>
     );
 }

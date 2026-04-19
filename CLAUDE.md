@@ -87,6 +87,81 @@ Format prices with `toLocaleString('th-TH')`. Most copy is Thai — preserve Tha
 
 Z-index ladder: cards `z-10`, navbar `z-50`, mobile menu `z-[60]`, modals `z-[100]`, toasts `z-[9999]`.
 
+## Navigation & menu — single source of truth
+
+The frontend and admin both have **mobile and desktop menus that must stay in sync**. Never hardcode menu links in individual layouts or navbars — always import from the single source:
+
+### Frontend profile menu (authenticated user)
+**Source:** `frontend/src/lib/profileMenu.tsx` → exports `profileMenuItems: ProfileMenuItem[]`
+
+Consumed by:
+- `frontend/src/app/profile/layout.tsx` → passes to `<ProfileSidebar>` (desktop rail, `hidden lg:block`)
+- `frontend/src/components/Navbar.tsx` → desktop account dropdown **and** mobile slide drawer
+
+🚨 **When adding a new `/profile/*` page**, edit `profileMenuItems` in `lib/profileMenu.tsx` **only**. Do NOT add the `<Link>` in Navbar or anywhere else — all three menus will update automatically.
+
+### Admin navigation
+**Source:** `admin/src/components/Sidebar.tsx` → exports `navigation`
+
+Consumed by:
+- `Sidebar.tsx` itself (desktop vertical rail, `hidden md:flex` in `DashboardLayout`)
+- `admin/src/components/MobileNav.tsx` (mobile drawer opened via hamburger in `Navbar.tsx`)
+
+🚨 **When adding a new admin page**, add one entry to `navigation` in `Sidebar.tsx` **only**. The hamburger-triggered `MobileNav` imports the same array, so mobile and desktop stay identical.
+
+### Public navbar menu (unauthenticated)
+`Navbar.tsx` itself contains the public top-level links (ซื้อรถ / ลงขาย / ชุมชน / ความรู้). These appear in two places within the same file (desktop nav + mobile slide menu) — when adding a new top-level route, add it in both blocks inside Navbar.tsx.
+
+### Admin UI: Tabs convention (mandatory)
+Canonical reference: `admin/src/app/listings/page.tsx`. All admin list pages (kyc, contact, forum, reports, etc.) MUST follow this exact pattern.
+
+Always use the Radix-based primitive — never custom button pills:
+```tsx
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+```
+
+Two distinct tab levels exist, with different rules:
+
+**1. Main section tabs** — top-level navigation between major sections of a page (e.g. `ประกาศขาย` / `คำขอต่ออายุ` in listings, `กระทู้` / `ความเห็น` in forum).
+- ✅ HAS icon (`<Car size={14} className="mr-1.5" />`)
+- ✅ May show urgency badge (`bg-amber-500` / `bg-red-500`)
+- Use sparingly — only when the page has truly separate sub-pages
+
+**2. Status filter tabs** — filter a single list by status (e.g. `ทั้งหมด` / `รอตรวจสอบ` / `อนุมัติ` / `ปฏิเสธ`).
+- ❌ NO icon on any tab
+- ✅ `ทั้งหมด` (ALL) is ALWAYS the FIRST tab
+- ✅ Optional count badge on actionable statuses (e.g. `PENDING`, `NEW`, `OPEN`) — use `bg-amber-500` for moderate urgency, `bg-red-500` for high urgency
+- Plain counts for non-actionable statuses use `<span className="ml-1.5 text-xs opacity-70">{count}</span>`
+
+Example (status filter):
+```tsx
+<Tabs value={filter} onValueChange={setFilter}>
+  <TabsList>
+    <TabsTrigger value="ALL">ทั้งหมด</TabsTrigger>
+    <TabsTrigger value="PENDING">
+      รอตรวจสอบ
+      {count > 0 && <span className="ml-1.5 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{count}</span>}
+    </TabsTrigger>
+    <TabsTrigger value="APPROVED">อนุมัติแล้ว</TabsTrigger>
+    <TabsTrigger value="REJECTED">ปฏิเสธแล้ว</TabsTrigger>
+  </TabsList>
+</Tabs>
+```
+
+**Rule summary:**
+| Aspect | Main tabs | Status filter tabs |
+|---|---|---|
+| Icon before label | ✅ yes | ❌ no |
+| "ทั้งหมด" position | N/A | FIRST |
+| Urgency badge | OK | only on actionable status (PENDING/NEW/OPEN) |
+| `<Tabs>` wrapper spacing | `className="mb-6"` | `className="mb-6"` |
+
+**Spacing rule:** The `<Tabs>` wrapper ALWAYS uses `className="mb-6"` (never `space-y-*`). This matches the listings page and gives consistent breathing room between the tab bar and the content below. `TabsContent` children may use `space-y-*` internally for multi-section content — that's fine.
+
+✅ For filters with many options (province, category, etc.), use a plain `<select>` styled `h-9 px-3 rounded-lg border border-border bg-background text-sm` alongside the Tabs.
+
+❌ Never build custom button-pill filters (`bg-primary text-primary-foreground` toggles). They look inconsistent.
+
 ## Conventions
 
 - **Type safety**: no `any`. Use Prisma-generated types + Zod for validation at API boundaries.

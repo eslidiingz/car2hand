@@ -27,6 +27,11 @@ import { adminServiceRoutes } from "./admin-services";
 import { adminSSERoutes, userSSERoutes } from "./admin-sse";
 import { forumRoutes } from "./forum";
 import { sellerProfileRoutes } from "./seller-profile";
+import { kycRoutes } from "./kyc";
+import { adminKycRoutes } from "./admin-kyc";
+import { adminContactRoutes, adminForumRoutes, adminReportsRoutes, publicReportRoutes } from "./admin-moderation";
+import { adminAuditRoutes, adminGarageRoutes, adminRevenueRoutes, adminListingBulkRoutes } from "./admin-p1";
+import { adminSellerProfileRoutes } from "./admin-seller-profiles";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 import { verifySmtpConnection } from "./email";
 
@@ -93,6 +98,17 @@ const app = new Elysia()
       .use(userSSERoutes)
       .use(forumRoutes)
       .use(sellerProfileRoutes)
+      .use(kycRoutes)
+      .use(adminKycRoutes)
+      .use(adminContactRoutes)
+      .use(adminForumRoutes)
+      .use(adminReportsRoutes)
+      .use(publicReportRoutes)
+      .use(adminAuditRoutes)
+      .use(adminGarageRoutes)
+      .use(adminRevenueRoutes)
+      .use(adminListingBulkRoutes)
+      .use(adminSellerProfileRoutes)
   )
 
   // Global error handler

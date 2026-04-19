@@ -57,6 +57,7 @@ export type SellerProfileMinAggregateOutputType = {
   totalSoldCount: number | null
   isVerified: boolean | null
   verifiedAt: Date | null
+  verificationLevel: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -83,6 +84,7 @@ export type SellerProfileMaxAggregateOutputType = {
   totalSoldCount: number | null
   isVerified: boolean | null
   verifiedAt: Date | null
+  verificationLevel: string | null
   createdAt: Date | null
   updatedAt: Date | null
   userId: string | null
@@ -110,6 +112,7 @@ export type SellerProfileCountAggregateOutputType = {
   totalSoldCount: number
   isVerified: number
   verifiedAt: number
+  verificationLevel: number
   createdAt: number
   updatedAt: number
   userId: number
@@ -148,6 +151,7 @@ export type SellerProfileMinAggregateInputType = {
   totalSoldCount?: true
   isVerified?: true
   verifiedAt?: true
+  verificationLevel?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -174,6 +178,7 @@ export type SellerProfileMaxAggregateInputType = {
   totalSoldCount?: true
   isVerified?: true
   verifiedAt?: true
+  verificationLevel?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -201,6 +206,7 @@ export type SellerProfileCountAggregateInputType = {
   totalSoldCount?: true
   isVerified?: true
   verifiedAt?: true
+  verificationLevel?: true
   createdAt?: true
   updatedAt?: true
   userId?: true
@@ -315,6 +321,7 @@ export type SellerProfileGroupByOutputType = {
   totalSoldCount: number
   isVerified: boolean
   verifiedAt: Date | null
+  verificationLevel: string
   createdAt: Date
   updatedAt: Date
   userId: string
@@ -365,6 +372,7 @@ export type SellerProfileWhereInput = {
   totalSoldCount?: Prisma.IntFilter<"SellerProfile"> | number
   isVerified?: Prisma.BoolFilter<"SellerProfile"> | boolean
   verifiedAt?: Prisma.DateTimeNullableFilter<"SellerProfile"> | Date | string | null
+  verificationLevel?: Prisma.StringFilter<"SellerProfile"> | string
   createdAt?: Prisma.DateTimeFilter<"SellerProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SellerProfile"> | Date | string
   userId?: Prisma.StringFilter<"SellerProfile"> | string
@@ -393,6 +401,7 @@ export type SellerProfileOrderByWithRelationInput = {
   totalSoldCount?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  verificationLevel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -425,6 +434,7 @@ export type SellerProfileWhereUniqueInput = Prisma.AtLeast<{
   totalSoldCount?: Prisma.IntFilter<"SellerProfile"> | number
   isVerified?: Prisma.BoolFilter<"SellerProfile"> | boolean
   verifiedAt?: Prisma.DateTimeNullableFilter<"SellerProfile"> | Date | string | null
+  verificationLevel?: Prisma.StringFilter<"SellerProfile"> | string
   createdAt?: Prisma.DateTimeFilter<"SellerProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SellerProfile"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -452,6 +462,7 @@ export type SellerProfileOrderByWithAggregationInput = {
   totalSoldCount?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  verificationLevel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -487,6 +498,7 @@ export type SellerProfileScalarWhereWithAggregatesInput = {
   totalSoldCount?: Prisma.IntWithAggregatesFilter<"SellerProfile"> | number
   isVerified?: Prisma.BoolWithAggregatesFilter<"SellerProfile"> | boolean
   verifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"SellerProfile"> | Date | string | null
+  verificationLevel?: Prisma.StringWithAggregatesFilter<"SellerProfile"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SellerProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SellerProfile"> | Date | string
   userId?: Prisma.StringWithAggregatesFilter<"SellerProfile"> | string
@@ -514,6 +526,7 @@ export type SellerProfileCreateInput = {
   totalSoldCount?: number
   isVerified?: boolean
   verifiedAt?: Date | string | null
+  verificationLevel?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSellerProfileInput
@@ -541,6 +554,7 @@ export type SellerProfileUncheckedCreateInput = {
   totalSoldCount?: number
   isVerified?: boolean
   verifiedAt?: Date | string | null
+  verificationLevel?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -568,6 +582,7 @@ export type SellerProfileUpdateInput = {
   totalSoldCount?: Prisma.IntFieldUpdateOperationsInput | number
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationLevel?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSellerProfileNestedInput
@@ -595,6 +610,7 @@ export type SellerProfileUncheckedUpdateInput = {
   totalSoldCount?: Prisma.IntFieldUpdateOperationsInput | number
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationLevel?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -622,6 +638,7 @@ export type SellerProfileCreateManyInput = {
   totalSoldCount?: number
   isVerified?: boolean
   verifiedAt?: Date | string | null
+  verificationLevel?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   userId: string
@@ -649,6 +666,7 @@ export type SellerProfileUpdateManyMutationInput = {
   totalSoldCount?: Prisma.IntFieldUpdateOperationsInput | number
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationLevel?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -675,6 +693,7 @@ export type SellerProfileUncheckedUpdateManyInput = {
   totalSoldCount?: Prisma.IntFieldUpdateOperationsInput | number
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationLevel?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -707,6 +726,7 @@ export type SellerProfileCountOrderByAggregateInput = {
   totalSoldCount?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrder
+  verificationLevel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -738,6 +758,7 @@ export type SellerProfileMaxOrderByAggregateInput = {
   totalSoldCount?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrder
+  verificationLevel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -764,6 +785,7 @@ export type SellerProfileMinOrderByAggregateInput = {
   totalSoldCount?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
   verifiedAt?: Prisma.SortOrder
+  verificationLevel?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userId?: Prisma.SortOrder
@@ -848,6 +870,7 @@ export type SellerProfileCreateWithoutUserInput = {
   totalSoldCount?: number
   isVerified?: boolean
   verifiedAt?: Date | string | null
+  verificationLevel?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -874,6 +897,7 @@ export type SellerProfileUncheckedCreateWithoutUserInput = {
   totalSoldCount?: number
   isVerified?: boolean
   verifiedAt?: Date | string | null
+  verificationLevel?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -916,6 +940,7 @@ export type SellerProfileUpdateWithoutUserInput = {
   totalSoldCount?: Prisma.IntFieldUpdateOperationsInput | number
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationLevel?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -942,6 +967,7 @@ export type SellerProfileUncheckedUpdateWithoutUserInput = {
   totalSoldCount?: Prisma.IntFieldUpdateOperationsInput | number
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationLevel?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -970,6 +996,7 @@ export type SellerProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   totalSoldCount?: boolean
   isVerified?: boolean
   verifiedAt?: boolean
+  verificationLevel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -998,6 +1025,7 @@ export type SellerProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   totalSoldCount?: boolean
   isVerified?: boolean
   verifiedAt?: boolean
+  verificationLevel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -1026,6 +1054,7 @@ export type SellerProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   totalSoldCount?: boolean
   isVerified?: boolean
   verifiedAt?: boolean
+  verificationLevel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
@@ -1054,12 +1083,13 @@ export type SellerProfileSelectScalar = {
   totalSoldCount?: boolean
   isVerified?: boolean
   verifiedAt?: boolean
+  verificationLevel?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   userId?: boolean
 }
 
-export type SellerProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "shopName" | "shopDescription" | "shopLogo" | "shopCoverImage" | "shopAddress" | "shopProvince" | "shopDistrict" | "shopMapUrl" | "shopPhone" | "showroomType" | "shopOpenHours" | "shopEstablishedYear" | "socialWebsite" | "socialFacebook" | "socialLine" | "socialInstagram" | "specializations" | "totalSoldCount" | "isVerified" | "verifiedAt" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["sellerProfile"]>
+export type SellerProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "shopName" | "shopDescription" | "shopLogo" | "shopCoverImage" | "shopAddress" | "shopProvince" | "shopDistrict" | "shopMapUrl" | "shopPhone" | "showroomType" | "shopOpenHours" | "shopEstablishedYear" | "socialWebsite" | "socialFacebook" | "socialLine" | "socialInstagram" | "specializations" | "totalSoldCount" | "isVerified" | "verifiedAt" | "verificationLevel" | "createdAt" | "updatedAt" | "userId", ExtArgs["result"]["sellerProfile"]>
 export type SellerProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -1097,6 +1127,7 @@ export type $SellerProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     totalSoldCount: number
     isVerified: boolean
     verifiedAt: Date | null
+    verificationLevel: string
     createdAt: Date
     updatedAt: Date
     userId: string
@@ -1545,6 +1576,7 @@ export interface SellerProfileFieldRefs {
   readonly totalSoldCount: Prisma.FieldRef<"SellerProfile", 'Int'>
   readonly isVerified: Prisma.FieldRef<"SellerProfile", 'Boolean'>
   readonly verifiedAt: Prisma.FieldRef<"SellerProfile", 'DateTime'>
+  readonly verificationLevel: Prisma.FieldRef<"SellerProfile", 'String'>
   readonly createdAt: Prisma.FieldRef<"SellerProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SellerProfile", 'DateTime'>
   readonly userId: Prisma.FieldRef<"SellerProfile", 'String'>

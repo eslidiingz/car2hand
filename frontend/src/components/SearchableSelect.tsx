@@ -113,7 +113,7 @@ export default function SearchableSelect({
             {/* Selected Value Trigger */}
             <div
                 onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
-                className={`w-full outline-none transition text-base text-left flex items-center justify-between gap-2 ${compact ? 'h-auto bg-transparent' : `h-12 border rounded-xl ${isOpen ? 'border-primary ring-1 ring-primary' : ''}`} ${icon ? 'pl-11' : compact ? 'pl-0' : 'pl-4'} ${disabled || loading ? 'bg-gray-200/50 border-gray-100 cursor-not-allowed' : compact ? 'cursor-pointer' : 'bg-white border-gray-200 cursor-pointer hover:border-primary'
+                className={`w-full outline-none transition text-base text-left flex items-center justify-between gap-2 ${compact ? 'h-auto bg-transparent' : `h-12 border rounded-xl ${isOpen ? 'border-primary ring-1 ring-primary' : ''}`} ${icon ? 'pl-11' : compact ? 'pl-0' : 'pl-4'} ${compact ? 'pr-0' : 'pr-4'} ${disabled || loading ? 'bg-gray-200/50 dark:bg-muted/40 border-gray-100 cursor-not-allowed' : compact ? 'cursor-pointer' : 'bg-white border-gray-200 cursor-pointer hover:border-primary'
                     }`}
             >
                 {icon && (

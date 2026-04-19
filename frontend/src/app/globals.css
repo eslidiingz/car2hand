@@ -1,18 +1,46 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F4F6F8;
+  --foreground: #1f2937;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --muted: #F4F6F8;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --surface: #F4F6F8;
+}
+
+.dark {
+  --background: #0b1220;
+  --foreground: #e5e7eb;
+  --card: #111827;
+  --card-foreground: #f3f4f6;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --border: #1f2937;
+  --input: #1f2937;
+  --surface: #111827;
+  color-scheme: dark; /* native widgets (date picker, scrollbars, etc.) follow theme */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-surface: var(--surface);
   --font-sans: var(--font-ibm-plex-sans-thai);
 
   --color-primary: #0F3460;
   --color-accent: #FF6B35;
-  --color-surface: #F4F6F8;
   --color-success: #00C851;
 }
 
@@ -24,32 +52,32 @@ body {
 /* Height: 48px (h-12) for all inputs */
 
 .form-input {
-  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-12 px-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
   margin-left: 1px;
 }
 
 .form-input-icon {
-  @apply w-full h-12 pl-11 pr-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-12 pl-11 pr-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
   margin-left: 1px;
 }
 
 .form-textarea {
-  @apply w-full p-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100 resize-none;
+  @apply w-full p-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border resize-none;
 }
 
 .form-select {
-  @apply w-full h-12 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-12 px-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.75rem center;
+  background-position: right 1rem center;
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
-  padding-right: 2.5rem;
+  padding-right: 2.75rem;
 }
 
 .form-select-icon {
-  @apply w-full h-12 pl-11 pr-10 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-12 pl-11 pr-11 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-base appearance-none cursor-pointer disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.75rem center;
+  background-position: right 1rem center;
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
 }
@@ -59,35 +87,35 @@ body {
 }
 
 .form-button-active {
-  @apply border-primary bg-blue-50 text-primary;
+  @apply border-primary bg-blue-50 text-primary shadow-sm dark:bg-primary/25 dark:border-blue-500/70 dark:text-blue-400;
 }
 
 .form-button-inactive {
-  @apply border-gray-200 text-gray-500 hover:border-primary;
+  @apply border-border bg-card text-muted-foreground hover:border-primary hover:text-primary;
 }
 
 .form-checkbox-label {
-  @apply h-12 flex items-center gap-3 px-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition;
+  @apply h-12 flex items-center gap-3 px-4 border border-border rounded-xl cursor-pointer hover:bg-muted transition;
 }
 
 /* === Modal Form Variants === */
 /* Height: 40px (h-10) for modal/compact forms */
 
 .form-input-sm {
-  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-10 px-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary transition text-sm disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
 }
 
 .form-input-icon-sm {
-  @apply w-full h-10 pl-10 pr-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:bg-white focus:ring-1 focus:ring-primary transition text-sm disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-10 pl-10 pr-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:bg-card focus:ring-1 focus:ring-primary transition text-sm disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
 }
 
 .form-select-sm {
-  @apply w-full h-10 px-4 border border-gray-200 rounded-xl bg-white outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-sm appearance-none cursor-pointer disabled:bg-gray-200/50 disabled:text-gray-400 disabled:cursor-not-allowed disabled:border-gray-100;
+  @apply w-full h-10 px-4 border border-border rounded-xl bg-card text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition text-sm appearance-none cursor-pointer disabled:bg-muted/50 disabled:text-muted-foreground disabled:cursor-not-allowed disabled:border-border;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.75rem center;
+  background-position: right 1rem center;
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
-  padding-right: 2.5rem;
+  padding-right: 2.75rem;
 }
 
 .form-button-sm {
@@ -149,6 +177,14 @@ body {
   background: #CBD5E1;
 }
 
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
 @keyframes image-change-fade {
   from {
     opacity: 0.8;
@@ -186,4 +222,295 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* =============================================
+ * Dark mode — pragmatic overrides
+ * =============================================
+ * The frontend was originally built for light mode only, using hardcoded
+ * Tailwind classes like `bg-white`, `text-gray-800`, `border-gray-100`.
+ * Rather than refactor hundreds of components, we remap the most common
+ * hardcoded light utilities to their dark-mode equivalents below.
+ *
+ * Escape hatches:
+ *   - Use `.force-light` on a wrapper to opt OUT (e.g. marketing hero
+ *     that's already dark-on-dark and looks fine in both themes).
+ *   - Components that intentionally want dark-only styling should use
+ *     `bg-card`, `text-foreground`, `border-border` — these already
+ *     respond to the theme via CSS variables and are untouched here.
+ */
+
+.dark :where(.bg-white):not(.force-light .bg-white) {
+  background-color: var(--card);
+}
+.dark :where(.bg-gray-50):not(.force-light .bg-gray-50),
+.dark :where(.bg-gray-100):not(.force-light .bg-gray-100),
+.dark :where(.bg-slate-50):not(.force-light .bg-slate-50),
+.dark :where(.bg-slate-100):not(.force-light .bg-slate-100) {
+  background-color: var(--muted);
+}
+
+.dark :where(.text-gray-900):not(.force-light .text-gray-900),
+.dark :where(.text-gray-800):not(.force-light .text-gray-800),
+.dark :where(.text-gray-700):not(.force-light .text-gray-700),
+.dark :where(.text-slate-900):not(.force-light .text-slate-900),
+.dark :where(.text-slate-800):not(.force-light .text-slate-800),
+.dark :where(.text-slate-700):not(.force-light .text-slate-700) {
+  color: var(--foreground);
+}
+.dark :where(.text-gray-600):not(.force-light .text-gray-600),
+.dark :where(.text-gray-500):not(.force-light .text-gray-500),
+.dark :where(.text-slate-600):not(.force-light .text-slate-600),
+.dark :where(.text-slate-500):not(.force-light .text-slate-500) {
+  color: var(--muted-foreground);
+}
+.dark :where(.text-gray-400):not(.force-light .text-gray-400),
+.dark :where(.text-slate-400):not(.force-light .text-slate-400),
+.dark :where(.text-slate-300):not(.force-light .text-slate-300) {
+  color: #9ca3af; /* keep a bit dimmer than muted-foreground for truly secondary text */
+}
+
+.dark :where(.border-gray-50):not(.force-light .border-gray-50),
+.dark :where(.border-gray-100):not(.force-light .border-gray-100),
+.dark :where(.border-gray-200):not(.force-light .border-gray-200),
+.dark :where(.border-gray-300):not(.force-light .border-gray-300),
+.dark :where(.border-slate-50):not(.force-light .border-slate-50),
+.dark :where(.border-slate-100):not(.force-light .border-slate-100),
+.dark :where(.border-slate-200):not(.force-light .border-slate-200),
+.dark :where(.border-slate-300):not(.force-light .border-slate-300) {
+  border-color: var(--border);
+}
+
+/* Covers both Tailwind 4 flavours: `> * + *` (border-top on 2nd+) and
+ * `> :not(:last-child)` (border-bottom on all-but-last). */
+.dark :where(.divide-gray-100 > *, .divide-gray-200 > *, .divide-slate-100 > *, .divide-slate-200 > *):not(.force-light .divide-gray-100 > *, .force-light .divide-gray-200 > *, .force-light .divide-slate-100 > *, .force-light .divide-slate-200 > *) {
+  border-color: var(--border);
+}
+
+/* Hover background defaults that assume light mode */
+.dark :where(.hover\:bg-gray-50:hover),
+.dark :where(.hover\:bg-gray-100:hover),
+.dark :where(.hover\:bg-gray-200:hover),
+.dark :where(.hover\:bg-slate-50:hover),
+.dark :where(.hover\:bg-slate-100:hover),
+.dark :where(.hover\:bg-slate-200:hover) {
+  background-color: var(--muted);
+}
+
+/* Tinted hover states (bg-blue-50 on hover, etc.) used in dropdowns / list rows.
+ * In light mode these give a subtle blue tint; in dark mode the raw #eff6ff
+ * becomes a bright glowing row that washes out the text. Remap to a muted
+ * tinted overlay that stays readable. */
+.dark :where(.hover\:bg-blue-50:hover):not(.force-light .hover\:bg-blue-50:hover) {
+  background-color: rgba(59, 130, 246, 0.18);
+}
+.dark :where(.hover\:bg-orange-50:hover):not(.force-light .hover\:bg-orange-50:hover) {
+  background-color: rgba(249, 115, 22, 0.18);
+}
+.dark :where(.hover\:bg-green-50:hover):not(.force-light .hover\:bg-green-50:hover) {
+  background-color: rgba(34, 197, 94, 0.18);
+}
+.dark :where(.hover\:bg-red-50:hover):not(.force-light .hover\:bg-red-50:hover) {
+  background-color: rgba(239, 68, 68, 0.18);
+}
+.dark :where(.hover\:bg-yellow-50:hover):not(.force-light .hover\:bg-yellow-50:hover) {
+  background-color: rgba(234, 179, 8, 0.18);
+}
+.dark :where(.hover\:bg-amber-50:hover):not(.force-light .hover\:bg-amber-50:hover) {
+  background-color: rgba(245, 158, 11, 0.18);
+}
+.dark :where(.hover\:bg-purple-50:hover):not(.force-light .hover\:bg-purple-50:hover) {
+  background-color: rgba(168, 85, 247, 0.18);
+}
+
+/* Shadows tuned for light backgrounds look like glowing halos on dark.
+ * Tone them down globally. Use :where() so specificity stays zero. */
+.dark :where(.shadow-sm):not(.force-light .shadow-sm) {
+  --tw-shadow-color: rgba(0, 0, 0, 0.25);
+}
+.dark :where(.shadow):not(.force-light .shadow),
+.dark :where(.shadow-md):not(.force-light .shadow-md) {
+  --tw-shadow-color: rgba(0, 0, 0, 0.35);
+}
+.dark :where(.shadow-lg):not(.force-light .shadow-lg),
+.dark :where(.shadow-xl):not(.force-light .shadow-xl),
+.dark :where(.shadow-2xl):not(.force-light .shadow-2xl) {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+/* Brand `text-primary` is the dark navy #0F3460 — great on white, nearly
+ * invisible on the dark page background. Lighten it in dark mode to a soft
+ * sky-blue that still reads as "Car2Hand primary" but has sufficient contrast.
+ * Backgrounds using `bg-primary` / `ring-primary` / `border-primary` stay
+ * untouched since the navy looks correct as a surface colour in dark mode. */
+.dark :where(.text-primary):not(.force-light .text-primary) {
+  color: #60a5fa; /* blue-400 — same tone family, high contrast on dark */
+}
+
+/* Colored chip/pill text (bg-{c}-50 + text-{c}-600 + border-{c}-200 pattern).
+ * In dark mode the tinted background is only 15% opacity, so the dark 600/700
+ * text gets swallowed by the page colour. Shift to the -300/-400 shade which
+ * is the "on-dark" variant of each hue. Keeps hue identity, fixes contrast. */
+.dark :where(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800):not(.force-light .text-blue-500, .force-light .text-blue-600, .force-light .text-blue-700, .force-light .text-blue-800) {
+  color: #60a5fa; /* blue-400 */
+}
+.dark :where(.text-green-500, .text-green-600, .text-green-700, .text-green-800, .text-emerald-600, .text-emerald-700, .text-emerald-800):not(.force-light .text-green-500, .force-light .text-green-600, .force-light .text-green-700, .force-light .text-green-800, .force-light .text-emerald-600, .force-light .text-emerald-700, .force-light .text-emerald-800) {
+  color: #4ade80; /* green-400 */
+}
+.dark :where(.text-red-500, .text-red-600, .text-red-700, .text-red-800, .text-rose-500, .text-rose-600, .text-rose-700, .text-rose-800):not(.force-light .text-red-500, .force-light .text-red-600, .force-light .text-red-700, .force-light .text-red-800, .force-light .text-rose-500, .force-light .text-rose-600, .force-light .text-rose-700, .force-light .text-rose-800) {
+  color: #f87171; /* red-400 */
+}
+.dark :where(.text-orange-500, .text-orange-600, .text-orange-700, .text-orange-800):not(.force-light .text-orange-500, .force-light .text-orange-600, .force-light .text-orange-700, .force-light .text-orange-800) {
+  color: #fb923c; /* orange-400 */
+}
+.dark :where(.text-yellow-500, .text-yellow-600, .text-yellow-700, .text-yellow-800):not(.force-light .text-yellow-500, .force-light .text-yellow-600, .force-light .text-yellow-700, .force-light .text-yellow-800) {
+  color: #facc15; /* yellow-400 */
+}
+.dark :where(.text-amber-500, .text-amber-600, .text-amber-700, .text-amber-800):not(.force-light .text-amber-500, .force-light .text-amber-600, .force-light .text-amber-700, .force-light .text-amber-800) {
+  color: #fbbf24; /* amber-400 */
+}
+.dark :where(.text-purple-500, .text-purple-600, .text-purple-700, .text-purple-800, .text-violet-600, .text-violet-700, .text-violet-800):not(.force-light .text-purple-500, .force-light .text-purple-600, .force-light .text-purple-700, .force-light .text-purple-800, .force-light .text-violet-600, .force-light .text-violet-700, .force-light .text-violet-800) {
+  color: #c084fc; /* purple-400 */
+}
+.dark :where(.text-cyan-500, .text-cyan-600, .text-cyan-700, .text-cyan-800, .text-sky-600, .text-sky-700, .text-sky-800, .text-teal-600, .text-teal-700, .text-teal-800):not(.force-light .text-cyan-500, .force-light .text-cyan-600, .force-light .text-cyan-700, .force-light .text-cyan-800, .force-light .text-sky-600, .force-light .text-sky-700, .force-light .text-sky-800, .force-light .text-teal-600, .force-light .text-teal-700, .force-light .text-teal-800) {
+  color: #22d3ee; /* cyan-400 */
+}
+.dark :where(.text-pink-500, .text-pink-600, .text-pink-700, .text-pink-800):not(.force-light .text-pink-500, .force-light .text-pink-600, .force-light .text-pink-700, .force-light .text-pink-800) {
+  color: #f472b6; /* pink-400 */
+}
+
+/* Pastel borders used on chips (border-{color}-200) — dim them to match the
+ * tinted bg so the pill reads as a cohesive unit rather than a bright outline. */
+.dark :where(.border-blue-100, .border-blue-200):not(.force-light .border-blue-100, .force-light .border-blue-200) {
+  border-color: rgba(59, 130, 246, 0.35);
+}
+.dark :where(.border-green-100, .border-green-200, .border-emerald-200):not(.force-light .border-green-100, .force-light .border-green-200, .force-light .border-emerald-200) {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+.dark :where(.border-red-100, .border-red-200, .border-rose-200):not(.force-light .border-red-100, .force-light .border-red-200, .force-light .border-rose-200) {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+.dark :where(.border-orange-100, .border-orange-200):not(.force-light .border-orange-100, .force-light .border-orange-200) {
+  border-color: rgba(249, 115, 22, 0.35);
+}
+.dark :where(.border-yellow-100, .border-yellow-200):not(.force-light .border-yellow-100, .force-light .border-yellow-200) {
+  border-color: rgba(234, 179, 8, 0.35);
+}
+.dark :where(.border-amber-100, .border-amber-200):not(.force-light .border-amber-100, .force-light .border-amber-200) {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+.dark :where(.border-purple-100, .border-purple-200, .border-violet-200):not(.force-light .border-purple-100, .force-light .border-purple-200, .force-light .border-violet-200) {
+  border-color: rgba(168, 85, 247, 0.35);
+}
+.dark :where(.border-cyan-100, .border-cyan-200, .border-sky-100, .border-sky-200, .border-teal-100, .border-teal-200):not(.force-light .border-cyan-100, .force-light .border-cyan-200, .force-light .border-sky-100, .force-light .border-sky-200, .force-light .border-teal-100, .force-light .border-teal-200) {
+  border-color: rgba(6, 182, 212, 0.35);
+}
+.dark :where(.border-pink-100, .border-pink-200):not(.force-light .border-pink-100, .force-light .border-pink-200) {
+  border-color: rgba(236, 72, 153, 0.35);
+}
+.dark :where(.border-indigo-100, .border-indigo-200):not(.force-light .border-indigo-100, .force-light .border-indigo-200) {
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+/* Missing tinted bg — cyan/pink/teal/sky/indigo for completeness (category chips use these) */
+.dark :where(.bg-cyan-50, .bg-sky-50, .bg-teal-50):not(.force-light .bg-cyan-50, .force-light .bg-sky-50, .force-light .bg-teal-50) {
+  background-color: rgba(6, 182, 212, 0.15);
+}
+.dark :where(.bg-pink-50):not(.force-light .bg-pink-50) {
+  background-color: rgba(236, 72, 153, 0.15);
+}
+.dark :where(.bg-indigo-50):not(.force-light .bg-indigo-50) {
+  background-color: rgba(99, 102, 241, 0.15);
+}
+.dark :where(.hover\:bg-cyan-100:hover, .hover\:bg-sky-100:hover, .hover\:bg-teal-100:hover) {
+  background-color: rgba(6, 182, 212, 0.25);
+}
+.dark :where(.hover\:bg-pink-100:hover) {
+  background-color: rgba(236, 72, 153, 0.25);
+}
+.dark :where(.hover\:bg-indigo-100:hover) {
+  background-color: rgba(99, 102, 241, 0.25);
+}
+.dark :where(.hover\:bg-green-100:hover) {
+  background-color: rgba(34, 197, 94, 0.25);
+}
+.dark :where(.hover\:bg-red-100:hover) {
+  background-color: rgba(239, 68, 68, 0.25);
+}
+/* indigo text shade (matches blue-400 tone family) */
+.dark :where(.text-indigo-500, .text-indigo-600, .text-indigo-700, .text-indigo-800):not(.force-light .text-indigo-500, .force-light .text-indigo-600, .force-light .text-indigo-700, .force-light .text-indigo-800) {
+  color: #818cf8; /* indigo-400 */
+}
+.dark :where(.hover\:bg-orange-100:hover) {
+  background-color: rgba(249, 115, 22, 0.25);
+}
+.dark :where(.hover\:bg-yellow-100:hover) {
+  background-color: rgba(234, 179, 8, 0.25);
+}
+.dark :where(.hover\:bg-amber-100:hover) {
+  background-color: rgba(245, 158, 11, 0.25);
+}
+.dark :where(.hover\:bg-purple-100:hover) {
+  background-color: rgba(168, 85, 247, 0.25);
+}
+.dark :where(.hover\:bg-blue-100:hover) {
+  background-color: rgba(59, 130, 246, 0.25);
+}
+.dark :where(.hover\:text-primary:hover):not(.force-light .hover\:text-primary:hover),
+.dark :where(.group:hover .group-hover\:text-primary):not(.force-light .group:hover .group-hover\:text-primary),
+.dark :where(.focus-within\:text-primary:focus-within):not(.force-light .focus-within\:text-primary:focus-within) {
+  color: #93c5fd; /* blue-300 — slightly brighter on hover */
+}
+/* Tailwind's opacity-modifier variants like `text-primary/80` still work
+ * because they compute from the above value via color-mix. */
+
+/* Tinted-shadow helpers (e.g. `shadow-orange-100`, `shadow-blue-100`) glow
+ * bright against dark pages — remap them to a dark drop shadow instead. */
+.dark :where([class*="shadow-orange-"]):not(.force-light [class*="shadow-orange-"]),
+.dark :where([class*="shadow-blue-"]):not(.force-light [class*="shadow-blue-"]),
+.dark :where([class*="shadow-green-"]):not(.force-light [class*="shadow-green-"]),
+.dark :where([class*="shadow-red-"]):not(.force-light [class*="shadow-red-"]),
+.dark :where([class*="shadow-amber-"]):not(.force-light [class*="shadow-amber-"]),
+.dark :where([class*="shadow-purple-"]):not(.force-light [class*="shadow-purple-"]) {
+  --tw-shadow-color: rgba(0, 0, 0, 0.45);
+}
+
+/* Soft tinted surfaces used for badges / highlights — dim them in dark mode
+ * so they don't glow against the dark background. */
+.dark :where(.bg-blue-50):not(.force-light .bg-blue-50) {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+.dark :where(.bg-orange-50):not(.force-light .bg-orange-50) {
+  background-color: rgba(249, 115, 22, 0.15);
+}
+.dark :where(.bg-green-50):not(.force-light .bg-green-50) {
+  background-color: rgba(34, 197, 94, 0.15);
+}
+.dark :where(.bg-red-50):not(.force-light .bg-red-50) {
+  background-color: rgba(239, 68, 68, 0.15);
+}
+.dark :where(.bg-yellow-50):not(.force-light .bg-yellow-50) {
+  background-color: rgba(234, 179, 8, 0.15);
+}
+.dark :where(.bg-amber-50):not(.force-light .bg-amber-50) {
+  background-color: rgba(245, 158, 11, 0.15);
+}
+.dark :where(.bg-purple-50):not(.force-light .bg-purple-50) {
+  background-color: rgba(168, 85, 247, 0.15);
+}
+
+/* Form inputs styled with bg-gray-50 from globals */
+.dark input[type="text"]:where(.bg-gray-50),
+.dark input[type="number"]:where(.bg-gray-50),
+.dark input[type="email"]:where(.bg-gray-50),
+.dark input[type="tel"]:where(.bg-gray-50),
+.dark input[type="password"]:where(.bg-gray-50),
+.dark textarea:where(.bg-gray-50),
+.dark select:where(.bg-gray-50) {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+/* Ring/shadow colours that reference primary/10 look harsh in dark */
+.dark :where(.shadow-blue-900\/10) {
+  --tw-shadow-color: rgba(15, 52, 96, 0.4);
 }

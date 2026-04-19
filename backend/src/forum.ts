@@ -49,6 +49,7 @@ const publicForumRoutes = new Elysia({ prefix: '/forum' })
             limit = '20',
             tag,
             listingId,
+            search,
         } = query;
 
         const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
@@ -61,6 +62,13 @@ const publicForumRoutes = new Elysia({ prefix: '/forum' })
             ...(listingId && { listingId }),
             ...(tab === 'unanswered' && {
                 comments: { none: {} },
+            }),
+            ...(search && {
+                OR: [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { content: { contains: search, mode: 'insensitive' } },
+                    { tags: { some: { tag: { name: { contains: search, mode: 'insensitive' } } } } },
+                ],
             }),
         };
 

@@ -4,20 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-    LayoutGrid,
-    Warehouse,
-    Car,
-    Heart,
-    MessageCircleMore,
-    Settings,
     LogOut,
-    User,
     ChevronRight,
     Loader2,
-    Package,
-    Bell
 } from 'lucide-react';
 import ProfileSidebar from '@/components/ProfileSidebar';
+import { profileMenuItems } from '@/lib/profileMenu';
 
 interface UserData {
     id: string;
@@ -109,16 +101,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         router.push('/');
     };
 
-    const menuItems = [
-        { name: 'ภาพรวมบัญชี', href: '/profile/dashboard', icon: <LayoutGrid size={20} /> },
-        { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <Car size={20} /> },
-        { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Warehouse size={20} /> },
-        { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart size={20} /> },
-        // { name: 'กล่องข้อความ', href: '/profile/messages', icon: <MessageCircleMore size={20} /> , badge: 3 },
-        { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} /> },
-        { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell size={20} /> },
-        { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Settings size={20} /> },
-    ];
+    // Profile menu lives in src/lib/profileMenu.tsx — do not hardcode here.
+    const menuItems = profileMenuItems;
 
     // Show loading state while checking authentication
     if (isLoading) {

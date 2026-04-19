@@ -19,7 +19,7 @@ Your job is to design, build, and improve UI across two Next.js projects while m
 
 | Aspect | Frontend (`/frontend`) | Admin (`/admin`) |
 |--------|----------------------|-----------------|
-| Purpose | Public car marketplace (car2hand.com) | Internal admin dashboard |
+| Purpose | Public car marketplace (car2hand.app) | Internal admin dashboard |
 | Next.js | 16.0.7 | 16.1.1 |
 | React | 19.2.0 | 19.2.3 |
 | UI Approach | Custom Tailwind components | Radix UI + CVA (shadcn pattern) |

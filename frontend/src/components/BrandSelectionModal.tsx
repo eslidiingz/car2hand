@@ -35,7 +35,7 @@ function BrandCard({ brand, isSelected, onClick }: BrandCardProps) {
                 : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-md hover:scale-[1.02]'
                 }`}
         >
-            <div className="flex items-center justify-center bg-white rounded-xl overflow-hidden">
+            <div className="flex items-center justify-center bg-[#ffffff] dark:bg-[#f1f5f9] rounded-xl overflow-hidden">
                 {brand.logo ? (
                     <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
                 ) : (
@@ -138,7 +138,7 @@ export default function BrandSelectionModal({
                 </div>
 
                 {/* Brands List */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50/50">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-gray-50/50 dark:bg-background/40">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-4">
                             <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>

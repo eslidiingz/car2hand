@@ -6,8 +6,10 @@ import { usePathname } from 'next/navigation';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import NotificationBell from './NotificationBell';
-import { User, ChevronDown, LogOut, Warehouse, Car, Heart, Settings, Scale, Menu, X, Package } from 'lucide-react';
+import { User, ChevronDown, LogOut, Scale, Menu, X } from 'lucide-react'; // icons shared across navbar UI
 import { useWishlist } from '@/contexts/WishlistContext';
+import { profileMenuItems } from '@/lib/profileMenu';
+import ThemeToggle from './ThemeToggle';
 
 interface UserData {
     id: string;
@@ -101,8 +103,8 @@ export default function Navbar() {
 
     const getLinkClass = (path: string) => {
         const baseClass = "h-16 flex items-center px-1 border-b-2 transition font-medium";
-        const activeClass = "border-accent text-primary font-bold";
-        const inactiveClass = "border-transparent text-gray-500 hover:text-accent";
+        const activeClass = "border-accent text-primary dark:text-white font-bold";
+        const inactiveClass = "border-transparent text-gray-500 dark:text-gray-300 hover:text-accent";
 
         return `${baseClass} ${isActive(path) ? activeClass : inactiveClass}`;
     };
@@ -119,6 +121,13 @@ export default function Navbar() {
         setIsRegisterModalOpen(false);
         setIsLoginModalOpen(true);
     };
+
+    // Listen for global login modal trigger from other components
+    useEffect(() => {
+        const handler = () => openLoginModal();
+        window.addEventListener('open-login-modal', handler);
+        return () => window.removeEventListener('open-login-modal', handler);
+    });
 
     const handleLogout = () => {
         setShowAccountMenu(false);
@@ -207,7 +216,7 @@ export default function Navbar() {
                 }}
                 onSwitchToLogin={openLoginModal}
             />
-            <nav className="bg-white shadow-sm fixed w-full z-50 top-0">
+            <nav className="bg-card shadow-sm fixed w-full z-50 top-0 border-b border-border">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex justify-between h-16 items-center">
                         {/* Logo Component */}
@@ -228,7 +237,8 @@ export default function Navbar() {
                         <div className="hidden lg:flex space-x-6 h-full">
                             <Link href="/buy" className={getLinkClass('/buy')}>ซื้อรถ</Link>
                             <Link href="/sell" className={getLinkClass('/sell')}>ลงขายกับเรา</Link>
-                            <Link href="/services" className={getLinkClass('/services')}>บริการ</Link>
+                            {/* TODO: Phase 2 — บริการ */}
+                            {/* <Link href="/services" className={getLinkClass('/services')}>บริการ</Link> */}
                             <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
                             <Link href="/community" className={getLinkClass('/community')}>ชุมชน</Link>
                         </div>
@@ -238,6 +248,11 @@ export default function Navbar() {
                             {/* Compare Tool */}
                             <div className="hidden sm:block">
                                 <CompareButton />
+                            </div>
+
+                            {/* Theme Toggle (desktop) */}
+                            <div className="hidden sm:block">
+                                <ThemeToggle />
                             </div>
 
                             {user ? (
@@ -250,7 +265,7 @@ export default function Navbar() {
                                             setShowAccountMenu(!showAccountMenu);
                                             setShowMobileMenu(false); // Close nav menu if open
                                         }}
-                                        className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 rounded-full hover:bg-gray-100 transition"
+                                        className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-3 py-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
                                     >
                                         <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs sm:text-sm shadow-sm overflow-hidden">
                                             {user.profileImage ? (
@@ -264,49 +279,37 @@ export default function Navbar() {
                                                 getInitials(user.fullName)
                                             )}
                                         </div>
-                                        <span className="hidden md:block font-medium text-gray-700 max-w-[120px] truncate">
+                                        <span className="hidden md:block font-medium text-gray-700 dark:text-gray-200 max-w-[120px] truncate">
                                             {user.fullName}
                                         </span>
-                                        <ChevronDown className={`text-gray-400 text-xs sm:text-sm transition-transform ${showAccountMenu ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`text-gray-400 dark:text-gray-500 text-xs sm:text-sm transition-transform ${showAccountMenu ? 'rotate-180' : ''}`} />
                                     </button>
 
                                     {/* Account Menu - Desktop Dropdown */}
                                     {showAccountMenu && (
                                         <>
                                             <div className="fixed inset-0 z-40 hidden md:block" onClick={() => setShowAccountMenu(false)}></div>
-                                            <div className="absolute right-0 top-14 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 hidden md:block">
-                                                <div className="px-4 py-3 border-b border-gray-100">
-                                                    <p className="font-bold text-gray-800">{user.fullName}</p>
-                                                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                                            <div className="absolute right-0 top-14 w-64 bg-card text-card-foreground rounded-xl shadow-xl border border-border py-2 z-50 hidden md:block">
+                                                <div className="px-4 py-3 border-b border-border">
+                                                    <p className="font-bold text-gray-800 dark:text-gray-100">{user.fullName}</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                                                 </div>
+                                                {/* Menu items from single source: src/lib/profileMenu.tsx */}
                                                 <div className="py-2">
-                                                    <Link href="/profile/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
-                                                        <User className="text-lg" />
-                                                        <span className="font-medium">บัญชีของฉัน</span>
-                                                    </Link>
-                                                    <Link href="/profile/listings" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
-                                                        <Car className="text-lg" />
-                                                        <span className="font-medium">รถที่ลงขาย</span>
-                                                    </Link>
-                                                    <Link href="/profile/garage" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
-                                                        <Warehouse className="text-lg" />
-                                                        <span className="font-medium">โรงรถของฉัน</span>
-                                                    </Link>
-                                                    <Link href="/profile/wishlist" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
-                                                        <Heart className="text-lg" />
-                                                        <span className="font-medium">รายการที่บันทึก</span>
-                                                    </Link>
-                                                    <Link href="/profile/packages" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
-                                                        <Package className="text-lg" />
-                                                        <span className="font-medium">แพ็กเกจของฉัน</span>
-                                                    </Link>
-                                                    <Link href="/profile/settings" className="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition" onClick={() => setShowAccountMenu(false)}>
-                                                        <Settings className="text-lg" />
-                                                        <span className="font-medium">ตั้งค่า</span>
-                                                    </Link>
+                                                    {profileMenuItems.map((item) => (
+                                                        <Link
+                                                            key={item.href}
+                                                            href={item.href}
+                                                            className="flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+                                                            onClick={() => setShowAccountMenu(false)}
+                                                        >
+                                                            {item.icon}
+                                                            <span className="font-medium">{item.name}</span>
+                                                        </Link>
+                                                    ))}
                                                 </div>
-                                                <div className="border-t border-gray-100 pt-2">
-                                                    <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2.5 text-red-500 hover:bg-red-50 transition w-full text-left">
+                                                <div className="border-t border-border pt-2">
+                                                    <button onClick={handleLogout} className="flex items-center gap-3 px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition w-full text-left">
                                                         <LogOut className="text-lg" />
                                                         <span className="font-medium">ออกจากระบบ</span>
                                                     </button>
@@ -317,51 +320,29 @@ export default function Navbar() {
 
                                     {/* Account Menu - Mobile Drawer */}
                                     {showAccountMenu && (
-                                        <div className="md:hidden fixed inset-x-0 top-16 bg-white z-[60] border-t border-gray-100 shadow-2xl overflow-y-auto h-[calc(100vh-64px)]">
+                                        <div className="md:hidden fixed inset-x-0 top-16 bg-card text-card-foreground z-[60] border-t border-border shadow-2xl overflow-y-auto h-[calc(100vh-64px)]">
                                             <div className="p-4 space-y-2">
-                                                <div className="px-4 py-4 mb-4 bg-gray-50 rounded-2xl">
-                                                    <p className="font-bold text-gray-800 text-lg">{user.fullName}</p>
-                                                    <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                                                <div className="px-4 py-4 mb-4 bg-muted rounded-2xl">
+                                                    <p className="font-bold text-gray-800 dark:text-gray-100 text-lg">{user.fullName}</p>
+                                                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                                                 </div>
-                                                <Link href="/profile/dashboard" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
-                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                        <User size={20} />
-                                                    </div>
-                                                    <span>ภาพรวมบัญชี</span>
-                                                </Link>
-                                                <Link href="/profile/listings" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
-                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                        <Car size={20} />
-                                                    </div>
-                                                    <span>รถที่ลงขาย</span>
-                                                </Link>
-                                                <Link href="/profile/garage" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
-                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                        <Warehouse size={20} />
-                                                    </div>
-                                                    <span>โรงรถของฉัน</span>
-                                                </Link>
-                                                <Link href="/profile/wishlist" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
-                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                        <Heart size={20} />
-                                                    </div>
-                                                    <span>รายการที่บันทึก</span>
-                                                </Link>
-                                                <Link href="/profile/packages" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
-                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                        <Package size={20} />
-                                                    </div>
-                                                    <span>แพ็กเกจของฉัน</span>
-                                                </Link>
-                                                <Link href="/profile/settings" className="flex items-center gap-4 p-4 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all" onClick={() => setShowAccountMenu(false)}>
-                                                    <div className="w-10 h-10 bg-blue-50 text-primary rounded-full flex items-center justify-center">
-                                                        <Settings size={20} />
-                                                    </div>
-                                                    <span>ตั้งค่าบัญชี</span>
-                                                </Link>
-                                                <div className="pt-4 border-t border-gray-100">
-                                                    <button onClick={handleLogout} className="flex items-center gap-4 p-4 text-red-500 font-bold w-full text-left rounded-xl hover:bg-red-50 transition-all">
-                                                        <div className="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center">
+                                                {/* Menu items from single source: src/lib/profileMenu.tsx */}
+                                                {profileMenuItems.map((item) => (
+                                                    <Link
+                                                        key={item.href}
+                                                        href={item.href}
+                                                        className="flex items-center gap-4 p-4 text-gray-700 dark:text-gray-200 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                                                        onClick={() => setShowAccountMenu(false)}
+                                                    >
+                                                        <div className="w-10 h-10 bg-blue-50 dark:bg-primary/20 text-primary rounded-full flex items-center justify-center">
+                                                            {item.icon}
+                                                        </div>
+                                                        <span>{item.name}</span>
+                                                    </Link>
+                                                ))}
+                                                <div className="pt-4 border-t border-border">
+                                                    <button onClick={handleLogout} className="flex items-center gap-4 p-4 text-red-500 font-bold w-full text-left rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all">
+                                                        <div className="w-10 h-10 bg-red-50 dark:bg-red-500/15 text-red-500 rounded-full flex items-center justify-center">
                                                             <LogOut size={20} />
                                                         </div>
                                                         <span>ออกจากระบบ</span>
@@ -387,7 +368,7 @@ export default function Navbar() {
                                     setShowMobileMenu(!showMobileMenu);
                                     setShowAccountMenu(false); // Close account menu if open
                                 }}
-                                className="p-2 -mr-2 text-gray-600 hover:text-primary transition lg:hidden"
+                                className="p-2 -mr-2 text-gray-600 dark:text-gray-300 hover:text-primary transition lg:hidden"
                             >
                                 {showMobileMenu ? <X size={26} /> : <Menu size={26} />}
                             </button>
@@ -397,12 +378,12 @@ export default function Navbar() {
 
                 {/* Mobile Menu Drawer */}
                 {showMobileMenu && (
-                    <div className="lg:hidden fixed inset-x-0 top-16 bg-white z-[60] border-t border-gray-100 shadow-2xl overflow-y-auto h-[calc(100vh-64px)]">
+                    <div className="lg:hidden fixed inset-x-0 top-16 bg-card text-card-foreground z-[60] border-t border-border shadow-2xl overflow-y-auto h-[calc(100vh-64px)]">
                         <div className="p-4 pb-20 space-y-2">
                             {/* Comparison Tool in Mobile Menu */}
                             <Link
                                 href="/buy/compare"
-                                className="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl text-primary font-bold mb-4 border border-blue-100"
+                                className="flex items-center justify-between p-4 bg-blue-50/50 dark:bg-blue-500/10 rounded-2xl text-primary font-bold mb-4 border border-blue-100"
                                 onClick={() => setShowMobileMenu(false)}
                             >
                                 <div className="flex items-center gap-3">
@@ -426,11 +407,12 @@ export default function Navbar() {
                             </Link>
 
                             <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 pt-2">เมนูหลัก</p>
-                            <Link href="/buy" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/buy') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setShowMobileMenu(false)}>ซื้อรถ</Link>
-                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setShowMobileMenu(false)}>ลงขายกับเรา</Link>
-                            <Link href="/services" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/services') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setShowMobileMenu(false)}>บริการ</Link>
-                            <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>
-                            <Link href="/community" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/community') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setShowMobileMenu(false)}>ชุมชน</Link>
+                            <Link href="/buy" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/buy') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ซื้อรถ</Link>
+                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ลงขายกับเรา</Link>
+                            {/* TODO: Phase 2 — บริการ */}
+                            {/* <Link href="/services" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/services') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>บริการ</Link> */}
+                            <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>
+                            <Link href="/community" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/community') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ชุมชน</Link>
 
                             {!user && (
                                 <button
@@ -441,6 +423,11 @@ export default function Navbar() {
                                     เข้าสู่ระบบ / ลงทะเบียน
                                 </button>
                             )}
+
+                            <div className="pt-4 mt-4 border-t border-border flex items-center justify-between px-4">
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">โหมดธีม</span>
+                                <ThemeToggle />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -454,17 +441,17 @@ export default function Navbar() {
                             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                             onClick={() => setShowLogoutConfirm(false)}
                         ></div>
-                        <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10 transform transition-all">
+                        <div className="bg-card text-card-foreground rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10 transform transition-all">
                             <div className="text-center">
-                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <div className="w-16 h-16 bg-red-100 dark:bg-red-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <LogOut className="text-3xl text-red-500" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-2">ออกจากระบบ</h3>
-                                <p className="text-gray-500 text-sm mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">ออกจากระบบ</h3>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => setShowLogoutConfirm(false)}
-                                        className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
+                                        className="flex-1 py-3 px-4 border border-border rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition"
                                     >
                                         ยกเลิก
                                     </button>

@@ -203,7 +203,7 @@ export default function ComparePage() {
                                 {/* Spec rows */}
                                 <tbody>
                                     {specRows.map((spec, idx) => (
-                                        <tr key={spec.label} className={idx % 2 === 0 ? 'bg-gray-50/50' : ''}>
+                                        <tr key={spec.label} className={idx % 2 === 0 ? 'bg-gray-50/50 dark:bg-muted/20' : ''}>
                                             <td className="px-2 py-2.5 text-center">
                                                 <div className="flex flex-col items-center gap-0.5">
                                                     <span className="w-5 h-5 flex items-center justify-center">{spec.icon}</span>
@@ -266,7 +266,7 @@ export default function ComparePage() {
                                 {/* Spec rows */}
                                 <tbody>
                                     {specRows.map((spec, idx) => (
-                                        <tr key={spec.label} className={idx % 2 === 0 ? 'bg-gray-50/50' : ''}>
+                                        <tr key={spec.label} className={idx % 2 === 0 ? 'bg-gray-50/50 dark:bg-muted/20' : ''}>
                                             <td className="px-4 py-3 text-sm text-gray-500 font-medium sticky left-0 bg-white z-10">
                                                 <span className="flex items-center gap-2 whitespace-nowrap">
                                                     {spec.icon} {spec.label}

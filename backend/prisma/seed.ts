@@ -38,14 +38,15 @@ async function main() {
             listingDurationDays: 60,
             autoBumpPerDay: 1,
             manualBumpPerDay: 1,
-            badge: 'Verified Seller',
+            // NOTE: Badge removed — "Verified Seller" is now KYC-earned (ยืนยันตัวตน),
+            // not a paid perk. Package badges are cosmetic/commercial only.
+            badge: null,
             searchPriority: 'higher',
             features: [
                 'ลงประกาศได้ 5 รายการ',
                 'รูปภาพสูงสุด 20 รูป',
                 'ระยะเวลาประกาศ 60 วัน',
                 'ดันโพสต์อัตโนมัติ 1 ครั้ง/วัน + ด้วยตัวเอง 1 ครั้ง/คัน/วัน',
-                'ป้าย Verified Seller',
                 'อันดับการค้นหาดีกว่าทั่วไป',
             ],
             sortOrder: 1,

@@ -31,7 +31,9 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { usePendingCounts } from "@/contexts/PendingContext";
+import { useDebounce } from "@/hooks/useDebounce";
 import { RefreshCw, CreditCard, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface ListingImage {
     id: string;
@@ -117,6 +119,7 @@ export default function ListingModerationPage() {
     const [mainTab, setMainTab] = useState<'listings' | 'renewals'>('listings');
     const [filterStatus, setFilterStatus] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const debouncedSearch = useDebounce(searchQuery, 500);
     const [listings, setListings] = useState<Listing[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -144,7 +147,7 @@ export default function ListingModerationPage() {
         try {
             const params = new URLSearchParams({ page: String(page), limit: '20' });
             if (filterStatus) params.set('status', filterStatus);
-            if (searchQuery) params.set('search', searchQuery);
+            if (debouncedSearch) params.set('search', debouncedSearch);
             const data = await apiFetch(`/admin/listings?${params}`);
             setListings(data.listings || []);
             setTotalPages(data.pagination?.totalPages || 1);
@@ -154,7 +157,7 @@ export default function ListingModerationPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [page, filterStatus, searchQuery]);
+    }, [page, filterStatus, debouncedSearch]);
 
     // Fetch counts for each status tab
     const fetchStatusCounts = useCallback(async () => {
@@ -475,15 +478,23 @@ export default function ListingModerationPage() {
                         const thumbnail = listing.images?.[0]?.url;
                         return (
                             <div key={listing.id} className="bg-card rounded-xl shadow-sm border border-border overflow-hidden flex flex-col md:flex-row">
-                                {/* Thumbnail */}
-                                <div className="w-full md:w-56 aspect-[4/3] bg-accent relative overflow-hidden flex-shrink-0">
+                                {/* Thumbnail — click to preview modal */}
+                                <button
+                                    type="button"
+                                    onClick={() => { setCarouselIdx(0); setViewSlip(listing); }}
+                                    aria-label={`ดูรูป ${listing.title}`}
+                                    className="w-full md:w-56 aspect-[4/3] bg-accent relative overflow-hidden flex-shrink-0 cursor-pointer group/thumb text-left"
+                                >
                                     {thumbnail ? (
-                                        <img src={thumbnail} alt={listing.title} className="w-full h-full object-cover" />
+                                        <img src={thumbnail} alt={listing.title} className="w-full h-full object-cover transition group-hover/thumb:scale-105" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
                                             <ImageOff className="text-muted-foreground" size={32} />
                                         </div>
                                     )}
+                                    <div className="absolute inset-0 bg-black/0 group-hover/thumb:bg-black/30 transition flex items-center justify-center opacity-0 group-hover/thumb:opacity-100">
+                                        <Eye size={28} className="text-white drop-shadow" />
+                                    </div>
                                     <div className="absolute top-3 left-3 flex gap-2">
                                         <span className="bg-black/50 backdrop-blur-md text-white px-2 py-0.5 rounded-md text-xs font-medium flex items-center gap-1">
                                             {listing.vehicleType === "CAR" ? <Car size={12} /> : <Bike size={12} />}
@@ -495,13 +506,15 @@ export default function ListingModerationPage() {
                                             <ImagePlus size={12} /> {listing.images.length}
                                         </span>
                                     </div>
-                                </div>
+                                </button>
 
                                 {/* Content */}
                                 <div className="flex-1 p-5 flex flex-col">
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <h2 className="text-base font-semibold text-foreground">{listing.title}</h2>
+                                            <Link href={`/listings/${listing.id}`} className="inline-block group/title">
+                                                <h2 className="text-base font-semibold text-foreground group-hover/title:text-primary group-hover/title:underline transition-colors">{listing.title}</h2>
+                                            </Link>
                                             <div className="flex items-center gap-4 mt-1.5 flex-wrap">
                                                 <span className="text-xs text-muted-foreground flex items-center gap-1">
                                                     <Clock size={13} />
@@ -584,6 +597,11 @@ export default function ListingModerationPage() {
                                             >
                                                 <Eye size={14} /> ดูรายละเอียด
                                             </Button>
+                                            <Link href={`/listings/${listing.id}`}>
+                                                <Button variant="outline" size="sm" className="font-medium">
+                                                    <ExternalLink size={14} /> เปิดหน้าจัดการ
+                                                </Button>
+                                            </Link>
                                             <a
                                                 href={`${process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3000'}/buy/${listing.id}`}
                                                 target="_blank"

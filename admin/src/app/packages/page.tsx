@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
 import { toast } from "sonner";
@@ -249,7 +250,7 @@ export default function AdminPackagesPage() {
                 )}
             </div>
 
-            <Tabs defaultValue="transactions" className="space-y-6" onValueChange={(v) => setActiveTab(v as any)}>
+            <Tabs defaultValue="transactions" className="mb-6" onValueChange={(v) => setActiveTab(v as any)}>
                 <TabsList>
                     <TabsTrigger value="transactions">
                         <Package size={16} className="mr-1.5" /> คำขออัพเกรด
@@ -310,7 +311,7 @@ export default function AdminPackagesPage() {
 
             <TabsContent value="transactions">
                     {/* Filter Tabs */}
-                    <Tabs defaultValue="" className="space-y-4" onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
+                    <Tabs defaultValue="" className="mb-6" onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
                         <TabsList>
                             <TabsTrigger value="">ทั้งหมด</TabsTrigger>
                             <TabsTrigger value="PENDING">รอตรวจสอบ</TabsTrigger>
@@ -338,15 +339,15 @@ export default function AdminPackagesPage() {
                                         <div key={tx.id} className="p-5 hover:bg-accent transition-colors">
                                             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                                                 {/* User Info */}
-                                                <div className="flex items-center gap-3 min-w-[200px]">
+                                                <Link href={`/users/${tx.user.id}`} className="flex items-center gap-3 min-w-[200px] group/user">
                                                     <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-muted-foreground">
                                                         <User size={18} />
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-sm text-foreground">{tx.user.fullName}</p>
+                                                        <p className="font-medium text-sm text-foreground group-hover/user:text-primary group-hover/user:underline transition-colors">{tx.user.fullName}</p>
                                                         <p className="text-xs text-muted-foreground">{tx.user.email}</p>
                                                     </div>
-                                                </div>
+                                                </Link>
 
                                                 {/* Package Info */}
                                                 <div className="flex items-center gap-2 min-w-[200px]">

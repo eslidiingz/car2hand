@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import {
     Pencil,
@@ -90,16 +90,16 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 const COLOR_MAP: Record<string, { bg: string; hover: string; border: string; text: string }> = {
-    blue:   { bg: 'bg-blue-50',   hover: 'hover:bg-blue-100',   border: 'border-blue-100',   text: 'text-primary' },
-    orange: { bg: 'bg-orange-50', hover: 'hover:bg-orange-100', border: 'border-orange-100', text: 'text-accent' },
-    green:  { bg: 'bg-green-50',  hover: 'hover:bg-green-100',  border: 'border-green-100',  text: 'text-green-600' },
-    yellow: { bg: 'bg-yellow-50', hover: 'hover:bg-yellow-100', border: 'border-yellow-100', text: 'text-yellow-500' },
-    purple: { bg: 'bg-purple-50', hover: 'hover:bg-purple-100', border: 'border-purple-100', text: 'text-purple-500' },
-    red:    { bg: 'bg-red-50',    hover: 'hover:bg-red-100',    border: 'border-red-100',    text: 'text-red-500' },
-    teal:   { bg: 'bg-teal-50',   hover: 'hover:bg-teal-100',   border: 'border-teal-100',   text: 'text-teal-600' },
-    indigo: { bg: 'bg-indigo-50', hover: 'hover:bg-indigo-100', border: 'border-indigo-100', text: 'text-indigo-600' },
+    blue:   { bg: 'bg-blue-50',   hover: 'hover:bg-blue-100',   border: 'border-blue-200',   text: 'text-primary' },
+    orange: { bg: 'bg-orange-50', hover: 'hover:bg-orange-100', border: 'border-orange-200', text: 'text-accent' },
+    green:  { bg: 'bg-green-50',  hover: 'hover:bg-green-100',  border: 'border-green-200',  text: 'text-green-600' },
+    yellow: { bg: 'bg-yellow-50', hover: 'hover:bg-yellow-100', border: 'border-yellow-200', text: 'text-yellow-500' },
+    purple: { bg: 'bg-purple-50', hover: 'hover:bg-purple-100', border: 'border-purple-200', text: 'text-purple-500' },
+    red:    { bg: 'bg-red-50',    hover: 'hover:bg-red-100',    border: 'border-red-200',    text: 'text-red-500' },
+    teal:   { bg: 'bg-teal-50',   hover: 'hover:bg-teal-100',   border: 'border-teal-200',   text: 'text-teal-600' },
+    indigo: { bg: 'bg-indigo-50', hover: 'hover:bg-indigo-100', border: 'border-indigo-200', text: 'text-indigo-600' },
     gray:   { bg: 'bg-gray-50',   hover: 'hover:bg-gray-100',   border: 'border-gray-200',   text: 'text-gray-600' },
-    pink:   { bg: 'bg-pink-50',   hover: 'hover:bg-pink-100',   border: 'border-pink-100',   text: 'text-pink-500' },
+    pink:   { bg: 'bg-pink-50',   hover: 'hover:bg-pink-100',   border: 'border-pink-200',   text: 'text-pink-500' },
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -108,23 +108,26 @@ function PostCard({ post }: { post: Post }) {
     const colors = COLOR_MAP[post.category.color] ?? COLOR_MAP.gray;
     return (
         <Link href={`/community/topic/${post.id}`}>
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
-                <div className="flex items-start gap-4">
-                    <div className="flex flex-col items-center gap-1 min-w-[40px]">
-                        <ChevronUp className="text-xl text-gray-300" />
-                        <span className={`font-bold ${post.score > 0 ? 'text-primary' : 'text-gray-500'}`}>
+            <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer group">
+                <div className="flex items-start gap-3 sm:gap-4">
+                    {/* Vote */}
+                    <div className="flex flex-col items-center gap-0.5 min-w-[32px] sm:min-w-[40px]">
+                        <ChevronUp size={20} className="text-gray-300" />
+                        <span className={`font-bold text-sm ${post.score > 0 ? 'text-primary' : 'text-gray-500'}`}>
                             {post.score}
                         </span>
-                        <ChevronDown className="text-xl text-gray-300" />
+                        <ChevronDown size={20} className="text-gray-300" />
                     </div>
+
                     <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        {/* Badges */}
+                        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
                             <span className={`${colors.bg} ${colors.text} text-[10px] font-bold px-2 py-0.5 rounded-full border ${colors.border}`}>
                                 {post.category.name}
                             </span>
                             {post.isSolved && (
                                 <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-                                    <Check /> แก้ไขแล้ว
+                                    <Check size={10} /> แก้ไขแล้ว
                                 </span>
                             )}
                             {post.isPinned && (
@@ -133,9 +136,11 @@ function PostCard({ post }: { post: Post }) {
                                 </span>
                             )}
                         </div>
+
+                        {/* Title & Content */}
                         <div className="flex gap-4">
                             <div className="flex-1">
-                                <h3 className="font-bold text-lg text-gray-800 mb-1 group-hover:text-primary transition line-clamp-2">
+                                <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-1 group-hover:text-primary transition line-clamp-2">
                                     {post.title}
                                 </h3>
                                 <p className="text-sm text-gray-500 line-clamp-2 mb-3">{post.content}</p>
@@ -146,8 +151,10 @@ function PostCard({ post }: { post: Post }) {
                                 </div>
                             )}
                         </div>
+
+                        {/* Tags */}
                         {post.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-2">
+                            <div className="flex flex-wrap gap-1 mb-3">
                                 {post.tags.slice(0, 4).map((tag) => (
                                     <span key={tag} className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
                                         #{tag}
@@ -155,17 +162,21 @@ function PostCard({ post }: { post: Post }) {
                                 ))}
                             </div>
                         )}
-                        <div className="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-3">
-                            <div className="flex items-center gap-2">
-                                <div className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center text-[8px] font-bold flex-shrink-0">
-                                    {post.author.fullName.charAt(0).toUpperCase()}
+
+                        {/* Footer */}
+                        <div className="border-t border-gray-100 pt-3 text-xs text-gray-400">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[9px] font-bold flex-shrink-0">
+                                        {post.author.fullName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="text-gray-600 truncate max-w-[100px] sm:max-w-[140px]">{post.author.fullName}</span>
                                 </div>
-                                <span className="text-gray-600 truncate max-w-[120px]">{post.author.fullName}</span>
-                                <span>• {new Date(post.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                            <div className="flex items-center gap-4 flex-shrink-0">
-                                <span className="flex items-center gap-1"><MessageCircle /> {post.commentCount}</span>
-                                <span className="flex items-center gap-1"><Eye /> {post.viewCount >= 1000 ? `${(post.viewCount / 1000).toFixed(1)}k` : post.viewCount}</span>
+                                <div className="flex items-center gap-3 flex-shrink-0">
+                                    <span>{new Date(post.createdAt).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' })}</span>
+                                    <span className="flex items-center gap-1"><MessageCircle size={14} /> {post.commentCount}</span>
+                                    <span className="flex items-center gap-1"><Eye size={14} /> {post.viewCount >= 1000 ? `${(post.viewCount / 1000).toFixed(1)}k` : post.viewCount}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -187,9 +198,16 @@ export default function CommunityPage() {
     const [activeTab, setActiveTab] = useState<'trending' | 'latest' | 'unanswered'>('trending');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [search, setSearch] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
+        setIsLoggedIn(!!stored);
+    }, []);
 
     // fetch sidebar data once
     useEffect(() => {
@@ -215,6 +233,15 @@ export default function CommunityPage() {
                 limit: '10',
             });
             if (activeCategory) params.set('category', activeCategory);
+            if (searchQuery.trim()) {
+                const q = searchQuery.trim();
+                // Tag search: send as tag param for exact match
+                if (q.startsWith('#')) {
+                    params.set('tag', q.slice(1));
+                } else {
+                    params.set('search', q);
+                }
+            }
 
             const res = await fetch(`${API_BASE}/forum/posts?${params}`);
             const data = await res.json();
@@ -223,11 +250,25 @@ export default function CommunityPage() {
         } finally {
             setLoading(false);
         }
-    }, [activeTab, activeCategory, page]);
+    }, [activeTab, activeCategory, page, searchQuery]);
 
     useEffect(() => {
         fetchPosts();
     }, [fetchPosts]);
+
+    // scroll to post list when page changes (skip initial load)
+    const isFirstLoad = useRef(true);
+    useEffect(() => {
+        if (isFirstLoad.current) {
+            isFirstLoad.current = false;
+            return;
+        }
+        // Wait for posts to render, then scroll tabs to top of viewport
+        const timer = setTimeout(() => {
+            document.getElementById('post-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [page]);
 
     // reset page when tab/category changes
     const handleTabChange = (tab: typeof activeTab) => {
@@ -240,10 +281,16 @@ export default function CommunityPage() {
         setPage(1);
     };
 
-    // local search filter (client-side on loaded posts)
-    const filtered = search.trim()
-        ? posts.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()) || p.content.toLowerCase().includes(search.toLowerCase()))
-        : posts;
+    // posts come pre-filtered from server
+    const filtered = posts;
+
+    const handleSearch = () => {
+        setSearchQuery(search.trim());
+        setPage(1);
+        setTimeout(() => {
+            document.getElementById('post-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    };
 
     return (
         <div className="bg-surface text-gray-800 min-h-screen">
@@ -255,22 +302,42 @@ export default function CommunityPage() {
                             <h1 className="text-2xl md:text-3xl font-bold text-primary mb-1">ชุมชน Car2Hand</h1>
                             <p className="text-gray-500">พื้นที่แลกเปลี่ยนประสบการณ์ ปรึกษาปัญหาเรื่องรถ และรีวิวจากผู้ใช้จริง</p>
                         </div>
-                        <div className="flex gap-3 w-full md:w-auto">
-                            <div className="relative flex-1 md:w-64">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                <input
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    placeholder="ค้นหากระทู้..."
-                                    className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
-                                />
-                            </div>
-                            <Link
-                                href="/community/create"
-                                className="bg-accent text-white px-5 py-2.5 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-100 flex items-center gap-2 whitespace-nowrap"
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
+                            <form
+                                id="search-form"
+                                className="relative flex-1 md:w-[332px] flex gap-2"
+                                onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
                             >
-                                <Pencil size={18} /> ตั้งกระทู้
-                            </Link>
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                    <input
+                                        value={search}
+                                        onChange={(e) => {
+                                            setSearch(e.target.value);
+                                            if (!e.target.value.trim()) {
+                                                setSearchQuery('');
+                                                setPage(1);
+                                            }
+                                        }}
+                                        placeholder="ค้นหากระทู้..."
+                                        className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary"
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="hidden sm:inline-flex bg-primary text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-opacity-90 transition whitespace-nowrap items-center justify-center"
+                                >
+                                    ค้นหา
+                                </button>
+                            </form>
+                            {isLoggedIn && (
+                                <Link
+                                    href="/community/create"
+                                    className="bg-accent text-white px-5 py-2.5 rounded-xl font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-100 flex items-center justify-center gap-2 whitespace-nowrap"
+                                >
+                                    <Pencil size={18} /> ตั้งกระทู้
+                                </Link>
+                            )}
                         </div>
                     </div>
 
@@ -299,7 +366,7 @@ export default function CommunityPage() {
                 {/* Main Feed */}
                 <div className="lg:col-span-3">
                     {/* Tabs */}
-                    <div className="flex items-center gap-6 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar">
+                    <div id="post-list" className="flex items-center gap-6 border-b border-gray-200 mb-6 overflow-x-auto no-scrollbar">
                         {([
                             { key: 'trending', label: '🔥 กำลังเป็นกระแส' },
                             { key: 'latest',   label: 'มาใหม่ล่าสุด' },
@@ -331,13 +398,13 @@ export default function CommunityPage() {
                             <p className="text-sm">เป็นคนแรกที่ตั้งกระทู้!</p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="flex flex-col gap-6">
                             {filtered.map((post) => <PostCard key={post.id} post={post} />)}
                         </div>
                     )}
 
                     {/* Pagination */}
-                    {totalPages > 1 && !loading && (
+                    {totalPages > 1 && !loading && filtered.length > 0 && (
                         <div className="flex items-center justify-center gap-2 mt-6">
                             <button
                                 disabled={page === 1}
@@ -433,6 +500,11 @@ export default function CommunityPage() {
                                         key={tag.name}
                                         onClick={() => {
                                             setSearch(`#${tag.name}`);
+                                            setSearchQuery(`#${tag.name}`);
+                                            setPage(1);
+                                            setTimeout(() => {
+                                                document.getElementById('post-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                            }, 100);
                                         }}
                                         className="bg-white border border-gray-200 px-3 py-1 rounded-full text-xs text-gray-600 hover:border-primary hover:text-primary cursor-pointer transition shadow-sm"
                                     >

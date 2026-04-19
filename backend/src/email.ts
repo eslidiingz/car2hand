@@ -54,7 +54,7 @@ interface SendEmailParams {
 export async function sendEmail({ to, subject, html, text }: SendEmailParams) {
     const t = getTransporter();
     const fromName = process.env.EMAIL_FROM_NAME || "Car2Hand";
-    const fromAddress = process.env.EMAIL_FROM || process.env.SMTP_USERNAME || "noreply@car2hand.com";
+    const fromAddress = process.env.EMAIL_FROM || process.env.SMTP_USERNAME || "noreply@car2hand.app";
     const from = `${fromName} <${fromAddress}>`;
 
     if (!t) {

@@ -15,7 +15,10 @@ import {
     Phone,
     User,
     Send,
+    Trash2,
+    Eye,
 } from "lucide-react";
+import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -113,6 +116,8 @@ export default function AdminInquiriesPage() {
     const [adminNote, setAdminNote] = useState("");
     const [updatingId, setUpdatingId] = useState<string | null>(null);
     const [savingNote, setSavingNote] = useState(false);
+    const [deleteInquiry, setDeleteInquiry] = useState<Inquiry | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     const fetchInquiries = useCallback(async () => {
         try {
@@ -188,6 +193,23 @@ export default function AdminInquiriesPage() {
         setSelectedInquiry(inquiry);
         setAdminNote(inquiry.adminNote || "");
         setDetailOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!deleteInquiry) return;
+        setDeleting(true);
+        try {
+            const res = await apiFetch(`/admin/services/inquiries/${deleteInquiry.id}`, {
+                method: "DELETE",
+            });
+            toast.success(res?.message || "ลบการสอบถามเรียบร้อย");
+            setDeleteInquiry(null);
+            fetchInquiries();
+        } catch (err: any) {
+            toast.error(err?.message || "ไม่สามารถลบการสอบถามได้");
+        } finally {
+            setDeleting(false);
+        }
     };
 
     const formatDate = (dateStr: string) => {
@@ -309,8 +331,9 @@ export default function AdminInquiriesPage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => openDetail(inquiry)}
+                                                    title="ดูรายละเอียด"
                                                 >
-                                                    <MessageSquare className="h-4 w-4" />
+                                                    <Eye className="h-4 w-4" />
                                                 </Button>
                                                 <Select
                                                     value={inquiry.status}
@@ -328,6 +351,15 @@ export default function AdminInquiriesPage() {
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setDeleteInquiry(inquiry)}
+                                                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                                                    title="ลบ"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -446,6 +478,15 @@ export default function AdminInquiriesPage() {
                         )}
                     </DialogContent>
                 </Dialog>
+
+                <DeleteConfirmModal
+                    isOpen={!!deleteInquiry}
+                    onClose={() => setDeleteInquiry(null)}
+                    onConfirm={handleDelete}
+                    title="ลบการสอบถาม"
+                    description={`คุณแน่ใจหรือไม่ที่จะลบการสอบถามของ "${deleteInquiry?.customerName ?? ""}"?`}
+                    isLoading={deleting}
+                />
             </div>
         </DashboardLayout>
     );

@@ -19,7 +19,7 @@ Both projects (`/frontend` and `/admin`) are Next.js App Router apps deployed to
 
 | Project | Purpose | Port (dev) | Next.js |
 |---------|---------|-----------|---------|
-| `frontend/` | Public marketplace (car2hand.com) | 3000 | 15.x |
+| `frontend/` | Public marketplace (car2hand.app) | 3000 | 15.x |
 | `admin/` | Internal admin dashboard | 3001 | 15.x |
 | `backend/` | ElysiaJS API (Bun runtime) | 8000 | — |
 
@@ -35,14 +35,14 @@ Both projects (`/frontend` and `/admin`) are Next.js App Router apps deployed to
 
 **frontend (`frontend/.env.local`):**
 ```
-NEXT_PUBLIC_API_URL=https://api.car2hand.com/api   # base API URL
-NEXT_PUBLIC_SITE_URL=https://car2hand.com
+NEXT_PUBLIC_API_URL=https://api.car2hand.app/api   # base API URL
+NEXT_PUBLIC_SITE_URL=https://car2hand.app
 ```
 
 **admin (`admin/.env.local`):**
 ```
-NEXT_PUBLIC_API_URL=https://api.car2hand.com/api
-NEXT_PUBLIC_ADMIN_URL=https://admin.car2hand.com
+NEXT_PUBLIC_API_URL=https://api.car2hand.app/api
+NEXT_PUBLIC_ADMIN_URL=https://admin.car2hand.app
 ```
 
 ### Rules
@@ -136,7 +136,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'storage.car2hand.com', // Cloudflare R2 / S3 bucket
+        hostname: 'storage.car2hand.app', // Cloudflare R2 / S3 bucket
       },
       {
         protocol: 'http',
@@ -283,8 +283,8 @@ const HeavyChart = dynamic(() => import('./HeavyChart'), {
 ```typescript
 app.use(cors({
   origin: [
-    'https://car2hand.com',
-    'https://admin.car2hand.com',
+    'https://car2hand.app',
+    'https://admin.car2hand.app',
     /\.vercel\.app$/, // allow all Vercel preview deployments
   ],
 }));

@@ -184,8 +184,8 @@ export default function TermsPage() {
                             </p>
                             <p className="font-semibold text-gray-800">
                                 อีเมล:{' '}
-                                <a href="mailto:support@car2hand.com" className="text-primary hover:underline">
-                                    support@car2hand.com
+                                <a href="mailto:support@car2hand.app" className="text-primary hover:underline">
+                                    support@car2hand.app
                                 </a>
                             </p>
                         </section>
