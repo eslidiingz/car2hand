@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { authGuard } from "./jwt";
-import { uploadGarageVehicleImage, deleteByPrefix, isValidImageType, isValidFileSize } from "./storage";
+import { uploadFile, processImage, generateFilename, deleteByPrefix, isValidImageType, isValidFileSize } from "./storage";
 
 export const garageRoutes = new Elysia({ prefix: "/garage" })
     .use(authGuard)
@@ -129,11 +129,10 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
         try {
             const arrayBuffer = await file.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
-            const url = await uploadGarageVehicleImage(auth.userId, params.id, {
-                buffer,
-                originalname: file.name || "car.jpg",
-                mimetype: file.type,
-            });
+            const webpBuffer = await processImage(buffer, { maxWidth: 1600, quality: 85 });
+            const webpFilename = generateFilename(file.name || "car.jpg").replace(/\.[^.]+$/, '.webp');
+            const objectPath = `${auth.userId}/garage/${params.id}/${webpFilename}`;
+            const url = await uploadFile(objectPath, webpBuffer, 'image/webp');
             const updated = await prisma.garageVehicle.update({
                 where: { id: params.id },
                 data: { imageUrl: url },

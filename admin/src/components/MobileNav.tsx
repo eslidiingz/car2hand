@@ -21,7 +21,7 @@ interface MobileNavProps {
 export default function MobileNav({ open, onClose }: MobileNavProps) {
     const pathname = usePathname();
     const { logout, admin } = useAuth();
-    const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount } = usePendingCounts();
+    const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount, pendingSlotPurchaseCount } = usePendingCounts();
 
     // Close on route change
     useEffect(() => { onClose(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [pathname]);
@@ -79,7 +79,7 @@ export default function MobileNav({ open, onClose }: MobileNavProps) {
                         const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href + "/"));
                         const isPackages = item.href === "/packages";
                         const isListings = item.href === "/listings";
-                        const badgeCount = isPackages ? pendingUpgradeCount : isListings ? (pendingListingCount + pendingRenewalCount) : 0;
+                        const badgeCount = isPackages ? (pendingUpgradeCount + pendingSlotPurchaseCount) : isListings ? (pendingListingCount + pendingRenewalCount) : 0;
                         const showBadge = badgeCount > 0;
 
                         return (

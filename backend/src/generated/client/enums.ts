@@ -142,6 +142,14 @@ export const PaymentStatus = {
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
+export const StorageProviderType = {
+  MINIO: 'MINIO',
+  CLOUDFLARE_R2: 'CLOUDFLARE_R2'
+} as const
+
+export type StorageProviderType = (typeof StorageProviderType)[keyof typeof StorageProviderType]
+
+
 export const NotificationType = {
   LISTING_EXPIRED: 'LISTING_EXPIRED',
   LISTING_APPROVED: 'LISTING_APPROVED',

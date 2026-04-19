@@ -27,7 +27,7 @@ export interface VehicleListing {
     price: string;
     mileage: number;
     province: string;
-    status: 'DRAFT' | 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'EXPIRED' | 'SUSPENDED';
+    status: 'DRAFT' | 'PENDING' | 'ACTIVE' | 'INACTIVE' | 'SOLD' | 'EXPIRED' | 'SUSPENDED' | 'PAUSED';
     viewCount: number;
     favoriteCount: number;
     createdAt: string;
@@ -49,6 +49,7 @@ export const STATUS_CONFIG: Record<string, { label: string; bgColor: string; tex
     'EXPIRED': { label: 'หมดอายุ', bgColor: 'bg-red-50', textColor: 'text-red-600', dotColor: 'bg-red-500' },
     'INACTIVE': { label: 'ไม่ใช้งาน', bgColor: 'bg-gray-50', textColor: 'text-gray-400', dotColor: 'bg-gray-400' },
     'SUSPENDED': { label: 'ถูกระงับ', bgColor: 'bg-red-50', textColor: 'text-red-600', dotColor: 'bg-red-500' },
+    'PAUSED': { label: 'หยุดชั่วคราว', bgColor: 'bg-amber-50', textColor: 'text-amber-600', dotColor: 'bg-amber-500' },
 };
 
 interface ProfileListingCardProps {

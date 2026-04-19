@@ -1,4 +1,5 @@
 import prisma from "../db";
+import { downgradeUserToBasic } from "../config/pause";
 
 // แจ้งเตือนแพ็กเกจจะหมดอายุใน 3 วัน
 async function notifyExpiringPackages() {
@@ -55,8 +56,11 @@ async function notifyExpiringPackages() {
     }
 }
 
-// แจ้งเตือนแพ็กเกจหมดอายุแล้ว
-async function notifyExpiredPackages() {
+/**
+ * Downgrade expired packages → Basic + pause excess listings + แจ้งเตือน
+ * รันทุก 1 ชม. — ถ้า packageExpiresAt < now จะถูก downgrade ทันที
+ */
+async function downgradeExpiredPackages() {
     const now = new Date();
 
     try {
@@ -69,6 +73,10 @@ async function notifyExpiredPackages() {
         });
 
         for (const user of users) {
+            // ทำ downgrade + pause
+            const result = await downgradeUserToBasic(user.id);
+
+            // Notification (กัน spam: ส่งครั้งเดียวใน 7 วัน)
             const existing = await prisma.userNotification.findFirst({
                 where: {
                     userId: user.id,
@@ -78,11 +86,15 @@ async function notifyExpiredPackages() {
             });
             if (existing) continue;
 
+            const pausedMsg = result && result.pausedCount > 0
+                ? ` ประกาศ ${result.pausedCount} รายการถูกหยุดชั่วคราว (จะกลับมาแสดงเมื่ออัพเกรดหรือลบประกาศอื่น)`
+                : '';
+
             await prisma.userNotification.create({
                 data: {
                     userId: user.id,
                     title: 'แพ็กเกจหมดอายุ',
-                    message: `แพ็กเกจ ${user.currentPackage?.name} ของคุณหมดอายุแล้ว สิทธิ์ของคุณถูกเปลี่ยนเป็น Basic (Free) กรุณาอัพเกรดเพื่อใช้งานต่อ`,
+                    message: `แพ็กเกจ ${user.currentPackage?.name} หมดอายุแล้ว ระบบปรับเป็น Basic (Free)${pausedMsg}`,
                     type: 'PACKAGE_EXPIRED',
                 }
             });
@@ -91,13 +103,37 @@ async function notifyExpiredPackages() {
                 try {
                     const { pushMessage, buildTextMessage } = await import("../line");
                     await pushMessage(user.lineUserId, buildTextMessage(
-                        `\u{26A0}\u{FE0F} แพ็กเกจ ${user.currentPackage?.name} ของคุณหมดอายุแล้ว\n\nสิทธิ์ถูกเปลี่ยนเป็น Basic (Free)\nอัพเกรดแพ็กเกจที่ Car2Hand เพื่อใช้งานต่อ`
+                        `\u{26A0}\u{FE0F} แพ็กเกจ ${user.currentPackage?.name} หมดอายุแล้ว\n\nระบบปรับเป็น Basic (Free) — แสดงได้ 3 รายการ/45 วัน${pausedMsg}\nอัพเกรดที่ Car2Hand เพื่อกลับมาใช้งานเต็มรูปแบบ`
                     ));
                 } catch {}
             }
         }
+
+        if (users.length > 0) console.log(`[Package Expiry] Downgrade ${users.length} users → Basic`);
     } catch (error) {
         console.error('[Package Expired] Error:', error);
+    }
+}
+
+/**
+ * Listing expiry cron — flip ACTIVE → EXPIRED เมื่อ expiredAt ผ่านมาแล้ว
+ * หมายเหตุ: PAUSED listings มี expiredAt freeze ไว้ — cron นี้ไม่แตะ
+ */
+async function expireStaleListings() {
+    const now = new Date();
+    try {
+        const result = await prisma.vehicleListing.updateMany({
+            where: {
+                status: 'ACTIVE',
+                expiredAt: { lt: now, not: null },
+            },
+            data: { status: 'EXPIRED' },
+        });
+        if (result.count > 0) {
+            console.log(`[Listing Expiry] Flipped ${result.count} listings ACTIVE → EXPIRED`);
+        }
+    } catch (error) {
+        console.error('[Listing Expiry] Error:', error);
     }
 }
 
@@ -105,13 +141,17 @@ async function notifyExpiredPackages() {
 export function startPackageExpiryCrons() {
     // เรียกตอน startup
     notifyExpiringPackages();
-    notifyExpiredPackages();
+    downgradeExpiredPackages();
+    expireStaleListings();
 
     // แจ้งเตือนใกล้หมดอายุ ทุก 24 ชม.
     setInterval(notifyExpiringPackages, 24 * 60 * 60 * 1000);
 
-    // แจ้งเตือนหมดอายุ ทุก 1 ชม.
-    setInterval(notifyExpiredPackages, 60 * 60 * 1000);
+    // Downgrade + pause ทุก 1 ชม.
+    setInterval(downgradeExpiredPackages, 60 * 60 * 1000);
 
-    console.log('[Cron] Package expiry notification crons started');
+    // Listing expiry sweep ทุก 1 ชม.
+    setInterval(expireStaleListings, 60 * 60 * 1000);
+
+    console.log('[Cron] Package expiry + listing expiry crons started');
 }

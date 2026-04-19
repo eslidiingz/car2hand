@@ -23,12 +23,13 @@ export function broadcastAdminEvent(event: string, data: object) {
 }
 
 export async function getAndBroadcastPendingCounts() {
-    const [pendingListings, pendingUpgrades, pendingRenewals] = await Promise.all([
+    const [pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases] = await Promise.all([
         prisma.vehicleListing.count({ where: { status: 'PENDING' } }),
         prisma.packageTransaction.count({ where: { status: 'PENDING' } }),
         prisma.listingRenewal.count({ where: { status: 'PENDING' } }),
+        prisma.slotPurchase.count({ where: { status: 'PENDING' } }),
     ]);
-    broadcastAdminEvent('pending-update', { pendingListings, pendingUpgrades, pendingRenewals });
+    broadcastAdminEvent('pending-update', { pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases });
 }
 
 // ============================================================
@@ -110,8 +111,9 @@ export const adminSSERoutes = new Elysia({ prefix: "/admin" })
                     prisma.vehicleListing.count({ where: { status: 'PENDING' } }),
                     prisma.packageTransaction.count({ where: { status: 'PENDING' } }),
                     prisma.listingRenewal.count({ where: { status: 'PENDING' } }),
-                ]).then(([pendingListings, pendingUpgrades, pendingRenewals]) => {
-                    const msg = `event: pending-update\ndata: ${JSON.stringify({ pendingListings, pendingUpgrades, pendingRenewals })}\n\n`;
+                    prisma.slotPurchase.count({ where: { status: 'PENDING' } }),
+                ]).then(([pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases]) => {
+                    const msg = `event: pending-update\ndata: ${JSON.stringify({ pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases })}\n\n`;
                     try { controller.enqueue(new TextEncoder().encode(msg)); } catch { /* closed */ }
                 });
                 // Heartbeat

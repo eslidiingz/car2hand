@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 import { AuthProvider } from '@/contexts/AuthContext';
+import { PendingProvider } from '@/contexts/PendingContext';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from "@/components/ui/sonner";
 
@@ -28,7 +29,9 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground min-h-screen">
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <PendingProvider>
+              {children}
+            </PendingProvider>
           </AuthProvider>
           <Toaster position="top-right" richColors />
         </ThemeProvider>

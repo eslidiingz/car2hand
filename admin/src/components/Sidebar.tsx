@@ -20,7 +20,8 @@ import {
     Warehouse,
     ScrollText,
     BarChart3,
-    Store
+    Store,
+    HardDrive
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
@@ -55,6 +56,7 @@ export const navigation = [
     { name: "รายได้ & CSV", href: "/revenue", icon: BarChart3 },
     { name: "ประวัติการทำงาน", href: "/audit", icon: ScrollText },
     { name: "การแจ้งเตือน", href: "/notifications", icon: Bell },
+    { name: "ที่เก็บไฟล์", href: "/settings/storage", icon: HardDrive },
 ];
 
 export default function Sidebar() {

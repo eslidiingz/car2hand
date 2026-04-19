@@ -49,9 +49,6 @@ model User {
   listingRenewals     ListingRenewal[]
   bumpLogs            ListingBumpLog[]
   notifications       UserNotification[]
-  pushSubscriptions   PushSubscription[]
-  kycSubmissions      KycSubmission[]
-  abuseReports        AbuseReport[]
   garageVehicles      GarageVehicle[]
   inspectionBookings  InspectionBooking[]
   serviceInquiries    ServiceInquiry[]
@@ -105,9 +102,6 @@ model SellerProfile {
   totalSoldCount      Int          @default(0)
   isVerified          Boolean      @default(false)
   verifiedAt          DateTime?
-  // KYC trust level — orthogonal to Package tier
-  // NONE = ยังไม่ยืนยัน, ID = ยืนยันบุคคล, BUSINESS = ร้านรับรอง, DEALER = ดีลเลอร์รับรอง
-  verificationLevel   String       @default("NONE")
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
@@ -115,44 +109,7 @@ model SellerProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([shopProvince])
-  @@index([verificationLevel])
   @@map("seller_profiles")
-}
-
-// KYC (Know Your Customer) submission — รองรับ 3 ระดับ ID / BUSINESS / DEALER
-// ผู้ใช้ submit เอกสาร → admin review → approve/reject → badge + verificationLevel
-model KycSubmission {
-  id     String        @id @default(cuid())
-  userId String
-  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type   String        // ID | BUSINESS | DEALER
-  status String        @default("PENDING") // PENDING | APPROVED | REJECTED | CANCELLED
-
-  // ─── Personal identity (type = ID, or required base for BUSINESS/DEALER) ───
-  fullName     String?
-  idNumber     String?  // เลขบัตรประชาชน (plain — admin-only read; consider encrypting at rest)
-  idCardImage  String?  // MinIO URL — รูปบัตร ปชช.
-  selfieImage  String?  // รูปเซลฟี่ถือบัตร
-
-  // ─── Business (type = BUSINESS/DEALER) ───
-  businessName         String?
-  taxId                String?  // เลขทะเบียนพาณิชย์ / เลขผู้เสียภาษี
-  businessCertImage    String?  // หนังสือรับรองบริษัท / ทะเบียนพาณิชย์
-  addressProofImage    String?  // หลักฐานที่อยู่ร้าน (ใบเสร็จค่าน้ำ/ไฟ/แผนที่)
-  dealerAppointmentDoc String?  // หนังสือแต่งตั้ง (เฉพาะ DEALER)
-
-  requestedShowroom  ShowroomType?  // ถ้าขอเปลี่ยน showroomType
-
-  // ─── Review metadata ───
-  submittedAt DateTime  @default(now())
-  reviewedAt  DateTime?
-  reviewedBy  String?   // admin id (FK to admins table, not enforced)
-  reviewNote  String?   @db.Text  // เหตุผลถ้า reject / note ถ้า approve
-
-  @@index([userId, status])
-  @@index([status, submittedAt])
-  @@map("kyc_submissions")
 }
 
 // =============================================
@@ -578,6 +535,24 @@ model SystemSetting {
   @@map("system_settings")
 }
 
+// =============================================
+// Storage Setting - ตั้งค่าผู้ให้บริการ Object Storage (singleton)
+// =============================================
+enum StorageProviderType {
+  MINIO
+  CLOUDFLARE_R2
+}
+
+model StorageSetting {
+  id        String              @id @default(cuid())
+  provider  StorageProviderType @default(MINIO)
+  config    Json                @default("{}")
+  updatedAt DateTime            @updatedAt
+  updatedBy String?
+
+  @@map("storage_settings")
+}
+
 // รายการอัพเกรด/ต่ออายุแพ็กเกจ
 model PackageTransaction {
   id              String        @id @default(cuid())
@@ -710,25 +685,6 @@ model UserNotification {
   @@map("user_notifications")
 }
 
-// Web Push Notification Subscription — ผูก browser endpoint กับ user
-// ผู้ใช้คนหนึ่งมีได้หลาย subscription (หลาย browser/device)
-model PushSubscription {
-  id        String   @id @default(cuid())
-  endpoint  String   @unique @db.Text   // FCM / Mozilla / Apple endpoint URL
-  p256dh    String   @db.Text            // ECDH public key (base64url)
-  auth      String   @db.Text            // auth secret (base64url)
-  userAgent String?  @db.Text            // for diagnostics / device management UI
-  createdAt DateTime @default(now())
-  lastUsedAt DateTime @default(now())
-
-  // Relations
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@map("push_subscriptions")
-}
-
 // Bump/Boost System - ระบบดันโพส
 // =============================================
 
@@ -776,77 +732,6 @@ model NotificationTemplate {
 
   @@index([type])
   @@map("notification_templates")
-}
-
-// ─── Contact inbox — submissions from /contact form ────────────
-model ContactMessage {
-  id          String   @id @default(cuid())
-  name        String
-  email       String
-  phoneNumber String?
-  subject     String
-  message     String   @db.Text
-  ipAddress   String?  // for rate-limit auditing / spam detection
-  userAgent   String?  @db.Text
-
-  // Triage
-  status      String   @default("NEW")  // NEW | IN_PROGRESS | RESOLVED | SPAM
-  isRead      Boolean  @default(false)
-  adminNote   String?  @db.Text
-
-  createdAt   DateTime @default(now())
-  readAt      DateTime?
-  resolvedAt  DateTime?
-  resolvedBy  String?  // admin id
-
-  @@index([status, createdAt])
-  @@index([isRead])
-  @@map("contact_messages")
-}
-
-// ─── Admin audit log — immutable record of every admin action ────
-// Tracked actions: approve/reject listing, approve/reject package transaction,
-// KYC approve/reject, delete/hide forum content, ban user, etc.
-model AdminAuditLog {
-  id         String   @id @default(cuid())
-  adminId    String   // admin.id (not User)
-  action     String   // LISTING_APPROVE, LISTING_REJECT, KYC_APPROVE, USER_BAN, etc.
-  targetType String   // LISTING | USER | KYC | TRANSACTION | FORUM_POST | CONTACT | REPORT
-  targetId   String
-  note       String?  @db.Text
-  metadata   Json?    // extra context (e.g. { reason: "...", previousStatus: "PENDING" })
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-
-  @@index([adminId, createdAt])
-  @@index([targetType, targetId])
-  @@index([action, createdAt])
-  @@map("admin_audit_logs")
-}
-
-// ─── Abuse reports — users flagging listings / posts / other users ────
-model AbuseReport {
-  id          String   @id @default(cuid())
-  reporterId  String?  // FK to users; null = anonymous
-  reporter    User?    @relation(fields: [reporterId], references: [id], onDelete: SetNull)
-
-  targetType  String   // LISTING | FORUM_POST | FORUM_COMMENT | USER
-  targetId    String   // id of the reported entity
-
-  reason      String   // SPAM | FRAUD | INAPPROPRIATE | DUPLICATE | OTHER
-  description String?  @db.Text
-
-  status      String   @default("OPEN")  // OPEN | REVIEWING | RESOLVED | DISMISSED
-  adminNote   String?  @db.Text
-
-  createdAt   DateTime @default(now())
-  reviewedAt  DateTime?
-  reviewedBy  String?  // admin id
-
-  @@index([status, createdAt])
-  @@index([targetType, targetId])
-  @@index([reporterId])
-  @@map("abuse_reports")
 }
 
 model NotificationLog {

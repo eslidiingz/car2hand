@@ -96,8 +96,20 @@ function getSlugIcon(slug: string) {
 }
 
 export default function AdminPackagesPage() {
-    const { refreshUpgrades: refreshUpgradeBadge } = usePendingCounts();
-    const [activeTab, setActiveTab] = useState<'packages' | 'transactions'>('transactions');
+    const pendingCounts = usePendingCounts();
+    const refreshUpgradeBadge = pendingCounts.refreshUpgrades;
+    const refreshSlotBadge = pendingCounts.refreshSlotPurchases;
+    const pendingSlotPurchaseCount = pendingCounts.pendingSlotPurchaseCount;
+    const [activeTab, setActiveTab] = useState<'packages' | 'transactions' | 'slots'>('transactions');
+    const [slotPurchases, setSlotPurchases] = useState<any[]>([]);
+    const [slotFilterStatus, setSlotFilterStatus] = useState<string>('');
+    const [slotPage, setSlotPage] = useState(1);
+    const [slotTotalPages, setSlotTotalPages] = useState(1);
+    const [slotIsLoading, setSlotIsLoading] = useState(true);
+    const [slotApproveId, setSlotApproveId] = useState<string | null>(null);
+    const [slotRejectId, setSlotRejectId] = useState<string | null>(null);
+    const [slotRejectNote, setSlotRejectNote] = useState('');
+    const [viewSlotSlip, setViewSlotSlip] = useState<string | null>(null);
     const [packages, setPackages] = useState<PackageData[]>([]);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [totalPages, setTotalPages] = useState(1);
@@ -145,6 +157,61 @@ export default function AdminPackagesPage() {
     useEffect(() => {
         if (activeTab === 'transactions') fetchTransactions();
     }, [page, filterStatus, activeTab]);
+
+    const fetchSlotPurchases = async () => {
+        setSlotIsLoading(true);
+        try {
+            const params = new URLSearchParams({ page: String(slotPage), limit: '20' });
+            if (slotFilterStatus) params.set('status', slotFilterStatus);
+            const data = await apiFetch(`/admin/slot-purchases?${params}`);
+            setSlotPurchases(data.purchases || []);
+            setSlotTotalPages(data.pagination?.totalPages || 1);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setSlotIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'slots') fetchSlotPurchases();
+    }, [slotPage, slotFilterStatus, activeTab]);
+
+    const handleSlotApprove = async () => {
+        if (!slotApproveId) return;
+        setActionLoading(slotApproveId);
+        try {
+            await apiFetch(`/admin/slot-purchases/${slotApproveId}/approve`, { method: 'POST' });
+            toast.success('อนุมัติคำขอซื้อ slot สำเร็จ');
+            setSlotApproveId(null);
+            fetchSlotPurchases();
+            refreshSlotBadge();
+        } catch (error: any) {
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleSlotReject = async () => {
+        if (!slotRejectId) return;
+        setActionLoading(slotRejectId);
+        try {
+            await apiFetch(`/admin/slot-purchases/${slotRejectId}/reject`, {
+                method: 'POST',
+                body: JSON.stringify({ adminNote: slotRejectNote }),
+            });
+            toast.success('ปฏิเสธคำขอเรียบร้อย');
+            setSlotRejectId(null);
+            setSlotRejectNote('');
+            fetchSlotPurchases();
+            refreshSlotBadge();
+        } catch (error: any) {
+            toast.error(error.message || 'เกิดข้อผิดพลาด');
+        } finally {
+            setActionLoading(null);
+        }
+    };
 
     const handleApprove = async () => {
         if (!approveId) return;
@@ -254,6 +321,14 @@ export default function AdminPackagesPage() {
                 <TabsList>
                     <TabsTrigger value="transactions">
                         <Package size={16} className="mr-1.5" /> คำขออัพเกรด
+                    </TabsTrigger>
+                    <TabsTrigger value="slots">
+                        <CreditCard size={16} className="mr-1.5" /> ซื้อ slot เพิ่ม
+                        {pendingSlotPurchaseCount > 0 && (
+                            <span className="ml-1.5 bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                {pendingSlotPurchaseCount}
+                            </span>
+                        )}
                     </TabsTrigger>
                     <TabsTrigger value="packages">
                         <Star size={16} className="mr-1.5" /> จัดการแพ็กเกจ
@@ -448,7 +523,158 @@ export default function AdminPackagesPage() {
                         </div>
                     )}
             </TabsContent>
+
+            <TabsContent value="slots">
+                <Tabs defaultValue="" className="mb-6" onValueChange={(v) => { setSlotFilterStatus(v); setSlotPage(1); }}>
+                    <TabsList>
+                        <TabsTrigger value="">ทั้งหมด</TabsTrigger>
+                        <TabsTrigger value="PENDING">รอตรวจสอบ</TabsTrigger>
+                        <TabsTrigger value="APPROVED">อนุมัติแล้ว</TabsTrigger>
+                        <TabsTrigger value="REJECTED">ถูกปฏิเสธ</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+
+                <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+                    {slotIsLoading ? (
+                        <div className="p-12 text-center text-muted-foreground">
+                            <CreditCard className="mx-auto mb-3 animate-pulse opacity-30" size={32} />
+                            <p className="text-sm">กำลังโหลด...</p>
+                        </div>
+                    ) : slotPurchases.length === 0 ? (
+                        <div className="p-12 text-center text-muted-foreground">
+                            <CreditCard className="mx-auto mb-3 opacity-30" size={32} />
+                            <p className="text-sm">ไม่พบรายการ</p>
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-border">
+                            {slotPurchases.map((sp: any) => {
+                                const status = statusConfig[sp.status] || statusConfig.PENDING;
+                                return (
+                                    <div key={sp.id} className="p-5 hover:bg-accent transition-colors">
+                                        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                                            <Link href={`/users/${sp.user.id}`} className="flex items-center gap-3 min-w-[200px] group/user">
+                                                <div className="w-9 h-9 bg-accent rounded-lg flex items-center justify-center text-muted-foreground">
+                                                    <User size={18} />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-sm text-foreground group-hover/user:text-primary group-hover/user:underline transition-colors">{sp.user.fullName}</p>
+                                                    <p className="text-xs text-muted-foreground">{sp.user.email}</p>
+                                                </div>
+                                            </Link>
+
+                                            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground flex-1">
+                                                <span className="bg-orange-50 text-orange-700 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                                    <Car size={12} /> +{sp.quantity} slot
+                                                </span>
+                                                <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded font-medium flex items-center gap-1">
+                                                    <CreditCard size={12} /> ฿{Number(sp.totalAmount).toLocaleString()}
+                                                </span>
+                                                <span className="bg-muted px-2 py-1 rounded">
+                                                    ปัจจุบันมี {sp.user.bonusListingSlots} slot
+                                                </span>
+                                                {sp.user.currentPackage && (
+                                                    <span className="bg-muted px-2 py-1 rounded flex items-center gap-1">
+                                                        {getSlugIcon(sp.user.currentPackage.slug)} {sp.user.currentPackage.name}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                                                <span className={`text-xs px-2 py-1 rounded font-medium flex items-center gap-1 ${status.color}`}>
+                                                    {status.icon} {status.label}
+                                                </span>
+                                                <p className="text-[11px] text-muted-foreground">
+                                                    {new Date(sp.createdAt).toLocaleDateString('th-TH', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex gap-2 flex-shrink-0">
+                                                <Button variant="outline" size="sm" onClick={() => setViewSlotSlip(sp.slipImage)} className="h-8">
+                                                    <Eye size={14} className="mr-1" /> สลิป
+                                                </Button>
+                                                {sp.status === 'PENDING' && (
+                                                    <>
+                                                        <Button variant="default" size="sm" onClick={() => setSlotApproveId(sp.id)} className="h-8 bg-emerald-600 hover:bg-emerald-700">
+                                                            <Check size={14} className="mr-1" /> อนุมัติ
+                                                        </Button>
+                                                        <Button variant="outline" size="sm" onClick={() => setSlotRejectId(sp.id)} className="h-8 text-rose-600 border-rose-200 hover:bg-rose-50">
+                                                            <X size={14} className="mr-1" /> ปฏิเสธ
+                                                        </Button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        {sp.adminNote && (
+                                            <p className="text-xs text-rose-600 mt-2 ml-12">หมายเหตุ: {sp.adminNote}</p>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+
+                {slotTotalPages > 1 && (
+                    <div className="flex justify-center gap-1 mt-4">
+                        {Array.from({ length: slotTotalPages }, (_, i) => i + 1).map(p => (
+                            <Button key={p} variant={p === slotPage ? 'default' : 'outline'} size="sm" onClick={() => setSlotPage(p)} className="h-8 w-8 p-0">
+                                {p}
+                            </Button>
+                        ))}
+                    </div>
+                )}
+            </TabsContent>
             </Tabs>
+
+            {/* Slot slip viewer */}
+            {viewSlotSlip && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setViewSlotSlip(null)} />
+                    <div className="relative max-w-2xl w-full bg-white rounded-xl overflow-hidden">
+                        <button onClick={() => setViewSlotSlip(null)} className="absolute top-3 right-3 z-10 bg-white/90 rounded-full p-1.5 shadow"><X size={16} /></button>
+                        <img src={viewSlotSlip} alt="Slip" className="w-full" />
+                    </div>
+                </div>
+            )}
+
+            {/* Slot approve confirm */}
+            {slotApproveId && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => setSlotApproveId(null)} />
+                    <div className="relative bg-white rounded-xl p-6 max-w-sm w-full">
+                        <h3 className="font-bold mb-2">ยืนยันการอนุมัติ?</h3>
+                        <p className="text-sm text-muted-foreground mb-4">ระบบจะเพิ่ม slot ให้ user ทันที</p>
+                        <div className="flex gap-2 justify-end">
+                            <Button variant="outline" size="sm" onClick={() => setSlotApproveId(null)}>ยกเลิก</Button>
+                            <Button size="sm" onClick={handleSlotApprove} disabled={actionLoading === slotApproveId} className="bg-emerald-600 hover:bg-emerald-700">
+                                {actionLoading === slotApproveId ? 'กำลังอนุมัติ...' : 'อนุมัติ'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Slot reject with note */}
+            {slotRejectId && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => { setSlotRejectId(null); setSlotRejectNote(''); }} />
+                    <div className="relative bg-white rounded-xl p-6 max-w-sm w-full">
+                        <h3 className="font-bold mb-2">เหตุผลที่ปฏิเสธ</h3>
+                        <textarea
+                            value={slotRejectNote}
+                            onChange={(e) => setSlotRejectNote(e.target.value)}
+                            placeholder="เช่น สลิปไม่ชัด / ยอดไม่ตรง"
+                            className="w-full h-24 p-3 border border-border rounded-lg text-sm mb-3"
+                        />
+                        <div className="flex gap-2 justify-end">
+                            <Button variant="outline" size="sm" onClick={() => { setSlotRejectId(null); setSlotRejectNote(''); }}>ยกเลิก</Button>
+                            <Button size="sm" variant="destructive" onClick={handleSlotReject} disabled={actionLoading === slotRejectId}>
+                                {actionLoading === slotRejectId ? 'กำลังปฏิเสธ...' : 'ปฏิเสธ'}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Slip Viewer Modal */}
             {viewSlip && (

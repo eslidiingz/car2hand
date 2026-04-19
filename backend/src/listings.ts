@@ -2,9 +2,11 @@ import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { uploadListingImages, deleteListingImages, deleteFile, deleteOldFile, isValidImageType, isValidFileSize, ensureBucket, uploadFile, processImage, generateFilename, buildListingImagePath, getPublicUrl } from "./storage";
 import { getUserPackage, canCreateListing, canUploadPhotos, getListingExpiryDate } from "./config/packages";
+import { reactivatePausedListings, getEffectiveMaxListings } from "./config/pause";
 import { getAndBroadcastPendingCounts } from "./admin-sse";
 import { authGuard } from "./jwt";
 import { sanitizeObject } from "./security";
+import { getSetting } from "./admin-settings";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
@@ -1543,7 +1545,8 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
         }
 
         try {
-            // ตรวจสอบแพ็กเกจผู้ใช้ — Basic (Free) ต้องรอ admin อนุมัติ
+            // ตรวจสอบแพ็กเกจผู้ใช้ — Basic (Free) อาจต้องรอ admin อนุมัติ
+            // ขึ้นกับการตั้งค่า BASIC_LISTING_REQUIRES_APPROVAL (เปิดอยู่ตามค่าเริ่มต้น)
             const userWithPkg = await prisma.user.findUnique({
                 where: { id: userId },
                 select: { currentPackage: { select: { slug: true, price: true, listingDurationDays: true } } }
@@ -1553,7 +1556,11 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                 || userWithPkg.currentPackage.slug === 'basic'
                 || Number(userWithPkg.currentPackage.price) === 0;
 
-            const newStatus = isBasicFree ? "PENDING" : "ACTIVE";
+            // Admin global flag — when false, Basic listings auto-publish like paid packages.
+            const basicRequiresApproval = await getSetting('BASIC_LISTING_REQUIRES_APPROVAL');
+
+            const requiresApproval = isBasicFree && basicRequiresApproval;
+            const newStatus = requiresApproval ? "PENDING" : "ACTIVE";
             const durationDays = userWithPkg?.currentPackage?.listingDurationDays ?? 30;
 
             const updatedListing = await prisma.vehicleListing.update({
@@ -1585,11 +1592,11 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             }
 
             return {
-                message: isBasicFree
+                message: requiresApproval
                     ? "ส่งประกาศเพื่อรอการตรวจสอบจากผู้ดูแลระบบ"
                     : "เผยแพร่ประกาศสำเร็จ",
                 listing: updatedListing,
-                requiresApproval: isBasicFree
+                requiresApproval
             };
         } catch (error) {
             console.error(error);
@@ -1814,7 +1821,29 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                 where: { id }
             });
 
-            return { message: "ลบประกาศสำเร็จ" };
+            // ถ้ามี paused listings และยังมี slot ว่างใน effective max → ปลุก FIFO 1 อัน
+            const userPkg = await getUserPackage(userId);
+            const effectiveMax = userPkg.maxListings; // already includes bonus
+            let reactivatedCount = 0;
+            if (effectiveMax === -1) {
+                const pausedCount = await prisma.vehicleListing.count({
+                    where: { userId, status: 'PAUSED' }
+                });
+                if (pausedCount > 0) reactivatedCount = await reactivatePausedListings(userId, pausedCount);
+            } else {
+                const currentActive = await prisma.vehicleListing.count({
+                    where: { userId, status: { in: ['ACTIVE', 'PENDING', 'DRAFT'] } }
+                });
+                const available = Math.max(0, effectiveMax - currentActive);
+                if (available > 0) reactivatedCount = await reactivatePausedListings(userId, available);
+            }
+
+            return {
+                message: reactivatedCount > 0
+                    ? `ลบประกาศสำเร็จ พร้อมปลุกประกาศที่หยุดชั่วคราว ${reactivatedCount} รายการ`
+                    : "ลบประกาศสำเร็จ",
+                reactivatedCount,
+            };
         } catch (error) {
             console.error(error);
             set.status = 500;
@@ -1843,13 +1872,13 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
         const isBasicFree = !userPkg.id || userPkg.name === 'Basic (Free)';
 
         if (isBasicFree) {
-            // Basic user ต้องจ่าย 50 บาท เพื่อต่ออายุ
+            // Basic user ต้องจ่าย 49 บาท เพื่อต่ออายุ 45 วัน
             if (!paymentSlip) {
                 set.status = 400;
                 return {
-                    message: "ผู้ใช้แพ็กเกจ Basic ต้องชำระ 50 บาทเพื่อต่ออายุ หรือลบประกาศเดิมแล้วลงใหม่",
-                    renewalPrice: 50,
-                    renewalDays: 30,
+                    message: "ผู้ใช้แพ็กเกจ Basic ต้องชำระ 49 บาทเพื่อต่ออายุ หรือลบประกาศเดิมแล้วลงใหม่",
+                    renewalPrice: 49,
+                    renewalDays: 45,
                     requiresPayment: true,
                 };
             }
@@ -1868,7 +1897,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                 data: {
                     listingId: id,
                     userId,
-                    amount: 50,
+                    amount: 49,
                     slipImage: paymentSlip,
                     status: 'PENDING',
                 }

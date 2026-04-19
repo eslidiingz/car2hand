@@ -21,9 +21,11 @@ import {
     ImageIcon,
     X,
     AlertTriangle,
+    ShoppingBag,
 } from 'lucide-react';
 import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
 import Toast from '@/components/Toast';
+import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 
 interface ApiResponse {
     listings: VehicleListing[];
@@ -59,19 +61,20 @@ interface PackageInfo {
 export default function MyListingsPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const initialStatus = (['ALL', 'ACTIVE', 'PENDING', 'EXPIRED'] as const).includes(searchParams.get('status') as any)
-        ? (searchParams.get('status') as 'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED')
+    const initialStatus = (['ALL', 'ACTIVE', 'PENDING', 'EXPIRED', 'PAUSED'] as const).includes(searchParams.get('status') as any)
+        ? (searchParams.get('status') as 'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED' | 'PAUSED')
         : 'ALL';
     const [listings, setListings] = useState<VehicleListing[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [user, setUser] = useState<{ id: string } | null>(null);
-    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED'>(initialStatus);
+    const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'PENDING' | 'EXPIRED' | 'PAUSED'>(initialStatus);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [deleting, setDeleting] = useState(false);
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [packageInfo, setPackageInfo] = useState<PackageInfo | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [showSlotModal, setShowSlotModal] = useState(false);
 
     const [renewId, setRenewId] = useState<string | null>(null);
     const [renewLoading, setRenewLoading] = useState(false);
@@ -94,6 +97,7 @@ export default function MyListingsPage() {
     const statuses = [
         { key: 'ALL', label: 'ทั้งหมด', count: listings.length },
         { key: 'ACTIVE', label: 'กำลังขาย', count: listings.filter(l => l.status === 'ACTIVE').length },
+        { key: 'PAUSED', label: 'หยุดชั่วคราว', count: listings.filter(l => l.status === 'PAUSED').length },
         { key: 'EXPIRED', label: 'หมดอายุ', count: listings.filter(l => l.status === 'EXPIRED').length },
         { key: 'PENDING', label: 'รอตรวจ', count: listings.filter(l => l.status === 'PENDING').length },
     ];
@@ -295,7 +299,7 @@ export default function MyListingsPage() {
                 setRenewLoading(false);
             }
         } else {
-            // Basic user → แสดง modal ต่ออายุ (จ่าย 50 บาท)
+            // Basic user → แสดง modal ต่ออายุ (จ่าย 49 บาท / 45 วัน)
             setRenewSlipPreview(null);
             setRenewSlipData(null);
             setRenewError(null);
@@ -414,7 +418,7 @@ export default function MyListingsPage() {
                         ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-500/10 dark:to-orange-500/10 border-red-200'
                         : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10 border-blue-200'
                 }`}>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex flex-col gap-3">
                         <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
                                 <Crown className={`text-lg ${isAtLimit ? 'text-orange-500' : 'text-blue-500'}`} />
@@ -422,7 +426,7 @@ export default function MyListingsPage() {
                                     {packageInfo.currentPackage?.nameTh || 'แพ็กเกจพื้นฐาน'}
                                 </span>
                             </div>
-                            <div className="flex items-baseline gap-1.5 mb-2">
+                            <div className="flex items-baseline gap-1.5 mb-2 flex-wrap">
                                 <span className={`text-2xl font-bold ${isAtLimit ? 'text-red-600' : 'text-gray-800'}`}>
                                     {packageInfo.usage.activeListings}
                                 </span>
@@ -430,6 +434,11 @@ export default function MyListingsPage() {
                                 <span className="text-gray-500 text-sm font-semibold">
                                     {isUnlimited ? 'ไม่จำกัด' : `${packageInfo.usage.maxListings} รายการ`}
                                 </span>
+                                {!isUnlimited && (packageInfo.usage as any).bonusListingSlots > 0 && (
+                                    <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                                        แพ็กเกจ {(packageInfo.usage as any).packageMaxListings} + slot {(packageInfo.usage as any).bonusListingSlots}
+                                    </span>
+                                )}
                             </div>
                             {!isUnlimited && (
                                 <div className="w-full bg-white/70 dark:bg-white/10 rounded-full h-2 overflow-hidden">
@@ -441,18 +450,25 @@ export default function MyListingsPage() {
                             )}
                         </div>
                         {isAtLimit && (
-                            <Link
-                                href="/profile/packages"
-                                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 whitespace-nowrap"
-                            >
-                                อัพเกรดแพ็กเกจ
-                                <ArrowRight className="text-sm" />
-                            </Link>
+                            <div className="flex flex-row gap-2 shrink-0">
+                                <button
+                                    onClick={() => setShowSlotModal(true)}
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold text-sm hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 whitespace-nowrap"
+                                >
+                                    <ShoppingBag size={14} /> ซื้อ slot ฿99
+                                </button>
+                                <Link
+                                    href="/profile/packages"
+                                    className="flex items-center gap-2 px-4 py-2.5 bg-white border border-orange-200 text-orange-600 rounded-xl font-bold text-sm hover:bg-orange-50 transition whitespace-nowrap"
+                                >
+                                    อัพเกรด <ArrowRight size={14} />
+                                </Link>
+                            </div>
                         )}
                     </div>
                     {isAtLimit && (
                         <p className="text-xs text-red-500 mt-2 font-medium">
-                            สิทธิการลงประกาศเต็มแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม
+                            สิทธิการลงประกาศเต็มแล้ว ซื้อ slot เพิ่ม (ถาวร) หรืออัพเกรดแพ็กเกจ
                         </p>
                     )}
                 </div>
@@ -588,29 +604,35 @@ export default function MyListingsPage() {
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
                         <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                            คุณใช้สิทธิลงประกาศครบ {packageInfo?.usage.maxListings} รายการตามแพ็กเกจปัจจุบันแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม
+                            คุณใช้สิทธิลงประกาศครบ {packageInfo?.usage.maxListings} รายการตามแพ็กเกจปัจจุบันแล้ว เลือกซื้อ slot เพิ่ม (฿99/slot) หรืออัพเกรดแพ็กเกจ
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <Link
-                                href="/profile/packages"
+                            <button
+                                onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
                                 className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
                             >
+                                <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
+                            </button>
+                            <Link
+                                href="/profile/packages"
+                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                            >
                                 ดูแพ็กเกจ
-                                <ArrowRight className="text-sm" />
+                                <ArrowRight size={16} />
                             </Link>
                             <button
                                 onClick={() => setShowUpgradeModal(false)}
-                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-500 hover:bg-gray-50 transition"
+                                className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
                             >
-                                ยกเลิก
+                                ปิด
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Renewal Modal (Basic user — จ่าย 50 บาท) */}
+            {/* Renewal Modal (Basic user — จ่าย 49 บาท / 45 วัน) */}
             {renewId && (
                 <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center">
                     <div
@@ -632,8 +654,8 @@ export default function MyListingsPage() {
                         <div className="p-5 space-y-4">
                             {/* Price info */}
                             <div className="text-center py-3 bg-emerald-50 rounded-xl">
-                                <p className="text-sm text-gray-600">ต่ออายุประกาศ 30 วัน</p>
-                                <p className="text-2xl font-bold text-emerald-600 mt-1">฿50</p>
+                                <p className="text-sm text-gray-600">ต่ออายุประกาศ 45 วัน</p>
+                                <p className="text-2xl font-bold text-emerald-600 mt-1">฿49</p>
                             </div>
 
                             {/* Payment info */}
@@ -643,7 +665,7 @@ export default function MyListingsPage() {
                                     {paymentInfo.bankName && <p className="text-gray-600">ธนาคาร: <span className="font-bold">{paymentInfo.bankName}</span></p>}
                                     {paymentInfo.accountName && <p className="text-gray-600">ชื่อบัญชี: <span className="font-bold">{paymentInfo.accountName}</span></p>}
                                     {paymentInfo.accountNumber && <p className="text-gray-600">เลขบัญชี: <span className="font-bold font-mono">{paymentInfo.accountNumber}</span></p>}
-                                    <p className="text-gray-600">จำนวน: <span className="font-bold text-lg">฿50</span></p>
+                                    <p className="text-gray-600">จำนวน: <span className="font-bold text-lg">฿49</span></p>
                                 </div>
                             )}
 
@@ -804,6 +826,15 @@ export default function MyListingsPage() {
             )}
 
             {toastMsg && <Toast message={toastMsg.message} type={toastMsg.type} />}
+
+            <SlotPurchaseModal
+                open={showSlotModal}
+                onClose={() => setShowSlotModal(false)}
+                onSuccess={() => {
+                    showToast('ส่งคำขอซื้อ slot สำเร็จ รอ admin ตรวจสอบ', 'success');
+                    if (user) fetchPackageInfo(user.id);
+                }}
+            />
         </div>
     );
 }

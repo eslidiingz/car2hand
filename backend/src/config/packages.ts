@@ -23,9 +23,9 @@ export interface PackageData {
 
 // Default limits สำหรับ user ที่ไม่มี package (= Basic free tier)
 const DEFAULT_LIMITS = {
-    maxListings: 1,
+    maxListings: 3,
     maxPhotosPerListing: 15,
-    listingDurationDays: 30,
+    listingDurationDays: 45,
     manualBumpPerDay: 1,
     autoBumpPerDay: 0,
     name: 'Basic (Free)',
@@ -33,7 +33,10 @@ const DEFAULT_LIMITS = {
 };
 
 /**
- * ดึง package ปัจจุบันของ user พร้อม limits
+ * ดึง package ปัจจุบันของ user พร้อม limits (รวม bonus slots ที่ซื้อเพิ่ม)
+ *
+ * effective maxListings = packageMax + bonusListingSlots
+ * (-1 = unlimited จะคงไว้ ไม่บวก bonus)
  */
 export async function getUserPackage(userId: string) {
     const user = await prisma.user.findUnique({
@@ -42,24 +45,53 @@ export async function getUserPackage(userId: string) {
             currentPackageId: true,
             packageExpiresAt: true,
             currentPackage: true,
+            bonusListingSlots: true,
         }
     });
 
-    if (!user || !user.currentPackageId || !user.currentPackage) {
-        return { ...DEFAULT_LIMITS, id: null, packageExpiresAt: null };
+    if (!user) {
+        return { ...DEFAULT_LIMITS, id: null, packageExpiresAt: null, bonusListingSlots: 0, packageMaxListings: DEFAULT_LIMITS.maxListings };
     }
 
-    // เช็คว่า package หมดอายุหรือยัง
+    const bonus = user.bonusListingSlots ?? 0;
+
+    if (!user.currentPackageId || !user.currentPackage) {
+        const baseMax = DEFAULT_LIMITS.maxListings;
+        return {
+            ...DEFAULT_LIMITS,
+            id: null,
+            packageExpiresAt: null,
+            bonusListingSlots: bonus,
+            packageMaxListings: baseMax,
+            maxListings: baseMax + bonus,
+        };
+    }
+
+    // เช็คว่า package หมดอายุหรือยัง — fallback กลับ Basic + bonus
     if (user.packageExpiresAt && new Date() > user.packageExpiresAt) {
-        return { ...DEFAULT_LIMITS, id: null, packageExpiresAt: user.packageExpiresAt };
+        const baseMax = DEFAULT_LIMITS.maxListings;
+        return {
+            ...DEFAULT_LIMITS,
+            id: null,
+            packageExpiresAt: user.packageExpiresAt,
+            bonusListingSlots: bonus,
+            packageMaxListings: baseMax,
+            maxListings: baseMax + bonus,
+        };
     }
 
     const pkg = user.currentPackage;
+    const baseMax = pkg.maxListings;
+    // -1 = unlimited → ไม่บวก bonus
+    const effectiveMax = baseMax === -1 ? -1 : baseMax + bonus;
+
     return {
         id: pkg.id,
         name: pkg.name,
         nameTh: pkg.nameTh,
-        maxListings: pkg.maxListings,
+        maxListings: effectiveMax,
+        packageMaxListings: baseMax,
+        bonusListingSlots: bonus,
         maxPhotosPerListing: pkg.maxPhotosPerListing,
         listingDurationDays: pkg.listingDurationDays,
         manualBumpPerDay: pkg.manualBumpPerDay,

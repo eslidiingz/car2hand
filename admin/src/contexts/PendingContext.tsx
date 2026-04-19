@@ -9,24 +9,29 @@ interface PendingState {
     pendingListingCount: number;
     pendingUpgradeCount: number;
     pendingRenewalCount: number;
+    pendingSlotPurchaseCount: number;
     refreshListings: () => Promise<void>;
     refreshUpgrades: () => Promise<void>;
     refreshRenewals: () => Promise<void>;
+    refreshSlotPurchases: () => Promise<void>;
 }
 
 const PendingContext = createContext<PendingState>({
     pendingListingCount: 0,
     pendingUpgradeCount: 0,
     pendingRenewalCount: 0,
+    pendingSlotPurchaseCount: 0,
     refreshListings: async () => {},
     refreshUpgrades: async () => {},
     refreshRenewals: async () => {},
+    refreshSlotPurchases: async () => {},
 });
 
 export function PendingProvider({ children }: { children: ReactNode }) {
     const [pendingListingCount, setPendingListingCount] = useState(0);
     const [pendingUpgradeCount, setPendingUpgradeCount] = useState(0);
     const [pendingRenewalCount, setPendingRenewalCount] = useState(0);
+    const [pendingSlotPurchaseCount, setPendingSlotPurchaseCount] = useState(0);
     const esRef = useRef<EventSource | null>(null);
 
     const refreshListings = useCallback(async () => {
@@ -56,11 +61,21 @@ export function PendingProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    const refreshSlotPurchases = useCallback(async () => {
+        try {
+            const data = await apiFetch("/admin/slot-purchases?status=PENDING&limit=1");
+            setPendingSlotPurchaseCount(data.pagination?.total ?? 0);
+        } catch {
+            // silent
+        }
+    }, []);
+
     useEffect(() => {
         // Initial fetch
         refreshListings();
         refreshUpgrades();
         refreshRenewals();
+        refreshSlotPurchases();
 
         // Connect SSE
         const token = localStorage.getItem("admin_token");
@@ -75,6 +90,7 @@ export function PendingProvider({ children }: { children: ReactNode }) {
                 setPendingListingCount(data.pendingListings ?? 0);
                 setPendingUpgradeCount(data.pendingUpgrades ?? 0);
                 setPendingRenewalCount(data.pendingRenewals ?? 0);
+                setPendingSlotPurchaseCount(data.pendingSlotPurchases ?? 0);
             } catch {
                 // invalid data
             }
@@ -88,10 +104,10 @@ export function PendingProvider({ children }: { children: ReactNode }) {
             es.close();
             esRef.current = null;
         };
-    }, [refreshListings, refreshUpgrades, refreshRenewals]);
+    }, [refreshListings, refreshUpgrades, refreshRenewals, refreshSlotPurchases]);
 
     return (
-        <PendingContext.Provider value={{ pendingListingCount, pendingUpgradeCount, pendingRenewalCount, refreshListings, refreshUpgrades, refreshRenewals }}>
+        <PendingContext.Provider value={{ pendingListingCount, pendingUpgradeCount, pendingRenewalCount, pendingSlotPurchaseCount, refreshListings, refreshUpgrades, refreshRenewals, refreshSlotPurchases }}>
             {children}
         </PendingContext.Provider>
     );

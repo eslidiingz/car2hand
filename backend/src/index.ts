@@ -27,13 +27,10 @@ import { adminServiceRoutes } from "./admin-services";
 import { adminSSERoutes, userSSERoutes } from "./admin-sse";
 import { forumRoutes } from "./forum";
 import { sellerProfileRoutes } from "./seller-profile";
-import { kycRoutes } from "./kyc";
-import { adminKycRoutes } from "./admin-kyc";
-import { adminContactRoutes, adminForumRoutes, adminReportsRoutes, publicReportRoutes } from "./admin-moderation";
-import { adminAuditRoutes, adminGarageRoutes, adminRevenueRoutes, adminListingBulkRoutes } from "./admin-p1";
-import { adminSellerProfileRoutes } from "./admin-seller-profiles";
+import { adminStorageRoutes } from "./admin-storage";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 import { verifySmtpConnection } from "./email";
+import { ensureStorageSettingSeeded } from "./storage/factory";
 
 // Allowed origins (update for production)
 const ALLOWED_ORIGINS = [
@@ -98,17 +95,7 @@ const app = new Elysia()
       .use(userSSERoutes)
       .use(forumRoutes)
       .use(sellerProfileRoutes)
-      .use(kycRoutes)
-      .use(adminKycRoutes)
-      .use(adminContactRoutes)
-      .use(adminForumRoutes)
-      .use(adminReportsRoutes)
-      .use(publicReportRoutes)
-      .use(adminAuditRoutes)
-      .use(adminGarageRoutes)
-      .use(adminRevenueRoutes)
-      .use(adminListingBulkRoutes)
-      .use(adminSellerProfileRoutes)
+      .use(adminStorageRoutes)
   )
 
   // Global error handler
@@ -149,6 +136,11 @@ const app = new Elysia()
   })
 
   .listen(8000);
+
+// Seed storage setting row on first boot (non-blocking)
+ensureStorageSettingSeeded().catch((err) => {
+  console.error("[STORAGE] Failed to seed StorageSetting:", err);
+});
 
 // Start cron jobs
 startPackageExpiryCrons();

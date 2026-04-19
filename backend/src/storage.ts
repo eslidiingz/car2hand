@@ -1,78 +1,42 @@
-import * as Minio from 'minio';
 import sharp from 'sharp';
+import { getActiveProvider, getProviderByType } from './storage/factory';
+import type { StorageProvider } from './storage/provider';
 
-// MinIO Client Configuration
-export const minioClient = new Minio.Client({
-    endPoint: process.env.MINIO_ENDPOINT || 'localhost',
-    port: parseInt(process.env.MINIO_PORT || '9000'),
-    useSSL: process.env.MINIO_USE_SSL === 'true',
-    accessKey: process.env.MINIO_ACCESS_KEY,
-    secretKey: process.env.MINIO_SECRET_KEY,
-});
-
-// Single bucket for all uploads
+// Legacy single-bucket constant retained for callers that reference it directly.
 export const BUCKET = process.env.MINIO_BUCKET || 'uploads';
 
 // =============================================
 // Path Builders - สร้าง path ตามโครงสร้าง
 // =============================================
 
-/**
- * สร้าง path สำหรับ avatar
- * Structure: {userId}/avatar/{filename}
- */
 export function buildAvatarPath(userId: string, filename: string): string {
     return `${userId}/avatar/${filename}`;
 }
 
-/**
- * สร้าง path สำหรับรูป listing
- * Structure: {userId}/listings/{listingId}/{filename}
- */
 export function buildListingImagePath(userId: string, listingId: string, filename: string): string {
     return `${userId}/listings/${listingId}/${filename}`;
 }
 
-/**
- * สร้าง path สำหรับรูปบทความ
- * Structure: admin/articles/{filename}
- */
 export function buildArticlePath(filename: string): string {
     return `articles/${filename}`;
 }
 
-/**
- * สร้าง path สำหรับโลโก้ร้านผู้ขาย
- * Structure: {userId}/seller/logo/{filename}
- */
 export function buildSellerLogoPath(userId: string, filename: string): string {
     return `${userId}/seller/logo/${filename}`;
 }
 
-/**
- * สร้าง path สำหรับภาพปกร้านผู้ขาย
- * Structure: {userId}/seller/cover/{filename}
- */
 export function buildSellerCoverPath(userId: string, filename: string): string {
     return `${userId}/seller/cover/${filename}`;
 }
-
-/**
- * สร้าง path สำหรับรูปรถในโรงรถของผู้ใช้
- * Structure: {userId}/garage/{vehicleId}/{filename}
- */
-export function buildGarageVehiclePath(userId: string, vehicleId: string, filename: string): string {
-    return `${userId}/garage/${vehicleId}/${filename}`;
-}
-
 
 // =============================================
 // URL Builders
 // =============================================
 
-/**
- * สร้าง public URL สำหรับเข้าถึงไฟล์
- */
+// Synchronous version kept for backwards compatibility — synthesizes a MinIO URL
+// from env even when the active provider differs. Callers that need a guaranteed
+// active-provider URL should use `uploadFile` (which returns the correct URL) or
+// call the async `getActiveProvider()` themselves.
 export function getPublicUrl(objectPath: string): string {
     const endpoint = process.env.MINIO_ENDPOINT || 'localhost';
     const port = process.env.MINIO_PORT || '9000';
@@ -85,26 +49,15 @@ export function getPublicUrl(objectPath: string): string {
 // File Upload Functions
 // =============================================
 
-/**
- * อัพโหลดไฟล์ทั่วไป
- */
 export async function uploadFile(
     objectPath: string,
     buffer: Buffer,
     contentType: string
 ): Promise<string> {
-    await minioClient.putObject(BUCKET, objectPath, buffer, buffer.length, {
-        'Content-Type': contentType,
-    });
-    return getPublicUrl(objectPath);
+    const provider = await getActiveProvider();
+    return provider.upload(objectPath, buffer, contentType);
 }
 
-/**
- * แปลงรูปภาพเป็น WebP format
- * @param buffer - Buffer ของรูปภาพเดิม
- * @param quality - คุณภาพ WebP (1-100, default: 80)
- * @returns Buffer ของรูปภาพ WebP
- */
 export async function convertToWebP(
     buffer: Buffer,
     quality: number = 80
@@ -114,11 +67,6 @@ export async function convertToWebP(
         .toBuffer();
 }
 
-/**
- * แปลงและ resize รูปภาพเป็น WebP
- * @param buffer - Buffer ของรูปภาพเดิม
- * @param options - ตัวเลือกการแปลง
- */
 export async function processImage(
     buffer: Buffer,
     options: {
@@ -158,15 +106,10 @@ export async function processImage(
         .toBuffer();
 }
 
-/**
- * อัพโหลด Avatar - แปลงเป็น WebP อัตโนมัติ
- * @returns URL ของรูป avatar
- */
 export async function uploadAvatar(
     userId: string,
     file: { buffer: Buffer; originalname: string; mimetype: string }
 ): Promise<string> {
-    // แปลงรูปเป็น WebP (ขนาดเล็กกว่าสำหรับ avatar — จำกัด 300x300)
     const webpBuffer = await processImage(file.buffer, {
         maxWidth: 300,
         maxHeight: 300
@@ -176,10 +119,8 @@ export async function uploadAvatar(
     const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
     const objectPath = buildAvatarPath(userId, webpFilename);
 
-    // อัพโหลดรูปใหม่ก่อน
     const url = await uploadFile(objectPath, webpBuffer, 'image/webp');
 
-    // ลบ avatar เก่าหลังอัพโหลดสำเร็จ (ลบทั้ง prefix ยกเว้นไฟล์ใหม่)
     const allAvatars = await listFiles(`${userId}/avatar/`);
     const oldAvatars = allAvatars.filter(f => f.name !== objectPath);
     for (const old of oldAvatars) {
@@ -189,23 +130,17 @@ export async function uploadAvatar(
     return url;
 }
 
-/**
- * อัพโหลดรูป Listing (รถ/มอเตอร์ไซค์) - แปลงเป็น WebP อัตโนมัติ
- * @returns URL ของรูป
- */
 export async function uploadListingImage(
     userId: string,
     listingId: string,
     file: { buffer: Buffer; originalname: string; mimetype: string },
     order?: number
 ): Promise<{ url: string; order: number }> {
-    // แปลงรูปเป็น WebP
     const webpBuffer = await processImage(file.buffer, {
         maxWidth: 800,
         addWatermark: true
     });
 
-    // สร้างชื่อไฟล์แบบ .webp
     const baseFilename = generateFilename(file.originalname);
     const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
     const filename = order !== undefined
@@ -218,20 +153,14 @@ export async function uploadListingImage(
     return { url, order: order ?? 0 };
 }
 
-/**
- * อัพโหลดรูปของ Article - แปลงเป็น WebP อัตโนมัติ
- * @returns URL ของรูป
- */
 export async function uploadArticleImage(
     file: { buffer: Buffer; originalname: string; mimetype: string }
 ): Promise<string> {
-    // แปลงรูปเป็น WebP
     const webpBuffer = await processImage(file.buffer, {
         maxWidth: 960,
         maxHeight: 640
     });
 
-    // สร้างชื่อไฟล์แบบ .webp
     const baseFilename = generateFilename(file.originalname);
     const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
     const objectPath = buildArticlePath(webpFilename);
@@ -239,43 +168,6 @@ export async function uploadArticleImage(
     return uploadFile(objectPath, webpBuffer, 'image/webp');
 }
 
-
-/**
- * อัพโหลดรูปรถในโรงรถส่วนตัว - แปลงเป็น WebP ขนาด 800x600
- * ใช้สำหรับ GarageVehicle.imageUrl (ไม่ใส่ watermark — รถส่วนตัว)
- * @returns URL ของรูป
- */
-export async function uploadGarageVehicleImage(
-    userId: string,
-    vehicleId: string,
-    file: { buffer: Buffer; originalname: string; mimetype: string }
-): Promise<string> {
-    const webpBuffer = await processImage(file.buffer, {
-        maxWidth: 800,
-        maxHeight: 600,
-    });
-
-    const baseFilename = generateFilename(file.originalname);
-    const webpFilename = baseFilename.replace(/\.[^.]+$/, '.webp');
-    const objectPath = buildGarageVehiclePath(userId, vehicleId, webpFilename);
-
-    const url = await uploadFile(objectPath, webpBuffer, 'image/webp');
-
-    // ลบรูปเก่าของรถคันนี้ก่อน (รองรับการอัพใหม่แทนที่)
-    const prefix = `${userId}/garage/${vehicleId}/`;
-    const all = await listFiles(prefix);
-    for (const f of all) {
-        if (f.name !== objectPath) {
-            try { await deleteFile(f.name); } catch { }
-        }
-    }
-
-    return url;
-}
-
-/**
- * อัพโหลดหลายรูปสำหรับ Listing
- */
 export async function uploadListingImages(
     userId: string,
     listingId: string,
@@ -291,112 +183,45 @@ export async function uploadListingImages(
 // File Delete Functions
 // =============================================
 
-/**
- * ลบไฟล์เดี่ยว
- */
 export async function deleteFile(objectPath: string): Promise<void> {
-    await minioClient.removeObject(BUCKET, objectPath);
+    const provider = await getActiveProvider();
+    await provider.delete(objectPath);
 }
 
-/**
- * ลบไฟล์ทั้งหมดที่ขึ้นต้นด้วย prefix
- */
 export async function deleteByPrefix(prefix: string): Promise<number> {
-    const objectsList: string[] = [];
-    const stream = minioClient.listObjects(BUCKET, prefix, true);
-
-    return new Promise((resolve, reject) => {
-        stream.on('data', (obj) => {
-            if (obj.name) {
-                objectsList.push(obj.name);
-            }
-        });
-
-        stream.on('error', reject);
-
-        stream.on('end', async () => {
-            if (objectsList.length === 0) {
-                resolve(0);
-                return;
-            }
-
-            try {
-                await minioClient.removeObjects(BUCKET, objectsList);
-                resolve(objectsList.length);
-            } catch (err) {
-                reject(err);
-            }
-        });
-    });
+    const provider = await getActiveProvider();
+    return provider.deleteByPrefix(prefix);
 }
 
-/**
- * ลบ Avatar ของ user
- */
 export async function deleteAvatarFiles(userId: string): Promise<number> {
-    const prefix = `${userId}/avatar/`;
-    return deleteByPrefix(prefix);
+    return deleteByPrefix(`${userId}/avatar/`);
 }
 
-/**
- * ลบรูปทั้งหมดของ Listing
- */
 export async function deleteListingImages(userId: string, listingId: string): Promise<number> {
-    const prefix = `${userId}/listings/${listingId}/`;
-    return deleteByPrefix(prefix);
+    return deleteByPrefix(`${userId}/listings/${listingId}/`);
 }
 
-/**
- * ลบไฟล์ทั้งหมดของ User (เมื่อลบบัญชี)
- * รวมถึง avatar และ รูป listings ทั้งหมด
- */
 export async function deleteUserFiles(userId: string): Promise<number> {
-    const prefix = `${userId}/`;
-    return deleteByPrefix(prefix);
+    return deleteByPrefix(`${userId}/`);
 }
 
 // =============================================
 // List Files Functions
 // =============================================
 
-/**
- * ดึงรายการไฟล์ตาม prefix
- */
 export async function listFiles(prefix: string): Promise<Array<{ name: string; url: string; size: number }>> {
-    const files: Array<{ name: string; url: string; size: number }> = [];
-    const stream = minioClient.listObjects(BUCKET, prefix, true);
-
-    return new Promise((resolve, reject) => {
-        stream.on('data', (obj) => {
-            if (obj.name) {
-                files.push({
-                    name: obj.name,
-                    url: getPublicUrl(obj.name),
-                    size: obj.size || 0,
-                });
-            }
-        });
-
-        stream.on('error', reject);
-        stream.on('end', () => resolve(files));
-    });
+    const provider = await getActiveProvider();
+    return provider.list(prefix);
 }
 
-/**
- * ดึงรายการรูปของ Listing
- */
 export async function getListingImages(userId: string, listingId: string): Promise<Array<{ name: string; url: string; size: number }>> {
-    const prefix = `${userId}/listings/${listingId}/`;
-    return listFiles(prefix);
+    return listFiles(`${userId}/listings/${listingId}/`);
 }
 
 // =============================================
 // Utility Functions
 // =============================================
 
-/**
- * สร้างชื่อไฟล์ unique
- */
 export function generateFilename(originalName: string): string {
     const timestamp = Date.now();
     const random = Math.random().toString(36).substring(2, 8);
@@ -404,61 +229,44 @@ export function generateFilename(originalName: string): string {
     return `${timestamp}-${random}.${ext}`;
 }
 
-/**
- * ตรวจสอบและสร้าง bucket ถ้ายังไม่มี
- */
 export async function ensureBucket(): Promise<void> {
-    const exists = await minioClient.bucketExists(BUCKET);
-    if (!exists) {
-        await minioClient.makeBucket(BUCKET);
-        // Set bucket policy to public read
-        const policy = {
-            Version: '2012-10-17',
-            Statement: [
-                {
-                    Effect: 'Allow',
-                    Principal: { AWS: ['*'] },
-                    Action: ['s3:GetObject'],
-                    Resource: [`arn:aws:s3:::${BUCKET}/*`],
-                },
-            ],
-        };
-        await minioClient.setBucketPolicy(BUCKET, JSON.stringify(policy));
-        console.log(`✅ Created bucket: ${BUCKET}`);
-    }
+    const provider = await getActiveProvider();
+    await provider.ensureBucket();
 }
 
-/**
- * ตรวจสอบว่าไฟล์เป็นรูปภาพหรือไม่
- */
 export function isValidImageType(mimetype: string): boolean {
     const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     return validTypes.includes(mimetype);
 }
 
-/**
- * ตรวจสอบขนาดไฟล์ (default: 10MB)
- */
 export function isValidFileSize(size: number, maxSizeMB: number = 10): boolean {
     const maxBytes = maxSizeMB * 1024 * 1024;
     return size <= maxBytes;
 }
 
 /**
- * ดึง object path จาก MinIO URL เพื่อใช้ในการลบไฟล์
- * @returns object path หรือ null ถ้า URL ไม่ใช่ MinIO
+ * ดึง object path จาก URL — matches MinIO `/<bucket>/` shape and the configured
+ * Cloudflare R2 public URL base. Stays synchronous for backwards compatibility
+ * (DB rows can contain URLs from either provider, so both shapes are checked).
  */
 export function extractObjectPath(url: string | null | undefined): string | null {
     if (!url) return null;
+
+    const r2Base = (process.env.CLOUDFLARE_R2_PUBLIC_URL || '').replace(/\/+$/, '');
+    if (r2Base) {
+        const prefix = `${r2Base}/`;
+        if (url.startsWith(prefix)) {
+            return url.slice(prefix.length) || null;
+        }
+    }
+
     const bucketStr = `/${BUCKET}/`;
-    if (!url.includes(bucketStr)) return null;
-    return url.split(bucketStr)[1] || null;
+    if (url.includes(bucketStr)) {
+        return url.split(bucketStr)[1] || null;
+    }
+    return null;
 }
 
-/**
- * ลบไฟล์เก่าจาก MinIO ตาม URL (ถ้าเป็น MinIO URL)
- * ใช้เมื่ออัพโหลดรูปใหม่ทับรูปเดิม
- */
 export async function deleteOldFile(oldUrl: string | null | undefined): Promise<boolean> {
     const objectPath = extractObjectPath(oldUrl);
     if (!objectPath) return false;
@@ -471,45 +279,5 @@ export async function deleteOldFile(oldUrl: string | null | undefined): Promise<
     }
 }
 
-/**
- * ดึง URL รูปภาพทั้งหมดจาก markdown content ที่ถูกอัพโหลดเข้า MinIO bucket articles/
- * รองรับทั้ง markdown image syntax `![alt](url)` และ HTML `<img src="url">`
- * คืนเฉพาะ URL ที่อยู่ภายใต้ path articles/ เท่านั้น (ป้องกันการลบรูปจาก source อื่นโดยไม่ได้ตั้งใจ)
- */
-export function extractArticleImageUrls(markdown: string | null | undefined): string[] {
-    if (!markdown) return [];
-    const urls = new Set<string>();
-    const mdRegex = /!\[[^\]]*\]\(([^)\s]+)/g;
-    const htmlRegex = /<img[^>]+src=["']([^"']+)["']/gi;
-    let match: RegExpExecArray | null;
-    while ((match = mdRegex.exec(markdown)) !== null) urls.add(match[1]);
-    while ((match = htmlRegex.exec(markdown)) !== null) urls.add(match[1]);
-
-    return Array.from(urls).filter((url) => {
-        const path = extractObjectPath(url);
-        return path !== null && path.startsWith('articles/');
-    });
-}
-
-/**
- * ลบรูปภาพใน article content ที่ถูกลบออกจาก content ใหม่
- * คำนวณจาก diff ของ URL ใน old vs new content
- */
-export async function deleteRemovedArticleImages(
-    oldContent: string | null | undefined,
-    newContent: string | null | undefined
-): Promise<number> {
-    const oldUrls = new Set(extractArticleImageUrls(oldContent));
-    const newUrls = new Set(extractArticleImageUrls(newContent));
-    const removed: string[] = [];
-    for (const url of oldUrls) {
-        if (!newUrls.has(url)) removed.push(url);
-    }
-    let deleted = 0;
-    for (const url of removed) {
-        if (await deleteOldFile(url)) deleted++;
-    }
-    return deleted;
-}
-
-export default minioClient;
+export type { StorageProvider };
+export { getActiveProvider, getProviderByType };

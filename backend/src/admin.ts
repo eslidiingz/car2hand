@@ -9,6 +9,7 @@ import { jwtPlugin, generateAccessToken, authGuard } from "./jwt";
 import { adminLoginSchema, validateInput } from "./validation";
 import { authRateLimiter } from "./security";
 import { getUserPackage, getListingExpiryDate } from "./config/packages";
+import { reactivatePausedListings, getEffectiveMaxListings } from "./config/pause";
 import { testLineConnection } from "./line";
 import { getAndBroadcastPendingCounts, pushNotification } from "./admin-sse";
 import { logAdminAction, diffFields } from "./admin-p1";
@@ -906,8 +907,8 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     return { error: 'Bad Request', message: 'รายการนี้ถูกดำเนินการแล้ว' };
                 }
 
-                // ต่ออายุ 30 วัน (Basic package)
-                const newExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                // ต่ออายุ 45 วัน (Basic package)
+                const newExpiry = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
 
                 await prisma.$transaction([
                     prisma.listingRenewal.update({
@@ -1756,8 +1757,37 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                     })
                 ]);
 
+                // Reactivate paused listings up to new effective max (package + bonus)
+                const userBonus = await prisma.user.findUnique({
+                    where: { id: transaction.userId },
+                    select: { bonusListingSlots: true }
+                });
+                const effectiveMax = getEffectiveMaxListings(transaction.package.maxListings, userBonus?.bonusListingSlots ?? 0);
+                let reactivatedCount = 0;
+                if (effectiveMax === -1) {
+                    // unlimited — reactivate ทุก paused
+                    const pausedCount = await prisma.vehicleListing.count({
+                        where: { userId: transaction.userId, status: 'PAUSED' }
+                    });
+                    if (pausedCount > 0) {
+                        reactivatedCount = await reactivatePausedListings(transaction.userId, pausedCount);
+                    }
+                } else {
+                    const currentActive = await prisma.vehicleListing.count({
+                        where: {
+                            userId: transaction.userId,
+                            status: { in: ['ACTIVE', 'PENDING', 'DRAFT'] }
+                        }
+                    });
+                    const available = Math.max(0, effectiveMax - currentActive);
+                    if (available > 0) {
+                        reactivatedCount = await reactivatePausedListings(transaction.userId, available);
+                    }
+                }
+
                 // สร้าง notification แจ้งผู้ใช้
-                const pkgApproveNotif = { title: 'แพ็กเกจได้รับการอนุมัติ', message: `แพ็กเกจ ${transaction.package.name} ของคุณได้รับการอนุมัติแล้ว`, type: 'PACKAGE_APPROVED' };
+                const reactivateMsg = reactivatedCount > 0 ? ` พร้อมปลุกประกาศที่หยุดชั่วคราว ${reactivatedCount} รายการ` : '';
+                const pkgApproveNotif = { title: 'แพ็กเกจได้รับการอนุมัติ', message: `แพ็กเกจ ${transaction.package.name} ของคุณได้รับการอนุมัติแล้ว${reactivateMsg}`, type: 'PACKAGE_APPROVED' };
                 await prisma.userNotification.create({ data: { userId: transaction.userId, ...pkgApproveNotif } });
                 pushNotification(transaction.userId, pkgApproveNotif);
 

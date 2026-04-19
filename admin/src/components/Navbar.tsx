@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, User, Package, Car, Menu } from "lucide-react";
+import { Bell, Search, User, Package, Car, Menu, RefreshCw, CreditCard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,8 @@ import MobileNav from "./MobileNav";
 
 export default function Navbar() {
     const { admin } = useAuth();
-    const { pendingUpgradeCount, pendingListingCount } = usePendingCounts();
-    const totalPending = pendingUpgradeCount + pendingListingCount;
+    const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount, pendingSlotPurchaseCount } = usePendingCounts();
+    const totalPending = pendingUpgradeCount + pendingListingCount + pendingRenewalCount + pendingSlotPurchaseCount;
     const [showNotif, setShowNotif] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -99,6 +99,25 @@ export default function Navbar() {
                                             </div>
                                         </Link>
                                     )}
+                                    {pendingRenewalCount > 0 && (
+                                        <Link
+                                            href="/listings"
+                                            onClick={() => setShowNotif(false)}
+                                            className="px-4 py-3.5 flex items-start gap-3 hover:bg-accent transition-colors"
+                                        >
+                                            <div className="mt-0.5 p-1.5 rounded-lg bg-sky-100 dark:bg-sky-500/20 flex-shrink-0">
+                                                <RefreshCw className="h-4 w-4 text-sky-600" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold text-foreground">
+                                                    คำขอต่ออายุประกาศ
+                                                </p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">
+                                                    มี <span className="font-bold text-sky-600">{pendingRenewalCount} รายการ</span> รอพิจารณา
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    )}
                                     {pendingUpgradeCount > 0 && (
                                         <Link
                                             href="/packages"
@@ -114,6 +133,25 @@ export default function Navbar() {
                                                 </p>
                                                 <p className="text-xs text-muted-foreground mt-0.5">
                                                     มี <span className="font-bold text-orange-600">{pendingUpgradeCount} รายการ</span> รอพิจารณา
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    )}
+                                    {pendingSlotPurchaseCount > 0 && (
+                                        <Link
+                                            href="/packages"
+                                            onClick={() => setShowNotif(false)}
+                                            className="px-4 py-3.5 flex items-start gap-3 hover:bg-accent transition-colors"
+                                        >
+                                            <div className="mt-0.5 p-1.5 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex-shrink-0">
+                                                <CreditCard className="h-4 w-4 text-violet-600" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-semibold text-foreground">
+                                                    คำขอซื้อ slot ประกาศเพิ่ม
+                                                </p>
+                                                <p className="text-xs text-muted-foreground mt-0.5">
+                                                    มี <span className="font-bold text-violet-600">{pendingSlotPurchaseCount} รายการ</span> รอพิจารณา
                                                 </p>
                                             </div>
                                         </Link>
