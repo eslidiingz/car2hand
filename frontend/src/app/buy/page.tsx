@@ -695,8 +695,8 @@ function BuyContent() {
                                                 <p className="text-xs text-center text-gray-400 py-4">ไม่พบยี่ห้อนี้</p>
                                             )}
                                     </div>
-                                    {/* Visual cue: Bottom shadow/gradient for scrollable content */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none"></div>
+                                    {/* Visual cue: Bottom fade — white in light, dark card color in dark */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-card dark:via-card/80 pointer-events-none"></div>
                                 </div>
                             </div>
 

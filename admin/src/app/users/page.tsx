@@ -2,7 +2,6 @@
 
 import DashboardLayout from "@/components/DashboardLayout";
 import { apiFetch } from "@/lib/api";
-import { toast } from "sonner";
 import {
     Users,
     Search,
@@ -13,11 +12,12 @@ import {
     ChevronRight,
     Package,
     Car,
-    UserCheck,
-    UserX
+    Eye
 } from "lucide-react";
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface UserItem {
     id: string;
@@ -32,18 +32,18 @@ interface UserItem {
 
 export default function UserManagementPage() {
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearch = useDebounce(searchTerm, 500);
     const [users, setUsers] = useState<UserItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [total, setTotal] = useState(0);
-    const [togglingId, setTogglingId] = useState<string | null>(null);
 
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
         try {
             const params = new URLSearchParams({ page: String(page), limit: '20' });
-            if (searchTerm) params.set('search', searchTerm);
+            if (debouncedSearch) params.set('search', debouncedSearch);
             const data = await apiFetch(`/admin/users?${params}`);
             setUsers(data.users || []);
             setTotalPages(data.pagination?.totalPages || 1);
@@ -53,23 +53,11 @@ export default function UserManagementPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [page, searchTerm]);
+    }, [page, debouncedSearch]);
 
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
-
-    const handleToggleStatus = async (userId: string) => {
-        setTogglingId(userId);
-        try {
-            await apiFetch(`/admin/users/${userId}/toggle-status`, { method: 'PUT' });
-            fetchUsers();
-        } catch (error: any) {
-            toast.error(error.message || 'เกิดข้อผิดพลาด');
-        } finally {
-            setTogglingId(null);
-        }
-    };
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('th-TH', {
@@ -150,15 +138,15 @@ export default function UserManagementPage() {
                                 users.map((user) => (
                                     <tr key={user.id} className="hover:bg-accent transition-colors group">
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
+                                            <Link href={`/users/${user.id}`} className="flex items-center gap-3 group/link">
                                                 <div className="h-9 w-9 bg-accent rounded-lg flex items-center justify-center text-muted-foreground font-medium text-sm">
                                                     {user.fullName.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-medium text-foreground">{user.fullName}</p>
+                                                    <p className="text-sm font-medium text-foreground group-hover/link:text-primary group-hover/link:underline transition-colors">{user.fullName}</p>
                                                     <span className="text-xs text-muted-foreground flex items-center gap-1"><Mail size={11} /> {user.email}</span>
                                                 </div>
-                                            </div>
+                                            </Link>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="text-sm text-muted-foreground flex items-center gap-1"><Phone size={13} /> {user.phoneNumber}</span>
@@ -190,22 +178,15 @@ export default function UserManagementPage() {
                                             {formatDate(user.createdAt)}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                disabled={togglingId === user.id}
-                                                onClick={() => handleToggleStatus(user.id)}
-                                                className={user.isActive
-                                                    ? "text-rose-500 hover:text-rose-600 hover:bg-rose-50 text-xs"
-                                                    : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 text-xs"
-                                                }
-                                            >
-                                                {user.isActive ? (
-                                                    <><UserX size={14} /> ปิดการใช้งาน</>
-                                                ) : (
-                                                    <><UserCheck size={14} /> เปิดการใช้งาน</>
-                                                )}
-                                            </Button>
+                                            <Link href={`/users/${user.id}`}>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-primary hover:text-primary hover:bg-blue-50 text-xs"
+                                                >
+                                                    <Eye size={14} /> ดูรายละเอียด
+                                                </Button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

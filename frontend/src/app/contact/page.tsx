@@ -127,10 +127,10 @@ export default function ContactPage() {
                         </div>
                         <h3 className="font-bold text-gray-800 mb-1">อีเมล</h3>
                         <a
-                            href="mailto:support@car2hand.com"
+                            href="mailto:support@car2hand.app"
                             className="text-sm text-primary hover:underline break-all"
                         >
-                            support@car2hand.com
+                            support@car2hand.app
                         </a>
                         <p className="text-xs text-gray-500 mt-1">ตอบกลับภายใน 1-2 วันทำการ</p>
                     </div>

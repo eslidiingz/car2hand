@@ -37,6 +37,7 @@ import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
 import Toast from '@/components/Toast';
+import TrustBadge from '@/components/TrustBadge';
 
 // Types (exported so parent can use if needed)
 export interface VehicleImage {
@@ -345,13 +346,13 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     <>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                                            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
+                                            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 dark:bg-black/50 backdrop-blur rounded-full flex items-center justify-center text-gray-700 dark:text-white hover:bg-white dark:hover:bg-black/70 transition shadow-lg"
                                         >
                                             <ChevronLeft className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                                            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-700 hover:bg-white transition shadow-lg"
+                                            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white/80 dark:bg-black/50 backdrop-blur rounded-full flex items-center justify-center text-gray-700 dark:text-white hover:bg-white dark:hover:bg-black/70 transition shadow-lg"
                                         >
                                             <ChevronRight className="w-[16px] h-[16px] md:w-[20px] md:h-[20px]" />
                                         </button>
@@ -568,6 +569,9 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                         ) : (
                                             <p className="font-bold text-gray-800">{listing.user.fullName}</p>
                                         )}
+                                        {/* Trust badge — KYC-earned verification */}
+                                        <TrustBadge level={(listing as any).user?.sellerProfile?.verificationLevel} size="sm" />
+                                        {/* Commercial badge — from paid package (marketing only) */}
                                         {listing.badge && (
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${
                                                 listing.badge === 'Premium Choice' ? 'bg-gradient-to-r from-yellow-500 to-amber-600' :
@@ -576,14 +580,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                             }`}>
                                                 {listing.badge === 'Premium Choice' && <Crown size={10} />}
                                                 {listing.badge === 'Hot Deal' && <Flame size={10} />}
-                                                {listing.badge === 'Verified Seller' && <BadgeCheck size={10} />}
                                                 {listing.badge}
-                                            </span>
-                                        )}
-                                        {(listing as any).user?.sellerProfile?.isVerified && (
-                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-green-500">
-                                                <BadgeCheck size={10} />
-                                                ยืนยันตัวตน
                                             </span>
                                         )}
                                     </div>

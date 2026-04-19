@@ -63,13 +63,31 @@ export async function pushUnreadCount(userId: string) {
 }
 
 /**
- * Push a new notification event + updated unread count to a user
+ * Push a new notification event + updated unread count to a user.
+ * Delivery channels (fan-out):
+ *   1. SSE (if tab is open) — instant in-app badge
+ *   2. Web Push (if user subscribed) — OS-level alert even if tab closed
  */
-export async function pushNotification(userId: string, notification: { title: string; message: string; type: string }) {
+export async function pushNotification(userId: string, notification: { title: string; message: string; type: string; url?: string }) {
     const unreadCount = await prisma.userNotification.count({
         where: { userId, isRead: false }
     });
     sendUserEvent(userId, 'new-notification', { ...notification, unreadCount });
+
+    // Lazy import to avoid circular deps and keep web-push optional.
+    // sendToUser() silently returns 0 if VAPID is not configured.
+    try {
+        const { sendToUser } = await import('./web-push-service');
+        await sendToUser(userId, {
+            title: notification.title,
+            body: notification.message,
+            tag: notification.type,
+            url: notification.url || '/',
+            data: { type: notification.type },
+        });
+    } catch (err) {
+        console.warn('[pushNotification] web-push delivery failed:', err instanceof Error ? err.message : err);
+    }
 }
 
 // ============================================================

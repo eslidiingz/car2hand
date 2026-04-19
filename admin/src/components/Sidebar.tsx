@@ -12,21 +12,48 @@ import {
     Package,
     Tags,
     Bell,
-    Wrench
+    Wrench,
+    BadgeCheck,
+    Inbox,
+    MessageSquare,
+    Flag,
+    Warehouse,
+    ScrollText,
+    BarChart3,
+    Store
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const navigation = [
+/**
+ * ⚠️  SINGLE SOURCE OF TRUTH for the admin navigation.
+ * ─────────────────────────────────────────────────────────────
+ * Used by:
+ *   1. `Sidebar.tsx`  (this file — desktop vertical rail)
+ *   2. `MobileNav.tsx` (mobile drawer opened from Navbar hamburger)
+ *
+ * 🚨 When adding a new admin page, add it HERE only.
+ *    Never hardcode links in Navbar.tsx, DashboardLayout.tsx, or page.tsx.
+ *    The mobile and desktop menus MUST stay in sync automatically.
+ */
+export const navigation = [
     { name: "สรุปภาพรวม", href: "/", icon: LayoutDashboard },
     { name: "ผู้ใช้งาน", href: "/users", icon: Users },
+    { name: "ร้านค้า/ผู้ขาย", href: "/sellers", icon: Store },
+    { name: "ยืนยันตัวตน (KYC)", href: "/kyc", icon: BadgeCheck },
     { name: "ประกาศขาย", href: "/listings", icon: Car },
     { name: "จัดการบริการ", href: "/services", icon: Wrench },
     { name: "จัดการบทความ", href: "/articles", icon: BookOpen },
     { name: "หมวดหมู่บทความ", href: "/categories", icon: Tags },
     { name: "แพ็กเกจ", href: "/packages", icon: Package },
+    { name: "ชุมชน", href: "/forum", icon: MessageSquare },
+    { name: "กล่องข้อความ", href: "/contact", icon: Inbox },
+    { name: "รายงานการใช้ในทางผิด", href: "/reports", icon: Flag },
+    { name: "โรงรถผู้ใช้", href: "/garage", icon: Warehouse },
+    { name: "รายได้ & CSV", href: "/revenue", icon: BarChart3 },
+    { name: "ประวัติการทำงาน", href: "/audit", icon: ScrollText },
     { name: "การแจ้งเตือน", href: "/notifications", icon: Bell },
 ];
 

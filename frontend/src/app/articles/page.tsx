@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
@@ -144,13 +144,20 @@ function PopularArticleItem({ article, index }: { article: Article; index: numbe
 }
 
 function LoanCalculator() {
-  const [carPrice, setCarPrice] = useState(500000);
-  const [downPayment, setDownPayment] = useState(100000);
+  const [carPrice, setCarPrice] = useState<number | ''>('');
+  const [downPayment, setDownPayment] = useState<number | ''>('');
   const [months, setMonths] = useState(60);
+  const [interestRate, setInterestRate] = useState<number | ''>(3);
 
-  const principal = Math.max(0, carPrice - downPayment);
-  const interest = principal * 0.035 * (months / 12);
-  const monthly = months > 0 ? (principal + interest) / months : 0;
+  const carPriceNum = carPrice === '' ? 0 : carPrice;
+  const downPaymentNum = downPayment === '' ? 0 : downPayment;
+  const principal = Math.max(0, carPriceNum - downPaymentNum);
+  const interestRateNum = interestRate === '' ? 0 : interestRate;
+  const rate = Math.max(0, interestRateNum) / 100;
+  const interest = principal * rate * (months / 12);
+  const totalAmount = principal + interest;
+  const monthly = months > 0 ? totalAmount / months : 0;
+  const hasInput = carPrice !== '' && carPriceNum > 0;
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -162,8 +169,9 @@ function LoanCalculator() {
           <label className="text-xs text-gray-500 font-bold block mb-1.5">ราคารถ (บาท)</label>
           <input
             type="number"
+            placeholder="กรอกราคารถ"
             value={carPrice}
-            onChange={(e) => setCarPrice(Number(e.target.value))}
+            onChange={(e) => setCarPrice(e.target.value === '' ? '' : Number(e.target.value))}
             className="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
           />
         </div>
@@ -171,10 +179,26 @@ function LoanCalculator() {
           <label className="text-xs text-gray-500 font-bold block mb-1.5">เงินดาวน์ (บาท)</label>
           <input
             type="number"
+            placeholder="กรอกเงินดาวน์"
             value={downPayment}
-            onChange={(e) => setDownPayment(Number(e.target.value))}
+            onChange={(e) => setDownPayment(e.target.value === '' ? '' : Number(e.target.value))}
             className="w-full p-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
           />
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 font-bold block mb-1.5">อัตราดอกเบี้ย (% ต่อปี)</label>
+          <div className="relative">
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="20"
+              value={interestRate}
+              onChange={(e) => setInterestRate(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full p-2.5 pr-10 border border-gray-200 rounded-lg text-sm bg-gray-50 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">%</span>
+          </div>
         </div>
         <div>
           <label className="text-xs text-gray-500 font-bold block mb-1.5">ระยะเวลาผ่อน (งวด)</label>
@@ -194,13 +218,25 @@ function LoanCalculator() {
             ))}
           </div>
         </div>
-        <div className="bg-blue-50 p-4 rounded-xl mt-2 text-center border border-blue-100">
-          <span className="text-xs text-gray-500 block mb-1">ค่างวดต่อเดือน (โดยประมาณ)</span>
-          <span className="text-2xl font-bold text-primary">
-            {formatNumber(Math.round(monthly))}{' '}
-            <span className="text-sm font-normal text-gray-500">บาท</span>
-          </span>
-        </div>
+        {hasInput ? (
+          <div className="bg-blue-50 p-4 rounded-xl mt-2 border border-blue-100">
+            <div className="text-center">
+              <span className="text-xs text-gray-500 block mb-1">ค่างวดต่อเดือน (โดยประมาณ)</span>
+              <span className="text-2xl font-bold text-primary">
+                {formatNumber(Math.round(monthly))}{' '}
+                <span className="text-sm font-normal text-gray-500">บาท</span>
+              </span>
+            </div>
+            <div className="mt-3 pt-3 border-t border-blue-200 flex justify-between text-xs text-gray-500">
+              <span>ยอดจัด: {formatNumber(principal)} บาท</span>
+              <span>ดอกเบี้ยรวม: {formatNumber(Math.round(interest))} บาท</span>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-gray-50 p-4 rounded-xl mt-2 border border-gray-200 text-center">
+            <span className="text-sm text-gray-400">กรอกราคารถเพื่อคำนวณค่างวด</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -223,7 +259,7 @@ function ArticlesContent() {
 
   // Data states
   const [categories, setCategories] = useState<Category[]>([]);
-  const [featuredArticle, setFeaturedArticle] = useState<Article | null>(null);
+  const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [popularArticles, setPopularArticles] = useState<Article[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -274,10 +310,10 @@ function ArticlesContent() {
     async function fetchFeatured() {
       setIsFeaturedLoading(true);
       try {
-        const res = await fetch(`${API_URL}/articles/featured?limit=1`);
+        const res = await fetch(`${API_URL}/articles/featured?limit=3`);
         const data = await res.json();
         if (data.success && data.articles?.length > 0) {
-          setFeaturedArticle(data.articles[0]);
+          setFeaturedArticles(data.articles.slice(0, 3));
         }
       } catch (err) {
         console.error('Failed to fetch featured:', err);
@@ -314,6 +350,19 @@ function ArticlesContent() {
     }
     fetchArticles();
   }, [currentCategory, currentSearch, currentPage, currentSort]);
+
+  // Scroll to articles heading when page changes (skip initial load)
+  const isFirstPageLoad = useRef(true);
+  useEffect(() => {
+    if (isFirstPageLoad.current) {
+      isFirstPageLoad.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      document.getElementById('articles-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [currentPage]);
 
   // Sync searchInput when URL search param changes externally
   useEffect(() => {
@@ -402,53 +451,58 @@ function ArticlesContent() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Featured Article */}
-        {!isFeaturedLoading && featuredArticle && (
+        {/* Featured Articles */}
+        {!isFeaturedLoading && featuredArticles.length > 0 && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-2">
-              <Star className="text-yellow-500" /> บทความแนะนำ
+              <Star className="text-yellow-500" fill="currentColor" /> บทความแนะนำ
             </h2>
-            <Link
-              href={`/articles/${featuredArticle.slug}`}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-lg transition duration-300 block"
-            >
-              <div className="h-64 md:h-80 overflow-hidden relative bg-gray-100">
-                {featuredArticle.featuredImage ? (
-                  <img
-                    src={featuredArticle.featuredImage}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                    alt={featuredArticle.title}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
-                    <Newspaper size={80} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredArticles.map((article) => (
+                <Link
+                  key={article.id}
+                  href={`/articles/${article.slug}`}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group cursor-pointer hover:shadow-lg transition duration-300 block flex flex-col"
+                >
+                  <div className="h-48 md:h-56 overflow-hidden relative bg-gray-100">
+                    {article.featuredImage ? (
+                      <img
+                        src={article.featuredImage}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        alt={article.title}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
+                        <Newspaper size={64} />
+                      </div>
+                    )}
+                    {article.category && (
+                      <span className="absolute top-4 left-4 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                        {article.category.name}
+                      </span>
+                    )}
                   </div>
-                )}
-                {featuredArticle.category && (
-                  <span className="absolute top-4 left-4 bg-accent text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                    {featuredArticle.category.name}
-                  </span>
-                )}
-              </div>
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-xs text-gray-500 mb-2 font-medium">
-                  {featuredArticle.category && (
-                    <span className="uppercase tracking-wider">{featuredArticle.category.name}</span>
-                  )}
-                  <span>-</span>
-                  <span>{readTime(featuredArticle.content)} นาทีอ่าน</span>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-primary transition">
-                  {featuredArticle.title}
-                </h3>
-                <p className="text-gray-500 mb-4 line-clamp-2 leading-relaxed">
-                  {featuredArticle.excerpt || featuredArticle.content.substring(0, 200)}
-                </p>
-                <span className="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                  อ่านต่อ <ArrowRight />
-                </span>
-              </div>
-            </Link>
+                  <div className="p-5 flex-1 flex flex-col">
+                    <div className="flex items-center gap-2 text-xs text-gray-500 mb-2 font-medium">
+                      {article.category && (
+                        <span className="uppercase tracking-wider">{article.category.name}</span>
+                      )}
+                      <span>-</span>
+                      <span>{readTime(article.content)} นาทีอ่าน</span>
+                    </div>
+                    <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 group-hover:text-primary transition line-clamp-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed flex-1">
+                      {article.excerpt || article.content.substring(0, 150)}
+                    </p>
+                    <span className="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                      อ่านต่อ <ArrowRight size={16} />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 
@@ -457,7 +511,7 @@ function ArticlesContent() {
           {/* Articles Column */}
           <div className="lg:col-span-2">
             {/* Header with sort */}
-            <div className="flex items-center justify-between mb-6">
+            <div id="articles-heading" className="flex items-center justify-between mb-6 scroll-mt-6">
               <h2 className="text-xl font-bold text-primary flex items-center gap-2">
                 <Newspaper className="text-blue-500" />
                 {currentSearch

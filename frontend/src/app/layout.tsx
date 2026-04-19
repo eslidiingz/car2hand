@@ -1,9 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { WishlistProvider } from "@/contexts/WishlistContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, organizationSchema, websiteSchema } from "@/lib/seo";
 
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   weight: ["300", "400", "500", "600", "700"],
@@ -12,13 +16,85 @@ const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0F3460",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Car2Hand | พบรถมือสองคุณภาพที่คุณมั่นใจ",
-  description: "Marketplace for second-hand cars with AI valuation and mechanic check. Buy and sell with confidence.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | รถมือสองคุณภาพที่คุณมั่นใจ`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "รถมือสอง",
+    "ขายรถมือสอง",
+    "ซื้อรถมือสอง",
+    "รถมือสองราคาถูก",
+    "used cars Thailand",
+    "Car2Hand",
+    "ตลาดรถมือสอง",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: "/",
+    languages: {
+      "th-TH": "/",
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "th_TH",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | รถมือสองคุณภาพที่คุณมั่นใจ`,
+    description: SITE_DESCRIPTION,
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} | รถมือสองคุณภาพที่คุณมั่นใจ`,
+    description: SITE_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/favicon.webp",
     shortcut: "/favicon.webp",
-    apple: "/favicon.webp",
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/favicon.webp" },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    statusBarStyle: "default",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
   },
 };
 
@@ -28,13 +104,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${ibmPlexSansThai.variable}`}>
-      <body className="font-sans antialiased bg-surface text-gray-800 flex flex-col min-h-screen">
-        <WishlistProvider>
-          <Navbar />
-          <main className="flex-grow pt-16">{children}</main>
-          <Footer />
-        </WishlistProvider>
+    <html lang="th" className={`${ibmPlexSansThai.variable}`} suppressHydrationWarning>
+      <body className="font-sans antialiased bg-background text-foreground flex flex-col min-h-screen">
+        <JsonLd data={[organizationSchema(), websiteSchema()]} />
+        <ServiceWorkerRegister />
+        <ThemeProvider>
+          <WishlistProvider>
+            <Navbar />
+            <main className="flex-grow pt-16">{children}</main>
+            <Footer />
+          </WishlistProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -172,6 +172,25 @@ const protectedSellerRoutes = new Elysia({ prefix: "/users/me/seller-profile" })
 
         const sanitized = sanitizeObject(body as Record<string, unknown>);
 
+        // Guard: showroomType upgrade requires matching KYC level
+        //   INDIVIDUAL → anyone
+        //   TENT       → BUSINESS or DEALER verified
+        //   DEALER     → DEALER verified
+        const requestedShowroom = (sanitized.showroomType as string) || 'INDIVIDUAL';
+        const currentProfile = await prisma.sellerProfile.findUnique({
+            where: { userId },
+            select: { verificationLevel: true, showroomType: true },
+        });
+        const currentLevel = currentProfile?.verificationLevel || 'NONE';
+        if (requestedShowroom === 'TENT' && !['BUSINESS', 'DEALER'].includes(currentLevel)) {
+            set.status = 403;
+            return { error: 'KYC_REQUIRED', message: 'ต้องยืนยันร้านรับรอง (BUSINESS) ก่อนเปลี่ยนเป็นเต็นท์' };
+        }
+        if (requestedShowroom === 'DEALER' && currentLevel !== 'DEALER') {
+            set.status = 403;
+            return { error: 'KYC_REQUIRED', message: 'ต้องยืนยันดีลเลอร์รับรอง (DEALER) ก่อนเปลี่ยนเป็นดีลเลอร์' };
+        }
+
         const profile = await prisma.sellerProfile.upsert({
             where: { userId },
             update: {
@@ -182,7 +201,7 @@ const protectedSellerRoutes = new Elysia({ prefix: "/users/me/seller-profile" })
                 shopDistrict: (sanitized.shopDistrict as string) || null,
                 shopMapUrl: (sanitized.shopMapUrl as string) || null,
                 shopPhone: (sanitized.shopPhone as string) || null,
-                showroomType: (sanitized.showroomType as any) || 'INDIVIDUAL',
+                showroomType: requestedShowroom as any,
                 shopOpenHours: (sanitized.shopOpenHours as string) || null,
                 shopEstablishedYear: sanitized.shopEstablishedYear as number || null,
                 socialWebsite: (sanitized.socialWebsite as string) || null,

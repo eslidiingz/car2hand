@@ -240,18 +240,18 @@ export default function SellPage() {
                 </div>
 
                 <div className="overflow-x-auto pb-8">
-                    <div className="grid grid-cols-4 min-w-[800px] bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100">
+                    <div className="grid grid-cols-4 min-w-[800px] bg-white dark:bg-card rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-border">
                         {/* Table Header */}
                         <div className="col-span-1 p-8"></div>
                         <div className="col-span-1 bg-primary text-white p-8 text-center relative flex flex-col items-center justify-center gap-2 shadow-2xl z-10">
                             <h3 className="font-bold text-2xl">Car<span className='text-accent'>2</span>Hand</h3>
                             <div className="w-8 h-1 bg-accent/50 rounded-full mt-1"></div>
                         </div>
-                        <div className="col-span-1 bg-gray-50/50 p-8 text-center flex flex-col items-center justify-center">
-                            <h3 className="font-bold text-gray-500 text-lg">เต็นท์รถทั่วไป</h3>
+                        <div className="col-span-1 bg-gray-50/50 dark:bg-muted/30 p-8 text-center flex flex-col items-center justify-center">
+                            <h3 className="font-bold text-gray-500 dark:text-muted-foreground text-lg">เต็นท์รถทั่วไป</h3>
                         </div>
-                        <div className="col-span-1 bg-gray-50/50 p-8 text-center flex flex-col items-center justify-center">
-                            <h3 className="font-bold text-gray-500 text-lg whitespace-nowrap">โพสต์เอง (FB/Web)</h3>
+                        <div className="col-span-1 bg-gray-50/50 dark:bg-muted/30 p-8 text-center flex flex-col items-center justify-center">
+                            <h3 className="font-bold text-gray-500 dark:text-muted-foreground text-lg whitespace-nowrap">โพสต์เอง (FB/Web)</h3>
                         </div>
 
                         {/* Rows */}
@@ -312,17 +312,17 @@ export default function SellPage() {
                             },
                         ].map((row, idx) => (
                             <React.Fragment key={idx}>
-                                <div className={`col-span-1 py-6 px-8 flex items-center font-bold text-gray-700 border-t border-gray-50 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
+                                <div className={`col-span-1 py-6 px-8 flex items-center font-bold text-gray-700 dark:text-foreground border-t border-gray-50 dark:border-border/50 ${idx % 2 === 0 ? 'bg-white dark:bg-card' : 'bg-gray-50/20 dark:bg-muted/20'}`}>
                                     {row.label}
                                 </div>
-                                <div className={`col-span-1 py-6 px-6 bg-blue-900/5 flex items-center justify-center gap-2 font-bold text-primary text-center border-x-4 border-primary/5 border-t border-primary/5`}>
+                                <div className={`col-span-1 py-6 px-6 bg-blue-900/5 dark:bg-primary/15 flex items-center justify-center gap-2 font-bold text-primary text-center border-x-4 border-primary/5 dark:border-primary/20 border-t border-primary/5 dark:border-t-primary/20`}>
                                     {row.c2hIcon}
                                     <span className="text-sm md:text-base">{row.c2h}</span>
                                 </div>
-                                <div className={`col-span-1 py-6 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 ${row.others1Color} ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
+                                <div className={`col-span-1 py-6 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 dark:border-border/50 ${row.others1Color} ${idx % 2 === 0 ? 'bg-white dark:bg-card' : 'bg-gray-50/20 dark:bg-muted/20'}`}>
                                     {row.others1}
                                 </div>
-                                <div className={`col-span-1 py-6 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 ${row.others2Color} ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'}`}>
+                                <div className={`col-span-1 py-6 px-6 flex items-center justify-center text-center text-sm font-medium border-t border-gray-50 dark:border-border/50 ${row.others2Color} ${idx % 2 === 0 ? 'bg-white dark:bg-card' : 'bg-gray-50/20 dark:bg-muted/20'}`}>
                                     {row.others2}
                                 </div>
                             </React.Fragment>
@@ -332,8 +332,8 @@ export default function SellPage() {
             </section>
 
             {/* Steps Section */}
-            <section className="bg-white py-20 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-gray-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+            <section className="bg-white dark:bg-card py-20 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-gray-50 dark:bg-primary/10 rounded-full mix-blend-multiply dark:mix-blend-normal filter blur-3xl opacity-70"></div>
 
                 <div className="max-w-7xl mx-auto px-4 relative z-10">
                     <h2 className="text-3xl font-bold text-primary text-center mb-16">ขายง่ายๆ ใน 3 ขั้นตอน</h2>
@@ -347,7 +347,7 @@ export default function SellPage() {
                             <p className="text-gray-500">กรอกข้อมูลรถของคุณ และอัปโหลดรูปภาพ</p>
                         </div>
                         <div className="flex flex-col items-center text-center group relative">
-                            <div className="hidden md:block absolute top-10 -left-1/2 w-full h-[2px] bg-gray-200 -z-10"></div>
+                            <div className="hidden md:block absolute top-10 -left-1/2 w-full h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-border -z-10"></div>
                             <div className="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
                                 <Wand2 className="text-4xl text-accent" />
                             </div>
@@ -355,7 +355,7 @@ export default function SellPage() {
                             <p className="text-gray-500">ระบบช่วยประเมินราคากลางให้ เพื่อให้คุณตั้งราคาได้เหมาะสม</p>
                         </div>
                         <div className="flex flex-col items-center text-center group relative">
-                            <div className="hidden md:block absolute top-10 -left-1/2 w-full h-[2px] bg-gray-200 -z-10"></div>
+                            <div className="hidden md:block absolute top-10 -left-1/2 w-full h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-border -z-10"></div>
                             <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300">
                                 <Handshake className="text-4xl text-green-600" />
                             </div>

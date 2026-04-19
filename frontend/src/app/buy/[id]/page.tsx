@@ -3,6 +3,15 @@ import type { Metadata } from 'next';
 import ListingDetailClient, { VehicleListing } from './ListingDetailClient';
 import { ArrowLeft, AlertCircle, Timer } from 'lucide-react';
 import Link from 'next/link';
+import JsonLd from '@/components/JsonLd';
+import {
+    absoluteUrl,
+    breadcrumbSchema,
+    DEFAULT_OG_IMAGE,
+    SITE_NAME,
+    truncateDescription,
+    vehicleListingSchema,
+} from '@/lib/seo';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -28,19 +37,81 @@ async function getListing(id: string): Promise<ListingResponse> {
     }
 }
 
+/** Human-readable title used across meta tags and headings. */
+function buildListingTitle(listing: VehicleListing): string {
+    const subModel = listing.subModel ? ` ${listing.subModel}` : '';
+    const mileageText = listing.mileage ? ` ${listing.mileage.toLocaleString('th-TH')} กม.` : '';
+    return `${listing.year} ${listing.brand} ${listing.model}${subModel}${mileageText} ราคา ฿${listing.price.toLocaleString('th-TH')}`;
+}
+
+/** Concise description front-loaded with facts — better for AI Overviews / Gemini. */
+function buildListingDescription(listing: VehicleListing): string {
+    const parts: string[] = [];
+    parts.push(`${listing.year} ${listing.brand} ${listing.model}${listing.subModel ? ` ${listing.subModel}` : ''}`);
+    parts.push(`ราคา ฿${listing.price.toLocaleString('th-TH')}`);
+    if (listing.mileage) parts.push(`วิ่ง ${listing.mileage.toLocaleString('th-TH')} กม.`);
+    if (listing.transmission) parts.push(listing.transmission === 'AUTOMATIC' ? 'เกียร์ออโต้' : listing.transmission === 'MANUAL' ? 'เกียร์ธรรมดา' : listing.transmission);
+    if (listing.fuelType) parts.push(listing.fuelType === 'EV' ? 'รถไฟฟ้า' : listing.fuelType === 'HYBRID' ? 'ไฮบริด' : '');
+    if (listing.province) parts.push(`${listing.province}`);
+    const summary = parts.filter(Boolean).join(' · ');
+    const desc = listing.description ? ` ${listing.description}` : '';
+    return truncateDescription(`${summary}${desc}`, 200);
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
     const { listing, expired } = await getListing(id);
+    const canonicalPath = `/buy/${id}`;
 
-    if (expired) return { title: 'ประกาศหมดอายุ | CAR2Hand' };
-    if (!listing) return { title: 'ไม่พบประกาศ | CAR2Hand' };
+    if (expired) {
+        return {
+            title: 'ประกาศหมดอายุ',
+            robots: { index: false, follow: true },
+            alternates: { canonical: canonicalPath },
+        };
+    }
+    if (!listing) {
+        return {
+            title: 'ไม่พบประกาศ',
+            robots: { index: false, follow: true },
+            alternates: { canonical: canonicalPath },
+        };
+    }
+
+    const title = `${listing.year} ${listing.brand} ${listing.model}${listing.subModel ? ` ${listing.subModel}` : ''}`;
+    const description = buildListingDescription(listing);
+    const images = listing.images.length > 0
+        ? listing.images.slice(0, 4).map((img) => ({ url: img.url, alt: buildListingTitle(listing) }))
+        : [{ url: DEFAULT_OG_IMAGE, alt: SITE_NAME }];
+    const keywords = [
+        listing.brand,
+        listing.model,
+        listing.subModel,
+        `${listing.brand} ${listing.model} มือสอง`,
+        `${listing.year} ${listing.brand} ${listing.model}`,
+        listing.province ? `รถมือสอง ${listing.province}` : null,
+        'รถมือสอง',
+    ].filter(Boolean) as string[];
 
     return {
-        title: `${listing.year} ${listing.brand} ${listing.model} | CAR2Hand`,
-        description: listing.description || `ขาย ${listing.title} ราคา ฿${listing.price.toLocaleString()} ที่ CAR2Hand`,
+        title,
+        description,
+        keywords,
+        alternates: { canonical: canonicalPath },
         openGraph: {
-            images: listing.images[0]?.url ? [listing.images[0].url] : [],
-        }
+            type: 'website',
+            locale: 'th_TH',
+            url: absoluteUrl(canonicalPath),
+            title,
+            description,
+            images,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: images.map((i) => i.url),
+        },
     };
 }
 
@@ -84,5 +155,45 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
         );
     }
 
-    return <ListingDetailClient listing={listing} />;
+    // SEO / GEO — Vehicle + Product + Offer + Breadcrumb structured data
+    const vehicleJsonLd = vehicleListingSchema(
+        {
+            id: listing.id,
+            title: buildListingTitle(listing),
+            description: listing.description,
+            brand: listing.brand,
+            model: listing.model,
+            year: listing.year,
+            price: listing.price,
+            mileage: listing.mileage,
+            color: listing.color,
+            fuelType: listing.fuelType,
+            transmission: listing.transmission,
+            bodyType: listing.bodyType,
+            vehicleType: listing.vehicleType,
+            condition: listing.condition,
+            engineSize: listing.engineSize,
+            seats: listing.seats,
+            province: listing.province,
+            district: listing.district,
+            images: listing.images.map((img) => img.url),
+            seller: listing.user ? { fullName: listing.user.fullName } : null,
+            createdAt: listing.createdAt,
+        },
+        `/buy/${id}`,
+    );
+
+    const breadcrumb = breadcrumbSchema([
+        { name: 'หน้าแรก', url: '/' },
+        { name: 'ซื้อรถ', url: '/buy' },
+        { name: `${listing.brand} ${listing.model}`, url: `/buy?brand=${encodeURIComponent(listing.brand)}` },
+        { name: buildListingTitle(listing), url: `/buy/${id}` },
+    ]);
+
+    return (
+        <>
+            <JsonLd data={[vehicleJsonLd, breadcrumb]} />
+            <ListingDetailClient listing={listing} />
+        </>
+    );
 }

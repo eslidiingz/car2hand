@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import LineConnection from '@/components/settings/LineConnection';
 import SellerProfileForm from '@/components/settings/SellerProfileForm';
+import PushNotificationToggle from '@/components/PushNotificationToggle';
 import Toast from '@/components/Toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
@@ -414,7 +415,7 @@ export default function SettingsPage() {
                                 {/* Profile Image */}
                                 <div className="flex flex-col sm:flex-row items-center gap-4 pb-4">
                                     <div className="relative">
-                                        <div className="w-24 h-24 rounded-full overflow-hidden bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-md ring-4 ring-white">
+                                        <div className="w-24 h-24 rounded-full overflow-hidden bg-primary text-white flex items-center justify-center text-2xl font-bold shadow-md ring-4 ring-white dark:ring-card">
                                             {profile.profileImage ? (
                                                 // eslint-disable-next-line @next/next/no-img-element
                                                 <img
@@ -629,14 +630,14 @@ export default function SettingsPage() {
 
                         {/* Danger Zone — Delete Account */}
                         <div className="mt-10 pt-6 border-t border-red-100">
-                            <div className="rounded-2xl border border-red-200 bg-red-50/50 p-5 sm:p-6">
+                            <div className="rounded-2xl border border-red-200 bg-red-50/50 dark:bg-red-500/10 p-5 sm:p-6">
                                 <div className="flex items-start gap-3 mb-3">
                                     <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
                                         <AlertTriangle className="text-red-500" size={20} />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="text-base font-bold text-red-700">ลบบัญชีของฉัน</h3>
-                                        <p className="text-sm text-red-600/80 mt-1 leading-relaxed">
+                                        <p className="text-sm text-red-600/80 dark:text-red-300 mt-1 leading-relaxed">
                                             เมื่อลบบัญชี ข้อมูลทั้งหมดของคุณจะถูกลบอย่างถาวร
                                             รวมถึงประกาศ รถในโรงรถ ข้อความในชุมชน และไม่สามารถกู้คืนได้
                                         </p>
@@ -646,7 +647,7 @@ export default function SettingsPage() {
                                     <button
                                         type="button"
                                         onClick={openDeleteAccountModal}
-                                        className="inline-flex items-center gap-2 bg-white border border-red-300 text-red-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-red-100 transition"
+                                        className="inline-flex items-center gap-2 bg-white border border-red-300 text-red-600 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-red-100 transition dark:bg-red-500/20 dark:border-red-400/40 dark:hover:bg-red-500/30"
                                     >
                                         <Trash2 size={16} />
                                         ลบบัญชีของฉัน
@@ -659,7 +660,14 @@ export default function SettingsPage() {
 
                 {/* ===== NOTIFICATIONS TAB ===== */}
                 {activeTab === 'notifications' && (
-                    <LineConnection />
+                    <div className="space-y-5">
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">การแจ้งเตือน</h3>
+                            <p className="text-sm text-gray-500">จัดการช่องทางการแจ้งเตือน — เลือกรับผ่านเบราว์เซอร์และ/หรือ LINE</p>
+                        </div>
+                        <PushNotificationToggle />
+                        <LineConnection />
+                    </div>
                 )}
 
                 {activeTab === 'shop' && (

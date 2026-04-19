@@ -78,7 +78,7 @@ const CATEGORIES: FaqCategory[] = [
                         <Link href="/data-deletion" className="text-primary font-semibold hover:underline">
                             หน้าขอลบข้อมูลบัญชี
                         </Link>{' '}
-                        หรือส่งคำขอมาที่ support@car2hand.com
+                        หรือส่งคำขอมาที่ support@car2hand.app
                     </>
                 ),
             },
@@ -179,11 +179,11 @@ const CATEGORIES: FaqCategory[] = [
             },
             {
                 q: 'ขอคืนเงินได้ไหม?',
-                a: 'ค่าบริการที่ชำระแล้วไม่สามารถขอคืนได้ ยกเว้นกรณีที่ระบบมีข้อผิดพลาด กรุณาติดต่อ support@car2hand.com เพื่อตรวจสอบ',
+                a: 'ค่าบริการที่ชำระแล้วไม่สามารถขอคืนได้ ยกเว้นกรณีที่ระบบมีข้อผิดพลาด กรุณาติดต่อ support@car2hand.app เพื่อตรวจสอบ',
             },
             // {
             //     q: 'ออกใบเสร็จ/ใบกำกับภาษีได้ไหม?',
-            //     a: 'ได้ครับ กรุณาส่งข้อมูลบริษัทและเลขประจำตัวผู้เสียภาษีมาที่ support@car2hand.com พร้อมแนบหลักฐานการชำระเงิน',
+            //     a: 'ได้ครับ กรุณาส่งข้อมูลบริษัทและเลขประจำตัวผู้เสียภาษีมาที่ support@car2hand.app พร้อมแนบหลักฐานการชำระเงิน',
             // },
         ],
     },
@@ -199,7 +199,7 @@ const CATEGORIES: FaqCategory[] = [
             },
             {
                 q: 'พบประกาศต้องสงสัยรายงานได้ที่ไหน?',
-                a: 'กดปุ่ม "รายงาน" บนประกาศที่สงสัย หรือส่งอีเมลมาที่ support@car2hand.com ทีมงานจะตรวจสอบภายใน 24 ชั่วโมง',
+                a: 'กดปุ่ม "รายงาน" บนประกาศที่สงสัย หรือส่งอีเมลมาที่ support@car2hand.app ทีมงานจะตรวจสอบภายใน 24 ชั่วโมง',
             },
             {
                 q: 'ข้อมูลส่วนตัวของฉันปลอดภัยไหม?',
@@ -328,7 +328,7 @@ export default function HelpPage() {
                         <HelpCircle className="text-gray-300 mx-auto mb-3" size={48} />
                         <p className="text-gray-500">ไม่พบคำถามที่ตรงกับ &quot;{query}&quot;</p>
                         <p className="text-sm text-gray-400 mt-1">
-                            ลองใช้คำอื่น หรือติดต่อทีมงานที่ support@car2hand.com
+                            ลองใช้คำอื่น หรือติดต่อทีมงานที่ support@car2hand.app
                         </p>
                     </div>
                 ) : (
@@ -399,11 +399,11 @@ export default function HelpPage() {
                             ติดต่อทีมงาน
                         </Link>
                         <a
-                            href="mailto:support@car2hand.com"
+                            href="mailto:support@car2hand.app"
                             className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/30 text-white px-6 py-3 rounded-xl font-bold hover:bg-white/20 transition"
                         >
                             <Mail size={18} />
-                            support@car2hand.com
+                            support@car2hand.app
                         </a>
                     </div>
                 </div>

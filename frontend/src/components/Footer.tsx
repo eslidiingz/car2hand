@@ -41,8 +41,9 @@ export default function Footer() {
                         <h4 className="font-bold mb-4">เกี่ยวกับเรา</h4>
                         <ul className="space-y-2">
                             <li><Link href="/about" className="text-gray-400 hover:text-white">เกี่ยวกับ Car2Hand</Link></li>
-                            <li><Link href="/services/inspection" className="text-gray-400 hover:text-white">การตรวจสอบรถยนต์</Link></li>
-                            <li><Link href="/services/finance" className="text-gray-400 hover:text-white">การเงินและประกัน</Link></li>
+                            {/* TODO: Phase 2 — บริการ */}
+                            {/* <li><Link href="/services/inspection" className="text-gray-400 hover:text-white">การตรวจสอบรถยนต์</Link></li> */}
+                            {/* <li><Link href="/services/finance" className="text-gray-400 hover:text-white">การเงินและประกัน</Link></li> */}
                         </ul>
                     </div>
                 </div>

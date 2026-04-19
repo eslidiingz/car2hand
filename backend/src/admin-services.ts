@@ -1,7 +1,30 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
+import { jwtPlugin } from "./jwt";
+import { logAdminAction } from "./admin-p1";
 
 export const adminServiceRoutes = new Elysia({ prefix: "/admin/services" })
+    .use(jwtPlugin())
+    .derive(async ({ jwt, headers, set }) => {
+        const authHeader = headers["authorization"];
+        if (!authHeader?.startsWith("Bearer ")) {
+            set.status = 401;
+            return { authError: "Unauthorized" as const, adminId: null as string | null };
+        }
+        const token = authHeader.slice(7).trim();
+        const payload = await jwt.verify(token);
+        if (!payload) {
+            set.status = 401;
+            return { authError: "Invalid Token" as const, adminId: null as string | null };
+        }
+        return { authError: null as string | null, adminId: (payload as { userId: string }).userId };
+    })
+    .onBeforeHandle(({ authError, set }) => {
+        if (authError) {
+            set.status = 401;
+            return { error: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ Admin' };
+        }
+    })
 
     // Dashboard stats
     .get("/dashboard", async () => {
@@ -52,6 +75,30 @@ export const adminServiceRoutes = new Elysia({ prefix: "/admin/services" })
         };
     })
 
+    // Get booking detail (includes user info)
+    .get("/bookings/:id", async ({ params, set }) => {
+        const booking = await prisma.inspectionBooking.findUnique({
+            where: { id: params.id },
+            include: {
+                package: true,
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        email: true,
+                        phoneNumber: true,
+                        profileImage: true,
+                    }
+                }
+            }
+        });
+        if (!booking) {
+            set.status = 404;
+            return { error: 'Not Found', message: 'ไม่พบการจอง' };
+        }
+        return { booking };
+    })
+
     // Update booking
     .put("/bookings/:id", async ({ params, body, set }) => {
         try {
@@ -70,6 +117,38 @@ export const adminServiceRoutes = new Elysia({ prefix: "/admin/services" })
             status: t.Optional(t.String()),
             adminNote: t.Optional(t.String()),
         })
+    })
+
+    // Delete booking (hard delete)
+    .delete("/bookings/:id", async ({ params, adminId, set }) => {
+        try {
+            const existing = await prisma.inspectionBooking.findUnique({
+                where: { id: params.id },
+                select: { id: true, contactName: true, brandName: true }
+            });
+            if (!existing) {
+                set.status = 404;
+                return { error: 'Not Found', message: 'ไม่พบการจอง' };
+            }
+
+            await prisma.inspectionBooking.delete({ where: { id: params.id } });
+
+            if (adminId) {
+                await logAdminAction({
+                    adminId,
+                    action: 'BOOKING_DELETE',
+                    targetType: 'BOOKING',
+                    targetId: params.id,
+                    note: `ลบการจอง ${existing.contactName} (${existing.brandName})`,
+                });
+            }
+
+            return { message: 'ลบการจองเรียบร้อย' };
+        } catch (error) {
+            console.error('Delete booking error:', error);
+            set.status = 500;
+            return { error: 'Server Error', message: 'ไม่สามารถลบการจองได้' };
+        }
     })
 
     // List inquiries (paginated)
@@ -100,6 +179,29 @@ export const adminServiceRoutes = new Elysia({ prefix: "/admin/services" })
         };
     })
 
+    // Get inquiry detail (includes user info)
+    .get("/inquiries/:id", async ({ params, set }) => {
+        const inquiry = await prisma.serviceInquiry.findUnique({
+            where: { id: params.id },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        fullName: true,
+                        email: true,
+                        phoneNumber: true,
+                        profileImage: true,
+                    }
+                }
+            }
+        });
+        if (!inquiry) {
+            set.status = 404;
+            return { error: 'Not Found', message: 'ไม่พบรายการสอบถาม' };
+        }
+        return { inquiry };
+    })
+
     // Update inquiry
     .put("/inquiries/:id", async ({ params, body, set }) => {
         try {
@@ -117,6 +219,38 @@ export const adminServiceRoutes = new Elysia({ prefix: "/admin/services" })
             status: t.Optional(t.String()),
             adminNote: t.Optional(t.String()),
         })
+    })
+
+    // Delete inquiry (hard delete)
+    .delete("/inquiries/:id", async ({ params, adminId, set }) => {
+        try {
+            const existing = await prisma.serviceInquiry.findUnique({
+                where: { id: params.id },
+                select: { id: true, contactName: true, type: true }
+            });
+            if (!existing) {
+                set.status = 404;
+                return { error: 'Not Found', message: 'ไม่พบรายการสอบถาม' };
+            }
+
+            await prisma.serviceInquiry.delete({ where: { id: params.id } });
+
+            if (adminId) {
+                await logAdminAction({
+                    adminId,
+                    action: 'INQUIRY_DELETE',
+                    targetType: 'INQUIRY',
+                    targetId: params.id,
+                    note: `ลบรายการสอบถาม ${existing.contactName} (${existing.type})`,
+                });
+            }
+
+            return { message: 'ลบรายการสอบถามเรียบร้อย' };
+        } catch (error) {
+            console.error('Delete inquiry error:', error);
+            set.status = 500;
+            return { error: 'Server Error', message: 'ไม่สามารถลบรายการสอบถามได้' };
+        }
     })
 
     // === Inspection Packages CRUD ===

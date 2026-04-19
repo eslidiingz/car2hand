@@ -20,6 +20,7 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 // shadcn/ui components
 import { Button } from "@/components/ui/button";
@@ -196,13 +197,15 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                             {/* Content */}
                             <Card className="rounded-xl border-border shadow-sm">
                                 <CardContent className="p-6">
-                                    <Label className="text-sm font-medium text-foreground mb-3 block">เนื้อหาบทความ</Label>
-                                    <Textarea
-                                        required
-                                        placeholder="เขียนเนื้อหาของคุณที่นี่..."
+                                    <div className="flex items-center justify-between mb-3">
+                                        <Label className="text-sm font-medium text-foreground">เนื้อหาบทความ (Markdown)</Label>
+                                        <span className="text-xs text-muted-foreground">รองรับ **bold**, # หัวข้อ, รูป, ลิงก์, ตาราง</span>
+                                    </div>
+                                    <MarkdownEditor
                                         value={formData.content}
-                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                        className="p-4 bg-muted border-border rounded-lg focus:bg-white transition-colors text-base leading-relaxed min-h-[500px] resize-none"
+                                        onChange={(v) => setFormData({ ...formData, content: v })}
+                                        height={520}
+                                        placeholder="เขียนเนื้อหาของคุณที่นี่... ใช้ # สำหรับหัวข้อ, **ตัวหนา**, *ตัวเอียง*"
                                     />
                                 </CardContent>
                             </Card>

@@ -411,8 +411,8 @@ export default function MyListingsPage() {
             {packageInfo && (
                 <div className={`rounded-2xl border p-4 sm:p-5 ${
                     isAtLimit
-                        ? 'bg-gradient-to-r from-red-50 to-orange-50 border-red-200'
-                        : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                        ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-500/10 dark:to-orange-500/10 border-red-200'
+                        : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10 border-blue-200'
                 }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex-1">
@@ -432,7 +432,7 @@ export default function MyListingsPage() {
                                 </span>
                             </div>
                             {!isUnlimited && (
-                                <div className="w-full bg-white/70 rounded-full h-2 overflow-hidden">
+                                <div className="w-full bg-white/70 dark:bg-white/10 rounded-full h-2 overflow-hidden">
                                     <div
                                         className={`h-2 rounded-full transition-all duration-500 ${isAtLimit ? 'bg-gradient-to-r from-red-400 to-orange-500' : 'bg-gradient-to-r from-blue-400 to-indigo-500'}`}
                                         style={{ width: `${usagePercent}%` }}

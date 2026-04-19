@@ -151,7 +151,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                             select: { badge: true, searchPriority: true }
                         },
                         sellerProfile: {
-                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
+                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true }
                         }
                     }
                 }
@@ -358,7 +358,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                                 select: { badge: true, searchPriority: true }
                             },
                             sellerProfile: {
-                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
+                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true }
                             }
                         }
                     }
@@ -460,7 +460,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                             select: { badge: true }
                         },
                         sellerProfile: {
-                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, shopProvince: true }
+                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true, shopProvince: true }
                         }
                     }
                 }
@@ -531,7 +531,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                             packageExpiresAt: true,
                             currentPackage: { select: { badge: true } },
                             sellerProfile: {
-                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true }
+                                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true }
                             }
                         }
                     }

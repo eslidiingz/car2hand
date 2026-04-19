@@ -293,6 +293,9 @@ export type UserWhereInput = {
   listingRenewals?: Prisma.ListingRenewalListRelationFilter
   bumpLogs?: Prisma.ListingBumpLogListRelationFilter
   notifications?: Prisma.UserNotificationListRelationFilter
+  pushSubscriptions?: Prisma.PushSubscriptionListRelationFilter
+  kycSubmissions?: Prisma.KycSubmissionListRelationFilter
+  abuseReports?: Prisma.AbuseReportListRelationFilter
   garageVehicles?: Prisma.GarageVehicleListRelationFilter
   inspectionBookings?: Prisma.InspectionBookingListRelationFilter
   serviceInquiries?: Prisma.ServiceInquiryListRelationFilter
@@ -330,6 +333,9 @@ export type UserOrderByWithRelationInput = {
   listingRenewals?: Prisma.ListingRenewalOrderByRelationAggregateInput
   bumpLogs?: Prisma.ListingBumpLogOrderByRelationAggregateInput
   notifications?: Prisma.UserNotificationOrderByRelationAggregateInput
+  pushSubscriptions?: Prisma.PushSubscriptionOrderByRelationAggregateInput
+  kycSubmissions?: Prisma.KycSubmissionOrderByRelationAggregateInput
+  abuseReports?: Prisma.AbuseReportOrderByRelationAggregateInput
   garageVehicles?: Prisma.GarageVehicleOrderByRelationAggregateInput
   inspectionBookings?: Prisma.InspectionBookingOrderByRelationAggregateInput
   serviceInquiries?: Prisma.ServiceInquiryOrderByRelationAggregateInput
@@ -370,6 +376,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   listingRenewals?: Prisma.ListingRenewalListRelationFilter
   bumpLogs?: Prisma.ListingBumpLogListRelationFilter
   notifications?: Prisma.UserNotificationListRelationFilter
+  pushSubscriptions?: Prisma.PushSubscriptionListRelationFilter
+  kycSubmissions?: Prisma.KycSubmissionListRelationFilter
+  abuseReports?: Prisma.AbuseReportListRelationFilter
   garageVehicles?: Prisma.GarageVehicleListRelationFilter
   inspectionBookings?: Prisma.InspectionBookingListRelationFilter
   serviceInquiries?: Prisma.ServiceInquiryListRelationFilter
@@ -454,6 +463,9 @@ export type UserCreateInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -490,6 +502,9 @@ export type UserUncheckedCreateInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -526,6 +541,9 @@ export type UserUpdateInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -562,6 +580,9 @@ export type UserUncheckedUpdateInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -752,6 +773,20 @@ export type UserUpdateOneRequiredWithoutSellerProfileNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSellerProfileInput, Prisma.UserUpdateWithoutSellerProfileInput>, Prisma.UserUncheckedUpdateWithoutSellerProfileInput>
 }
 
+export type UserCreateNestedOneWithoutKycSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutKycSubmissionsInput, Prisma.UserUncheckedCreateWithoutKycSubmissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutKycSubmissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutKycSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutKycSubmissionsInput, Prisma.UserUncheckedCreateWithoutKycSubmissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutKycSubmissionsInput
+  upsert?: Prisma.UserUpsertWithoutKycSubmissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutKycSubmissionsInput, Prisma.UserUpdateWithoutKycSubmissionsInput>, Prisma.UserUncheckedUpdateWithoutKycSubmissionsInput>
+}
+
 export type UserCreateNestedOneWithoutWishlistsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWishlistsInput, Prisma.UserUncheckedCreateWithoutWishlistsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWishlistsInput
@@ -878,6 +913,20 @@ export type UserUpdateOneRequiredWithoutNotificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNotificationsInput, Prisma.UserUpdateWithoutNotificationsInput>, Prisma.UserUncheckedUpdateWithoutNotificationsInput>
 }
 
+export type UserCreateNestedOneWithoutPushSubscriptionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPushSubscriptionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPushSubscriptionsInput
+  upsert?: Prisma.UserUpsertWithoutPushSubscriptionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPushSubscriptionsInput, Prisma.UserUpdateWithoutPushSubscriptionsInput>, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+}
+
 export type UserCreateNestedOneWithoutBumpLogsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutBumpLogsInput, Prisma.UserUncheckedCreateWithoutBumpLogsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutBumpLogsInput
@@ -890,6 +939,22 @@ export type UserUpdateOneRequiredWithoutBumpLogsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutBumpLogsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBumpLogsInput, Prisma.UserUpdateWithoutBumpLogsInput>, Prisma.UserUncheckedUpdateWithoutBumpLogsInput>
+}
+
+export type UserCreateNestedOneWithoutAbuseReportsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAbuseReportsInput, Prisma.UserUncheckedCreateWithoutAbuseReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAbuseReportsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutAbuseReportsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAbuseReportsInput, Prisma.UserUncheckedCreateWithoutAbuseReportsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAbuseReportsInput
+  upsert?: Prisma.UserUpsertWithoutAbuseReportsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAbuseReportsInput, Prisma.UserUpdateWithoutAbuseReportsInput>, Prisma.UserUncheckedUpdateWithoutAbuseReportsInput>
 }
 
 export type UserCreateNestedOneWithoutInspectionBookingsInput = {
@@ -1019,6 +1084,9 @@ export type UserCreateWithoutSellerProfileInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -1054,6 +1122,9 @@ export type UserUncheckedCreateWithoutSellerProfileInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -1105,6 +1176,9 @@ export type UserUpdateWithoutSellerProfileInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -1140,6 +1214,9 @@ export type UserUncheckedUpdateWithoutSellerProfileInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -1148,6 +1225,174 @@ export type UserUncheckedUpdateWithoutSellerProfileInput = {
   forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
   forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
   reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutKycSubmissionsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
+  garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutKycSubmissionsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutKycSubmissionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutKycSubmissionsInput, Prisma.UserUncheckedCreateWithoutKycSubmissionsInput>
+}
+
+export type UserUpsertWithoutKycSubmissionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutKycSubmissionsInput, Prisma.UserUncheckedUpdateWithoutKycSubmissionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutKycSubmissionsInput, Prisma.UserUncheckedCreateWithoutKycSubmissionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutKycSubmissionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutKycSubmissionsInput, Prisma.UserUncheckedUpdateWithoutKycSubmissionsInput>
+}
+
+export type UserUpdateWithoutKycSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutKycSubmissionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWishlistsInput = {
@@ -1174,6 +1419,9 @@ export type UserCreateWithoutWishlistsInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -1209,6 +1457,9 @@ export type UserUncheckedCreateWithoutWishlistsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -1260,6 +1511,9 @@ export type UserUpdateWithoutWishlistsInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -1295,6 +1549,9 @@ export type UserUncheckedUpdateWithoutWishlistsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -1330,6 +1587,9 @@ export type UserCreateWithoutListingsInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -1365,6 +1625,9 @@ export type UserUncheckedCreateWithoutListingsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -1416,6 +1679,9 @@ export type UserUpdateWithoutListingsInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -1451,6 +1717,9 @@ export type UserUncheckedUpdateWithoutListingsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -1486,6 +1755,9 @@ export type UserCreateWithoutCurrentPackageInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -1521,6 +1793,9 @@ export type UserUncheckedCreateWithoutCurrentPackageInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -1606,6 +1881,9 @@ export type UserCreateWithoutPackageTransactionsInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -1641,6 +1919,9 @@ export type UserUncheckedCreateWithoutPackageTransactionsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -1692,6 +1973,9 @@ export type UserUpdateWithoutPackageTransactionsInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -1727,6 +2011,9 @@ export type UserUncheckedUpdateWithoutPackageTransactionsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -1762,6 +2049,9 @@ export type UserCreateWithoutListingRenewalsInput = {
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -1797,6 +2087,9 @@ export type UserUncheckedCreateWithoutListingRenewalsInput = {
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -1848,6 +2141,9 @@ export type UserUpdateWithoutListingRenewalsInput = {
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -1883,6 +2179,9 @@ export type UserUncheckedUpdateWithoutListingRenewalsInput = {
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -1919,6 +2218,9 @@ export type UserCreateWithoutGarageVehiclesInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
@@ -1954,6 +2256,9 @@ export type UserUncheckedCreateWithoutGarageVehiclesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
@@ -2005,6 +2310,9 @@ export type UserUpdateWithoutGarageVehiclesInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
@@ -2040,6 +2348,9 @@ export type UserUncheckedUpdateWithoutGarageVehiclesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2074,6 +2385,9 @@ export type UserCreateWithoutNotificationsInput = {
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -2109,6 +2423,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -2160,6 +2477,9 @@ export type UserUpdateWithoutNotificationsInput = {
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -2195,6 +2515,177 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPushSubscriptionsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
+  garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPushSubscriptionsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPushSubscriptionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+}
+
+export type UserUpsertWithoutPushSubscriptionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPushSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPushSubscriptionsInput, Prisma.UserUncheckedCreateWithoutPushSubscriptionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPushSubscriptionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPushSubscriptionsInput, Prisma.UserUncheckedUpdateWithoutPushSubscriptionsInput>
+}
+
+export type UserUpdateWithoutPushSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPushSubscriptionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -2230,6 +2721,9 @@ export type UserCreateWithoutBumpLogsInput = {
   packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -2265,6 +2759,9 @@ export type UserUncheckedCreateWithoutBumpLogsInput = {
   packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -2316,6 +2813,9 @@ export type UserUpdateWithoutBumpLogsInput = {
   packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -2351,6 +2851,177 @@ export type UserUncheckedUpdateWithoutBumpLogsInput = {
   packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUncheckedUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUncheckedUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUncheckedUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutAbuseReportsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  packageExpiresAt?: Date | string | null
+  currentPackage?: Prisma.PackageCreateNestedOneWithoutUsersInput
+  listings?: Prisma.VehicleListingCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAbuseReportsInput = {
+  id?: string
+  fullName: string
+  isActive?: boolean
+  email: string
+  phoneNumber: string
+  password: string
+  profileImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lineUserId?: string | null
+  googleUserId?: string | null
+  facebookUserId?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiresAt?: Date | string | null
+  deleteAccountCode?: string | null
+  deleteAccountCodeExpiresAt?: Date | string | null
+  currentPackageId?: string | null
+  packageExpiresAt?: Date | string | null
+  listings?: Prisma.VehicleListingUncheckedCreateNestedManyWithoutUserInput
+  wishlists?: Prisma.WishlistUncheckedCreateNestedManyWithoutUserInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedCreateNestedManyWithoutUserInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
+  inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
+  serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumComments?: Prisma.ForumCommentUncheckedCreateNestedManyWithoutAuthorInput
+  forumVotes?: Prisma.ForumVoteUncheckedCreateNestedManyWithoutUserInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUncheckedCreateNestedManyWithoutUserInput
+  reputation?: Prisma.UserReputationUncheckedCreateNestedOneWithoutUserInput
+  sellerProfile?: Prisma.SellerProfileUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAbuseReportsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAbuseReportsInput, Prisma.UserUncheckedCreateWithoutAbuseReportsInput>
+}
+
+export type UserUpsertWithoutAbuseReportsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAbuseReportsInput, Prisma.UserUncheckedUpdateWithoutAbuseReportsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAbuseReportsInput, Prisma.UserUncheckedCreateWithoutAbuseReportsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAbuseReportsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAbuseReportsInput, Prisma.UserUncheckedUpdateWithoutAbuseReportsInput>
+}
+
+export type UserUpdateWithoutAbuseReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackage?: Prisma.PackageUpdateOneWithoutUsersNestedInput
+  listings?: Prisma.VehicleListingUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
+  inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
+  serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumComments?: Prisma.ForumCommentUpdateManyWithoutAuthorNestedInput
+  forumVotes?: Prisma.ForumVoteUpdateManyWithoutUserNestedInput
+  forumCommentVotes?: Prisma.ForumCommentVoteUpdateManyWithoutUserNestedInput
+  reputation?: Prisma.UserReputationUpdateOneWithoutUserNestedInput
+  sellerProfile?: Prisma.SellerProfileUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAbuseReportsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  profileImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lineUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  facebookUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleteAccountCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleteAccountCodeExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  packageExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  listings?: Prisma.VehicleListingUncheckedUpdateManyWithoutUserNestedInput
+  wishlists?: Prisma.WishlistUncheckedUpdateManyWithoutUserNestedInput
+  packageTransactions?: Prisma.PackageTransactionUncheckedUpdateManyWithoutUserNestedInput
+  listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
+  bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -2387,6 +3058,9 @@ export type UserCreateWithoutInspectionBookingsInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
@@ -2422,6 +3096,9 @@ export type UserUncheckedCreateWithoutInspectionBookingsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
@@ -2473,6 +3150,9 @@ export type UserUpdateWithoutInspectionBookingsInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
@@ -2508,6 +3188,9 @@ export type UserUncheckedUpdateWithoutInspectionBookingsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2543,6 +3226,9 @@ export type UserCreateWithoutServiceInquiriesInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
@@ -2578,6 +3264,9 @@ export type UserUncheckedCreateWithoutServiceInquiriesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
@@ -2629,6 +3318,9 @@ export type UserUpdateWithoutServiceInquiriesInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
@@ -2664,6 +3356,9 @@ export type UserUncheckedUpdateWithoutServiceInquiriesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
@@ -2699,6 +3394,9 @@ export type UserCreateWithoutForumPostsInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -2734,6 +3432,9 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -2785,6 +3486,9 @@ export type UserUpdateWithoutForumPostsInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -2820,6 +3524,9 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -2855,6 +3562,9 @@ export type UserCreateWithoutForumCommentsInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -2890,6 +3600,9 @@ export type UserUncheckedCreateWithoutForumCommentsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -2941,6 +3654,9 @@ export type UserUpdateWithoutForumCommentsInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -2976,6 +3692,9 @@ export type UserUncheckedUpdateWithoutForumCommentsInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -3011,6 +3730,9 @@ export type UserCreateWithoutForumVotesInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -3046,6 +3768,9 @@ export type UserUncheckedCreateWithoutForumVotesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -3097,6 +3822,9 @@ export type UserUpdateWithoutForumVotesInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -3132,6 +3860,9 @@ export type UserUncheckedUpdateWithoutForumVotesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -3167,6 +3898,9 @@ export type UserCreateWithoutForumCommentVotesInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -3202,6 +3936,9 @@ export type UserUncheckedCreateWithoutForumCommentVotesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -3253,6 +3990,9 @@ export type UserUpdateWithoutForumCommentVotesInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -3288,6 +4028,9 @@ export type UserUncheckedUpdateWithoutForumCommentVotesInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -3323,6 +4066,9 @@ export type UserCreateWithoutReputationInput = {
   listingRenewals?: Prisma.ListingRenewalCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryCreateNestedManyWithoutUserInput
@@ -3358,6 +4104,9 @@ export type UserUncheckedCreateWithoutReputationInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedCreateNestedManyWithoutUserInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.UserNotificationUncheckedCreateNestedManyWithoutUserInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedCreateNestedManyWithoutUserInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedCreateNestedManyWithoutUserInput
+  abuseReports?: Prisma.AbuseReportUncheckedCreateNestedManyWithoutReporterInput
   garageVehicles?: Prisma.GarageVehicleUncheckedCreateNestedManyWithoutUserInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedCreateNestedManyWithoutUserInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedCreateNestedManyWithoutUserInput
@@ -3409,6 +4158,9 @@ export type UserUpdateWithoutReputationInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -3444,6 +4196,9 @@ export type UserUncheckedUpdateWithoutReputationInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -3498,6 +4253,9 @@ export type UserUpdateWithoutCurrentPackageInput = {
   listingRenewals?: Prisma.ListingRenewalUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUpdateManyWithoutUserNestedInput
@@ -3533,6 +4291,9 @@ export type UserUncheckedUpdateWithoutCurrentPackageInput = {
   listingRenewals?: Prisma.ListingRenewalUncheckedUpdateManyWithoutUserNestedInput
   bumpLogs?: Prisma.ListingBumpLogUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.UserNotificationUncheckedUpdateManyWithoutUserNestedInput
+  pushSubscriptions?: Prisma.PushSubscriptionUncheckedUpdateManyWithoutUserNestedInput
+  kycSubmissions?: Prisma.KycSubmissionUncheckedUpdateManyWithoutUserNestedInput
+  abuseReports?: Prisma.AbuseReportUncheckedUpdateManyWithoutReporterNestedInput
   garageVehicles?: Prisma.GarageVehicleUncheckedUpdateManyWithoutUserNestedInput
   inspectionBookings?: Prisma.InspectionBookingUncheckedUpdateManyWithoutUserNestedInput
   serviceInquiries?: Prisma.ServiceInquiryUncheckedUpdateManyWithoutUserNestedInput
@@ -3576,6 +4337,9 @@ export type UserCountOutputType = {
   listingRenewals: number
   bumpLogs: number
   notifications: number
+  pushSubscriptions: number
+  kycSubmissions: number
+  abuseReports: number
   garageVehicles: number
   inspectionBookings: number
   serviceInquiries: number
@@ -3592,6 +4356,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   listingRenewals?: boolean | UserCountOutputTypeCountListingRenewalsArgs
   bumpLogs?: boolean | UserCountOutputTypeCountBumpLogsArgs
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
+  pushSubscriptions?: boolean | UserCountOutputTypeCountPushSubscriptionsArgs
+  kycSubmissions?: boolean | UserCountOutputTypeCountKycSubmissionsArgs
+  abuseReports?: boolean | UserCountOutputTypeCountAbuseReportsArgs
   garageVehicles?: boolean | UserCountOutputTypeCountGarageVehiclesArgs
   inspectionBookings?: boolean | UserCountOutputTypeCountInspectionBookingsArgs
   serviceInquiries?: boolean | UserCountOutputTypeCountServiceInquiriesArgs
@@ -3651,6 +4418,27 @@ export type UserCountOutputTypeCountBumpLogsArgs<ExtArgs extends runtime.Types.E
  */
 export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.UserNotificationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PushSubscriptionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountKycSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.KycSubmissionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAbuseReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AbuseReportWhereInput
 }
 
 /**
@@ -3729,6 +4517,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   listingRenewals?: boolean | Prisma.User$listingRenewalsArgs<ExtArgs>
   bumpLogs?: boolean | Prisma.User$bumpLogsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
+  kycSubmissions?: boolean | Prisma.User$kycSubmissionsArgs<ExtArgs>
+  abuseReports?: boolean | Prisma.User$abuseReportsArgs<ExtArgs>
   garageVehicles?: boolean | Prisma.User$garageVehiclesArgs<ExtArgs>
   inspectionBookings?: boolean | Prisma.User$inspectionBookingsArgs<ExtArgs>
   serviceInquiries?: boolean | Prisma.User$serviceInquiriesArgs<ExtArgs>
@@ -3815,6 +4606,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   listingRenewals?: boolean | Prisma.User$listingRenewalsArgs<ExtArgs>
   bumpLogs?: boolean | Prisma.User$bumpLogsArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
+  pushSubscriptions?: boolean | Prisma.User$pushSubscriptionsArgs<ExtArgs>
+  kycSubmissions?: boolean | Prisma.User$kycSubmissionsArgs<ExtArgs>
+  abuseReports?: boolean | Prisma.User$abuseReportsArgs<ExtArgs>
   garageVehicles?: boolean | Prisma.User$garageVehiclesArgs<ExtArgs>
   inspectionBookings?: boolean | Prisma.User$inspectionBookingsArgs<ExtArgs>
   serviceInquiries?: boolean | Prisma.User$serviceInquiriesArgs<ExtArgs>
@@ -3843,6 +4637,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     listingRenewals: Prisma.$ListingRenewalPayload<ExtArgs>[]
     bumpLogs: Prisma.$ListingBumpLogPayload<ExtArgs>[]
     notifications: Prisma.$UserNotificationPayload<ExtArgs>[]
+    pushSubscriptions: Prisma.$PushSubscriptionPayload<ExtArgs>[]
+    kycSubmissions: Prisma.$KycSubmissionPayload<ExtArgs>[]
+    abuseReports: Prisma.$AbuseReportPayload<ExtArgs>[]
     garageVehicles: Prisma.$GarageVehiclePayload<ExtArgs>[]
     inspectionBookings: Prisma.$InspectionBookingPayload<ExtArgs>[]
     serviceInquiries: Prisma.$ServiceInquiryPayload<ExtArgs>[]
@@ -4273,6 +5070,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   listingRenewals<T extends Prisma.User$listingRenewalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$listingRenewalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingRenewalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   bumpLogs<T extends Prisma.User$bumpLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$bumpLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ListingBumpLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserNotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pushSubscriptions<T extends Prisma.User$pushSubscriptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pushSubscriptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PushSubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  kycSubmissions<T extends Prisma.User$kycSubmissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$kycSubmissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$KycSubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  abuseReports<T extends Prisma.User$abuseReportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$abuseReportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AbuseReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   garageVehicles<T extends Prisma.User$garageVehiclesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$garageVehiclesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GarageVehiclePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   inspectionBookings<T extends Prisma.User$inspectionBookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$inspectionBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InspectionBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceInquiries<T extends Prisma.User$serviceInquiriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$serviceInquiriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceInquiryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4885,6 +5685,78 @@ export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.UserNotificationScalarFieldEnum | Prisma.UserNotificationScalarFieldEnum[]
+}
+
+/**
+ * User.pushSubscriptions
+ */
+export type User$pushSubscriptionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PushSubscription
+   */
+  select?: Prisma.PushSubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PushSubscription
+   */
+  omit?: Prisma.PushSubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PushSubscriptionInclude<ExtArgs> | null
+  where?: Prisma.PushSubscriptionWhereInput
+  orderBy?: Prisma.PushSubscriptionOrderByWithRelationInput | Prisma.PushSubscriptionOrderByWithRelationInput[]
+  cursor?: Prisma.PushSubscriptionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PushSubscriptionScalarFieldEnum | Prisma.PushSubscriptionScalarFieldEnum[]
+}
+
+/**
+ * User.kycSubmissions
+ */
+export type User$kycSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the KycSubmission
+   */
+  select?: Prisma.KycSubmissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the KycSubmission
+   */
+  omit?: Prisma.KycSubmissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.KycSubmissionInclude<ExtArgs> | null
+  where?: Prisma.KycSubmissionWhereInput
+  orderBy?: Prisma.KycSubmissionOrderByWithRelationInput | Prisma.KycSubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.KycSubmissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.KycSubmissionScalarFieldEnum | Prisma.KycSubmissionScalarFieldEnum[]
+}
+
+/**
+ * User.abuseReports
+ */
+export type User$abuseReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AbuseReport
+   */
+  select?: Prisma.AbuseReportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AbuseReport
+   */
+  omit?: Prisma.AbuseReportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AbuseReportInclude<ExtArgs> | null
+  where?: Prisma.AbuseReportWhereInput
+  orderBy?: Prisma.AbuseReportOrderByWithRelationInput | Prisma.AbuseReportOrderByWithRelationInput[]
+  cursor?: Prisma.AbuseReportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AbuseReportScalarFieldEnum | Prisma.AbuseReportScalarFieldEnum[]
 }
 
 /**

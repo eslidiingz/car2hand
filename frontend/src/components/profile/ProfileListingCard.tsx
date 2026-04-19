@@ -108,7 +108,7 @@ export default function ProfileListingCard({
                     {/* Info Section */}
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
-                            <h3 className="font-bold text-[#1E293B] text-sm md:text-lg leading-tight line-clamp-2 uppercase">
+                            <h3 className="font-bold text-gray-800 dark:text-foreground text-sm md:text-lg leading-tight line-clamp-2 uppercase">
                                 {listing.year} {listing.brand} {listing.model}
                             </h3>
                             <div className="relative">
@@ -128,7 +128,7 @@ export default function ProfileListingCard({
                                             className="fixed inset-0 z-10"
                                             onClick={() => onToggleMenu(null)}
                                         ></div>
-                                        <div className="absolute right-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-20 overflow-hidden text-[#1E293B]">
+                                        <div className="absolute right-0 w-48 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-20 overflow-hidden text-gray-800 dark:text-foreground">
                                             {listing.status === 'EXPIRED' ? (
                                                 <>
                                                     <Link
@@ -239,7 +239,7 @@ export default function ProfileListingCard({
             </div>
 
             {/* Bottom Action Bar */}
-            <div className="border-t border-gray-50 px-4 py-2.5 bg-gray-50/30 space-y-1">
+            <div className="border-t border-gray-50 px-4 py-2.5 bg-gray-50/30 dark:bg-muted/20 space-y-1">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex items-center gap-1 ${status.bgColor} ${status.textColor}`}>

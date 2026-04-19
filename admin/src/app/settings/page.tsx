@@ -171,7 +171,7 @@ export default function SettingsPage() {
                 </div>
             </div>
 
-            <Tabs defaultValue="payment" className="space-y-6">
+            <Tabs defaultValue="payment" className="mb-6">
                 <TabsList>
                     <TabsTrigger value="payment">การชำระเงิน</TabsTrigger>
                     <TabsTrigger value="line-oa">LINE OA</TabsTrigger>

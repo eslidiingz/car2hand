@@ -50,7 +50,8 @@ function CreateTopicPage() {
     useEffect(() => {
         const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
         if (!storedUser) {
-            router.push('/login?redirect=/community/create');
+            window.dispatchEvent(new Event('open-login-modal'));
+            router.push('/community');
             return;
         }
         const userData = JSON.parse(storedUser);

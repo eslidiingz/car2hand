@@ -76,8 +76,8 @@ export default function DataDeletionPage() {
                             <p className="leading-relaxed mb-3">
                                 หากไม่สามารถเข้าสู่ระบบได้ หรือเข้าสู่ระบบด้วย Facebook/Google/LINE และต้องการลบข้อมูล
                                 โปรดส่งอีเมลมาที่{' '}
-                                <a href="mailto:support@car2hand.com" className="text-primary font-semibold hover:underline">
-                                    support@car2hand.com
+                                <a href="mailto:support@car2hand.app" className="text-primary font-semibold hover:underline">
+                                    support@car2hand.app
                                 </a>{' '}
                                 พร้อมรายละเอียดต่อไปนี้:
                             </p>
@@ -157,10 +157,10 @@ export default function DataDeletionPage() {
                             <p className="font-semibold text-gray-800">
                                 อีเมล:{' '}
                                 <a
-                                    href="mailto:support@car2hand.com"
+                                    href="mailto:support@car2hand.app"
                                     className="text-primary hover:underline"
                                 >
-                                    support@car2hand.com
+                                    support@car2hand.app
                                 </a>
                             </p>
                         </section>

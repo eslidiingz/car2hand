@@ -186,7 +186,15 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
             }
             if (!res.ok) throw new Error("fetch failed");
             const data = await res.json();
-            const p = data.sellerProfile || data;
+            // Backend returns { profile }; earlier shape was { sellerProfile } — support both.
+            const p = data.profile || data.sellerProfile || data;
+            if (!p || typeof p !== 'object') {
+                setProfile(EMPTY_PROFILE);
+                return;
+            }
+            // Prisma fields: shopLogo / shopCoverImage — keep legacy logoUrl/coverUrl as fallback
+            const logoUrl = p.shopLogo ?? p.logoUrl ?? "";
+            const coverUrl = p.shopCoverImage ?? p.coverUrl ?? "";
             setProfile({
                 shopName: p.shopName ?? "",
                 showroomType: p.showroomType ?? "",
@@ -203,11 +211,11 @@ export default function SellerProfileForm({ onSaved }: SellerProfileFormProps) {
                 socialLine: p.socialLine ?? "",
                 socialInstagram: p.socialInstagram ?? "",
                 specializations: p.specializations ?? [],
-                logoUrl: p.logoUrl ?? "",
-                coverUrl: p.coverUrl ?? "",
+                logoUrl,
+                coverUrl,
             });
-            if (p.logoUrl) setLogoPreview(p.logoUrl);
-            if (p.coverUrl) setCoverPreview(p.coverUrl);
+            if (logoUrl) setLogoPreview(logoUrl);
+            if (coverUrl) setCoverPreview(coverUrl);
         } catch {
             showToast("ไม่สามารถโหลดข้อมูลร้านได้", "error");
         } finally {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
+import { useDebounce } from "@/hooks/useDebounce";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,9 @@ import {
     Phone,
     User,
     X,
+    Trash2,
 } from "lucide-react";
+import DeleteConfirmModal from "@/components/DeleteConfirmModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -87,18 +90,21 @@ export default function AdminBookingsPage() {
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 500);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
     const [detailOpen, setDetailOpen] = useState(false);
     const [updatingId, setUpdatingId] = useState<string | null>(null);
+    const [deleteBooking, setDeleteBooking] = useState<Booking | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     const fetchBookings = useCallback(async () => {
         try {
             setLoading(true);
             const params = new URLSearchParams({ page: String(page) });
             if (statusFilter !== "ALL") params.set("status", statusFilter);
-            if (search.trim()) params.set("search", search.trim());
+            if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
 
             const res = await apiFetch(`/admin/services/bookings?${params}`);
             if (res.ok) {
@@ -113,7 +119,7 @@ export default function AdminBookingsPage() {
         } finally {
             setLoading(false);
         }
-    }, [page, statusFilter, search]);
+    }, [page, statusFilter, debouncedSearch]);
 
     useEffect(() => {
         fetchBookings();
@@ -143,6 +149,23 @@ export default function AdminBookingsPage() {
     const openDetail = (booking: Booking) => {
         setSelectedBooking(booking);
         setDetailOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!deleteBooking) return;
+        setDeleting(true);
+        try {
+            const res = await apiFetch(`/admin/services/bookings/${deleteBooking.id}`, {
+                method: "DELETE",
+            });
+            toast.success(res?.message || "ลบการจองเรียบร้อย");
+            setDeleteBooking(null);
+            fetchBookings();
+        } catch (err: any) {
+            toast.error(err?.message || "ไม่สามารถลบการจองได้");
+        } finally {
+            setDeleting(false);
+        }
     };
 
     const formatDate = (dateStr: string) => {
@@ -270,6 +293,7 @@ export default function AdminBookingsPage() {
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => openDetail(booking)}
+                                                    title="ดูรายละเอียด"
                                                 >
                                                     <Eye className="h-4 w-4" />
                                                 </Button>
@@ -289,6 +313,15 @@ export default function AdminBookingsPage() {
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => setDeleteBooking(booking)}
+                                                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                                                    title="ลบ"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -396,6 +429,15 @@ export default function AdminBookingsPage() {
                         )}
                     </DialogContent>
                 </Dialog>
+
+                <DeleteConfirmModal
+                    isOpen={!!deleteBooking}
+                    onClose={() => setDeleteBooking(null)}
+                    onConfirm={handleDelete}
+                    title="ลบการจอง"
+                    description={`คุณแน่ใจหรือไม่ที่จะลบการจองของ "${deleteBooking?.customerName ?? ""}"?`}
+                    isLoading={deleting}
+                />
             </div>
         </DashboardLayout>
     );

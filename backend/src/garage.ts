@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { authGuard } from "./jwt";
+import { uploadGarageVehicleImage, deleteByPrefix, isValidImageType, isValidFileSize } from "./storage";
 
 export const garageRoutes = new Elysia({ prefix: "/garage" })
     .use(authGuard)
@@ -99,8 +100,74 @@ export const garageRoutes = new Elysia({ prefix: "/garage" })
 
         try {
             await prisma.garageVehicle.delete({ where: { id: params.id } });
+            // clean up image files (best-effort)
+            try { await deleteByPrefix(`${auth.userId}/garage/${params.id}/`); } catch { }
             return { message: "ลบรถสำเร็จ" };
         } catch { set.status = 404; return { message: "ไม่พบรถ" }; }
+    })
+
+    // Upload vehicle image (multipart/form-data, field "file")
+    .post("/:id/image", async ({ params, auth, body, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { message: "กรุณาเข้าสู่ระบบ" }; }
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403; return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
+        const file = (body as { file?: File })?.file;
+        if (!file || !(file instanceof File)) {
+            set.status = 400; return { message: "กรุณาเลือกไฟล์รูปภาพ" };
+        }
+        if (!isValidImageType(file.type)) {
+            set.status = 400; return { message: "รองรับเฉพาะไฟล์ JPG, PNG, WebP, GIF" };
+        }
+        if (!isValidFileSize(file.size, 10)) {
+            set.status = 400; return { message: "ขนาดไฟล์ต้องไม่เกิน 10MB" };
+        }
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+            const url = await uploadGarageVehicleImage(auth.userId, params.id, {
+                buffer,
+                originalname: file.name || "car.jpg",
+                mimetype: file.type,
+            });
+            const updated = await prisma.garageVehicle.update({
+                where: { id: params.id },
+                data: { imageUrl: url },
+                select: { id: true, imageUrl: true },
+            });
+            return { message: "อัพโหลดรูปสำเร็จ", imageUrl: updated.imageUrl };
+        } catch (err) {
+            console.error("Garage image upload error:", err);
+            set.status = 500;
+            return { message: "ไม่สามารถอัพโหลดรูปได้" };
+        }
+    })
+
+    // Remove vehicle image
+    .delete("/:id/image", async ({ params, auth, set }) => {
+        if (!auth || !auth.userId) { set.status = 401; return { message: "กรุณาเข้าสู่ระบบ" }; }
+
+        const vehicle = await prisma.garageVehicle.findUnique({ where: { id: params.id } });
+        if (!vehicle || vehicle.userId !== auth.userId) {
+            set.status = 403; return { message: "ไม่มีสิทธิ์เข้าถึง" };
+        }
+
+        try {
+            await deleteByPrefix(`${auth.userId}/garage/${params.id}/`);
+            await prisma.garageVehicle.update({
+                where: { id: params.id },
+                data: { imageUrl: null },
+            });
+            return { message: "ลบรูปสำเร็จ" };
+        } catch (err) {
+            console.error("Garage image delete error:", err);
+            set.status = 500;
+            return { message: "ไม่สามารถลบรูปได้" };
+        }
     })
 
     // Update mileage
