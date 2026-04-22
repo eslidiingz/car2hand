@@ -14,13 +14,17 @@ import {
 } from "@/components/ui/card";
 
 /**
- * Shape of all known admin-managed settings returned from
- * `GET /api/admin/settings`. The backend always responds with defaults — never
+ * Shape of all known admin-managed feature flags returned from
+ * `GET /api/admin/flags`. The backend always responds with defaults — never
  * 404 — so the union here is exhaustive for the admin UI.
  *
- * To add a new setting card, extend this interface AND render another
- * <Card> below — the page is structured so additional settings drop in
+ * To add a new flag card, extend this interface AND render another
+ * <Card> below — the page is structured so additional flags drop in
  * without touching existing code.
+ *
+ * NOTE: flags live at `/admin/flags` (admin_settings table) to stay out of
+ * `/admin/settings` which handles free-form service credentials (LINE /
+ * Google / Facebook / Payment) stored in the separate system_settings table.
  */
 interface KnownSettings {
     basicListingRequiresApproval: boolean;
@@ -37,7 +41,7 @@ export default function ListingApprovalSettings() {
         let cancelled = false;
         (async () => {
             try {
-                const res = (await apiFetch("/admin/settings")) as {
+                const res = (await apiFetch("/admin/flags")) as {
                     settings: KnownSettings;
                 };
                 if (!cancelled) {
@@ -67,7 +71,7 @@ export default function ListingApprovalSettings() {
         setIsSaving(true);
 
         try {
-            await apiFetch(`/admin/settings/${SETTING_KEY}`, {
+            await apiFetch(`/admin/flags/${SETTING_KEY}`, {
                 method: "PUT",
                 body: JSON.stringify({ value: next }),
             });

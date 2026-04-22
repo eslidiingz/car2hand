@@ -1,10 +1,14 @@
 /**
- * Admin global settings — flexible runtime feature flags.
+ * Admin feature flags — typed global switches stored in `admin_settings` table.
  *
- * - Typed registry of known setting keys (no arbitrary strings).
+ * Mounted at `/admin/flags` (NOT `/admin/settings`) to avoid clashing with the
+ * free-form system-config routes in admin.ts that use the `system_settings`
+ * table for LINE/Google/Facebook/Payment credentials.
+ *
+ * - Typed registry of known flag keys (no arbitrary strings).
  * - `getSetting<K>(key)` reads from DB with default fallback.
  * - `setSetting(key, value, adminId)` upserts with type validation.
- * - `adminSettingsRoutes` exposes /admin/settings (GET all, GET one, PUT one).
+ * - `adminSettingsRoutes` exposes /admin/flags (GET all, GET one, PUT one).
  *
  * Auth pattern matches admin-seller-profiles.ts / admin-kyc.ts.
  */
@@ -80,7 +84,7 @@ export async function setSetting<K extends SettingKey>(
 
 /* ─── Routes ─────────────────────────────────────────────────── */
 
-export const adminSettingsRoutes = new Elysia({ prefix: "/admin/settings" })
+export const adminSettingsRoutes = new Elysia({ prefix: "/admin/flags" })
     .use(jwtPlugin())
     .derive(async ({ jwt, headers, set }) => {
         const authHeader = headers["authorization"];
@@ -121,7 +125,7 @@ export const adminSettingsRoutes = new Elysia({ prefix: "/admin/settings" })
         return { settings };
     })
 
-    // GET /admin/settings/:key — single setting (404 if key not in registry)
+    // GET /admin/flags/:key — single flag (404 if key not in registry)
     .get("/:key", async ({ params, set }) => {
         const def = SETTINGS_BY_KEY[params.key];
         if (!def) {
@@ -133,7 +137,7 @@ export const adminSettingsRoutes = new Elysia({ prefix: "/admin/settings" })
         return { key: def.key, value };
     })
 
-    // PUT /admin/settings/:key — update a single setting; emits audit log.
+    // PUT /admin/flags/:key — update a single flag; emits audit log.
     .put("/:key", async ({ params, body, adminId, set }) => {
         const def = SETTINGS_BY_KEY[params.key];
         if (!def) {
