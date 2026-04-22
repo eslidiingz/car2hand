@@ -16,21 +16,21 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['business', 'shopping', 'lifestyle'],
     icons: [
       {
-        src: '/icons/icon-192.png',
+        src: '/icons/icon-192.jpg',
         sizes: '192x192',
-        type: 'image/png',
+        type: 'image/jpg',
         purpose: 'any',
       },
       {
-        src: '/icons/icon-512.png',
+        src: '/icons/icon-512.jpg',
         sizes: '512x512',
-        type: 'image/png',
+        type: 'image/jpg',
         purpose: 'any',
       },
       {
-        src: '/icons/icon-maskable-512.png',
+        src: '/icons/icon-maskable-512.jpg',
         sizes: '512x512',
-        type: 'image/png',
+        type: 'image/jpg',
         purpose: 'maskable',
       },
       {
