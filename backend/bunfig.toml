@@ -1,0 +1,11 @@
+[install]
+# Install dependencies with exact versions
+exact = true
+
+[install.scopes]
+# Define path mappings for TypeScript path aliases
+"@" = "./src"
+
+[build]
+# Use TypeScript configuration
+config = "tsconfig.json"
