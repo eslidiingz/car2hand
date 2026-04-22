@@ -1,6 +1,10 @@
 import * as Minio from 'minio';
 import type { StorageProvider, MinioProviderConfig } from './provider';
 
+export function createMinioProvider(config: MinioProviderConfig): StorageProvider {
+  return new MinioStorageProvider(config);
+}
+
 export class MinioStorageProvider implements StorageProvider {
   private readonly client: Minio.Client;
   private readonly bucket: string;

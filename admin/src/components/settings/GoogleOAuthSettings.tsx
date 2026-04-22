@@ -116,7 +116,7 @@ export default function GoogleOAuthSettings() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Google OAuth Credentials */}
-                <Card className="rounded-xl border-slate-200 shadow-sm">
+                <Card className="rounded-xl border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <KeyRound size={18} className="text-primary" />
@@ -133,7 +133,7 @@ export default function GoogleOAuthSettings() {
                                 value={settings["google.clientId"]}
                                 onChange={(e) => updateSetting("google.clientId", e.target.value)}
                                 placeholder="เช่น 123456789-abc.apps.googleusercontent.com"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200 font-mono text-sm"
+                                className="h-10 rounded-lg bg-muted border-border font-mono text-sm"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -143,14 +143,14 @@ export default function GoogleOAuthSettings() {
                                 value={settings["google.clientSecret"]}
                                 onChange={(e) => updateSetting("google.clientSecret", e.target.value)}
                                 placeholder="Client Secret จาก Google Cloud Console"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Setup Guide */}
-                <Card className="rounded-xl border-slate-200 shadow-sm">
+                <Card className="rounded-xl border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <Info size={18} className="text-primary" />
@@ -195,7 +195,7 @@ export default function GoogleOAuthSettings() {
             </div>
 
             {/* Callback URL */}
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <Link2 size={18} className="text-primary" />
@@ -210,7 +210,7 @@ export default function GoogleOAuthSettings() {
                         <Input
                             value={callbackUrl}
                             readOnly
-                            className="h-10 rounded-lg bg-slate-50 border-slate-200 font-mono text-sm"
+                            className="h-10 rounded-lg bg-muted border-border font-mono text-sm"
                         />
                         <Button
                             variant="outline"

@@ -2,11 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader2, ChevronRight, ChevronDown } from 'lucide-react';
+import { Loader2, ChevronRight, ChevronDown, Clock } from 'lucide-react';
 import ListingCard, { VehicleListing } from './ListingCard';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+/**
+ * รถมาใหม่วันนี้ — all ACTIVE listings ordered by createdAt desc (no package filter).
+ * Backend: GET /api/listings/new — returns up to 12 items.
+ * Shows 8 initially, "ดูเพิ่มเติม" expands to 12, then "ดูรถทั้งหมด" → /buy.
+ */
 export default function CarList() {
     const [allListings, setAllListings] = useState<VehicleListing[]>([]);
     const [displayCount, setDisplayCount] = useState(8);
@@ -15,20 +20,11 @@ export default function CarList() {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const [featuredRes, listingsRes] = await Promise.all([
-                    fetch(`${API_URL}/listings/featured`),
-                    fetch(`${API_URL}/listings?status=ACTIVE&limit=20`),
-                ]);
-
-                const featuredData = await featuredRes.json();
-                const listingsData = await listingsRes.json();
-
-                const featuredIds = new Set((featuredData.listings || []).map((l: VehicleListing) => l.id));
-                const filtered = (listingsData.listings || []).filter((l: VehicleListing) => !featuredIds.has(l.id));
-
-                setAllListings(filtered.slice(0, 16));
+                const res = await fetch(`${API_URL}/listings/new`);
+                const data = await res.json();
+                setAllListings((data.listings || []).slice(0, 12));
             } catch (error) {
-                console.error('Error fetching listings:', error);
+                console.error('Error fetching new listings:', error);
                 setAllListings([]);
             } finally {
                 setLoading(false);
@@ -40,14 +36,13 @@ export default function CarList() {
 
     const visibleListings = allListings.slice(0, displayCount);
     const hasMore = allListings.length > displayCount;
-    const isFullyExpanded = displayCount >= 16 || displayCount >= allListings.length;
 
     return (
         <section className="max-w-7xl mx-auto px-4 pt-12 pb-16">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-                    รถแนะนำสำหรับคุณ
-                    <span className="text-xs bg-accent/10 text-accent px-2 py-1 rounded-full font-bold">มาใหม่</span>
+                    <Clock className="text-accent" />
+                    รถมาใหม่วันนี้
                 </h2>
                 <Link
                     href="/buy"
@@ -79,9 +74,9 @@ export default function CarList() {
                         ))}
                     </div>
                     <div className="text-center mt-6">
-                        {hasMore && !isFullyExpanded ? (
+                        {hasMore ? (
                             <button
-                                onClick={() => setDisplayCount(16)}
+                                onClick={() => setDisplayCount(12)}
                                 className="text-accent font-bold hover:underline inline-flex items-center gap-1"
                             >
                                 ดูเพิ่มเติม <ChevronDown size={16} />

@@ -1,6 +1,6 @@
-import { BadgeCheck, Building2, Shield } from 'lucide-react';
+import { BadgeCheck, Building2 } from 'lucide-react';
 
-export type VerificationLevel = 'NONE' | 'ID' | 'BUSINESS' | 'DEALER';
+export type VerificationLevel = 'NONE' | 'INDIVIDUAL' | 'CORPORATE';
 
 interface TrustBadgeProps {
   level: VerificationLevel | null | undefined;
@@ -26,26 +26,19 @@ export default function TrustBadge({ level, size = 'md', showLabel = true, class
     text: string;
     ring: string;
   }> = {
-    ID: {
-      label: 'ยืนยันบุคคล',
+    INDIVIDUAL: {
+      label: 'บุคคลธรรมดา',
       icon: <BadgeCheck />,
-      bg: 'bg-blue-50',
-      text: 'text-blue-700',
-      ring: 'ring-blue-200',
-    },
-    BUSINESS: {
-      label: 'ร้านรับรอง',
-      icon: <Building2 />,
       bg: 'bg-emerald-50',
       text: 'text-emerald-700',
       ring: 'ring-emerald-200',
     },
-    DEALER: {
-      label: 'ดีลเลอร์รับรอง',
-      icon: <Shield />,
-      bg: 'bg-amber-50',
-      text: 'text-amber-700',
-      ring: 'ring-amber-300',
+    CORPORATE: {
+      label: 'นิติบุคคล',
+      icon: <Building2 />,
+      bg: 'bg-blue-50',
+      text: 'text-blue-700',
+      ring: 'ring-blue-200',
     },
   };
 

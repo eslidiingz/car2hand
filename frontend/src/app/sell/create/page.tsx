@@ -35,6 +35,7 @@ import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
 import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
+import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
 
 // Thai provinces list
 const PROVINCES = [
@@ -654,26 +655,28 @@ function CreateListingPage() {
                                         <Car size={24} className="text-accent" /> ระบุข้อมูลรถของคุณ
                                     </h2>
 
-                                    {/* Vehicle Type Toggle */}
-                                    <div className="mb-6">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">ประเภทยานพาหนะ</label>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <button
-                                                type="button"
-                                                onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: '' })}
-                                                className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
-                                            >
-                                                <Car size={20} /> รถยนต์
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: '' })}
-                                                className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
-                                            >
-                                                <Bike size={20} /> มอเตอร์ไซค์
-                                            </button>
+                                    {/* Vehicle Type Toggle — hidden while MOTORCYCLE_ENABLED=false */}
+                                    {MOTORCYCLE_ENABLED && (
+                                        <div className="mb-6">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">ประเภทยานพาหนะ</label>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: '' })}
+                                                    className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
+                                                >
+                                                    <Car size={20} /> รถยนต์
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: '' })}
+                                                    className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
+                                                >
+                                                    <Bike size={20} /> มอเตอร์ไซค์
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                                         <div className="md:col-span-2" ref={brandRef}>

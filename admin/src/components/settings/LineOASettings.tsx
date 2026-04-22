@@ -152,7 +152,7 @@ export default function LineOASettings() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Messaging API */}
-                <Card className="rounded-xl border-slate-200 shadow-sm">
+                <Card className="rounded-xl border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <MessageSquare size={18} className="text-primary" />
@@ -169,7 +169,7 @@ export default function LineOASettings() {
                                 value={settings["line.channelId"]}
                                 onChange={(e) => updateSetting("line.channelId", e.target.value)}
                                 placeholder="เช่น 1234567890"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -179,7 +179,7 @@ export default function LineOASettings() {
                                 value={settings["line.channelSecret"]}
                                 onChange={(e) => updateSetting("line.channelSecret", e.target.value)}
                                 placeholder="Channel Secret จาก LINE Developers Console"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -188,7 +188,7 @@ export default function LineOASettings() {
                                 value={settings["line.channelAccessToken"]}
                                 onChange={(e) => updateSetting("line.channelAccessToken", e.target.value)}
                                 placeholder="Channel Access Token จาก LINE Developers Console"
-                                className="rounded-lg bg-slate-50 border-slate-200 min-h-[80px]"
+                                className="rounded-lg bg-muted border-border min-h-[80px]"
                                 rows={3}
                             />
                         </div>
@@ -196,7 +196,7 @@ export default function LineOASettings() {
                 </Card>
 
                 {/* LINE Login */}
-                <Card className="rounded-xl border-slate-200 shadow-sm">
+                <Card className="rounded-xl border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <LogIn size={18} className="text-primary" />
@@ -213,7 +213,7 @@ export default function LineOASettings() {
                                 value={settings["line.loginChannelId"]}
                                 onChange={(e) => updateSetting("line.loginChannelId", e.target.value)}
                                 placeholder="เช่น 1234567890"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -223,7 +223,7 @@ export default function LineOASettings() {
                                 value={settings["line.loginChannelSecret"]}
                                 onChange={(e) => updateSetting("line.loginChannelSecret", e.target.value)}
                                 placeholder="Channel Secret จาก LINE Developers Console"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                     </CardContent>
@@ -231,7 +231,7 @@ export default function LineOASettings() {
             </div>
 
             {/* Webhook URL */}
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <Link2 size={18} className="text-primary" />
@@ -246,7 +246,7 @@ export default function LineOASettings() {
                         <Input
                             value={webhookUrl}
                             readOnly
-                            className="h-10 rounded-lg bg-slate-50 border-slate-200 font-mono text-sm"
+                            className="h-10 rounded-lg bg-muted border-border font-mono text-sm"
                         />
                         <Button
                             variant="outline"

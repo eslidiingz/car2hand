@@ -18,6 +18,8 @@ import {
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
+import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
+import { useDebounce } from '@/lib/useDebounce';
 
 interface PaginationInfo {
     page: number;
@@ -51,7 +53,10 @@ function BuyContent() {
     const [bodyStyles, setBodyStyles] = useState<{ value: string, label: string }[]>([]);
     const [motorcycleBodyStyles, setMotorcycleBodyStyles] = useState<{ value: string, label: string }[]>([]);
     const [seatOptions, setSeatOptions] = useState<{ value: number, label: string }[]>([]);
-    const [vehicleType, setVehicleType] = useState<'CAR' | 'MOTORCYCLE' | ''>((searchParams.get('vehicleType') as any) || 'CAR');
+    // While MOTORCYCLE_ENABLED=false, lock vehicleType to 'CAR' — we hide the toggle UI below
+    const [vehicleType, setVehicleType] = useState<'CAR' | 'MOTORCYCLE' | ''>(
+        MOTORCYCLE_ENABLED ? ((searchParams.get('vehicleType') as any) || 'CAR') : 'CAR'
+    );
     const [selectedBrands, setSelectedBrands] = useState<string[]>(searchParams.get('brand')?.split(',').filter(Boolean) || []);
     const [selectedBodyTypes, setSelectedBodyTypes] = useState<string[]>(searchParams.get('bodyType')?.split(',').filter(Boolean) || []);
     const [selectedSeats, setSelectedSeats] = useState<string>(searchParams.get('seats') || '');
@@ -63,6 +68,8 @@ function BuyContent() {
     const [showAllBrands, setShowAllBrands] = useState(false);
     const [bodyType, setBodyType] = useState(searchParams.get('bodyType') || '');
     const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+    // Debounce the search input so we don't refetch on every keystroke
+    const debouncedSearchQuery = useDebounce(searchQuery, 400);
     const [minPrice, setMinPrice] = useState(searchParams.get('minPrice') || '');
     const [maxPrice, setMaxPrice] = useState(searchParams.get('maxPrice') || '');
     const [minYear, setMinYear] = useState(searchParams.get('minYear') || '');
@@ -158,11 +165,11 @@ function BuyContent() {
             const params = new URLSearchParams();
             params.append('status', 'ACTIVE');
             params.append('page', page.toString());
-            params.append('limit', '12');
+            params.append('limit', '18');
 
             if (vehicleType) params.append('vehicleType', vehicleType);
             if (selectedBodyTypes.length > 0) params.append('bodyType', selectedBodyTypes.join(','));
-            if (searchQuery) params.append('q', searchQuery);
+            if (debouncedSearchQuery) params.append('q', debouncedSearchQuery);
             if (selectedBrands.length > 0) params.append('brand', selectedBrands.join(','));
             if (minPrice) params.append('minPrice', minPrice);
             if (maxPrice) params.append('maxPrice', maxPrice);
@@ -232,7 +239,7 @@ function BuyContent() {
 
     useEffect(() => {
         fetchListings();
-    }, [page, vehicleType, selectedBodyTypes, searchQuery, selectedBrands, minPrice, maxPrice, minYear, maxYear, maxMileage, selectedProvince, selectedSeats, selectedFuelTypes, selectedTransmissions, minEngineSize, maxEngineSize]);
+    }, [page, vehicleType, selectedBodyTypes, debouncedSearchQuery, selectedBrands, minPrice, maxPrice, minYear, maxYear, maxMileage, selectedProvince, selectedSeats, selectedFuelTypes, selectedTransmissions, minEngineSize, maxEngineSize]);
 
     const clearFilters = () => {
         setVehicleType('CAR');
@@ -276,29 +283,55 @@ function BuyContent() {
                         {/* Scrollable Content Container */}
                         <div className="flex-1 overflow-y-auto pr-2 -mr-2 custom-scrollbar space-y-6">
 
-
-                            {/* Vehicle Type */}
+                            {/* Keyword search */}
                             <div>
-                                <label className="text-sm font-semibold mb-3 block">ประเภทยานพาหนะ</label>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
-                                        className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
-                                            }`}
-                                    >
-                                        <Car size={24} />
-                                        <span className="text-xs font-medium">รถยนต์</span>
-                                    </button>
-                                    <button
-                                        onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
-                                        className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
-                                            }`}
-                                    >
-                                        <Bike size={24} />
-                                        <span className="text-xs font-medium">มอเตอร์ไซค์</span>
-                                    </button>
+                                <label className="text-sm font-semibold mb-2 block">ค้นหา</label>
+                                <div className="relative">
+                                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" size={16} />
+                                    <input
+                                        type="text"
+                                        placeholder="เช่น civic, bmw 320d..."
+                                        value={searchQuery}
+                                        onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                                        className="form-input-icon font-medium pr-10!"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={() => { setSearchQuery(''); setPage(1); }}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-gray-400 hover:text-gray-600 z-10"
+                                            aria-label="ล้างการค้นหา"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
+
+                            {/* Vehicle Type — hidden while MOTORCYCLE_ENABLED=false (only one option) */}
+                            {MOTORCYCLE_ENABLED && (
+                                <div>
+                                    <label className="text-sm font-semibold mb-3 block">ประเภทยานพาหนะ</label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
+                                            className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
+                                                }`}
+                                        >
+                                            <Car size={24} />
+                                            <span className="text-xs font-medium">รถยนต์</span>
+                                        </button>
+                                        <button
+                                            onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
+                                            className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'
+                                                }`}
+                                        >
+                                            <Bike size={24} />
+                                            <span className="text-xs font-medium">มอเตอร์ไซค์</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Budget */}
                             <div>
@@ -732,7 +765,7 @@ function BuyContent() {
                             <div className="w-full md:w-auto">
                                 {hasActiveFilters && (
                                     <div className="flex gap-2 flex-wrap">
-                                        {vehicleType && (
+                                        {vehicleType && MOTORCYCLE_ENABLED && (
                                             <span className="bg-gray-50 border border-gray-200 px-3 py-1 rounded-full text-xs cursor-pointer flex items-center gap-1 hover:border-accent hover:text-accent transition group"
                                                 onClick={() => setVehicleType('')}>
                                                 {vehicleType === 'CAR' ? 'รถยนต์' : 'มอเตอร์ไซค์'} <X className="group-hover:text-accent text-gray-400" size={12} />
@@ -936,26 +969,54 @@ function BuyContent() {
                     {/* Scrollable Filter Content */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-8 pb-32">
                         {/* Copy of Sidebar Content - We should ideally refactor this into a component */}
-                        {/* Vehicle Type */}
+
+                        {/* Keyword search */}
                         <div>
-                            <label className="text-sm font-semibold mb-3 block">ประเภทยานพาหนะ</label>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
-                                    className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'}`}
-                                >
-                                    <Car size={24} />
-                                    <span className="text-xs font-medium">รถยนต์</span>
-                                </button>
-                                <button
-                                    onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
-                                    className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'}`}
-                                >
-                                    <Bike size={24} />
-                                    <span className="text-xs font-medium">มอเตอร์ไซค์</span>
-                                </button>
+                            <label className="text-sm font-semibold mb-2 block">ค้นหา</label>
+                            <div className="relative">
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10" size={16} />
+                                <input
+                                    type="text"
+                                    placeholder="เช่น civic, bmw 320d..."
+                                    value={searchQuery}
+                                    onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+                                    className="form-input-icon font-medium pr-10!"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        onClick={() => { setSearchQuery(''); setPage(1); }}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-gray-400 hover:text-gray-600 z-10"
+                                        aria-label="ล้างการค้นหา"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                )}
                             </div>
                         </div>
+
+                        {/* Vehicle Type — hidden while MOTORCYCLE_ENABLED=false (only one option) */}
+                        {MOTORCYCLE_ENABLED && (
+                            <div>
+                                <label className="text-sm font-semibold mb-3 block">ประเภทยานพาหนะ</label>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setVehicleType(vehicleType === 'CAR' ? '' : 'CAR')}
+                                        className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'CAR' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'}`}
+                                    >
+                                        <Car size={24} />
+                                        <span className="text-xs font-medium">รถยนต์</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setVehicleType(vehicleType === 'MOTORCYCLE' ? '' : 'MOTORCYCLE')}
+                                        className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1 transition border-2 ${vehicleType === 'MOTORCYCLE' ? 'border-primary bg-blue-50 text-primary' : 'border-gray-200 text-gray-500 hover:border-primary'}`}
+                                    >
+                                        <Bike size={24} />
+                                        <span className="text-xs font-medium">มอเตอร์ไซค์</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Budget */}
                         <div>

@@ -10,10 +10,12 @@ interface PendingState {
     pendingUpgradeCount: number;
     pendingRenewalCount: number;
     pendingSlotPurchaseCount: number;
+    pendingKycCount: number;
     refreshListings: () => Promise<void>;
     refreshUpgrades: () => Promise<void>;
     refreshRenewals: () => Promise<void>;
     refreshSlotPurchases: () => Promise<void>;
+    refreshKyc: () => Promise<void>;
 }
 
 const PendingContext = createContext<PendingState>({
@@ -21,10 +23,12 @@ const PendingContext = createContext<PendingState>({
     pendingUpgradeCount: 0,
     pendingRenewalCount: 0,
     pendingSlotPurchaseCount: 0,
+    pendingKycCount: 0,
     refreshListings: async () => {},
     refreshUpgrades: async () => {},
     refreshRenewals: async () => {},
     refreshSlotPurchases: async () => {},
+    refreshKyc: async () => {},
 });
 
 export function PendingProvider({ children }: { children: ReactNode }) {
@@ -32,6 +36,7 @@ export function PendingProvider({ children }: { children: ReactNode }) {
     const [pendingUpgradeCount, setPendingUpgradeCount] = useState(0);
     const [pendingRenewalCount, setPendingRenewalCount] = useState(0);
     const [pendingSlotPurchaseCount, setPendingSlotPurchaseCount] = useState(0);
+    const [pendingKycCount, setPendingKycCount] = useState(0);
     const esRef = useRef<EventSource | null>(null);
 
     const refreshListings = useCallback(async () => {
@@ -70,16 +75,26 @@ export function PendingProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    const refreshKyc = useCallback(async () => {
+        try {
+            const data = await apiFetch("/admin/kyc?status=PENDING&limit=1");
+            setPendingKycCount(data.pagination?.total ?? 0);
+        } catch {
+            // silent
+        }
+    }, []);
+
     useEffect(() => {
+        // Skip if not authenticated — avoid 401-triggered redirect loop on /login
+        const token = localStorage.getItem("admin_token");
+        if (!token) return;
+
         // Initial fetch
         refreshListings();
         refreshUpgrades();
         refreshRenewals();
         refreshSlotPurchases();
-
-        // Connect SSE
-        const token = localStorage.getItem("admin_token");
-        if (!token) return;
+        refreshKyc();
 
         const es = new EventSource(`${API_URL}/admin/sse?token=${encodeURIComponent(token)}`);
         esRef.current = es;
@@ -91,6 +106,7 @@ export function PendingProvider({ children }: { children: ReactNode }) {
                 setPendingUpgradeCount(data.pendingUpgrades ?? 0);
                 setPendingRenewalCount(data.pendingRenewals ?? 0);
                 setPendingSlotPurchaseCount(data.pendingSlotPurchases ?? 0);
+                setPendingKycCount(data.pendingKyc ?? 0);
             } catch {
                 // invalid data
             }
@@ -104,10 +120,10 @@ export function PendingProvider({ children }: { children: ReactNode }) {
             es.close();
             esRef.current = null;
         };
-    }, [refreshListings, refreshUpgrades, refreshRenewals, refreshSlotPurchases]);
+    }, [refreshListings, refreshUpgrades, refreshRenewals, refreshSlotPurchases, refreshKyc]);
 
     return (
-        <PendingContext.Provider value={{ pendingListingCount, pendingUpgradeCount, pendingRenewalCount, pendingSlotPurchaseCount, refreshListings, refreshUpgrades, refreshRenewals, refreshSlotPurchases }}>
+        <PendingContext.Provider value={{ pendingListingCount, pendingUpgradeCount, pendingRenewalCount, pendingSlotPurchaseCount, pendingKycCount, refreshListings, refreshUpgrades, refreshRenewals, refreshSlotPurchases, refreshKyc }}>
             {children}
         </PendingContext.Provider>
     );

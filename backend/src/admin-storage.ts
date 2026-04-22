@@ -8,25 +8,40 @@ import { z } from "zod";
 import prisma from "./db";
 import { jwtPlugin } from "./jwt";
 import { validateInput } from "./validation";
-import { getProviderByType, invalidateActiveProvider } from "./storage/factory";
+import { getProviderByType, invalidateProviderCache } from "./storage/factory";
 import type { StorageProviderType } from "./storage/provider";
 
 const minioConfigSchema = z.object({
     endpoint: z.string().min(1, "กรุณากรอก endpoint"),
     port: z.number().int().min(1).max(65535),
     useSSL: z.boolean(),
-    accessKey: z.string().min(1, "กรุณากรอก access key"),
-    secretKey: z.string().min(1, "กรุณากรอก secret key"),
+    // Secrets are optional on update — omitted = keep the existing DB value.
+    // Backend merges from existing row before validating completeness.
+    accessKey: z.string().min(1).optional(),
+    secretKey: z.string().min(1).optional(),
     bucket: z.string().min(1, "กรุณากรอกชื่อ bucket"),
 });
 
 const cloudflareConfigSchema = z.object({
-    endpoint: z.string().url("endpoint ต้องเป็น URL ที่ถูกต้อง"),
-    accessKeyId: z.string().min(1, "กรุณากรอก access key ID"),
-    secretAccessKey: z.string().min(1, "กรุณากรอก secret access key"),
+    // Either endpoint (full URL) or accountId (shortcut) must be supplied.
+    // accountId → endpoint = https://{accountId}.r2.cloudflarestorage.com
+    endpoint: z.string().url().optional(),
+    accountId: z.string().min(1).optional(),
+    // Secrets are optional on update — omitted = keep the existing DB value.
+    accessKeyId: z.string().min(1).optional(),
+    secretAccessKey: z.string().min(1).optional(),
     bucket: z.string().min(1, "กรุณากรอกชื่อ bucket"),
     publicUrl: z.string().url("public URL ต้องเป็น URL ที่ถูกต้อง"),
-});
+    // Optional prefix prepended to every object key in the bucket — useful when
+    // sharing a bucket across environments. Empty/undefined = no prefix.
+    directory: z.string()
+        .max(200, "directory ยาวเกินไป")
+        .regex(/^[A-Za-z0-9_\-./]*$/, "directory ใช้ได้เฉพาะตัวอักษร/ตัวเลข/_/-/./")
+        .optional(),
+}).refine(
+    (c) => !!(c.endpoint || c.accountId),
+    { message: "กรุณากรอก endpoint หรือ accountId", path: ["endpoint"] },
+);
 
 const providerTypeSchema = z.enum(["MINIO", "CLOUDFLARE_R2"]);
 
@@ -39,6 +54,61 @@ const testBodySchema = z.discriminatedUnion("provider", [
     z.object({ provider: z.literal("MINIO"), config: minioConfigSchema }),
     z.object({ provider: z.literal("CLOUDFLARE_R2"), config: cloudflareConfigSchema }),
 ]);
+
+/**
+ * Merge omitted secret fields from the existing DB config.
+ *
+ * The frontend sends partial configs — secret fields are absent when the user
+ * hasn't retyped them (they're shown as redacted placeholders like `****abcd`).
+ * We preserve the existing secret in that case so the admin doesn't have to
+ * re-enter credentials every time they update a non-secret field (bucket,
+ * public URL, directory, etc.).
+ *
+ * Also strips obviously-redacted values so they never overwrite real secrets.
+ */
+function mergeSecrets(
+    provider: StorageProviderType,
+    incoming: Record<string, unknown>,
+    existing: Record<string, unknown>,
+): Record<string, unknown> {
+    const secretKeys = provider === "MINIO"
+        ? ["accessKey", "secretKey"]
+        : ["accessKeyId", "secretAccessKey"];
+
+    const result: Record<string, unknown> = { ...incoming };
+    for (const key of secretKeys) {
+        const inVal = incoming[key];
+        const isMissing = inVal === undefined || inVal === null || inVal === "";
+        const isRedacted = typeof inVal === "string" && /^\*{2,}/.test(inVal);
+        if (isMissing || isRedacted) {
+            if (existing[key] !== undefined) {
+                result[key] = existing[key];
+            } else {
+                delete result[key];
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ * Final completeness check on the merged config. Returns a Thai error message
+ * naming the missing secret so the admin knows they need to enter it the first
+ * time they configure this provider.
+ */
+function validateCompleteConfig(
+    provider: StorageProviderType,
+    config: Record<string, unknown>,
+): { ok: true } | { ok: false; message: string } {
+    if (provider === "MINIO") {
+        if (!config.accessKey) return { ok: false, message: "กรุณากรอก access key" };
+        if (!config.secretKey) return { ok: false, message: "กรุณากรอก secret key" };
+    } else {
+        if (!config.accessKeyId) return { ok: false, message: "กรุณากรอก access key ID" };
+        if (!config.secretAccessKey) return { ok: false, message: "กรุณากรอก secret access key" };
+    }
+    return { ok: true };
+}
 
 function maskSecret(value: string | undefined | null): string {
     if (!value) return "";
@@ -63,6 +133,7 @@ function redactConfig(provider: StorageProviderType, config: Record<string, unkn
         secretAccessKey: maskSecret(config.secretAccessKey as string | undefined),
         bucket: config.bucket ?? "",
         publicUrl: config.publicUrl ?? "",
+        directory: config.directory ?? "",
     };
 }
 
@@ -133,25 +204,43 @@ export const adminStorageRoutes = new Elysia({ prefix: "/admin/settings/storage"
             const existing = await prisma.storageSetting.findFirst({
                 orderBy: { updatedAt: "desc" },
             });
+            const id = existing?.id ?? "singleton";
 
-            const updated = existing
-                ? await prisma.storageSetting.update({
-                    where: { id: existing.id },
-                    data: {
-                        provider: parsed.provider,
-                        config: parsed.config as unknown as object,
-                        updatedBy: adminId,
-                    },
-                })
-                : await prisma.storageSetting.create({
-                    data: {
-                        provider: parsed.provider,
-                        config: parsed.config as unknown as object,
-                        updatedBy: adminId,
-                    },
-                });
+            // Merge omitted secrets from the existing row — the frontend leaves
+            // secret fields undefined when the user hasn't retyped them, which
+            // means "keep current value". Only applies when provider is unchanged.
+            const existingConfig = (existing?.config as Record<string, unknown> | null) ?? {};
+            const sameProvider = existing?.provider === parsed.provider;
+            const mergedConfig = mergeSecrets(
+                parsed.provider,
+                parsed.config as Record<string, unknown>,
+                sameProvider ? existingConfig : {},
+            );
 
-            invalidateActiveProvider();
+            // Final completeness check — secrets are required in storage, just
+            // not required to come from this request.
+            const completeness = validateCompleteConfig(parsed.provider, mergedConfig);
+            if (!completeness.ok) {
+                set.status = 400;
+                return { error: "Validation", message: completeness.message };
+            }
+
+            const updated = await prisma.storageSetting.upsert({
+                where: { id },
+                update: {
+                    provider: parsed.provider,
+                    config: mergedConfig as unknown as object,
+                    updatedBy: adminId,
+                },
+                create: {
+                    id,
+                    provider: parsed.provider,
+                    config: mergedConfig as unknown as object,
+                    updatedBy: adminId,
+                },
+            });
+
+            invalidateProviderCache();
 
             const rawConfig = (updated.config as Record<string, unknown> | null) ?? {};
             return {
@@ -182,32 +271,35 @@ export const adminStorageRoutes = new Elysia({ prefix: "/admin/settings/storage"
         const start = Date.now();
         try {
             const parsed = validateInput(testBodySchema, body);
-            const provider = getProviderByType(
+
+            // Same merge rule as PUT — omitted secrets fall back to the saved
+            // config so admin can click "Test" without retyping credentials.
+            const existing = await prisma.storageSetting.findFirst({
+                orderBy: { updatedAt: "desc" },
+            });
+            const existingConfig = (existing?.config as Record<string, unknown> | null) ?? {};
+            const sameProvider = existing?.provider === parsed.provider;
+            const mergedConfig = mergeSecrets(
                 parsed.provider,
-                parsed.config as unknown as Record<string, unknown>
+                parsed.config as Record<string, unknown>,
+                sameProvider ? existingConfig : {},
             );
 
-            // Try listing — succeeds for existing buckets with read perms.
-            // Fall back to ensureBucket + tiny upload + delete if list fails.
-            let listOk = false;
-            try {
-                await provider.list("");
-                listOk = true;
-            } catch {
-                listOk = false;
+            const completeness = validateCompleteConfig(parsed.provider, mergedConfig);
+            if (!completeness.ok) {
+                set.status = 400;
+                return { ok: false, message: completeness.message, latencyMs: Date.now() - start };
             }
 
-            if (!listOk) {
-                await provider.ensureBucket();
-                const testKey = `__healthcheck/${Date.now()}.txt`;
-                const testBuffer = Buffer.from("car2hand-storage-test");
-                await provider.upload(testKey, testBuffer, "text/plain");
-                try {
-                    await provider.delete(testKey);
-                } catch {
-                    // best-effort cleanup
-                }
-            }
+            const provider = getProviderByType(
+                parsed.provider,
+                mergedConfig
+            );
+
+            // Ping the provider via ensureBucket — the lightest connectivity check
+            // that works for both MinIO and R2 without mutating storage beyond
+            // bucket creation (idempotent).
+            await provider.ensureBucket();
 
             return {
                 ok: true,

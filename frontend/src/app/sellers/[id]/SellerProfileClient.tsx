@@ -65,9 +65,8 @@ interface ListingsResponse {
 // ---------- Helpers ----------
 
 const SHOWROOM_BADGES: Record<string, { label: string; color: string }> = {
-    PERSONAL: { label: 'ส่วนตัว', color: 'bg-gray-100 text-gray-600' },
-    TENT: { label: 'เต๊นท์', color: 'bg-blue-100 text-blue-700' },
-    DEALER: { label: 'ตัวแทนจำหน่าย', color: 'bg-orange-100 text-orange-700' },
+    INDIVIDUAL: { label: 'บุคคลธรรมดา', color: 'bg-gray-100 text-gray-600' },
+    CORPORATE: { label: 'นิติบุคคล', color: 'bg-blue-100 text-blue-700' },
 };
 
 // ---------- Skeleton ----------

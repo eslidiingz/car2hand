@@ -1221,6 +1221,13 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         isActive: true,
                         createdAt: true,
                         currentPackage: { select: { name: true, slug: true } },
+                        sellerProfile: {
+                            select: {
+                                isVerified: true,
+                                verificationLevel: true,
+                                verifiedAt: true,
+                            }
+                        },
                         _count: { select: { listings: true } },
                     }
                 }),

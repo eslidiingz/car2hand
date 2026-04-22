@@ -50,13 +50,13 @@ interface SellerDetail {
     shopProvince: string | null;
     shopDistrict: string | null;
     shopPhone: string | null;
-    showroomType: "INDIVIDUAL" | "TENT" | "DEALER";
+    showroomType: "INDIVIDUAL" | "CORPORATE";
     shopOpenHours: string | null;
     socialFacebook: string | null;
     socialLine: string | null;
     socialInstagram: string | null;
     specializations: unknown;
-    verificationLevel: "NONE" | "ID" | "BUSINESS" | "DEALER";
+    verificationLevel: "NONE" | "INDIVIDUAL" | "CORPORATE";
     isVerified: boolean;
     verifiedAt: string | null;
     totalSoldCount: number;
@@ -72,9 +72,8 @@ interface Stats {
 }
 
 const SHOWROOM_LABEL: Record<string, string> = {
-    INDIVIDUAL: "ผู้ขายส่วนตัว",
-    TENT: "เต๊นท์",
-    DEALER: "ตัวแทนจำหน่าย",
+    INDIVIDUAL: "บุคคลธรรมดา",
+    CORPORATE: "นิติบุคคล",
 };
 
 function formatDate(dateStr: string | null | undefined) {
@@ -113,12 +112,12 @@ type EditForm = {
     shopProvince: string;
     shopDistrict: string;
     shopPhone: string;
-    showroomType: "INDIVIDUAL" | "TENT" | "DEALER";
+    showroomType: "INDIVIDUAL" | "CORPORATE";
     shopOpenHours: string;
     socialFacebook: string;
     socialLine: string;
     socialInstagram: string;
-    verificationLevel: "NONE" | "ID" | "BUSINESS" | "DEALER";
+    verificationLevel: "NONE" | "INDIVIDUAL" | "CORPORATE";
 };
 
 export default function SellerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -147,7 +146,7 @@ export default function SellerDetailPage({ params }: { params: Promise<{ id: str
     });
 
     const [verifying, setVerifying] = useState(false);
-    const [verifyLevel, setVerifyLevel] = useState<"ID" | "BUSINESS" | "DEALER">("ID");
+    const [verifyLevel, setVerifyLevel] = useState<"INDIVIDUAL" | "CORPORATE">("INDIVIDUAL");
 
     const fetchSeller = useCallback(async () => {
         setLoading(true);
@@ -503,9 +502,8 @@ export default function SellerDetailPage({ params }: { params: Promise<{ id: str
                                                 disabled={saving}
                                                 className="h-9 w-full px-3 rounded-md border border-border bg-background text-sm"
                                             >
-                                                <option value="INDIVIDUAL">ผู้ขายส่วนตัว</option>
-                                                <option value="TENT">เต๊นท์</option>
-                                                <option value="DEALER">ตัวแทนจำหน่าย</option>
+                                                <option value="INDIVIDUAL">บุคคลธรรมดา</option>
+                                                <option value="CORPORATE">นิติบุคคล</option>
                                             </select>
                                         </div>
                                         <div className="space-y-1.5">
@@ -522,10 +520,9 @@ export default function SellerDetailPage({ params }: { params: Promise<{ id: str
                                                 disabled={saving}
                                                 className="h-9 w-full px-3 rounded-md border border-border bg-background text-sm"
                                             >
-                                                <option value="NONE">NONE</option>
-                                                <option value="ID">ID</option>
-                                                <option value="BUSINESS">BUSINESS</option>
-                                                <option value="DEALER">DEALER</option>
+                                                <option value="NONE">ยังไม่ยืนยัน</option>
+                                                <option value="INDIVIDUAL">บุคคลธรรมดา</option>
+                                                <option value="CORPORATE">นิติบุคคล</option>
                                             </select>
                                         </div>
                                     </div>
@@ -643,13 +640,12 @@ export default function SellerDetailPage({ params }: { params: Promise<{ id: str
                                             <select
                                                 id="verifyLevel"
                                                 value={verifyLevel}
-                                                onChange={(e) => setVerifyLevel(e.target.value as "ID" | "BUSINESS" | "DEALER")}
+                                                onChange={(e) => setVerifyLevel(e.target.value as "INDIVIDUAL" | "CORPORATE")}
                                                 disabled={verifying}
                                                 className="h-9 w-full px-3 rounded-md border border-border bg-background text-sm"
                                             >
-                                                <option value="ID">ID</option>
-                                                <option value="BUSINESS">BUSINESS</option>
-                                                <option value="DEALER">DEALER</option>
+                                                <option value="INDIVIDUAL">บุคคลธรรมดา</option>
+                                                <option value="CORPORATE">นิติบุคคล</option>
                                             </select>
                                         </div>
                                         <Button

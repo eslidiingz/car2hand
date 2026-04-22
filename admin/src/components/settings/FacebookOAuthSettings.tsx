@@ -116,7 +116,7 @@ export default function FacebookOAuthSettings() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Facebook OAuth Credentials */}
-                <Card className="rounded-xl border-slate-200 shadow-sm">
+                <Card className="rounded-xl border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <KeyRound size={18} className="text-primary" />
@@ -133,7 +133,7 @@ export default function FacebookOAuthSettings() {
                                 value={settings["facebook.appId"]}
                                 onChange={(e) => updateSetting("facebook.appId", e.target.value)}
                                 placeholder="เช่น 1234567890123456"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200 font-mono text-sm"
+                                className="h-10 rounded-lg bg-muted border-border font-mono text-sm"
                             />
                         </div>
                         <div className="space-y-1.5">
@@ -143,14 +143,14 @@ export default function FacebookOAuthSettings() {
                                 value={settings["facebook.appSecret"]}
                                 onChange={(e) => updateSetting("facebook.appSecret", e.target.value)}
                                 placeholder="App Secret จาก Meta for Developers"
-                                className="h-10 rounded-lg bg-slate-50 border-slate-200"
+                                className="h-10 rounded-lg bg-muted border-border"
                             />
                         </div>
                     </CardContent>
                 </Card>
 
                 {/* Setup Guide */}
-                <Card className="rounded-xl border-slate-200 shadow-sm">
+                <Card className="rounded-xl border-border shadow-sm">
                     <CardHeader>
                         <CardTitle className="text-base font-semibold flex items-center gap-2">
                             <Info size={18} className="text-primary" />
@@ -184,7 +184,7 @@ export default function FacebookOAuthSettings() {
             </div>
 
             {/* Callback URL */}
-            <Card className="rounded-xl border-slate-200 shadow-sm">
+            <Card className="rounded-xl border-border shadow-sm">
                 <CardHeader>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
                         <Link2 size={18} className="text-primary" />
@@ -199,7 +199,7 @@ export default function FacebookOAuthSettings() {
                         <Input
                             value={callbackUrl}
                             readOnly
-                            className="h-10 rounded-lg bg-slate-50 border-slate-200 font-mono text-sm"
+                            className="h-10 rounded-lg bg-muted border-border font-mono text-sm"
                         />
                         <Button
                             variant="outline"

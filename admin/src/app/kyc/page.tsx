@@ -20,7 +20,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type KycType = "ID" | "BUSINESS" | "DEALER";
+type KycType = "INDIVIDUAL" | "CORPORATE";
 type KycStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 
 interface Submission {
@@ -37,7 +37,7 @@ interface Submission {
     businessCertImage: string | null;
     addressProofImage: string | null;
     dealerAppointmentDoc: string | null;
-    requestedShowroom: "INDIVIDUAL" | "TENT" | "DEALER" | null;
+    requestedShowroom: "INDIVIDUAL" | "CORPORATE" | null;
     submittedAt: string;
     reviewedAt: string | null;
     reviewNote: string | null;
@@ -51,9 +51,8 @@ interface Submission {
 }
 
 const TYPE_META: Record<KycType, { label: string; icon: React.ReactNode; color: string }> = {
-    ID: { label: "ยืนยันบุคคล", icon: <UserIcon size={14} />, color: "bg-blue-100 text-blue-700" },
-    BUSINESS: { label: "ร้านรับรอง", icon: <Building2 size={14} />, color: "bg-emerald-100 text-emerald-700" },
-    DEALER: { label: "ดีลเลอร์รับรอง", icon: <Shield size={14} />, color: "bg-amber-100 text-amber-700" },
+    INDIVIDUAL: { label: "บุคคลธรรมดา", icon: <UserIcon size={14} />, color: "bg-emerald-100 text-emerald-700" },
+    CORPORATE: { label: "นิติบุคคล", icon: <Building2 size={14} />, color: "bg-blue-100 text-blue-700" },
 };
 
 const STATUS_META: Record<KycStatus, { label: string; color: string; icon: React.ReactNode }> = {
@@ -191,8 +190,8 @@ export default function AdminKycPage() {
                 </div>
 
                 {/* Pending summary */}
-                <div className="grid grid-cols-3 gap-4">
-                    {(["ID", "BUSINESS", "DEALER"] as KycType[]).map((t) => (
+                <div className="grid grid-cols-2 gap-4">
+                    {(["INDIVIDUAL", "CORPORATE"] as KycType[]).map((t) => (
                         <div key={t} className="bg-card border border-border rounded-2xl p-4">
                             <div className="flex items-center gap-2 text-muted-foreground mb-1">
                                 {TYPE_META[t].icon}
@@ -227,9 +226,8 @@ export default function AdminKycPage() {
                         className="h-9 px-3 rounded-lg border border-border bg-background text-sm"
                     >
                         <option value="">ทุกประเภท</option>
-                        <option value="ID">ยืนยันบุคคล</option>
-                        <option value="BUSINESS">ร้านรับรอง</option>
-                        <option value="DEALER">ดีลเลอร์รับรอง</option>
+                        <option value="INDIVIDUAL">บุคคลธรรมดา</option>
+                        <option value="CORPORATE">นิติบุคคล</option>
                     </select>
                 </div>
 
@@ -325,44 +323,34 @@ export default function AdminKycPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-3">
                                     <DocImage label="รูปบัตรประชาชน" url={selected.idCardImage} />
-                                    <DocImage label="รูปเซลฟี่ถือบัตร" url={selected.selfieImage} />
+                                    {selected.type === "INDIVIDUAL" && (
+                                        <DocImage label="รูปเซลฟี่ถือบัตร" url={selected.selfieImage} />
+                                    )}
                                 </div>
                             </section>
 
-                            {/* Business section */}
-                            {selected.type !== "ID" && (
+                            {/* Corporate section */}
+                            {selected.type === "CORPORATE" && (
                                 <section>
-                                    <h3 className="font-bold text-sm mb-3">ข้อมูลธุรกิจ</h3>
+                                    <h3 className="font-bold text-sm mb-3">ข้อมูลนิติบุคคล</h3>
                                     <div className="grid grid-cols-2 gap-3 text-sm mb-3">
                                         <div>
                                             <div className="text-xs text-muted-foreground">ชื่อร้าน/บริษัท</div>
                                             <div className="font-medium">{selected.businessName || "-"}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs text-muted-foreground">เลขทะเบียน/ผู้เสียภาษี</div>
+                                            <div className="text-xs text-muted-foreground">เลขผู้เสียภาษี</div>
                                             <div className="font-mono">{selected.taxId || "-"}</div>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <DocImage label="หนังสือรับรอง/ทะเบียนพาณิชย์" url={selected.businessCertImage} />
-                                        <DocImage label="หลักฐานที่อยู่ร้าน" url={selected.addressProofImage} />
-                                    </div>
-                                </section>
-                            )}
-
-                            {selected.type === "DEALER" && (
-                                <section>
-                                    <h3 className="font-bold text-sm mb-3">หนังสือแต่งตั้ง</h3>
-                                    <div className="grid grid-cols-1 gap-3">
-                                        <DocImage label="หนังสือแต่งตั้งจากค่ายรถ" url={selected.dealerAppointmentDoc} />
-                                    </div>
+                                    <DocImage label="ใบทะเบียนพาณิชย์ / หนังสือรับรองบริษัท" url={selected.businessCertImage} />
                                 </section>
                             )}
 
                             {selected.requestedShowroom && (
                                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-800">
                                     ขอเปลี่ยนประเภทร้านเป็น: <strong>
-                                        {selected.requestedShowroom === "INDIVIDUAL" ? "บุคคล" : selected.requestedShowroom === "TENT" ? "เต็นท์" : "ดีลเลอร์"}
+                                        {selected.requestedShowroom === "INDIVIDUAL" ? "บุคคลธรรมดา" : "นิติบุคคล"}
                                     </strong>
                                 </div>
                             )}
@@ -389,11 +377,20 @@ export default function AdminKycPage() {
 
                         {selected.status === "PENDING" && (
                             <div className="sticky bottom-0 bg-card border-t border-border p-4 flex gap-3">
-                                <Button variant="outline" className="flex-1" onClick={handleReject} disabled={actionLoading}>
+                                <Button
+                                    variant="destructive"
+                                    className="flex-1 font-medium"
+                                    onClick={handleReject}
+                                    disabled={actionLoading}
+                                >
                                     {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}
                                     ปฏิเสธ
                                 </Button>
-                                <Button className="flex-1" onClick={handleApprove} disabled={actionLoading}>
+                                <Button
+                                    className="flex-1 font-medium bg-emerald-600 hover:bg-emerald-700 text-white"
+                                    onClick={handleApprove}
+                                    disabled={actionLoading}
+                                >
                                     {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <Check size={16} />}
                                     อนุมัติ
                                 </Button>

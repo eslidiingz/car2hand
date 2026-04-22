@@ -115,10 +115,20 @@ export type SystemSetting = Prisma.SystemSettingModel
  */
 export type StorageSetting = Prisma.StorageSettingModel
 /**
+ * Model AdminSetting
+ * 
+ */
+export type AdminSetting = Prisma.AdminSettingModel
+/**
  * Model PackageTransaction
  * 
  */
 export type PackageTransaction = Prisma.PackageTransactionModel
+/**
+ * Model SlotPurchase
+ * 
+ */
+export type SlotPurchase = Prisma.SlotPurchaseModel
 /**
  * Model ListingRenewal
  * 

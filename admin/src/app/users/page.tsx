@@ -7,17 +7,21 @@ import {
     Search,
     Mail,
     Phone,
-    Shield,
+    ShieldAlert,
     ChevronLeft,
     ChevronRight,
     Package,
     Car,
-    Eye
+    Eye,
+    BadgeCheck,
+    Building2,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/useDebounce";
+
+type KycLevel = "NONE" | "INDIVIDUAL" | "CORPORATE" | string;
 
 interface UserItem {
     id: string;
@@ -27,7 +31,31 @@ interface UserItem {
     isActive: boolean;
     createdAt: string;
     currentPackage: { name: string; slug: string } | null;
+    sellerProfile: {
+        isVerified: boolean;
+        verificationLevel: KycLevel;
+        verifiedAt: string | null;
+    } | null;
     _count: { listings: number };
+}
+
+const KYC_BADGE: Record<string, { label: string; className: string; Icon: React.ElementType }> = {
+    INDIVIDUAL: {
+        label: "บุคคลธรรมดา",
+        className: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+        Icon: BadgeCheck,
+    },
+    CORPORATE: {
+        label: "นิติบุคคล",
+        className: "bg-blue-50 text-blue-700 border border-blue-200",
+        Icon: Building2,
+    },
+};
+
+function getKycBadge(profile: UserItem["sellerProfile"]) {
+    if (!profile) return null;
+    if (!profile.isVerified || !profile.verificationLevel || profile.verificationLevel === "NONE") return null;
+    return KYC_BADGE[profile.verificationLevel] ?? null;
 }
 
 export default function UserManagementPage() {
@@ -107,6 +135,7 @@ export default function UserManagementPage() {
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground">ข้อมูลผู้ใช้งาน</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground">เบอร์โทร</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground">แพ็กเกจ</th>
+                                <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">ยืนยันตัวตน</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">ประกาศ</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">สถานะ</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground">วันที่สมัคร</th>
@@ -117,7 +146,7 @@ export default function UserManagementPage() {
                             {isLoading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i}>
-                                        <td colSpan={7} className="px-6 py-4">
+                                        <td colSpan={8} className="px-6 py-4">
                                             <div className="animate-pulse flex items-center gap-3">
                                                 <div className="h-9 w-9 bg-accent rounded-lg" />
                                                 <div className="flex-1 space-y-2">
@@ -130,7 +159,7 @@ export default function UserManagementPage() {
                                 ))
                             ) : users.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground text-sm">
+                                    <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground text-sm">
                                         ไม่พบผู้ใช้งาน
                                     </td>
                                 </tr>
@@ -160,6 +189,26 @@ export default function UserManagementPage() {
                                             ) : (
                                                 <span className="text-xs text-muted-foreground">ไม่มีแพ็กเกจ</span>
                                             )}
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            {(() => {
+                                                const badge = getKycBadge(user.sellerProfile);
+                                                if (badge) {
+                                                    const { Icon, label, className } = badge;
+                                                    return (
+                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium ${className}`}>
+                                                            <Icon size={12} />
+                                                            {label}
+                                                        </span>
+                                                    );
+                                                }
+                                                return (
+                                                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                                        <ShieldAlert size={12} />
+                                                        ยังไม่ยืนยัน
+                                                    </span>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className="inline-flex items-center gap-1 text-sm text-muted-foreground font-medium">

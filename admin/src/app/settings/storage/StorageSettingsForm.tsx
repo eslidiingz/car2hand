@@ -72,6 +72,7 @@ type R2FormState = {
     secretAccessKey: string;
     bucket: string;
     publicUrl: string;
+    directory: string;
 };
 
 const DEFAULT_MINIO: MinioFormState = {
@@ -89,6 +90,7 @@ const DEFAULT_R2: R2FormState = {
     secretAccessKey: "",
     bucket: "",
     publicUrl: "",
+    directory: "",
 };
 
 type SecretField = "accessKey" | "secretKey" | "accessKeyId" | "secretAccessKey";
@@ -168,6 +170,7 @@ export default function StorageSettingsForm() {
                 secretAccessKey: cfg.secretAccessKey ?? "",
                 bucket: cfg.bucket ?? "",
                 publicUrl: cfg.publicUrl ?? "",
+                directory: cfg.directory ?? "",
             };
             setR2(next);
             setInitialR2(next);
@@ -226,7 +229,8 @@ export default function StorageSettingsForm() {
             r2.accessKeyId !== initialR2.accessKeyId ||
             r2.secretAccessKey !== initialR2.secretAccessKey ||
             r2.bucket !== initialR2.bucket ||
-            r2.publicUrl !== initialR2.publicUrl
+            r2.publicUrl !== initialR2.publicUrl ||
+            r2.directory !== initialR2.directory
         );
     }, [
         activeProvider,
@@ -302,6 +306,7 @@ export default function StorageSettingsForm() {
             endpoint: r2.endpoint.trim(),
             bucket: r2.bucket.trim(),
             publicUrl: r2.publicUrl.trim(),
+            directory: r2.directory.trim(),
         };
         const providerChanged = activeProvider !== initialProvider;
         if (providerChanged || touchedSecrets.accessKeyId) {
@@ -904,6 +909,19 @@ function R2Fields({
                 />
                 <p className="text-xs text-muted-foreground">
                     URL สาธารณะของ bucket (custom domain หรือ r2.dev URL)
+                </p>
+            </div>
+
+            <div className="space-y-1.5">
+                <Label>Directory <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                <Input
+                    value={value.directory}
+                    onChange={(e) => set("directory", e.target.value)}
+                    placeholder="เช่น car2hand/prod"
+                    className="h-10 rounded-xl bg-muted border-border"
+                />
+                <p className="text-xs text-muted-foreground">
+                    prefix นำหน้าทุกไฟล์ใน bucket — ใช้เมื่อต้องแยก environment หรือแชร์ bucket ร่วมกับโปรเจ็กต์อื่น (เว้นว่างไว้ถ้าไม่ต้องการ)
                 </p>
             </div>
         </>

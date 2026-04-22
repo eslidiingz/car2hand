@@ -20,6 +20,7 @@ import {
     Upload,
 } from 'lucide-react';
 import Toast from '@/components/Toast';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -523,43 +524,28 @@ export default function WarehousePage() {
         <div className="space-y-6">
             {toast && <Toast message={toast.message} type={toast.type} />}
 
-            {/* Delete Confirmation Modal */}
-            {deleteConfirm && (
-                <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={() => setDeleteConfirm(null)}>
-                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 text-center">
-                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash size={28} className="text-red-500" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">
-                                {deleteConfirm.type === 'vehicle' ? 'ลบรถคันนี้?' : deleteConfirm.type === 'service' ? 'ลบประวัติซ่อมนี้?' : 'ลบแจ้งเตือนนี้?'}
-                            </h3>
-                            <p className="text-sm text-gray-500 mb-1">
-                                &quot;{deleteConfirm.title}&quot;
-                            </p>
-                            <p className="text-xs text-gray-400">
-                                {deleteConfirm.type === 'vehicle'
-                                    ? 'ข้อมูลรถ ประวัติซ่อม และแจ้งเตือนทั้งหมดจะถูกลบ'
-                                    : 'การดำเนินการนี้ไม่สามารถย้อนกลับได้'}
-                            </p>
-                        </div>
-                        <div className="flex border-t border-gray-100">
-                            <button
-                                onClick={() => setDeleteConfirm(null)}
-                                className="flex-1 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 transition rounded-bl-2xl"
-                            >
-                                ยกเลิก
-                            </button>
-                            <button
-                                onClick={confirmDelete}
-                                className="flex-1 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50 transition border-l border-gray-100 rounded-br-2xl"
-                            >
-                                ลบ
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                open={!!deleteConfirm}
+                onClose={() => setDeleteConfirm(null)}
+                onConfirm={confirmDelete}
+                icon={<Trash size={28} />}
+                title={
+                    deleteConfirm?.type === 'vehicle' ? 'ลบรถคันนี้?'
+                        : deleteConfirm?.type === 'service' ? 'ลบประวัติซ่อมนี้?'
+                            : 'ลบแจ้งเตือนนี้?'
+                }
+                description={deleteConfirm ? (
+                    <>
+                        <span className="block mb-1">&quot;{deleteConfirm.title}&quot;</span>
+                        <span className="block text-xs text-gray-400">
+                            {deleteConfirm.type === 'vehicle'
+                                ? 'ข้อมูลรถ ประวัติซ่อม และแจ้งเตือนทั้งหมดจะถูกลบ'
+                                : 'การดำเนินการนี้ไม่สามารถย้อนกลับได้'}
+                        </span>
+                    </>
+                ) : undefined}
+                confirmLabel="ลบ"
+            />
 
             {/* Header */}
             <div className="flex justify-between items-center">

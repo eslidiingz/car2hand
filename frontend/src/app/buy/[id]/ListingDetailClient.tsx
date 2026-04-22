@@ -783,7 +783,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             key={`full-${currentImageIndex}`}
                             src={listing.images[currentImageIndex]?.url}
                             alt={listing.title}
-                            className="max-w-full max-h-full object-contain animate-image-change shadow-2xl"
+                            className="w-full max-w-[1440px] max-h-full object-contain animate-image-change shadow-2xl"
                         />
 
                         {/* Navigation Arrows - Hidden on mobile, visible on desktop */}

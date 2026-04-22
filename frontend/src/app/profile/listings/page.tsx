@@ -26,6 +26,7 @@ import {
 import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/profile/ProfileListingCard';
 import Toast from '@/components/Toast';
 import SlotPurchaseModal from '@/components/SlotPurchaseModal';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 interface ApiResponse {
     listings: VehicleListing[];
@@ -551,44 +552,16 @@ export default function MyListingsPage() {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
-            {deleteConfirm && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center">
-                    <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setDeleteConfirm(null)}
-                    ></div>
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash className="text-3xl text-red-500" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">ลบประกาศ</h3>
-                            <p className="text-gray-500 text-sm mb-6">คุณต้องการลบประกาศนี้ใช่หรือไม่?</p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setDeleteConfirm(null)}
-                                    disabled={deleting}
-                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
-                                >
-                                    ยกเลิก
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(deleteConfirm)}
-                                    disabled={deleting}
-                                    className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition flex items-center justify-center gap-2"
-                                >
-                                    {deleting ? (
-                                        <Loader2 className="animate-spin" />
-                                    ) : (
-                                        'ลบประกาศ'
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                open={!!deleteConfirm}
+                onClose={() => { if (!deleting) setDeleteConfirm(null); }}
+                onConfirm={() => { if (deleteConfirm) handleDelete(deleteConfirm); }}
+                icon={<Trash size={28} />}
+                title="ลบประกาศ"
+                description="คุณต้องการลบประกาศนี้ใช่หรือไม่?"
+                confirmLabel="ลบประกาศ"
+                loading={deleting}
+            />
 
             {/* Upgrade Package Modal */}
             {showUpgradeModal && (

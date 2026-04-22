@@ -53,7 +53,7 @@ interface SellerProfile {
     shopName: string;
     shopProvince: string | null;
     shopDistrict: string | null;
-    showroomType: "INDIVIDUAL" | "TENT" | "DEALER";
+    showroomType: "INDIVIDUAL" | "CORPORATE";
     isVerified: boolean;
     verifiedAt: string | null;
     verificationLevel: string;
@@ -96,9 +96,8 @@ interface UserDetail {
 }
 
 const SHOWROOM_LABEL: Record<string, string> = {
-    INDIVIDUAL: "ผู้ขายส่วนตัว",
-    TENT: "เต๊นท์",
-    DEALER: "ตัวแทนจำหน่าย",
+    INDIVIDUAL: "บุคคลธรรมดา",
+    CORPORATE: "นิติบุคคล",
 };
 
 const KYC_STATUS: Record<string, { label: string; className: string }> = {

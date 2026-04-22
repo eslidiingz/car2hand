@@ -24,9 +24,9 @@ interface SellerItem {
     shopLogo: string | null;
     shopProvince: string | null;
     shopDistrict: string | null;
-    showroomType: "INDIVIDUAL" | "TENT" | "DEALER";
+    showroomType: "INDIVIDUAL" | "CORPORATE";
     isVerified: boolean;
-    verificationLevel: "NONE" | "ID" | "BUSINESS" | "DEALER";
+    verificationLevel: "NONE" | "INDIVIDUAL" | "CORPORATE";
     totalSoldCount: number;
     createdAt: string;
     user: {
@@ -40,16 +40,14 @@ interface SellerItem {
 }
 
 const SHOWROOM_LABEL: Record<string, string> = {
-    INDIVIDUAL: "ส่วนตัว",
-    TENT: "เต๊นท์",
-    DEALER: "ดีลเลอร์",
+    INDIVIDUAL: "บุคคลธรรมดา",
+    CORPORATE: "นิติบุคคล",
 };
 
 const VERIFICATION_LEVEL_LABEL: Record<string, string> = {
     NONE: "ยังไม่ยืนยัน",
-    ID: "ID",
-    BUSINESS: "Business",
-    DEALER: "Dealer",
+    INDIVIDUAL: "บุคคลธรรมดา",
+    CORPORATE: "นิติบุคคล",
 };
 
 export default function SellerProfilesPage() {
@@ -141,9 +139,8 @@ export default function SellerProfilesPage() {
                 >
                     <option value="">ระดับยืนยัน: ทั้งหมด</option>
                     <option value="NONE">ยังไม่ยืนยัน</option>
-                    <option value="ID">ID</option>
-                    <option value="BUSINESS">Business</option>
-                    <option value="DEALER">Dealer</option>
+                    <option value="INDIVIDUAL">บุคคลธรรมดา</option>
+                    <option value="CORPORATE">นิติบุคคล</option>
                 </select>
                 <select
                     value={showroomType}
@@ -154,9 +151,8 @@ export default function SellerProfilesPage() {
                     className="h-9 px-3 rounded-lg border border-border bg-background text-sm"
                 >
                     <option value="">ประเภทร้าน: ทั้งหมด</option>
-                    <option value="INDIVIDUAL">ส่วนตัว</option>
-                    <option value="TENT">เต๊นท์</option>
-                    <option value="DEALER">ดีลเลอร์</option>
+                    <option value="INDIVIDUAL">บุคคลธรรมดา</option>
+                    <option value="CORPORATE">นิติบุคคล</option>
                 </select>
                 <select
                     value={isVerifiedFilter}

@@ -44,10 +44,10 @@ export const adminSellerProfileRoutes = new Elysia({ prefix: "/admin/seller-prof
         const skip = (page - 1) * limit;
 
         const where: Record<string, unknown> = {};
-        if (verificationLevel && ["NONE", "ID", "BUSINESS", "DEALER"].includes(verificationLevel)) {
+        if (verificationLevel && ["NONE", "INDIVIDUAL", "CORPORATE"].includes(verificationLevel)) {
             where.verificationLevel = verificationLevel;
         }
-        if (showroomType && ["INDIVIDUAL", "TENT", "DEALER"].includes(showroomType)) {
+        if (showroomType && ["INDIVIDUAL", "CORPORATE"].includes(showroomType)) {
             where.showroomType = showroomType;
         }
         if (isVerifiedRaw !== undefined) {
@@ -147,7 +147,7 @@ export const adminSellerProfileRoutes = new Elysia({ prefix: "/admin/seller-prof
                 shopProvince?: string;
                 shopDistrict?: string;
                 shopPhone?: string;
-                showroomType?: "INDIVIDUAL" | "TENT" | "DEALER";
+                showroomType?: "INDIVIDUAL" | "CORPORATE";
                 shopOpenHours?: string;
                 socialFacebook?: string;
                 socialLine?: string;
@@ -170,7 +170,7 @@ export const adminSellerProfileRoutes = new Elysia({ prefix: "/admin/seller-prof
             if (b.socialInstagram !== undefined) data.socialInstagram = b.socialInstagram;
             if (b.specializations !== undefined) data.specializations = b.specializations as never;
             if (b.verificationLevel !== undefined) {
-                if (!["NONE", "ID", "BUSINESS", "DEALER"].includes(b.verificationLevel)) {
+                if (!["NONE", "INDIVIDUAL", "CORPORATE"].includes(b.verificationLevel)) {
                     set.status = 400;
                     return { error: 'Validation', message: 'verificationLevel ไม่ถูกต้อง' };
                 }
@@ -207,7 +207,7 @@ export const adminSellerProfileRoutes = new Elysia({ prefix: "/admin/seller-prof
             shopProvince: t.Optional(t.String()),
             shopDistrict: t.Optional(t.String()),
             shopPhone: t.Optional(t.String()),
-            showroomType: t.Optional(t.Union([t.Literal('INDIVIDUAL'), t.Literal('TENT'), t.Literal('DEALER')])),
+            showroomType: t.Optional(t.Union([t.Literal('INDIVIDUAL'), t.Literal('CORPORATE')])),
             shopOpenHours: t.Optional(t.String()),
             socialFacebook: t.Optional(t.String()),
             socialLine: t.Optional(t.String()),
@@ -226,12 +226,12 @@ export const adminSellerProfileRoutes = new Elysia({ prefix: "/admin/seller-prof
                 return { error: 'Not Found', message: 'ไม่พบโปรไฟล์ผู้ขาย' };
             }
 
-            const b = body as { verificationLevel?: "ID" | "BUSINESS" | "DEALER" };
-            const level = b.verificationLevel && ["ID", "BUSINESS", "DEALER"].includes(b.verificationLevel)
+            const b = body as { verificationLevel?: "INDIVIDUAL" | "CORPORATE" };
+            const level = b.verificationLevel && ["INDIVIDUAL", "CORPORATE"].includes(b.verificationLevel)
                 ? b.verificationLevel
                 : (existing.verificationLevel && existing.verificationLevel !== "NONE"
                     ? existing.verificationLevel
-                    : "ID");
+                    : "INDIVIDUAL");
 
             const updated = await prisma.sellerProfile.update({
                 where: { id: params.id },
@@ -261,7 +261,7 @@ export const adminSellerProfileRoutes = new Elysia({ prefix: "/admin/seller-prof
         }
     }, {
         body: t.Object({
-            verificationLevel: t.Optional(t.Union([t.Literal('ID'), t.Literal('BUSINESS'), t.Literal('DEALER')])),
+            verificationLevel: t.Optional(t.Union([t.Literal('INDIVIDUAL'), t.Literal('CORPORATE')])),
         })
     })
 

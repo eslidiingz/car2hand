@@ -1,6 +1,6 @@
 import prisma from '../db';
-import { MinioStorageProvider } from './minio-provider';
-import { CloudflareR2StorageProvider } from './cloudflare-provider';
+import { MinioStorageProvider, createMinioProvider } from './minio-provider';
+import { CloudflareR2StorageProvider, createCloudflareProvider } from './cloudflare-provider';
 import type {
   StorageProvider,
   StorageProviderType,
@@ -28,6 +28,7 @@ function envCloudflareConfig(): CloudflareR2ProviderConfig {
     secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',
     bucket: process.env.CLOUDFLARE_R2_BUCKET || '',
     publicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL || '',
+    directory: process.env.CLOUDFLARE_R2_DIRECTORY || '',
   };
 }
 
@@ -54,6 +55,7 @@ function mergeCloudflareConfig(raw: Record<string, unknown>): CloudflareR2Provid
         : base.secretAccessKey,
     bucket: typeof raw.bucket === 'string' && raw.bucket ? raw.bucket : base.bucket,
     publicUrl: typeof raw.publicUrl === 'string' && raw.publicUrl ? raw.publicUrl : base.publicUrl,
+    directory: typeof raw.directory === 'string' ? raw.directory : base.directory,
   };
 }
 
@@ -63,9 +65,12 @@ export function getProviderByType(
 ): StorageProvider {
   const cfg = rawConfig ?? {};
   if (type === 'CLOUDFLARE_R2') {
-    return new CloudflareR2StorageProvider(mergeCloudflareConfig(cfg));
+    return createCloudflareProvider(mergeCloudflareConfig(cfg));
   }
-  return new MinioStorageProvider(mergeMinioConfig(cfg));
+  if (type === 'MINIO') {
+    return createMinioProvider(mergeMinioConfig(cfg));
+  }
+  throw new Error(`Unknown storage provider type: ${type}`);
 }
 
 export async function getActiveProvider(): Promise<StorageProvider> {
@@ -85,6 +90,9 @@ export async function getActiveProvider(): Promise<StorageProvider> {
 export function invalidateActiveProvider(): void {
   cached = null;
 }
+
+// Alias — matches the name used by consumers/tests
+export const invalidateProviderCache = invalidateActiveProvider;
 
 export async function ensureStorageSettingSeeded(): Promise<void> {
   const existing = await prisma.storageSetting.findFirst();

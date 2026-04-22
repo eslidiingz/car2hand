@@ -70,9 +70,8 @@ const EMPTY_PROFILE: SellerProfile = {
 
 const SHOWROOM_OPTIONS = [
     { value: "", label: "-- เลือกประเภท --" },
-    { value: "INDIVIDUAL", label: "ส่วนตัว" },
-    { value: "TENT", label: "เต๊นท์" },
-    { value: "DEALER", label: "ตัวแทนจำหน่าย" },
+    { value: "INDIVIDUAL", label: "บุคคลธรรมดา" },
+    { value: "CORPORATE", label: "นิติบุคคล (ร้าน/เต๊นท์/บริษัท)" },
 ];
 
 const SUGGESTED_TAGS = [

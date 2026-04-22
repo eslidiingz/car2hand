@@ -399,7 +399,9 @@ export const ModelName = {
   Package: 'Package',
   SystemSetting: 'SystemSetting',
   StorageSetting: 'StorageSetting',
+  AdminSetting: 'AdminSetting',
   PackageTransaction: 'PackageTransaction',
+  SlotPurchase: 'SlotPurchase',
   ListingRenewal: 'ListingRenewal',
   GarageVehicle: 'GarageVehicle',
   ServiceRecord: 'ServiceRecord',
@@ -439,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "sellerProfile" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "storageSetting" | "packageTransaction" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "listingBumpLog" | "notificationTemplate" | "notificationLog" | "servicePartner" | "inspectionPackage" | "inspectionBooking" | "serviceInquiry" | "forumCategory" | "forumPost" | "forumComment" | "forumVote" | "forumCommentVote" | "forumTag" | "forumPostTag" | "userReputation"
+    modelProps: "user" | "sellerProfile" | "kycSubmission" | "admin" | "article" | "articleCategory" | "wishlist" | "brand" | "vehicleModel" | "vehicleSubModel" | "vehicleListing" | "vehicleImage" | "package" | "systemSetting" | "storageSetting" | "adminSetting" | "packageTransaction" | "slotPurchase" | "listingRenewal" | "garageVehicle" | "serviceRecord" | "maintenanceReminder" | "userNotification" | "pushSubscription" | "listingBumpLog" | "notificationTemplate" | "contactMessage" | "adminAuditLog" | "abuseReport" | "notificationLog" | "servicePartner" | "inspectionPackage" | "inspectionBooking" | "serviceInquiry" | "forumCategory" | "forumPost" | "forumComment" | "forumVote" | "forumCommentVote" | "forumTag" | "forumPostTag" | "userReputation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1553,6 +1555,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AdminSetting: {
+      payload: Prisma.$AdminSettingPayload<ExtArgs>
+      fields: Prisma.AdminSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AdminSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AdminSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.AdminSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AdminSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>
+        }
+        findMany: {
+          args: Prisma.AdminSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>[]
+        }
+        create: {
+          args: Prisma.AdminSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>
+        }
+        createMany: {
+          args: Prisma.AdminSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AdminSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.AdminSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>
+        }
+        update: {
+          args: Prisma.AdminSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.AdminSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AdminSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AdminSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.AdminSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AdminSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.AdminSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAdminSetting>
+        }
+        groupBy: {
+          args: Prisma.AdminSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AdminSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AdminSettingCountAggregateOutputType> | number
+        }
+      }
+    }
     PackageTransaction: {
       payload: Prisma.$PackageTransactionPayload<ExtArgs>
       fields: Prisma.PackageTransactionFieldRefs
@@ -1624,6 +1700,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PackageTransactionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PackageTransactionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SlotPurchase: {
+      payload: Prisma.$SlotPurchasePayload<ExtArgs>
+      fields: Prisma.SlotPurchaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SlotPurchaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SlotPurchaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>
+        }
+        findFirst: {
+          args: Prisma.SlotPurchaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SlotPurchaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>
+        }
+        findMany: {
+          args: Prisma.SlotPurchaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>[]
+        }
+        create: {
+          args: Prisma.SlotPurchaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>
+        }
+        createMany: {
+          args: Prisma.SlotPurchaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SlotPurchaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>[]
+        }
+        delete: {
+          args: Prisma.SlotPurchaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>
+        }
+        update: {
+          args: Prisma.SlotPurchaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>
+        }
+        deleteMany: {
+          args: Prisma.SlotPurchaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SlotPurchaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SlotPurchaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>[]
+        }
+        upsert: {
+          args: Prisma.SlotPurchaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SlotPurchasePayload>
+        }
+        aggregate: {
+          args: Prisma.SlotPurchaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSlotPurchase>
+        }
+        groupBy: {
+          args: Prisma.SlotPurchaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SlotPurchaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SlotPurchaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SlotPurchaseCountAggregateOutputType> | number
         }
       }
     }
@@ -3460,7 +3610,8 @@ export const UserScalarFieldEnum = {
   deleteAccountCode: 'deleteAccountCode',
   deleteAccountCodeExpiresAt: 'deleteAccountCodeExpiresAt',
   currentPackageId: 'currentPackageId',
-  packageExpiresAt: 'packageExpiresAt'
+  packageExpiresAt: 'packageExpiresAt',
+  bonusListingSlots: 'bonusListingSlots'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -3678,6 +3829,8 @@ export const VehicleListingScalarFieldEnum = {
   expiredAt: 'expiredAt',
   bumpedAt: 'bumpedAt',
   autoBumpSlot: 'autoBumpSlot',
+  pausedAt: 'pausedAt',
+  remainingDays: 'remainingDays',
   userId: 'userId'
 } as const
 
@@ -3742,6 +3895,16 @@ export const StorageSettingScalarFieldEnum = {
 export type StorageSettingScalarFieldEnum = (typeof StorageSettingScalarFieldEnum)[keyof typeof StorageSettingScalarFieldEnum]
 
 
+export const AdminSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt',
+  updatedBy: 'updatedBy'
+} as const
+
+export type AdminSettingScalarFieldEnum = (typeof AdminSettingScalarFieldEnum)[keyof typeof AdminSettingScalarFieldEnum]
+
+
 export const PackageTransactionScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
@@ -3760,6 +3923,23 @@ export const PackageTransactionScalarFieldEnum = {
 } as const
 
 export type PackageTransactionScalarFieldEnum = (typeof PackageTransactionScalarFieldEnum)[keyof typeof PackageTransactionScalarFieldEnum]
+
+
+export const SlotPurchaseScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  pricePerSlot: 'pricePerSlot',
+  totalAmount: 'totalAmount',
+  slipImage: 'slipImage',
+  status: 'status',
+  adminNote: 'adminNote',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type SlotPurchaseScalarFieldEnum = (typeof SlotPurchaseScalarFieldEnum)[keyof typeof SlotPurchaseScalarFieldEnum]
 
 
 export const ListingRenewalScalarFieldEnum = {
@@ -4204,20 +4384,6 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'ShowroomType'
- */
-export type EnumShowroomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShowroomType'>
-    
-
-
-/**
- * Reference to a field of type 'ShowroomType[]'
- */
-export type ListEnumShowroomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShowroomType[]'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -4228,6 +4394,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ShowroomType'
+ */
+export type EnumShowroomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShowroomType'>
+    
+
+
+/**
+ * Reference to a field of type 'ShowroomType[]'
+ */
+export type ListEnumShowroomTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShowroomType[]'>
     
 
 
@@ -4648,7 +4828,9 @@ export type GlobalOmitConfig = {
   package?: Prisma.PackageOmit
   systemSetting?: Prisma.SystemSettingOmit
   storageSetting?: Prisma.StorageSettingOmit
+  adminSetting?: Prisma.AdminSettingOmit
   packageTransaction?: Prisma.PackageTransactionOmit
+  slotPurchase?: Prisma.SlotPurchaseOmit
   listingRenewal?: Prisma.ListingRenewalOmit
   garageVehicle?: Prisma.GarageVehicleOmit
   serviceRecord?: Prisma.ServiceRecordOmit

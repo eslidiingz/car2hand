@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
     User,
     Mail,
@@ -14,11 +15,14 @@ import {
     Camera,
     Trash2,
     AlertTriangle,
+    BadgeCheck,
+    Store,
 } from 'lucide-react';
 import LineConnection from '@/components/settings/LineConnection';
 import SellerProfileForm from '@/components/settings/SellerProfileForm';
 import PushNotificationToggle from '@/components/PushNotificationToggle';
 import Toast from '@/components/Toast';
+import { VerifyContent } from '@/components/verify/VerifyContent';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -64,8 +68,31 @@ function updateStoredUser(updates: Partial<{ fullName: string; phoneNumber: stri
     }
 }
 
+const VALID_TABS = new Set(['profile', 'security', 'notifications', 'verify', 'shop']);
+const DEFAULT_TAB = 'profile';
+
 export default function SettingsPage() {
-    const [activeTab, setActiveTab] = useState('profile');
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    // URL is the source of truth — clicking a tab pushes ?tab=xxx and the
+    // state derives from whatever searchParams carries. This gives us
+    // shareable URLs + back-button support for free.
+    const tabFromUrl = searchParams.get('tab');
+    const activeTab = tabFromUrl && VALID_TABS.has(tabFromUrl) ? tabFromUrl : DEFAULT_TAB;
+
+    const setActiveTab = useCallback((tab: string) => {
+        if (!VALID_TABS.has(tab)) return;
+        const params = new URLSearchParams(searchParams.toString());
+        if (tab === DEFAULT_TAB) {
+            params.delete('tab'); // keep the default URL clean (no ?tab=profile)
+        } else {
+            params.set('tab', tab);
+        }
+        const qs = params.toString();
+        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }, [pathname, router, searchParams]);
 
     // Profile state
     const [loading, setLoading] = useState(true);
@@ -371,28 +398,34 @@ export default function SettingsPage() {
             <div className="flex border-b border-gray-200 overflow-x-auto">
                 <button
                     onClick={() => setActiveTab('profile')}
-                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap ${activeTab === 'profile' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap flex items-center gap-2 ${activeTab === 'profile' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
-                    ข้อมูลส่วนตัว
+                    <User size={16} /> ข้อมูลส่วนตัว
                 </button>
                 <button
                     onClick={() => setActiveTab('security')}
-                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap ${activeTab === 'security' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap flex items-center gap-2 ${activeTab === 'security' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
-                    รหัสผ่านและความปลอดภัย
+                    <Lock size={16} /> รหัสผ่านและความปลอดภัย
                 </button>
                 <button
                     onClick={() => setActiveTab('notifications')}
-                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap ${activeTab === 'notifications' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap flex items-center gap-2 ${activeTab === 'notifications' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                 >
-                    การแจ้งเตือน
+                    <Bell size={16} /> การแจ้งเตือน
+                </button>
+                <button
+                    onClick={() => setActiveTab('verify')}
+                    className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap flex items-center gap-2 ${activeTab === 'verify' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                >
+                    <BadgeCheck size={16} /> ยืนยันตัวตน
                 </button>
                 {profile?.currentPackage && profile.currentPackage.slug !== 'basic' && (
                     <button
                         onClick={() => setActiveTab('shop')}
-                        className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap ${activeTab === 'shop' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                        className={`px-4 sm:px-6 py-3 text-sm font-bold border-b-2 transition whitespace-nowrap flex items-center gap-2 ${activeTab === 'shop' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
                     >
-                        ร้านค้า/ธุรกิจ
+                        <Store size={16} /> ร้านค้า/ธุรกิจ
                     </button>
                 )}
             </div>
@@ -668,6 +701,10 @@ export default function SettingsPage() {
                         <PushNotificationToggle />
                         <LineConnection />
                     </div>
+                )}
+
+                {activeTab === 'verify' && (
+                    <VerifyContent />
                 )}
 
                 {activeTab === 'shop' && (

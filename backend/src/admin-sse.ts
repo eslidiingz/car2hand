@@ -23,13 +23,14 @@ export function broadcastAdminEvent(event: string, data: object) {
 }
 
 export async function getAndBroadcastPendingCounts() {
-    const [pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases] = await Promise.all([
+    const [pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases, pendingKyc] = await Promise.all([
         prisma.vehicleListing.count({ where: { status: 'PENDING' } }),
         prisma.packageTransaction.count({ where: { status: 'PENDING' } }),
         prisma.listingRenewal.count({ where: { status: 'PENDING' } }),
         prisma.slotPurchase.count({ where: { status: 'PENDING' } }),
+        prisma.kycSubmission.count({ where: { status: 'PENDING' } }),
     ]);
-    broadcastAdminEvent('pending-update', { pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases });
+    broadcastAdminEvent('pending-update', { pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases, pendingKyc });
 }
 
 // ============================================================
@@ -112,8 +113,9 @@ export const adminSSERoutes = new Elysia({ prefix: "/admin" })
                     prisma.packageTransaction.count({ where: { status: 'PENDING' } }),
                     prisma.listingRenewal.count({ where: { status: 'PENDING' } }),
                     prisma.slotPurchase.count({ where: { status: 'PENDING' } }),
-                ]).then(([pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases]) => {
-                    const msg = `event: pending-update\ndata: ${JSON.stringify({ pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases })}\n\n`;
+                    prisma.kycSubmission.count({ where: { status: 'PENDING' } }),
+                ]).then(([pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases, pendingKyc]) => {
+                    const msg = `event: pending-update\ndata: ${JSON.stringify({ pendingListings, pendingUpgrades, pendingRenewals, pendingSlotPurchases, pendingKyc })}\n\n`;
                     try { controller.enqueue(new TextEncoder().encode(msg)); } catch { /* closed */ }
                 });
                 // Heartbeat

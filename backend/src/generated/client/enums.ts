@@ -11,8 +11,7 @@
 
 export const ShowroomType = {
   INDIVIDUAL: 'INDIVIDUAL',
-  TENT: 'TENT',
-  DEALER: 'DEALER'
+  CORPORATE: 'CORPORATE'
 } as const
 
 export type ShowroomType = (typeof ShowroomType)[keyof typeof ShowroomType]
@@ -110,7 +109,8 @@ export const ListingStatus = {
   INACTIVE: 'INACTIVE',
   SOLD: 'SOLD',
   EXPIRED: 'EXPIRED',
-  SUSPENDED: 'SUSPENDED'
+  SUSPENDED: 'SUSPENDED',
+  PAUSED: 'PAUSED'
 } as const
 
 export type ListingStatus = (typeof ListingStatus)[keyof typeof ListingStatus]

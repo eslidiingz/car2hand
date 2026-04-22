@@ -30,6 +30,8 @@ export interface CloudflareR2Config {
     secretAccessKey: string;
     bucket: string;
     publicUrl: string;
+    /** Optional directory prefix prepended to every object key */
+    directory?: string;
 }
 
 export type StorageConfig = MinioConfig | CloudflareR2Config;
