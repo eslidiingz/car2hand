@@ -18,6 +18,7 @@ import {
     X,
 } from 'lucide-react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 interface CompareItem extends WishlistItem {
     mileage?: number | null;
@@ -136,24 +137,15 @@ export default function ComparePage() {
                 </div>
             </div>
 
-            {/* Clear Confirm Modal */}
-            {showClearConfirm && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowClearConfirm(false)}>
-                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 text-center">
-                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash2 size={28} className="text-red-500" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">ล้างรายการเปรียบเทียบ?</h3>
-                            <p className="text-sm text-gray-500">รายการเปรียบเทียบทั้งหมดจะถูกลบ</p>
-                        </div>
-                        <div className="flex border-t border-gray-100">
-                            <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 transition rounded-bl-2xl">ยกเลิก</button>
-                            <button onClick={() => { clearCompare(); setShowClearConfirm(false); }} className="flex-1 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50 transition border-l border-gray-100 rounded-br-2xl">ล้างทั้งหมด</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                open={showClearConfirm}
+                onClose={() => setShowClearConfirm(false)}
+                onConfirm={() => { clearCompare(); setShowClearConfirm(false); }}
+                icon={<Trash2 size={28} />}
+                title="ล้างรายการเปรียบเทียบ?"
+                description="รายการเปรียบเทียบทั้งหมดจะถูกลบ"
+                confirmLabel="ล้างทั้งหมด"
+            />
 
             {loading ? (
                 <div className="flex items-center justify-center py-20">

@@ -158,7 +158,7 @@ export default function BrandSelectionModal({
                             {popularBrands.length > 0 && !search && (
                                 <div>
                                     <div className="flex items-center gap-2 mb-4 px-2">
-                                        <Star className="text-amber-400" size={18} />
+                                        <Star className="text-amber-400" size={18} fill="currentColor" />
                                         <h3 className="font-bold text-gray-900 uppercase tracking-wider text-xs">ยี่ห้อยอดนิยม</h3>
                                     </div>
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">

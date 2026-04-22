@@ -39,7 +39,7 @@ export const adminKycRoutes = new Elysia({ prefix: "/admin/kyc" })
 
         const where = {
             ...(status !== "ALL" ? { status } : {}),
-            ...(type && ["ID", "BUSINESS", "DEALER"].includes(type) ? { type } : {}),
+            ...(type && ["INDIVIDUAL", "CORPORATE"].includes(type) ? { type } : {}),
         };
 
         const [submissions, total] = await Promise.all([
@@ -105,6 +105,8 @@ export const adminKycRoutes = new Elysia({ prefix: "/admin/kyc" })
         try {
             await applyKycApproval(params.id, adminId, (body as { note?: string }).note);
             await logAdminAction({ adminId, action: "KYC_APPROVE", targetType: "KYC", targetId: params.id, note: (body as { note?: string }).note });
+            const { getAndBroadcastPendingCounts } = await import("./admin-sse");
+            getAndBroadcastPendingCounts();
             return { message: "อนุมัติเรียบร้อย" };
         } catch (err) {
             const msg = err instanceof Error ? err.message : "ERROR";
@@ -123,6 +125,8 @@ export const adminKycRoutes = new Elysia({ prefix: "/admin/kyc" })
         try {
             await applyKycRejection(params.id, adminId, reason);
             await logAdminAction({ adminId, action: "KYC_REJECT", targetType: "KYC", targetId: params.id, note: reason });
+            const { getAndBroadcastPendingCounts } = await import("./admin-sse");
+            getAndBroadcastPendingCounts();
             return { message: "ปฏิเสธเรียบร้อย" };
         } catch (err) {
             const msg = err instanceof Error ? err.message : "ERROR";

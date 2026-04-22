@@ -174,21 +174,16 @@ const protectedSellerRoutes = new Elysia({ prefix: "/users/me/seller-profile" })
 
         // Guard: showroomType upgrade requires matching KYC level
         //   INDIVIDUAL → anyone
-        //   TENT       → BUSINESS or DEALER verified
-        //   DEALER     → DEALER verified
+        //   CORPORATE  → CORPORATE verified
         const requestedShowroom = (sanitized.showroomType as string) || 'INDIVIDUAL';
         const currentProfile = await prisma.sellerProfile.findUnique({
             where: { userId },
             select: { verificationLevel: true, showroomType: true },
         });
         const currentLevel = currentProfile?.verificationLevel || 'NONE';
-        if (requestedShowroom === 'TENT' && !['BUSINESS', 'DEALER'].includes(currentLevel)) {
+        if (requestedShowroom === 'CORPORATE' && currentLevel !== 'CORPORATE') {
             set.status = 403;
-            return { error: 'KYC_REQUIRED', message: 'ต้องยืนยันร้านรับรอง (BUSINESS) ก่อนเปลี่ยนเป็นเต็นท์' };
-        }
-        if (requestedShowroom === 'DEALER' && currentLevel !== 'DEALER') {
-            set.status = 403;
-            return { error: 'KYC_REQUIRED', message: 'ต้องยืนยันดีลเลอร์รับรอง (DEALER) ก่อนเปลี่ยนเป็นดีลเลอร์' };
+            return { error: 'KYC_REQUIRED', message: 'ต้องยืนยันนิติบุคคล (CORPORATE) ก่อนเปลี่ยนเป็นร้าน/บริษัท' };
         }
 
         const profile = await prisma.sellerProfile.upsert({
@@ -242,8 +237,7 @@ const protectedSellerRoutes = new Elysia({ prefix: "/users/me/seller-profile" })
             shopPhone: t.Optional(t.String()),
             showroomType: t.Optional(t.Union([
                 t.Literal("INDIVIDUAL"),
-                t.Literal("TENT"),
-                t.Literal("DEALER")
+                t.Literal("CORPORATE")
             ])),
             shopOpenHours: t.Optional(t.String({ maxLength: 100 })),
             shopEstablishedYear: t.Optional(t.Nullable(t.Number())),

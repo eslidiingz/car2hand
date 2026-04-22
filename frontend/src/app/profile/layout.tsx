@@ -9,6 +9,7 @@ import {
     Loader2,
 } from 'lucide-react';
 import ProfileSidebar from '@/components/ProfileSidebar';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { profileMenuItems } from '@/lib/profileMenu';
 
 interface UserData {
@@ -156,38 +157,15 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 </div>
             </div>
 
-            {/* Logout Confirmation Modal */}
-            {showLogoutConfirm && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center">
-                    <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-                        onClick={() => setShowLogoutConfirm(false)}
-                    ></div>
-                    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 relative z-10 transform transition-all">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <LogOut className="text-3xl text-red-500" />
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">ออกจากระบบ</h3>
-                            <p className="text-gray-500 text-sm mb-6">คุณต้องการออกจากระบบใช่หรือไม่?</p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => setShowLogoutConfirm(false)}
-                                    className="flex-1 py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition"
-                                >
-                                    ยกเลิก
-                                </button>
-                                <button
-                                    onClick={confirmLogout}
-                                    className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition"
-                                >
-                                    ออกจากระบบ
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                open={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={confirmLogout}
+                icon={<LogOut size={28} />}
+                title="ออกจากระบบ"
+                description="คุณต้องการออกจากระบบใช่หรือไม่?"
+                confirmLabel="ออกจากระบบ"
+            />
         </div>
     );
 }

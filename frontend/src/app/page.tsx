@@ -1,21 +1,24 @@
 import Hero from "@/components/Hero";
-import Features from "@/components/Features";
 import CarList from "@/components/CarList";
 import FeaturedListings from "@/components/FeaturedListings";
-import ServiceShortcuts from "@/components/ServiceShortcuts";
-import CommunityHighlight from "@/components/CommunityHighlight";
+import RecommendedListings from "@/components/RecommendedListings";
 import QuickCategories from "@/components/QuickCategories";
+import { MOTORCYCLE_ENABLED } from "@/lib/featureFlags";
+import MotorcycleListings from "@/components/MotorcycleListings";
 
 export default function Home() {
   return (
     <>
       <Hero />
       <QuickCategories />
+      {/* ประกาศแนะนำ — CAR only, Dealer */}
       <FeaturedListings />
-      {/* <Features /> */}
+      {/* ประกาศเด่น — CAR only, Pro */}
+      <RecommendedListings />
+      {/* รถมาใหม่วันนี้ — CAR only, ล่าสุด */}
       <CarList />
-      {/* <ServiceShortcuts /> */}
-      {/* <CommunityHighlight /> */}
+      {/* มอเตอร์ไซค์ — hidden this phase; flip MOTORCYCLE_ENABLED to re-enable */}
+      {MOTORCYCLE_ENABLED && <MotorcycleListings />}
     </>
   );
 }

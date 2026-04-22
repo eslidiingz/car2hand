@@ -66,7 +66,9 @@ export const ModelName = {
   Package: 'Package',
   SystemSetting: 'SystemSetting',
   StorageSetting: 'StorageSetting',
+  AdminSetting: 'AdminSetting',
   PackageTransaction: 'PackageTransaction',
+  SlotPurchase: 'SlotPurchase',
   ListingRenewal: 'ListingRenewal',
   GarageVehicle: 'GarageVehicle',
   ServiceRecord: 'ServiceRecord',
@@ -127,7 +129,8 @@ export const UserScalarFieldEnum = {
   deleteAccountCode: 'deleteAccountCode',
   deleteAccountCodeExpiresAt: 'deleteAccountCodeExpiresAt',
   currentPackageId: 'currentPackageId',
-  packageExpiresAt: 'packageExpiresAt'
+  packageExpiresAt: 'packageExpiresAt',
+  bonusListingSlots: 'bonusListingSlots'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -345,6 +348,8 @@ export const VehicleListingScalarFieldEnum = {
   expiredAt: 'expiredAt',
   bumpedAt: 'bumpedAt',
   autoBumpSlot: 'autoBumpSlot',
+  pausedAt: 'pausedAt',
+  remainingDays: 'remainingDays',
   userId: 'userId'
 } as const
 
@@ -409,6 +414,16 @@ export const StorageSettingScalarFieldEnum = {
 export type StorageSettingScalarFieldEnum = (typeof StorageSettingScalarFieldEnum)[keyof typeof StorageSettingScalarFieldEnum]
 
 
+export const AdminSettingScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  updatedAt: 'updatedAt',
+  updatedBy: 'updatedBy'
+} as const
+
+export type AdminSettingScalarFieldEnum = (typeof AdminSettingScalarFieldEnum)[keyof typeof AdminSettingScalarFieldEnum]
+
+
 export const PackageTransactionScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
@@ -427,6 +442,23 @@ export const PackageTransactionScalarFieldEnum = {
 } as const
 
 export type PackageTransactionScalarFieldEnum = (typeof PackageTransactionScalarFieldEnum)[keyof typeof PackageTransactionScalarFieldEnum]
+
+
+export const SlotPurchaseScalarFieldEnum = {
+  id: 'id',
+  quantity: 'quantity',
+  pricePerSlot: 'pricePerSlot',
+  totalAmount: 'totalAmount',
+  slipImage: 'slipImage',
+  status: 'status',
+  adminNote: 'adminNote',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type SlotPurchaseScalarFieldEnum = (typeof SlotPurchaseScalarFieldEnum)[keyof typeof SlotPurchaseScalarFieldEnum]
 
 
 export const ListingRenewalScalarFieldEnum = {

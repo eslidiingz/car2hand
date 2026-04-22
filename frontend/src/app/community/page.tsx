@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
     Pencil,
     MessageCircle,
@@ -195,7 +196,28 @@ export default function CommunityPage() {
     const [stats, setStats] = useState<Stats | null>(null);
     const [popularTags, setPopularTags] = useState<TagEntry[]>([]);
 
-    const [activeTab, setActiveTab] = useState<'trending' | 'latest' | 'unanswered'>('trending');
+    // URL-driven tab: supports deep-linking + browser back/forward
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    type CommunityTab = 'trending' | 'latest' | 'unanswered';
+    const VALID_TABS: CommunityTab[] = ['trending', 'latest', 'unanswered'];
+    const DEFAULT_TAB: CommunityTab = 'trending';
+
+    const tabFromUrl = searchParams.get('tab') as CommunityTab | null;
+    const activeTab: CommunityTab = tabFromUrl && VALID_TABS.includes(tabFromUrl) ? tabFromUrl : DEFAULT_TAB;
+
+    const setActiveTab = useCallback((tab: CommunityTab) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (tab === DEFAULT_TAB) {
+            params.delete('tab');
+        } else {
+            params.set('tab', tab);
+        }
+        const qs = params.toString();
+        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }, [pathname, router, searchParams]);
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [searchQuery, setSearchQuery] = useState('');

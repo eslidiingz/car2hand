@@ -53,7 +53,7 @@ interface ListingUser {
     sellerProfile: {
         id: string;
         shopName: string;
-        showroomType: "INDIVIDUAL" | "TENT" | "DEALER";
+        showroomType: "INDIVIDUAL" | "CORPORATE";
         isVerified: boolean;
         verificationLevel: string;
         totalSoldCount: number;
@@ -132,9 +132,8 @@ const STATUS_META: Record<string, { label: string; className: string }> = {
 };
 
 const SHOWROOM_LABEL: Record<string, string> = {
-    INDIVIDUAL: "ผู้ขายส่วนตัว",
-    TENT: "เต๊นท์",
-    DEALER: "ตัวแทนจำหน่าย",
+    INDIVIDUAL: "บุคคลธรรมดา",
+    CORPORATE: "นิติบุคคล",
 };
 
 const RENEWAL_STATUS: Record<string, { label: string; className: string }> = {

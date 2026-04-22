@@ -5,7 +5,7 @@ async function main() {
 
     const packages = [
         {
-            name: 'Basic (Free)',
+            name: 'Basic',
             nameTh: 'แพ็กเกจพื้นฐาน',
             slug: 'basic',
             description: 'แพ็กเกจฟรี สำหรับผู้ที่ต้องการลองใช้งาน',
@@ -27,7 +27,7 @@ async function main() {
             sortOrder: 0,
         },
         {
-            name: 'Standard (Beginner)',
+            name: 'Standard',
             nameTh: 'แพ็กเกจเริ่มต้น',
             slug: 'standard',
             description: 'สำหรับพ่อค้าอิสระ ลงประกาศได้มากขึ้น',
@@ -52,7 +52,7 @@ async function main() {
             sortOrder: 1,
         },
         {
-            name: 'Professional (Pro)',
+            name: 'Professional',
             nameTh: 'แพ็กเกจมืออาชีพ',
             slug: 'professional',
             description: 'สำหรับเต็นท์รถขนาดเล็ก-กลาง',
@@ -83,7 +83,7 @@ async function main() {
             description: 'สำหรับโชว์รูมและเต็นท์ขนาดใหญ่',
             targetAudience: 'โชว์รูม/เต็นท์ใหญ่',
             price: 1990,
-            maxListings: 100,
+            maxListings: 150,
             maxPhotosPerListing: 40,
             listingDurationDays: 180,
             autoBumpPerDay: 5,
@@ -91,7 +91,7 @@ async function main() {
             badge: 'Premium Choice',
             searchPriority: 'priority',
             features: [
-                'ลงประกาศสูงสุด 100 รายการ',
+                'ลงประกาศสูงสุด 150 รายการ',
                 'รูปภาพสูงสุด 40 รูป/ประกาศ',
                 'ประกาศแสดงนาน 180 วัน',
                 'ดันโพสต์อัตโนมัติ 5 ครั้ง/วัน + ด้วยตัวเอง 3 ครั้ง/คัน/วัน',

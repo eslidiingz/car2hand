@@ -41,6 +41,7 @@ model User {
   currentPackageId String?
   currentPackage   Package?  @relation("UserCurrentPackage", fields: [currentPackageId], references: [id])
   packageExpiresAt DateTime?
+  bonusListingSlots Int      @default(0) // slot เพิ่มจากการซื้อเพิ่ม (ถาวร นอกเหนือจาก package)
 
   // Relations
   listings            VehicleListing[]
@@ -55,6 +56,7 @@ model User {
   garageVehicles      GarageVehicle[]
   inspectionBookings  InspectionBooking[]
   serviceInquiries    ServiceInquiry[]
+  slotPurchases       SlotPurchase[]
 
   // Forum relations
   forumPosts          ForumPost[]
@@ -78,9 +80,8 @@ model User {
 // =============================================
 
 enum ShowroomType {
-  INDIVIDUAL // ส่วนตัว
-  TENT       // เต๊นท์
-  DEALER     // ตัวแทนจำหน่าย
+  INDIVIDUAL // บุคคลธรรมดา (KYC type = INDIVIDUAL)
+  CORPORATE  // นิติบุคคล — ร้าน/เต๊นท์/ดีลเลอร์/บริษัท (KYC type = CORPORATE)
 }
 
 model SellerProfile {
@@ -106,7 +107,7 @@ model SellerProfile {
   isVerified          Boolean      @default(false)
   verifiedAt          DateTime?
   // KYC trust level — orthogonal to Package tier
-  // NONE = ยังไม่ยืนยัน, ID = ยืนยันบุคคล, BUSINESS = ร้านรับรอง, DEALER = ดีลเลอร์รับรอง
+  // NONE = ยังไม่ยืนยัน, INDIVIDUAL = ยืนยันบุคคลธรรมดา, CORPORATE = ยืนยันนิติบุคคล
   verificationLevel   String       @default("NONE")
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
@@ -119,28 +120,28 @@ model SellerProfile {
   @@map("seller_profiles")
 }
 
-// KYC (Know Your Customer) submission — รองรับ 3 ระดับ ID / BUSINESS / DEALER
+// KYC (Know Your Customer) submission — รองรับ 2 ระดับ INDIVIDUAL / CORPORATE
 // ผู้ใช้ submit เอกสาร → admin review → approve/reject → badge + verificationLevel
 model KycSubmission {
   id     String        @id @default(cuid())
   userId String
   user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type   String        // ID | BUSINESS | DEALER
+  type   String        // INDIVIDUAL | CORPORATE
   status String        @default("PENDING") // PENDING | APPROVED | REJECTED | CANCELLED
 
-  // ─── Personal identity (type = ID, or required base for BUSINESS/DEALER) ───
+  // ─── Personal identity (required for every submission) ───
   fullName     String?
   idNumber     String?  // เลขบัตรประชาชน (plain — admin-only read; consider encrypting at rest)
   idCardImage  String?  // MinIO URL — รูปบัตร ปชช.
-  selfieImage  String?  // รูปเซลฟี่ถือบัตร
+  selfieImage  String?  // รูปเซลฟี่ถือบัตร (เฉพาะ INDIVIDUAL)
 
-  // ─── Business (type = BUSINESS/DEALER) ───
+  // ─── Corporate (type = CORPORATE) ───
   businessName         String?
-  taxId                String?  // เลขทะเบียนพาณิชย์ / เลขผู้เสียภาษี
-  businessCertImage    String?  // หนังสือรับรองบริษัท / ทะเบียนพาณิชย์
-  addressProofImage    String?  // หลักฐานที่อยู่ร้าน (ใบเสร็จค่าน้ำ/ไฟ/แผนที่)
-  dealerAppointmentDoc String?  // หนังสือแต่งตั้ง (เฉพาะ DEALER)
+  taxId                String?  // เลขผู้เสียภาษี
+  businessCertImage    String?  // ใบทะเบียนพาณิชย์ / หนังสือรับรองบริษัท
+  addressProofImage    String?  // DEPRECATED — เหลือไว้ backward compat
+  dealerAppointmentDoc String?  // DEPRECATED — เหลือไว้ backward compat
 
   requestedShowroom  ShowroomType?  // ถ้าขอเปลี่ยน showroomType
 
@@ -391,6 +392,8 @@ model VehicleListing {
   expiredAt    DateTime? // วันหมดอายุประกาศ
   bumpedAt     DateTime? // วันที่ดันโพสล่าสุด (ใช้เรียงลำดับ)
   autoBumpSlot Int?      // slot ดันโพสอัตโนมัติ (0-based) ถ้า null = ระบบจัดให้
+  pausedAt     DateTime? // วันที่ถูก pause (เก็บสำหรับเรียงลำดับ unpause FIFO)
+  remainingDays Int?     // จำนวนวันที่เหลือตอน pause (freeze ไว้) นับต่อเมื่อ active อีกครั้ง
 
   // Relations
   userId    String
@@ -511,6 +514,7 @@ enum ListingStatus {
   SOLD // ขายแล้ว
   EXPIRED // หมดอายุ
   SUSPENDED // ถูกระงับ
+  PAUSED // หยุดชั่วคราว (เกิน limit หลัง downgrade แพ็กเกจ — เวลานับเหลือจะถูก freeze ไว้)
 }
 
 // สถานะเล่มทะเบียน
@@ -596,6 +600,15 @@ model StorageSetting {
   @@map("storage_settings")
 }
 
+model AdminSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  @@map("admin_settings")
+}
+
 // รายการอัพเกรด/ต่ออายุแพ็กเกจ
 model PackageTransaction {
   id              String        @id @default(cuid())
@@ -622,6 +635,28 @@ model PackageTransaction {
   @@index([status])
   @@index([createdAt])
   @@map("package_transactions")
+}
+
+// รายการซื้อ slot ประกาศเพิ่ม (99 บาท/slot, สะสมถาวร)
+model SlotPurchase {
+  id           String        @id @default(cuid())
+  quantity     Int
+  pricePerSlot Decimal       @db.Decimal(10, 2)
+  totalAmount  Decimal       @db.Decimal(10, 2)
+  slipImage    String        @db.Text
+  status       PaymentStatus @default(PENDING)
+  adminNote    String?
+  reviewedAt   DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("slot_purchases")
 }
 
 // รายการต่ออายุประกาศ (Basic user จ่าย 50 บาท)

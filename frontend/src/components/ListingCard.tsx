@@ -14,7 +14,7 @@ import {
     Scale,
     Crown,
     Flame,
-    BadgeCheck,
+    CircleCheckBig,
     Eye,
 } from 'lucide-react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
@@ -43,20 +43,50 @@ export interface VehicleListing {
             shopLogo?: string | null;
             showroomType?: string;
             isVerified?: boolean;
+            verificationLevel?: string | null;
         } | null;
     };
     createdAt: string;
     badge?: string | null;
+    /** From backend — derived from active package, drives card border color */
+    packageSlug?: string | null;
     isFeatured?: boolean;
     isPremium?: boolean;
 }
 
-// Badge config
-const BADGE_CONFIG: Record<string, { bg: string; icon: React.ReactNode; label: string }> = {
-    'Premium Choice': { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} />, label: 'Premium Choice' },
-    'Hot Deal': { bg: 'bg-orange-500', icon: <Flame size={10} />, label: 'Hot Deal' },
-    'Verified Seller': { bg: 'bg-blue-500', icon: <BadgeCheck size={10} />, label: 'Verified Seller' },
+/**
+ * Card presentation rules (Package × KYC):
+ *
+ *  | Package   | KYC | Border     | Badge                   |
+ *  |-----------|-----|------------|-------------------------|
+ *  | basic     | no  | none       | none                    |
+ *  | basic     | yes | none       | "ยืนยันตัวตนแล้ว" green  |
+ *  | standard  | no  | blue       | none                    |
+ *  | standard  | yes | blue       | "Verified Seller" blue  |
+ *  | pro       | no  | orange     | none                    |
+ *  | pro       | yes | orange     | "Hot Deal" orange       |
+ *  | dealer    | no  | gold       | none                    |
+ *  | dealer    | yes | gold       | "Premium Choice" gold   |
+ *
+ * Border alone signals "paid package", badge adds KYC trust. This makes KYC
+ * feel like the earned-reward step even after the seller has paid for a tier.
+ */
+const TIER_BORDER: Record<string, string> = {
+    standard: 'border border-blue-300',
+    professional: 'border border-orange-300',
+    premium: 'border-2 border-yellow-400 shadow-lg shadow-yellow-100', // Dealer
 };
+
+interface BadgeStyle { bg: string; icon: React.ReactNode; label: string }
+
+function getBadgeForTier(packageSlug: string, hasKyc: boolean): BadgeStyle | null {
+    if (!hasKyc) return null;
+    if (packageSlug === 'premium') return { bg: 'bg-gradient-to-r from-yellow-500 to-amber-600', icon: <Crown size={10} />, label: 'Premium Choice' };
+    if (packageSlug === 'professional') return { bg: 'bg-orange-500', icon: <Flame size={10} />, label: 'Hot Deal' };
+    if (packageSlug === 'standard') return { bg: 'bg-blue-500', icon: <CircleCheckBig size={10} />, label: 'Verified Seller' };
+    // Basic + KYC: small green verification pill
+    return { bg: 'bg-emerald-500', icon: <CircleCheckBig size={10} />, label: 'ยืนยันตัวตนแล้ว' };
+}
 
 interface ListingCardProps {
     listing: VehicleListing;
@@ -146,16 +176,22 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
         setTimeout(() => setShowToast(false), 2000);
     };
 
+    // Derive border (from package tier, regardless of KYC) and badge (only
+    // when KYC-verified) — backend now returns `packageSlug` + gates `badge`.
+    const packageSlug = listing.packageSlug || 'basic';
+    const hasKyc = !!(
+        listing.user.sellerProfile?.isVerified
+        && listing.user.sellerProfile.verificationLevel
+        && listing.user.sellerProfile.verificationLevel !== 'NONE'
+    );
+    const borderClass = TIER_BORDER[packageSlug] || 'border border-gray-100';
+    const packageBadge = getBadgeForTier(packageSlug, hasKyc);
+
     return (
         <>
             <Link
                 href={`/buy/${listing.id}`}
-                className={`bg-white rounded-3xl shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer relative flex flex-col h-full ${
-                    listing.badge === 'Premium Choice' ? 'border-2 border-yellow-400 shadow-lg shadow-yellow-100' :
-                    listing.badge === 'Hot Deal' ? 'border border-orange-300' :
-                    listing.badge === 'Verified Seller' ? 'border border-blue-200' :
-                    'border border-gray-100'
-                }`}
+                className={`bg-white rounded-3xl shadow-sm overflow-hidden hover:shadow-xl hover:-translate-y-1 transition duration-300 group cursor-pointer relative flex flex-col h-full ${borderClass}`}
             >
                 {/* Image */}
                 <div className="relative aspect-3/2 overflow-hidden">
@@ -171,20 +207,23 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         </div>
                     )}
 
-                    {/* Vehicle Type Badge */}
-                    {listing.vehicleType === 'MOTORCYCLE' && (
-                        <div className="absolute top-3 left-3 bg-primary text-white p-1.5 rounded-full">
-                            <Bike size={14} />
-                        </div>
-                    )}
+                    {/* Top-left badge stack: vehicle type + package/KYC badge.
+                     * Border color (on card container) always reflects the paid
+                     * package tier; badge only appears after KYC verification. */}
+                    <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10">
+                        {listing.vehicleType === 'MOTORCYCLE' && (
+                            <div className="bg-primary text-white p-1.5 rounded-full shadow-md">
+                                <Bike size={14} />
+                            </div>
+                        )}
 
-                    {/* Package Badge */}
-                    {listing.badge && BADGE_CONFIG[listing.badge] && (
-                        <div className={`absolute ${listing.vehicleType === 'MOTORCYCLE' ? 'top-12' : 'top-3'} left-3 ${BADGE_CONFIG[listing.badge].bg} text-white px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-md`}>
-                            {BADGE_CONFIG[listing.badge].icon}
-                            {BADGE_CONFIG[listing.badge].label}
-                        </div>
-                    )}
+                        {packageBadge && (
+                            <div className={`${packageBadge.bg} text-white px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-md`}>
+                                {packageBadge.icon}
+                                {packageBadge.label}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Favorite/Remove Button */}
                     {showRemoveButton ? (

@@ -27,7 +27,16 @@ import { adminServiceRoutes } from "./admin-services";
 import { adminSSERoutes, userSSERoutes } from "./admin-sse";
 import { forumRoutes } from "./forum";
 import { sellerProfileRoutes } from "./seller-profile";
+import { kycRoutes } from "./kyc";
+import { adminKycRoutes } from "./admin-kyc";
+import { adminContactRoutes, adminForumRoutes, adminReportsRoutes, publicReportRoutes } from "./admin-moderation";
+import { adminAuditRoutes, adminGarageRoutes, adminRevenueRoutes, adminListingBulkRoutes } from "./admin-p1";
+import { adminSellerProfileRoutes } from "./admin-seller-profiles";
 import { adminStorageRoutes } from "./admin-storage";
+import { adminSettingsRoutes } from "./admin-settings";
+import { adminMasterDataRoutes } from "./admin-master-data";
+import { slotPurchaseRoutes } from "./slots";
+import { adminSlotPurchaseRoutes } from "./admin-slots";
 import { startPackageExpiryCrons } from "./crons/package-expiry";
 import { verifySmtpConnection } from "./email";
 import { ensureStorageSettingSeeded } from "./storage/factory";
@@ -95,7 +104,22 @@ const app = new Elysia()
       .use(userSSERoutes)
       .use(forumRoutes)
       .use(sellerProfileRoutes)
+      .use(kycRoutes)
+      .use(adminKycRoutes)
+      .use(adminContactRoutes)
+      .use(adminForumRoutes)
+      .use(adminReportsRoutes)
+      .use(publicReportRoutes)
+      .use(adminAuditRoutes)
+      .use(adminGarageRoutes)
+      .use(adminRevenueRoutes)
+      .use(adminListingBulkRoutes)
+      .use(adminSellerProfileRoutes)
       .use(adminStorageRoutes)
+      .use(adminSettingsRoutes)
+      .use(adminMasterDataRoutes)
+      .use(slotPurchaseRoutes)
+      .use(adminSlotPurchaseRoutes)
   )
 
   // Global error handler

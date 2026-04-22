@@ -44,6 +44,12 @@ export interface CloudflareR2ProviderConfig {
   secretAccessKey: string;
   bucket: string;
   publicUrl: string;
+  /**
+   * Optional directory prefix prepended to every object key.
+   * Example: `"car2hand/prod"` → keys stored as `car2hand/prod/<userId>/avatar/x.webp`.
+   * Useful when sharing a bucket across environments or projects.
+   */
+  directory?: string;
 }
 
 export type StorageProviderConfig = MinioProviderConfig | CloudflareR2ProviderConfig;

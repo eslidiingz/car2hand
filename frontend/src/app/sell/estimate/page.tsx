@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
 import SearchableSelect, { type SelectOption } from '@/components/SearchableSelect';
+import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
 import {
     ArrowLeft,
     Sparkles,
@@ -318,21 +319,23 @@ function EstimatePricePage() {
                         กรอกข้อมูลรถของคุณ
                     </h2>
 
-                    {/* Vehicle Type Toggle */}
-                    <div className="flex gap-2 mb-4">
-                        <button
-                            onClick={() => setVehicleType('CAR')}
-                            className={`flex-1 py-2 rounded-xl text-sm font-bold transition ${vehicleType === 'CAR' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            <Car size={16} className="inline mr-1" /> รถยนต์
-                        </button>
-                        <button
-                            onClick={() => setVehicleType('MOTORCYCLE')}
-                            className={`flex-1 py-2 rounded-xl text-sm font-bold transition ${vehicleType === 'MOTORCYCLE' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            มอเตอร์ไซค์
-                        </button>
-                    </div>
+                    {/* Vehicle Type Toggle — hidden while MOTORCYCLE_ENABLED=false */}
+                    {MOTORCYCLE_ENABLED && (
+                        <div className="flex gap-2 mb-4">
+                            <button
+                                onClick={() => setVehicleType('CAR')}
+                                className={`flex-1 py-2 rounded-xl text-sm font-bold transition ${vehicleType === 'CAR' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            >
+                                <Car size={16} className="inline mr-1" /> รถยนต์
+                            </button>
+                            <button
+                                onClick={() => setVehicleType('MOTORCYCLE')}
+                                className={`flex-1 py-2 rounded-xl text-sm font-bold transition ${vehicleType === 'MOTORCYCLE' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            >
+                                มอเตอร์ไซค์
+                            </button>
+                        </div>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Brand */}

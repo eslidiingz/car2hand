@@ -434,15 +434,15 @@ export default function SellPage() {
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Eye className={`flex-shrink-0 ${pkg.badge ? 'text-green-500' : 'text-gray-300'}`} size={16} />
-                                                <span className={pkg.badge ? '' : 'text-gray-400'}>
-                                                    {pkg.badge ? `ป้าย "${pkg.badge}"` : 'ไม่มีป้ายพิเศษ'}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
                                                 <Megaphone className={`flex-shrink-0 ${pkg.searchPriority !== 'normal' ? 'text-green-500' : 'text-gray-300'}`} size={16} />
                                                 <span className={pkg.searchPriority !== 'normal' ? '' : 'text-gray-400'}>
                                                     ลำดับค้นหา: {formatSearchPriority(pkg.searchPriority)}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Eye className={`flex-shrink-0 ${pkg.badge ? 'text-green-500' : 'text-gray-300'}`} size={16} />
+                                                <span className={pkg.badge ? '' : 'text-gray-400'}>
+                                                    {pkg.badge ? `ป้าย "${pkg.badge}"` : 'ไม่มีป้ายพิเศษ'}
                                                 </span>
                                             </div>
                                         </div>

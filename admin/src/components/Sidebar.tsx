@@ -21,7 +21,8 @@ import {
     ScrollText,
     BarChart3,
     Store,
-    HardDrive
+    HardDrive,
+    Database
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePendingCounts } from "@/contexts/PendingContext";
@@ -48,6 +49,7 @@ export const navigation = [
     { name: "จัดการบริการ", href: "/services", icon: Wrench },
     { name: "จัดการบทความ", href: "/articles", icon: BookOpen },
     { name: "หมวดหมู่บทความ", href: "/categories", icon: Tags },
+    { name: "ยี่ห้อ/รุ่นรถ", href: "/master-data", icon: Database },
     { name: "แพ็กเกจ", href: "/packages", icon: Package },
     { name: "ชุมชน", href: "/forum", icon: MessageSquare },
     { name: "กล่องข้อความ", href: "/contact", icon: Inbox },
@@ -62,7 +64,7 @@ export const navigation = [
 export default function Sidebar() {
     const pathname = usePathname();
     const { logout } = useAuth();
-    const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount } = usePendingCounts();
+    const { pendingUpgradeCount, pendingListingCount, pendingRenewalCount, pendingSlotPurchaseCount, pendingKycCount } = usePendingCounts();
 
     return (
         <div className="flex h-full w-60 flex-col bg-card border-r border-border">
@@ -73,12 +75,13 @@ export default function Sidebar() {
                 </span>
             </div>
 
-            <nav className="flex-1 space-y-0.5 px-3 py-4">
+            <nav className="flex-1 min-h-0 overflow-y-auto space-y-0.5 px-3 py-4">
                 {navigation.map((item) => {
                     const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href + '/'));
                     const isPackages = item.href === '/packages';
                     const isListings = item.href === '/listings';
-                    const badgeCount = isPackages ? pendingUpgradeCount : isListings ? (pendingListingCount + pendingRenewalCount) : 0;
+                    const isKyc = item.href === '/kyc';
+                    const badgeCount = isPackages ? (pendingUpgradeCount + pendingSlotPurchaseCount) : isListings ? (pendingListingCount + pendingRenewalCount) : isKyc ? pendingKycCount : 0;
                     const showBadge = badgeCount > 0;
 
                     return (

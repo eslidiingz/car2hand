@@ -115,6 +115,14 @@ const slotRoutes = new Elysia({ prefix: "/slots" })
         } catch (error) {
             console.error('Slot purchase error:', error);
             set.status = 500;
+            const errName = error instanceof Error ? error.name : "";
+            // Surface storage errors so admin knows credentials/bucket are misconfigured
+            if (errName === "AccessDenied" || errName === "NoSuchBucket" || errName === "InvalidAccessKeyId") {
+                return {
+                    message: "ไม่สามารถอัพโหลดสลิปได้: ระบบจัดเก็บไฟล์ปฏิเสธการเข้าถึง (กรุณาแจ้ง admin ตรวจสอบการตั้งค่า Storage)",
+                    code: errName,
+                };
+            }
             return { message: "เกิดข้อผิดพลาดในการส่งคำขอ" };
         }
     }, {

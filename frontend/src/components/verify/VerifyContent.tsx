@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import {
-    ArrowLeft,
     BadgeCheck,
     Building2,
     Loader2,
@@ -14,11 +12,15 @@ import {
     Check,
     Clock,
     XCircle,
+    CircleCheckBig,
+    Crown,
+    Flame,
 } from 'lucide-react';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-type KycType = 'ID' | 'BUSINESS' | 'DEALER';
+type KycType = 'INDIVIDUAL' | 'CORPORATE';
 type KycStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
 
 interface Submission {
@@ -28,35 +30,77 @@ interface Submission {
     submittedAt: string;
     reviewedAt: string | null;
     reviewNote: string | null;
-    requestedShowroom: 'INDIVIDUAL' | 'TENT' | 'DEALER' | null;
+    requestedShowroom: 'INDIVIDUAL' | 'CORPORATE' | null;
 }
 
 interface KycState {
-    verificationLevel: 'NONE' | 'ID' | 'BUSINESS' | 'DEALER';
+    verificationLevel: 'NONE' | 'INDIVIDUAL' | 'CORPORATE';
     isVerified: boolean;
     verifiedAt: string | null;
-    showroomType: 'INDIVIDUAL' | 'TENT' | 'DEALER';
+    showroomType: 'INDIVIDUAL' | 'CORPORATE';
     submissions: Submission[];
     hasPending: boolean;
 }
 
 const LEVEL_META: Record<KycType, { label: string; icon: React.ReactNode; description: string }> = {
-    ID: {
-        label: 'ยืนยันบุคคล',
+    INDIVIDUAL: {
+        label: 'บุคคลธรรมดา',
         icon: <UserIcon size={20} />,
         description: 'สำหรับบุคคลทั่วไป ต้องใช้บัตรประชาชนและเซลฟี่ถือบัตร',
     },
-    BUSINESS: {
-        label: 'ร้านรับรอง',
+    CORPORATE: {
+        label: 'นิติบุคคล',
         icon: <Building2 size={20} />,
-        description: 'สำหรับเต็นท์รถ/ร้านค้า ต้องมีทะเบียนพาณิชย์',
-    },
-    DEALER: {
-        label: 'ดีลเลอร์รับรอง',
-        icon: <Shield size={20} />,
-        description: 'สำหรับตัวแทนจำหน่าย ต้องมีหนังสือแต่งตั้งจากค่ายรถ',
+        description: 'สำหรับร้านค้า/เต๊นท์/บริษัท ใช้ใบทะเบียนพาณิชย์หรือหนังสือรับรองบริษัทและเลขผู้เสียภาษี',
     },
 };
+
+/**
+ * Badge ที่ปรากฏจริงบนประกาศขับเคลื่อนด้วย "แพกเก็จ × KYC"
+ * (ดู frontend/src/components/ListingCard.tsx -> getBadgeForTier)
+ * — แสดงเฉพาะเมื่อ KYC ผ่านเท่านั้น
+ */
+const PACKAGE_BADGE_PREVIEWS: {
+    pkg: string;
+    pkgLabel: string;
+    borderClass: string;
+    badgeClass: string;
+    badgeIcon: React.ReactNode;
+    badgeLabel: string;
+}[] = [
+    {
+        pkg: 'basic',
+        pkgLabel: 'Basic',
+        borderClass: 'border border-gray-200',
+        badgeClass: 'bg-emerald-500 text-white',
+        badgeIcon: <CircleCheckBig size={10} />,
+        badgeLabel: 'ยืนยันตัวตนแล้ว',
+    },
+    {
+        pkg: 'standard',
+        pkgLabel: 'Standard',
+        borderClass: 'border border-blue-300',
+        badgeClass: 'bg-blue-500 text-white',
+        badgeIcon: <CircleCheckBig size={10} />,
+        badgeLabel: 'Verified Seller',
+    },
+    {
+        pkg: 'professional',
+        pkgLabel: 'Professional',
+        borderClass: 'border border-orange-300',
+        badgeClass: 'bg-orange-500 text-white',
+        badgeIcon: <Flame size={10} />,
+        badgeLabel: 'Hot Deal',
+    },
+    {
+        pkg: 'premium',
+        pkgLabel: 'Premium (Dealer)',
+        borderClass: 'border-2 border-yellow-400 shadow-md shadow-yellow-100',
+        badgeClass: 'bg-gradient-to-r from-yellow-500 to-amber-600 text-white',
+        badgeIcon: <Crown size={10} />,
+        badgeLabel: 'Premium Choice',
+    },
+];
 
 function getAuthToken(): string | null {
     if (typeof window === 'undefined') return null;
@@ -86,12 +130,14 @@ function FileField({
     setFile,
     required,
     hint,
+    disabled,
 }: {
     label: string;
     file: File | null;
     setFile: (f: File | null) => void;
     required?: boolean;
     hint?: string;
+    disabled?: boolean;
 }) {
     const preview = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
     useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
@@ -105,16 +151,24 @@ function FileField({
                 <div className="relative border border-gray-200 rounded-xl overflow-hidden bg-gray-50 aspect-[4/3] flex items-center justify-center">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={preview!} alt={label} className="max-w-full max-h-full object-contain" />
-                    <button
-                        type="button"
-                        onClick={() => setFile(null)}
-                        className="absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm"
-                    >
-                        <X size={14} />
-                    </button>
+                    {!disabled && (
+                        <button
+                            type="button"
+                            onClick={() => setFile(null)}
+                            className="absolute top-2 right-2 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm"
+                        >
+                            <X size={14} />
+                        </button>
+                    )}
                 </div>
             ) : (
-                <label className="border-2 border-dashed border-gray-200 rounded-xl aspect-[4/3] flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-blue-50/30 transition">
+                <label
+                    className={`border-2 border-dashed border-gray-200 rounded-xl aspect-[4/3] flex flex-col items-center justify-center transition ${
+                        disabled
+                            ? 'bg-gray-50 cursor-not-allowed opacity-60'
+                            : 'cursor-pointer hover:border-primary hover:bg-blue-50/30'
+                    }`}
+                >
                     <Upload size={24} className="text-gray-400 mb-2" />
                     <span className="text-sm text-gray-500 font-medium">แตะเพื่ออัปโหลด</span>
                     {hint && <span className="text-[11px] text-gray-400 mt-1 px-3 text-center">{hint}</span>}
@@ -122,6 +176,7 @@ function FileField({
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
                         className="hidden"
+                        disabled={disabled}
                         onChange={(e) => {
                             const f = e.target.files?.[0] || null;
                             if (f && f.size > 8 * 1024 * 1024) {
@@ -137,26 +192,27 @@ function FileField({
     );
 }
 
-export default function VerifyPage() {
+export function VerifyContent() {
     const [loading, setLoading] = useState(true);
     const [state, setState] = useState<KycState | null>(null);
-    const [selectedType, setSelectedType] = useState<KycType>('ID');
+    const [selectedType, setSelectedType] = useState<KycType>('INDIVIDUAL');
+    const [showUpgradeForm, setShowUpgradeForm] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    // Cancel-confirm modal state: id of submission being cancelled, or null
+    const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
+    const [cancelling, setCancelling] = useState(false);
 
     // Form fields
     const [fullName, setFullName] = useState('');
     const [idNumber, setIdNumber] = useState('');
     const [businessName, setBusinessName] = useState('');
     const [taxId, setTaxId] = useState('');
-    const [requestedShowroom, setRequestedShowroom] = useState<'INDIVIDUAL' | 'TENT' | 'DEALER'>('INDIVIDUAL');
 
     const [idCardImage, setIdCardImage] = useState<File | null>(null);
     const [selfieImage, setSelfieImage] = useState<File | null>(null);
     const [businessCertImage, setBusinessCertImage] = useState<File | null>(null);
-    const [addressProofImage, setAddressProofImage] = useState<File | null>(null);
-    const [dealerAppointmentDoc, setDealerAppointmentDoc] = useState<File | null>(null);
 
     const fetchState = useCallback(async () => {
         const token = getAuthToken();
@@ -175,9 +231,7 @@ export default function VerifyPage() {
 
     const resetForm = () => {
         setFullName(''); setIdNumber(''); setBusinessName(''); setTaxId('');
-        setRequestedShowroom('INDIVIDUAL');
         setIdCardImage(null); setSelfieImage(null); setBusinessCertImage(null);
-        setAddressProofImage(null); setDealerAppointmentDoc(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -186,10 +240,8 @@ export default function VerifyPage() {
         const token = getAuthToken();
         if (!token) { setError('กรุณาเข้าสู่ระบบ'); return; }
 
-        // Showroom default per type
-        let showroom: 'INDIVIDUAL' | 'TENT' | 'DEALER' = requestedShowroom;
-        if (selectedType === 'ID' && showroom !== 'INDIVIDUAL') showroom = 'INDIVIDUAL';
-        if (selectedType === 'DEALER' && showroom === 'INDIVIDUAL') showroom = 'DEALER';
+        // Auto-map showroom type from KYC tier (no separate selector needed)
+        const showroom: 'INDIVIDUAL' | 'CORPORATE' = selectedType === 'INDIVIDUAL' ? 'INDIVIDUAL' : 'CORPORATE';
 
         const form = new FormData();
         form.set('type', selectedType);
@@ -197,16 +249,13 @@ export default function VerifyPage() {
         form.set('idNumber', idNumber);
         form.set('requestedShowroom', showroom);
         if (idCardImage) form.set('idCardImage', idCardImage);
-        if (selfieImage) form.set('selfieImage', selfieImage);
+        // Selfie only required/sent for personal verification
+        if (selectedType === 'INDIVIDUAL' && selfieImage) form.set('selfieImage', selfieImage);
 
-        if (selectedType !== 'ID') {
+        if (selectedType === 'CORPORATE') {
             form.set('businessName', businessName);
             form.set('taxId', taxId);
             if (businessCertImage) form.set('businessCertImage', businessCertImage);
-            if (addressProofImage) form.set('addressProofImage', addressProofImage);
-        }
-        if (selectedType === 'DEALER' && dealerAppointmentDoc) {
-            form.set('dealerAppointmentDoc', dealerAppointmentDoc);
         }
 
         setSubmitting(true);
@@ -231,14 +280,21 @@ export default function VerifyPage() {
         }
     };
 
-    const handleCancel = async (id: string) => {
+    const confirmCancel = async () => {
+        if (!cancelTargetId) return;
         const token = getAuthToken();
         if (!token) return;
-        await fetch(`${API_URL}/kyc/cancel/${id}`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        await fetchState();
+        setCancelling(true);
+        try {
+            await fetch(`${API_URL}/kyc/cancel/${cancelTargetId}`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            await fetchState();
+            setCancelTargetId(null);
+        } finally {
+            setCancelling(false);
+        }
     };
 
     if (loading) {
@@ -260,19 +316,16 @@ export default function VerifyPage() {
     const verifiedBadge = state.verificationLevel !== 'NONE' ? LEVEL_META[state.verificationLevel as KycType] : null;
     const canSubmit = !state.hasPending;
 
+    // Available upgrade tiers: only levels strictly above current verification.
+    // NONE → INDIVIDUAL / CORPORATE, INDIVIDUAL → CORPORATE, CORPORATE → (none)
+    const LEVEL_ORDER: Record<'NONE' | KycType, number> = { NONE: 0, INDIVIDUAL: 1, CORPORATE: 2 };
+    const availableTypes = (['INDIVIDUAL', 'CORPORATE'] as KycType[]).filter(
+        (t) => LEVEL_ORDER[t] > LEVEL_ORDER[state.verificationLevel]
+    );
+    const atMaxLevel = availableTypes.length === 0;
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-2">
-                <Link href="/profile/settings" className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition">
-                    <ArrowLeft size={18} />
-                </Link>
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-800">ยืนยันตัวตน</h1>
-                    <p className="text-sm text-gray-500">เพิ่มความน่าเชื่อถือให้ประกาศของคุณ</p>
-                </div>
-            </div>
-
             {/* Current level */}
             {verifiedBadge ? (
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-5 flex items-start gap-3">
@@ -301,6 +354,38 @@ export default function VerifyPage() {
                 </div>
             )}
 
+            {/* Badge preview — Package × KYC matrix (actual badge rendered on listings) */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6">
+                <div className="flex items-center gap-2 mb-1">
+                    <BadgeCheck size={18} className="text-primary" />
+                    <h3 className="font-bold text-gray-800">ตัวอย่าง badge ตามแพกเก็จ</h3>
+                </div>
+                <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                    Badge บนประกาศขึ้นอยู่กับ <strong>แพกเก็จที่ใช้</strong> × <strong>สถานะการยืนยันตัวตน</strong> —
+                    ยืนยันตัวตนแล้วเท่านั้นจึงจะแสดง badge บนประกาศของคุณ
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {PACKAGE_BADGE_PREVIEWS.map((p) => (
+                        <div
+                            key={p.pkg}
+                            className={`relative rounded-xl bg-white p-3 ${p.borderClass}`}
+                        >
+                            <div className="absolute top-2 left-2">
+                                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold shadow-sm ${p.badgeClass}`}>
+                                    {p.badgeIcon}
+                                    {p.badgeLabel}
+                                </span>
+                            </div>
+                            <div className="aspect-[4/3] rounded-lg bg-gray-100 mb-2 flex items-center justify-center text-gray-300 text-[10px]">
+                                รูปประกาศ
+                            </div>
+                            <p className="text-[11px] font-bold text-gray-800">{p.pkgLabel}</p>
+                            <p className="text-[10px] text-gray-400">+ ยืนยันตัวตน</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/* History */}
             {state.submissions.length > 0 && (
                 <div className="bg-white border border-gray-200 rounded-2xl p-5">
@@ -324,7 +409,7 @@ export default function VerifyPage() {
                                 </div>
                                 {s.status === 'PENDING' && (
                                     <button
-                                        onClick={() => handleCancel(s.id)}
+                                        onClick={() => setCancelTargetId(s.id)}
                                         className="text-xs text-gray-500 hover:text-red-500 font-medium whitespace-nowrap"
                                     >
                                         ยกเลิก
@@ -336,9 +421,57 @@ export default function VerifyPage() {
                 </div>
             )}
 
-            {/* New submission form */}
+            {/* Already at max level — no more upgrades available */}
+            {atMaxLevel && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 text-center">
+                    <BadgeCheck size={40} className="mx-auto text-amber-500 mb-2" />
+                    <h3 className="font-bold text-gray-800">คุณได้รับการยืนยันระดับสูงสุดแล้ว</h3>
+                    <p className="text-sm text-gray-500 mt-1">ไม่มีระดับการยืนยันที่สูงกว่านี้</p>
+                </div>
+            )}
+
+            {/* Verified but has upgrade path — collapsed behind a button so the empty form
+             * doesn't mislead users into thinking their previously submitted data was lost. */}
+            {!atMaxLevel && verifiedBadge && !showUpgradeForm && canSubmit && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6">
+                    <div className="flex items-start sm:items-center gap-3 flex-col sm:flex-row">
+                        <div className="flex-1">
+                            <h3 className="font-bold text-gray-800">ต้องการอัพเกรดระดับการยืนยัน?</h3>
+                            <p className="text-sm text-gray-500 mt-0.5">
+                                ส่งเอกสารเพิ่มเพื่อเพิ่มระดับรับรอง — ได้ badge ที่สูงขึ้นบนประกาศ
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setShowUpgradeForm(true);
+                                setSelectedType(availableTypes[0]);
+                            }}
+                            className="px-4 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 whitespace-nowrap"
+                        >
+                            อัพเกรดระดับการยืนยัน
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* New submission form (NONE user, or verified user who chose to upgrade) */}
+            {!atMaxLevel && (!verifiedBadge || showUpgradeForm) && (
             <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6">
-                <h3 className="font-bold text-gray-800 mb-4">ยื่นคำขอยืนยันตัวตน</h3>
+                <div className="flex items-start justify-between gap-3 mb-4">
+                    <h3 className="font-bold text-gray-800">
+                        {verifiedBadge ? 'อัพเกรดระดับการยืนยัน' : 'ยื่นคำขอยืนยันตัวตน'}
+                    </h3>
+                    {verifiedBadge && (
+                        <button
+                            type="button"
+                            onClick={() => setShowUpgradeForm(false)}
+                            className="text-xs text-gray-500 hover:text-gray-700"
+                        >
+                            ยกเลิก
+                        </button>
+                    )}
+                </div>
 
                 {!canSubmit && (
                     <div className="bg-blue-50 text-blue-700 text-sm p-3 rounded-xl mb-4">
@@ -346,9 +479,9 @@ export default function VerifyPage() {
                     </div>
                 )}
 
-                {/* Type selector */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
-                    {(['ID', 'BUSINESS', 'DEALER'] as KycType[]).map((t) => (
+                {/* Type selector — only tiers above current verification */}
+                <div className={`grid grid-cols-1 gap-3 mb-5 ${availableTypes.length === 2 ? 'sm:grid-cols-2' : ''}`}>
+                    {availableTypes.map((t) => (
                         <button
                             key={t}
                             type="button"
@@ -400,32 +533,38 @@ export default function VerifyPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className={`grid grid-cols-1 ${selectedType === 'INDIVIDUAL' ? 'sm:grid-cols-2' : ''} gap-4`}>
                         <FileField
                             label="รูปบัตรประชาชน"
                             file={idCardImage}
                             setFile={setIdCardImage}
                             required
+                            disabled={!canSubmit}
                             hint="ถ่ายให้เห็นข้อความชัดเจน ไม่เบลอ"
                         />
-                        <FileField
-                            label="รูปเซลฟี่ถือบัตร"
-                            file={selfieImage}
-                            setFile={setSelfieImage}
-                            required
-                            hint="ถือบัตร ปชช. ให้เห็นใบหน้าและหมายเลขบัตร"
-                        />
+                        {selectedType === 'INDIVIDUAL' && (
+                            <FileField
+                                label="รูปเซลฟี่ถือบัตร"
+                                file={selfieImage}
+                                setFile={setSelfieImage}
+                                required
+                                disabled={!canSubmit}
+                                hint="ถือบัตร ปชช. ให้เห็นใบหน้าและหมายเลขบัตร"
+                            />
+                        )}
                     </div>
 
-                    {/* Business fields */}
-                    {selectedType !== 'ID' && (
+                    {/* Corporate fields */}
+                    {selectedType === 'CORPORATE' && (
                         <>
                             <div className="pt-3 border-t border-gray-100">
-                                <h4 className="font-bold text-sm text-gray-700 mb-3">ข้อมูลธุรกิจ</h4>
+                                <h4 className="font-bold text-sm text-gray-700 mb-3">ข้อมูลร้าน/บริษัท</h4>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 text-gray-700">ชื่อร้าน/บริษัท <span className="text-red-500">*</span></label>
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700">
+                                        ชื่อร้าน/บริษัท <span className="text-red-500">*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         value={businessName}
@@ -433,15 +572,19 @@ export default function VerifyPage() {
                                         disabled={!canSubmit}
                                         required
                                         className="form-input-sm"
-                                        placeholder="เช่น เต็นท์เฮียชัย นนทบุรี"
+                                        placeholder="เช่น เต็นท์เฮียชัย นนทบุรี / บริษัท คาร์ทูแฮนด์ จำกัด"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1.5 text-gray-700">เลขทะเบียนพาณิชย์/ผู้เสียภาษี <span className="text-red-500">*</span></label>
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700">
+                                        เลขผู้เสียภาษี <span className="text-red-500">*</span>
+                                    </label>
                                     <input
                                         type="text"
+                                        inputMode="numeric"
+                                        maxLength={13}
                                         value={taxId}
-                                        onChange={(e) => setTaxId(e.target.value)}
+                                        onChange={(e) => setTaxId(e.target.value.replace(/\D/g, ''))}
                                         disabled={!canSubmit}
                                         required
                                         className="form-input-sm font-mono"
@@ -449,57 +592,15 @@ export default function VerifyPage() {
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <FileField
-                                    label="หนังสือรับรอง/ทะเบียนพาณิชย์"
-                                    file={businessCertImage}
-                                    setFile={setBusinessCertImage}
-                                    required
-                                />
-                                <FileField
-                                    label="หลักฐานที่อยู่ร้าน"
-                                    file={addressProofImage}
-                                    setFile={setAddressProofImage}
-                                    required
-                                    hint="เช่น ใบเสร็จค่าไฟ/ค่าน้ำ 3 เดือนล่าสุด"
-                                />
-                            </div>
+                            <FileField
+                                label="ใบทะเบียนพาณิชย์ / หนังสือรับรองบริษัท"
+                                file={businessCertImage}
+                                setFile={setBusinessCertImage}
+                                required
+                                disabled={!canSubmit}
+                                hint="ใบทะเบียนพาณิชย์ หรือหนังสือรับรองนิติบุคคลอายุไม่เกิน 6 เดือน"
+                            />
                         </>
-                    )}
-
-                    {/* Dealer only */}
-                    {selectedType === 'DEALER' && (
-                        <FileField
-                            label="หนังสือแต่งตั้งจากค่ายรถ"
-                            file={dealerAppointmentDoc}
-                            setFile={setDealerAppointmentDoc}
-                            required
-                            hint="เอกสารยืนยันการเป็นตัวแทนจำหน่าย"
-                        />
-                    )}
-
-                    {/* Showroom type (BUSINESS & DEALER only) */}
-                    {selectedType !== 'ID' && (
-                        <div>
-                            <label className="block text-sm font-medium mb-1.5 text-gray-700">ประเภทร้าน</label>
-                            <div className="flex gap-2 flex-wrap">
-                                {(selectedType === 'BUSINESS' ? ['INDIVIDUAL', 'TENT'] : ['INDIVIDUAL', 'TENT', 'DEALER']).map((v) => (
-                                    <button
-                                        key={v}
-                                        type="button"
-                                        disabled={!canSubmit}
-                                        onClick={() => setRequestedShowroom(v as 'INDIVIDUAL' | 'TENT' | 'DEALER')}
-                                        className={`px-4 py-2 rounded-xl border text-sm font-medium transition ${
-                                            requestedShowroom === v
-                                                ? 'border-primary bg-primary text-white'
-                                                : 'border-gray-200 text-gray-600 hover:border-primary'
-                                        }`}
-                                    >
-                                        {v === 'INDIVIDUAL' ? 'บุคคล' : v === 'TENT' ? 'เต็นท์รถ' : 'ดีลเลอร์'}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
                     )}
 
                     {/* Feedback */}
@@ -527,6 +628,25 @@ export default function VerifyPage() {
                     ตรวจสอบใช้เวลา 1–3 วันทำการ
                 </p>
             </div>
+            )}
+
+            <ConfirmDialog
+                open={!!cancelTargetId}
+                onClose={() => setCancelTargetId(null)}
+                onConfirm={confirmCancel}
+                title="ยืนยันการยกเลิก"
+                description={
+                    <>
+                        คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำขอยืนยันตัวตนนี้?
+                        <br />
+                        <span className="text-xs text-gray-400">หากยกเลิกแล้วจะต้องเริ่มยื่นคำขอใหม่</span>
+                    </>
+                }
+                cancelLabel="ไม่ยกเลิก"
+                confirmLabel={cancelling ? 'กำลังยกเลิก...' : 'ยืนยันยกเลิก'}
+                loading={cancelling}
+            />
         </div>
     );
 }
+

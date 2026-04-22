@@ -2,7 +2,7 @@
  * Admin seller-profile CRUD route tests.
  *
  * Covers list/detail/update, manual verify + unverify, including the default
- * verificationLevel fallback ("current=NONE → defaults to ID").
+ * verificationLevel fallback ("current=NONE → defaults to INDIVIDUAL").
  */
 
 import { describe, test, expect, beforeAll } from "bun:test";
@@ -91,31 +91,31 @@ describe("GET /admin/seller-profiles (list)", () => {
     });
 
     test("filters by verificationLevel", async () => {
-        // Existing pg-1/2/3 are NONE; seed BUSINESS + DEALER
-        seedSeller("vl-biz", { verificationLevel: "BUSINESS" });
-        seedSeller("vl-deal", { verificationLevel: "DEALER" });
+        // Existing pg-1/2/3 are NONE; seed INDIVIDUAL + CORPORATE
+        seedSeller("vl-ind", { verificationLevel: "INDIVIDUAL" });
+        seedSeller("vl-corp", { verificationLevel: "CORPORATE" });
 
-        const res = await app.handle(new Request("http://localhost/admin/seller-profiles?verificationLevel=BUSINESS", {
+        const res = await app.handle(new Request("http://localhost/admin/seller-profiles?verificationLevel=CORPORATE", {
             headers: authHeaders(token),
         }));
         const body = await readJson(res);
         const sellers = body!.sellers as Array<{ verificationLevel: string }>;
         expect(sellers.length).toBeGreaterThan(0);
-        expect(sellers.every((s) => s.verificationLevel === "BUSINESS")).toBe(true);
+        expect(sellers.every((s) => s.verificationLevel === "CORPORATE")).toBe(true);
     });
 
-    test("filters by showroomType=TENT", async () => {
-        seedSeller("st-tent", { showroomType: "TENT" });
-        const res = await app.handle(new Request("http://localhost/admin/seller-profiles?showroomType=TENT", {
+    test("filters by showroomType=CORPORATE", async () => {
+        seedSeller("st-corp", { showroomType: "CORPORATE" });
+        const res = await app.handle(new Request("http://localhost/admin/seller-profiles?showroomType=CORPORATE", {
             headers: authHeaders(token),
         }));
         const body = await readJson(res);
         const sellers = body!.sellers as Array<{ showroomType: string }>;
-        expect(sellers.every((s) => s.showroomType === "TENT")).toBe(true);
+        expect(sellers.every((s) => s.showroomType === "CORPORATE")).toBe(true);
     });
 
     test("filters by isVerified=true", async () => {
-        seedSeller("iv-true", { isVerified: true, verificationLevel: "ID" });
+        seedSeller("iv-true", { isVerified: true, verificationLevel: "INDIVIDUAL" });
         const res = await app.handle(new Request("http://localhost/admin/seller-profiles?isVerified=true", {
             headers: authHeaders(token),
         }));
@@ -207,7 +207,7 @@ describe("PUT /admin/seller-profiles/:id", () => {
 // ─── POST /:id/verify ───────────────────────────────────────────────
 
 describe("POST /admin/seller-profiles/:id/verify", () => {
-    test("defaults to ID when current=NONE and no level provided", async () => {
+    test("defaults to INDIVIDUAL when current=NONE and no level provided", async () => {
         seedSeller("verify-from-none", { verificationLevel: "NONE", isVerified: false });
         const res = await app.handle(new Request("http://localhost/admin/seller-profiles/verify-from-none/verify", {
             method: "POST",
@@ -218,24 +218,24 @@ describe("POST /admin/seller-profiles/:id/verify", () => {
         const body = await readJson(res);
         const seller = body!.seller as { isVerified: boolean; verificationLevel: string; verifiedAt: unknown };
         expect(seller.isVerified).toBe(true);
-        expect(seller.verificationLevel).toBe("ID");
+        expect(seller.verificationLevel).toBe("INDIVIDUAL");
         expect(seller.verifiedAt).not.toBeNull();
 
         const audit = db._store.auditLogs.find((l) => l.action === "SELLER_PROFILE_VERIFY" && l.targetId === "verify-from-none");
         expect(audit).toBeDefined();
-        expect((audit!.metadata as { verificationLevel: string }).verificationLevel).toBe("ID");
+        expect((audit!.metadata as { verificationLevel: string }).verificationLevel).toBe("INDIVIDUAL");
     });
 
-    test("preserves current verificationLevel when already set (e.g. BUSINESS)", async () => {
-        seedSeller("verify-from-biz", { verificationLevel: "BUSINESS", isVerified: false });
-        const res = await app.handle(new Request("http://localhost/admin/seller-profiles/verify-from-biz/verify", {
+    test("preserves current verificationLevel when already set (e.g. CORPORATE)", async () => {
+        seedSeller("verify-from-corp", { verificationLevel: "CORPORATE", isVerified: false });
+        const res = await app.handle(new Request("http://localhost/admin/seller-profiles/verify-from-corp/verify", {
             method: "POST",
             headers: { "content-type": "application/json", ...authHeaders(token) },
             body: "{}",
         }));
         const body = await readJson(res);
         const seller = body!.seller as { verificationLevel: string; isVerified: boolean };
-        expect(seller.verificationLevel).toBe("BUSINESS");
+        expect(seller.verificationLevel).toBe("CORPORATE");
         expect(seller.isVerified).toBe(true);
     });
 
@@ -244,10 +244,10 @@ describe("POST /admin/seller-profiles/:id/verify", () => {
         const res = await app.handle(new Request("http://localhost/admin/seller-profiles/verify-explicit/verify", {
             method: "POST",
             headers: { "content-type": "application/json", ...authHeaders(token) },
-            body: JSON.stringify({ verificationLevel: "DEALER" }),
+            body: JSON.stringify({ verificationLevel: "CORPORATE" }),
         }));
         const body = await readJson(res);
-        expect((body!.seller as { verificationLevel: string }).verificationLevel).toBe("DEALER");
+        expect((body!.seller as { verificationLevel: string }).verificationLevel).toBe("CORPORATE");
     });
 
     test("404 when seller missing", async () => {
@@ -264,7 +264,7 @@ describe("POST /admin/seller-profiles/:id/verify", () => {
 
 describe("POST /admin/seller-profiles/:id/unverify", () => {
     test("resets isVerified=false + verificationLevel=NONE + verifiedAt=null", async () => {
-        seedSeller("unverify-1", { isVerified: true, verificationLevel: "BUSINESS", verifiedAt: new Date() });
+        seedSeller("unverify-1", { isVerified: true, verificationLevel: "CORPORATE", verifiedAt: new Date() });
         const res = await app.handle(new Request("http://localhost/admin/seller-profiles/unverify-1/unverify", {
             method: "POST",
             headers: authHeaders(token),

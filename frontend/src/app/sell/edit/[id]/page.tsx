@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect from '@/components/SearchableSelect';
+import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
 
 // Types
 interface VehicleImage {
@@ -1056,26 +1057,28 @@ export default function EditListingPage() {
                                 <Car size={24} className="text-accent" /> ข้อมูลรถของคุณ
                             </h3>
 
-                            {/* Vehicle Type */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">ประเภทยานพาหนะ</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: 'SEDAN' })}
-                                        className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
-                                    >
-                                        <Car size={20} /> รถยนต์
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: 'STANDARD' })}
-                                        className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
-                                    >
-                                        <Bike size={20} /> มอเตอร์ไซค์
-                                    </button>
+                            {/* Vehicle Type — hidden while MOTORCYCLE_ENABLED=false */}
+                            {MOTORCYCLE_ENABLED && (
+                                <div className="mb-6">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">ประเภทยานพาหนะ</label>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => updateFormData({ vehicleType: 'CAR', brand: '', model: '', bodyType: 'SEDAN' })}
+                                            className={`form-button ${formData.vehicleType === 'CAR' ? 'form-button-active' : 'form-button-inactive'}`}
+                                        >
+                                            <Car size={20} /> รถยนต์
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => updateFormData({ vehicleType: 'MOTORCYCLE', brand: '', model: '', bodyType: 'STANDARD' })}
+                                            className={`form-button ${formData.vehicleType === 'MOTORCYCLE' ? 'form-button-active' : 'form-button-inactive'}`}
+                                        >
+                                            <Bike size={20} /> มอเตอร์ไซค์
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Year, Brand, Model */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">

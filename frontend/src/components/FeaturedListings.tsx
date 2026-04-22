@@ -46,7 +46,6 @@ export default function FeaturedListings() {
                 <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
                     <Sparkles className="text-amber-500" />
                     ประกาศแนะนำ
-                    <span className="text-xs bg-amber-50 text-amber-600 px-2 py-1 rounded-full font-bold">Featured</span>
                 </h2>
                 <Link
                     href="/buy"

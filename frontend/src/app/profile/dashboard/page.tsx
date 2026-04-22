@@ -17,6 +17,8 @@ import {
     RotateCcw,
     Crown,
     ShoppingBag,
+    ShieldAlert,
+    ArrowRight,
 } from 'lucide-react';
 import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 
@@ -46,7 +48,11 @@ export default function DashboardPage() {
     const [listings, setListings] = useState<Listing[]>([]);
     const [loading, setLoading] = useState(true);
     const [maxListings, setMaxListings] = useState<number>(3);
+    const [packageMaxListings, setPackageMaxListings] = useState<number>(3);
+    const [bonusListingSlots, setBonusListingSlots] = useState<number>(0);
     const [packageName, setPackageName] = useState<string>('Basic');
+    const [packageSlug, setPackageSlug] = useState<string>('basic');
+    const [isKycVerified, setIsKycVerified] = useState<boolean | null>(null);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [showSlotModal, setShowSlotModal] = useState(false);
 
@@ -69,11 +75,37 @@ export default function DashboardPage() {
             .then(r => r.json())
             .then(data => {
                 if (data.currentPackage) {
-                    setMaxListings(data.currentPackage.maxListings ?? 3);
                     setPackageName(data.currentPackage.name ?? 'Basic');
+                    setPackageSlug(data.currentPackage.slug ?? 'basic');
                 }
+                // usage.maxListings is the EFFECTIVE max (packageMax + bonusListingSlots).
+                // usage.packageMaxListings is the package-only value for display.
+                const pkgMax = data.usage?.packageMaxListings ?? data.currentPackage?.maxListings ?? 3;
+                const bonus = data.usage?.bonusListingSlots ?? 0;
+                const effective = data.usage?.maxListings ?? (pkgMax === -1 ? -1 : pkgMax + bonus);
+                setPackageMaxListings(pkgMax);
+                setBonusListingSlots(bonus);
+                setMaxListings(effective);
             })
             .catch(() => {});
+
+        // Check KYC status to decide whether to show the "complete KYC" banner.
+        // Paid-package users who haven't done KYC only get the card border, not
+        // the full badge — banner urges them to finish KYC to unlock it.
+        if (token) {
+            fetch(`${API_BASE}/kyc/me`, { headers: { Authorization: `Bearer ${token}` } })
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (data) {
+                        setIsKycVerified(
+                            !!data.isVerified
+                            && data.verificationLevel
+                            && data.verificationLevel !== 'NONE'
+                        );
+                    }
+                })
+                .catch(() => {});
+        }
     }, []);
 
     const activeListings = listings.filter(l => l.status === 'ACTIVE');
@@ -106,9 +138,34 @@ export default function DashboardPage() {
         { label: 'ประกาศหมดอายุ', value: expiredListings.length.toString(), icon: <Clock className="text-orange-500" />, badge: expiredListings.length > 0 ? 'ต้องดำเนินการ' : null },
     ];
 
+    // Banner condition: Pro/Dealer tier users who paid but haven't completed KYC.
+    // They already get the card border from package, but miss the full badge
+    // (Hot Deal / Premium Choice) until KYC is approved.
+    const paidTierNeedingKyc = (packageSlug === 'professional' || packageSlug === 'premium') && isKycVerified === false;
+
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-bold text-gray-800">ภาพรวมบัญชี (Dashboard)</h1>
+
+            {/* KYC nudge — only for paid Pro/Dealer users who haven't verified yet */}
+            {paidTierNeedingKyc && (
+                <Link
+                    href="/profile/settings?tab=verify"
+                    className="flex items-start gap-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 hover:shadow-md transition group"
+                >
+                    <div className="w-11 h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0">
+                        <ShieldAlert size={22} />
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="font-bold text-amber-900">ยืนยัน KYC เพื่อปลดล็อก badge เต็ม</h3>
+                        <p className="text-sm text-amber-700/90 mt-0.5">
+                            แพ็กเกจ <strong>{packageName}</strong> ของคุณแสดงขอบการ์ดแล้ว — ทำ KYC ให้เสร็จเพื่อรับ
+                            badge <strong>{packageSlug === 'premium' ? 'Premium Choice' : 'Hot Deal'}</strong> บนประกาศทุกรายการของคุณ
+                        </p>
+                    </div>
+                    <ArrowRight size={20} className="text-amber-700 flex-shrink-0 mt-1 group-hover:translate-x-1 transition" />
+                </Link>
+            )}
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -215,7 +272,7 @@ export default function DashboardPage() {
                 <button
                     onClick={() => {
                         const usedSlots = listings.filter(l => ['ACTIVE', 'DRAFT', 'PENDING'].includes(l.status)).length;
-                        if (usedSlots >= maxListings) {
+                        if (maxListings !== -1 && usedSlots >= maxListings) {
                             setShowUpgradeModal(true);
                         } else {
                             router.push('/sell/create');
@@ -310,7 +367,7 @@ export default function DashboardPage() {
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
                         <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                            แพ็กเกจ {packageName} ลงประกาศได้สูงสุด {maxListings} รายการ เลือกซื้อ slot เพิ่ม (฿99/slot) หรืออัพเกรดแพ็กเกจ
+                            แพ็กเกจ {packageName} ลงประกาศได้สูงสุด {maxListings} รายการ{bonusListingSlots > 0 ? ` (แพ็กเกจ ${packageMaxListings} + slot ${bonusListingSlots})` : ''} เลือกซื้อ slot เพิ่ม (฿99/slot) หรืออัพเกรดแพ็กเกจ
                         </p>
 
                         <div className="flex flex-col gap-3">

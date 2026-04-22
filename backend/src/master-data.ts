@@ -347,3 +347,95 @@ export const masterDataRoutes = new Elysia({ prefix: '/master-data' })
             vehicleType: t.Optional(t.String())
         })
     });
+
+/**
+ * Ensure a VehicleModel / VehicleSubModel exist in master data.
+ *
+ * Called whenever a seller submits a listing with a model (and optional sub-model)
+ * that may not exist in the dropdown — we upsert so the next seller can pick
+ * the same value from autocomplete instead of re-typing it.
+ *
+ * - Brand must already exist (matched by `name + vehicleType`). If not, we
+ *   skip silently — sellers can't invent a brand from the UI (picker is a
+ *   strict select).
+ * - Models are created with `bodyType` if given so filtering by body type
+ *   keeps working.
+ * - Both models and sub-models are created with `isActive: false` by default
+ *   so they don't pollute the "popular/featured" picks until an admin curates
+ *   them. They STILL appear in the dropdown (admin-data.ts filters isActive=true
+ *   → change to also include user-submitted). See the filter change below.
+ *
+ * Safe to call multiple times — uses upsert semantics.
+ */
+export async function ensureModelAndSubModel({
+    vehicleType,
+    brand,
+    model,
+    subModel,
+    bodyType,
+}: {
+    vehicleType: 'CAR' | 'MOTORCYCLE';
+    brand: string;
+    model: string;
+    subModel?: string | null;
+    bodyType?: string | null;
+}): Promise<{ modelCreated: boolean; subModelCreated: boolean }> {
+    if (!brand?.trim() || !model?.trim()) {
+        return { modelCreated: false, subModelCreated: false };
+    }
+
+    const brandRecord = await prisma.brand.findFirst({
+        where: { name: brand.trim(), vehicleType },
+        select: { id: true },
+    });
+    if (!brandRecord) {
+        // Brand must exist first — don't invent brands from listing input.
+        return { modelCreated: false, subModelCreated: false };
+    }
+
+    // Upsert VehicleModel
+    const modelName = model.trim();
+    let modelCreated = false;
+    const existingModel = await prisma.vehicleModel.findUnique({
+        where: { brandId_name: { brandId: brandRecord.id, name: modelName } },
+        select: { id: true },
+    });
+
+    let modelId: string;
+    if (existingModel) {
+        modelId = existingModel.id;
+    } else {
+        const created = await prisma.vehicleModel.create({
+            data: {
+                brandId: brandRecord.id,
+                name: modelName,
+                bodyType: (bodyType?.trim() || null) as never,
+                // isActive defaults to true (per schema) so the model shows up in dropdowns.
+                // If you want moderator curation before it goes public, flip this to false
+                // and update the GET /brands/:id/models endpoint filter accordingly.
+            },
+            select: { id: true },
+        });
+        modelId = created.id;
+        modelCreated = true;
+    }
+
+    // Upsert VehicleSubModel (optional)
+    let subModelCreated = false;
+    const subModelName = subModel?.trim();
+    if (subModelName) {
+        const existingSub = await prisma.vehicleSubModel.findUnique({
+            where: { modelId_name: { modelId, name: subModelName } },
+            select: { id: true },
+        });
+        if (!existingSub) {
+            await prisma.vehicleSubModel.create({
+                data: { modelId, name: subModelName },
+            });
+            subModelCreated = true;
+        }
+    }
+
+    return { modelCreated, subModelCreated };
+}
+

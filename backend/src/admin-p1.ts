@@ -339,7 +339,7 @@ export const adminRevenueRoutes = new Elysia({ prefix: "/admin/revenue" })
         const txs = await prisma.packageTransaction.findMany({
             where: {
                 status: "APPROVED",
-                approvedAt: { gte: since },
+                reviewedAt: { gte: since },
             },
             include: { package: { select: { name: true, slug: true } } },
         });
@@ -351,7 +351,7 @@ export const adminRevenueRoutes = new Elysia({ prefix: "/admin/revenue" })
         for (const t of txs) {
             const amount = Number(t.amount || 0);
             totalRevenue += amount;
-            const d = new Date(t.approvedAt || t.createdAt);
+            const d = new Date(t.reviewedAt || t.createdAt);
             const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
             if (!byMonth[key]) byMonth[key] = { revenue: 0, count: 0 };
             byMonth[key].revenue += amount;
@@ -400,7 +400,7 @@ export const adminRevenueRoutes = new Elysia({ prefix: "/admin/revenue" })
         const rows = txs.map((t) => [
             t.id,
             t.createdAt.toISOString(),
-            t.approvedAt?.toISOString() || "",
+            t.reviewedAt?.toISOString() || "",
             t.status,
             t.user?.fullName || "",
             t.user?.email || "",

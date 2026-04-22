@@ -4,13 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
     Heart,
-    Check,
     AlertTriangle,
     RotateCcw,
     Trash,
-    X,
 } from 'lucide-react';
 import Toast from '@/components/Toast';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import { useWishlist } from '@/contexts/WishlistContext';
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 
@@ -82,53 +81,25 @@ export default function WishlistPage() {
                 <span className="text-sm text-gray-500">{wishlist.length} รายการ</span>
             </div>
 
-            {/* Clear All Confirmation Modal */}
-            {showClearConfirm && (
-                <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={() => setShowClearConfirm(false)}>
-                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 text-center">
-                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash size={28} className="text-red-500" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">ลบรายการโปรดทั้งหมด?</h3>
-                            <p className="text-sm text-gray-500">หลังจากลบแล้วสามารถเพิ่มใหม่เพื่อให้แสดงข้อมูลครบถ้วน</p>
-                        </div>
-                        <div className="flex border-t border-gray-100">
-                            <button onClick={() => setShowClearConfirm(false)} className="flex-1 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 transition rounded-bl-2xl">
-                                ยกเลิก
-                            </button>
-                            <button onClick={confirmClearAll} className="flex-1 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50 transition border-l border-gray-100 rounded-br-2xl">
-                                ลบทั้งหมด
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                open={showClearConfirm}
+                onClose={() => setShowClearConfirm(false)}
+                onConfirm={confirmClearAll}
+                icon={<Trash size={28} />}
+                title="ลบรายการโปรดทั้งหมด?"
+                description="หลังจากลบแล้วสามารถเพิ่มใหม่เพื่อให้แสดงข้อมูลครบถ้วน"
+                confirmLabel="ลบทั้งหมด"
+            />
 
-            {/* Remove Single Item Confirmation Modal */}
-            {removeConfirm && (
-                <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4" onClick={() => setRemoveConfirm(null)}>
-                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 text-center">
-                            <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Trash size={28} className="text-red-500" />
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">ลบรายการนี้ออก?</h3>
-                            <p className="text-sm text-gray-500 line-clamp-2">
-                                &ldquo;{removeConfirm.title}&rdquo; จะถูกเอาออกจากรายการที่บันทึกไว้
-                            </p>
-                        </div>
-                        <div className="flex border-t border-gray-100">
-                            <button onClick={() => setRemoveConfirm(null)} className="flex-1 py-3.5 text-sm font-bold text-gray-600 hover:bg-gray-50 transition rounded-bl-2xl">
-                                ยกเลิก
-                            </button>
-                            <button onClick={confirmRemove} className="flex-1 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50 transition border-l border-gray-100 rounded-br-2xl">
-                                ลบรายการ
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmDialog
+                open={!!removeConfirm}
+                onClose={() => setRemoveConfirm(null)}
+                onConfirm={confirmRemove}
+                icon={<Trash size={28} />}
+                title="ลบรายการนี้ออก?"
+                description={removeConfirm ? `"${removeConfirm.title}" จะถูกเอาออกจากรายการที่บันทึกไว้` : undefined}
+                confirmLabel="ลบรายการ"
+            />
 
             {/* AlertTriangle for old data */}
             {hasOldData && (

@@ -5,7 +5,6 @@ import {
     Heart,
     Package,
     Bell,
-    BadgeCheck,
     Settings,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -37,6 +36,5 @@ export const profileMenuItems: ProfileMenuItem[] = [
     { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart size={20} /> },
     { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} /> },
     { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell size={20} /> },
-    { name: 'ยืนยันตัวตน', href: '/profile/verify', icon: <BadgeCheck size={20} /> },
     { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Settings size={20} /> },
 ];

@@ -34,6 +34,41 @@ bunx prisma db seed      # seed data (seed.ts, seed-admin, seed-categories, seed
 
 Package manager: **pnpm** for frontend/admin, **bun** for backend. Do not mix.
 
+### Database migration — drift warning 🚨
+
+As of 2026-04-22 the local schema has drift: **`SellerProfile` model exists in `schema.prisma` but has no corresponding migration file** (it was added via `prisma db push` at some point instead of `migrate dev`). This means:
+
+- `bunx prisma migrate deploy` on a **fresh** target DB (e.g. a new Supabase project) **will FAIL** on the last migration `20260421120000_simplify_kyc_to_2_types` with `relation "seller_profiles" does not exist`.
+- Local dev DB still works because `db push` synced it ad-hoc.
+- The Supabase `car2hand` project was bootstrapped via `prisma db push --accept-data-loss` (not migrate deploy) — so it has the full 42-table schema but **no `_prisma_migrations` history**. Running `migrate deploy` there now will also fail (try to re-apply all migrations that already exist).
+
+**When you need to fix this**, do one of the following — don't just "try migrate deploy and see":
+
+1. **Create a catch-up migration** for `SellerProfile` + any other drifted models:
+   - `bunx prisma migrate dev --create-only --name add_seller_profile_baseline`
+   - Inspect the generated SQL, keep only the missing `CREATE TABLE seller_profiles` / related enums
+   - Commit it **before** `20260421120000_simplify_kyc_to_2_types`
+2. **Then** reconcile deployed environments with `prisma migrate resolve --applied <name>` for each migration already in their DB.
+
+For a **brand-new environment** (new Supabase project, fresh CI test DB), the current quick path is:
+```bash
+bunx prisma db push --accept-data-loss     # sync schema without migration history
+bunx prisma generate
+bun run prisma/seed.ts                      # + seed-master-data, seed-categories, seed-forum-categories, seed-admin
+```
+
+**Never commit** new migrations without first resolving the drift above — otherwise you'll stack a broken chain on top of a broken chain.
+
+### Supabase deployment
+
+- Connection strings live in `backend/.env` as `DATABASE_URL` (pooler, port 6543, pgbouncer=true) and `DIRECT_URL` (direct, port 5432).
+- Runtime (Elysia app) uses the pooler URL for connection reuse.
+- **Migrations require the DIRECT URL** — pgbouncer transaction mode drops the advisory lock Prisma uses to serialize migrations. When running `prisma db push` / `migrate deploy` against Supabase, set `DATABASE_URL` to the **DIRECT** URL for the duration of the command, e.g.:
+  ```bash
+  DATABASE_URL="$DIRECT_URL" bunx prisma db push
+  ```
+- `bun run prisma/seed-master-data.ts` against Supabase takes ~5 minutes (~1800 rows across brands/models/sub-models through the pooler). The seed script is idempotent (upserts), so rerunning is safe.
+
 ## Backend architecture
 
 Entry: `backend/src/index.ts` — registers global security middleware (`requestLogger`, `securityHeaders`, `rateLimiter(100/min/IP)`), CORS (allowed origins from env `FRONTEND_URL`/`ADMIN_URL` + localhost 3000/3001), then groups all routes under `/api`.
@@ -86,6 +121,125 @@ Shadows: `shadow-sm` default, `shadow-xl` on hover, `shadow-2xl` for modals. Car
 Format prices with `toLocaleString('th-TH')`. Most copy is Thai — preserve Thai strings when editing.
 
 Z-index ladder: cards `z-10`, navbar `z-50`, mobile menu `z-[60]`, modals `z-[100]`, toasts `z-[9999]`.
+
+### Frontend confirmation dialogs — single source of truth
+
+**Canonical component**: `frontend/src/components/ConfirmDialog.tsx`
+
+🚨 **For any "are you sure?" destructive-action prompt** (delete, cancel, remove, logout, etc.) on the public frontend, use `<ConfirmDialog>`. Do NOT write a new inline `fixed inset-0` modal — visual consistency matters more than the 20 lines you save.
+
+```tsx
+import ConfirmDialog from '@/components/ConfirmDialog';
+import { Trash } from 'lucide-react';
+
+<ConfirmDialog
+  open={!!target}
+  onClose={() => setTarget(null)}
+  onConfirm={async () => { await doIt(); setTarget(null); }}
+  icon={<Trash size={28} />}         // defaults to AlertTriangle
+  title="ลบประกาศ"
+  description="แน่ใจหรือไม่ว่าต้องการลบ?"
+  confirmLabel="ลบประกาศ"              // defaults to "ยืนยัน"
+  cancelLabel="ยกเลิก"                 // defaults to "ยกเลิก"
+  variant="danger"                    // "danger" (red) | "warning" (amber)
+  loading={deleting}                   // disables buttons + shows spinner
+/>
+```
+
+Consumers today (must stay in sync — do not divergent re-roll):
+- `components/verify/VerifyContent.tsx` — cancel pending KYC submission
+- `app/profile/wishlist/page.tsx` — remove one / clear all wishlist
+- `app/profile/listings/page.tsx` — delete listing
+- `app/profile/garage/page.tsx` — delete vehicle / service / reminder
+- `app/buy/compare/page.tsx` — clear compare list
+- `components/Navbar.tsx` + `app/profile/layout.tsx` — logout confirmation
+
+**Exception — the admin app** has its own `admin/src/components/DeleteConfirmModal.tsx` built on Radix Dialog. Use that one inside admin; use `ConfirmDialog` inside frontend. Do not cross-import.
+
+**Non-trivial confirms stay custom**: multi-step flows (e.g. the settings page "delete account" email-code confirmation) do not fit the simple dialog API and keep their inline JSX.
+
+### Frontend tabs — URL-driven state convention
+
+Every top-level tab on the **public frontend** (not modal-internal tabs) must sync with `?tab=xxx` on the URL. This gives us shareable deep-links (e.g. "ยืนยัน KYC" banner → `/profile/settings?tab=verify`), honest browser back-button behaviour, and bookmarkable state.
+
+**Pattern** — URL is the source of truth, state is derived:
+
+```tsx
+"use client";
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+
+const VALID_TABS = new Set(['profile', 'security', 'notifications', 'verify', 'shop']);
+const DEFAULT_TAB = 'profile';
+
+export default function SettingsPage() {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const tabFromUrl = searchParams.get('tab');
+    const activeTab = tabFromUrl && VALID_TABS.has(tabFromUrl) ? tabFromUrl : DEFAULT_TAB;
+
+    const setActiveTab = useCallback((tab: string) => {
+        if (!VALID_TABS.has(tab)) return;
+        const params = new URLSearchParams(searchParams.toString());
+        if (tab === DEFAULT_TAB) {
+            params.delete('tab');               // keep the default URL clean
+        } else {
+            params.set('tab', tab);
+        }
+        const qs = params.toString();
+        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }, [pathname, router, searchParams]);
+
+    // ...use activeTab/setActiveTab exactly as before
+}
+```
+
+**Rules:**
+- Use `router.replace` (not `push`) so tab switches don't pollute history — use Back button to leave the page, not to undo tab clicks.
+- Always include `{ scroll: false }` — stop the browser from jumping to top on tab change.
+- Strip `tab=<DEFAULT_TAB>` from the URL so `/profile/settings` and `/profile/settings?tab=profile` don't both appear in history.
+- Validate values from `searchParams` against an allow-list before using — never trust raw URL input.
+- Do NOT use `useState` for the active tab. Deriving from URL every render is cheap and keeps state in one place.
+
+**Where applied today** (keep consistent — same pattern, not a duplicate recipe):
+- `app/profile/settings/page.tsx` — profile / security / notifications / verify / shop
+- `app/community/page.tsx` — trending / latest / unanswered
+
+**Skip URL sync** for:
+- Modal-internal tabs (e.g. garage vehicle detail drawer's "ประวัติซ่อม / แจ้งเตือน") — their parent context is transient.
+- Admin pages — use the existing Radix `<Tabs>` pattern (tabs convention section below). URL sync is fine to add there too, but not required yet.
+
+### Admin approve / reject buttons — CTA convention
+
+Any admin screen where the operator approves or rejects something (KYC / listings / renewals / packages / contact requests / reports) MUST follow this button pair pattern:
+
+```tsx
+// Approve — primary CTA, filled green
+<Button
+  className="flex-1 font-medium bg-emerald-600 hover:bg-emerald-700 text-white"
+  onClick={handleApprove}
+>
+  <Check size={16} /> อนุมัติ
+</Button>
+
+// Reject — destructive filled red (shadcn variant)
+<Button
+  variant="destructive"
+  className="flex-1 font-medium"
+  onClick={handleReject}
+>
+  <XCircle size={16} /> ปฏิเสธ
+</Button>
+```
+
+- **Approve = green** (`bg-emerald-600 hover:bg-emerald-700 text-white`) — the happy-path primary action.
+- **Reject = red destructive** (`variant="destructive"`) — visually destructive, never a neutral outline.
+- **Order**: follow the screen's existing convention. Card-level action rows conventionally go approve → reject; sticky bottom bars on a detail drawer often go reject → approve. Don't flip existing screens just to match sibling pages — consistency WITHIN a page matters more than across pages.
+- Icons: `Check` / `CheckCircle` for approve, `XCircle` / `X` for reject.
+- Never use `variant="outline"` or default black primary for these — approve/reject must be visually distinct from neutral actions.
+
+Canonical references: `admin/src/app/listings/page.tsx` (PENDING action row + confirm modal), `admin/src/app/kyc/page.tsx` (sticky bottom bar), `admin/src/app/packages/page.tsx` (transactions + slot-purchases). If you see a plain outline "ปฏิเสธ" or a default-black "อนุมัติ" anywhere, fix it.
 
 ## Navigation & menu — single source of truth
 

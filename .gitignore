@@ -3,3 +3,6 @@ node_modules
 .env
 dist
 build
+
+# Claude Code runtime state (not project config)
+.claude/scheduled_tasks.lock

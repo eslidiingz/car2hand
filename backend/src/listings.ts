@@ -7,9 +7,57 @@ import { getAndBroadcastPendingCounts } from "./admin-sse";
 import { authGuard } from "./jwt";
 import { sanitizeObject } from "./security";
 import { getSetting } from "./admin-settings";
+import { ensureModelAndSubModel } from "./master-data";
 
 // Ensure bucket exists on startup
 ensureBucket().catch(console.error);
+
+// Shared include for homepage tier endpoints (featured/recommended/new)
+const featuredInclude = {
+    images: { where: { isPrimary: true }, take: 1 },
+    user: {
+        select: {
+            id: true,
+            fullName: true,
+            packageExpiresAt: true,
+            currentPackage: { select: { slug: true, badge: true, searchPriority: true } },
+            sellerProfile: {
+                select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true },
+            },
+        },
+    },
+} as const;
+
+// Shape the homepage listing payload.
+// - `packageSlug` drives card border color (always, even without KYC)
+// - `badge` is gated by KYC — only non-null when the seller has passed KYC.
+//   Frontend renders different badge copy per (packageSlug × hasKyc) combination.
+function enrichFeatured(
+    listings: Array<{ isFeatured: boolean; isPremium: boolean; user: { id: string; fullName: string; packageExpiresAt: Date | null; currentPackage: { slug: string; badge: string | null } | null; sellerProfile: { isVerified?: boolean; verificationLevel?: string | null } | null } } & Record<string, unknown>>,
+    now: Date,
+) {
+    return listings.map((l) => {
+        const pkgActive = l.user.currentPackage
+            ? (l.user.packageExpiresAt ? new Date(l.user.packageExpiresAt) > now : true)
+            : false;
+        const hasKyc = !!(l.user.sellerProfile?.isVerified
+            && l.user.sellerProfile.verificationLevel
+            && l.user.sellerProfile.verificationLevel !== 'NONE');
+        const packageSlug = pkgActive ? (l.user.currentPackage?.slug || 'basic') : 'basic';
+        return {
+            ...l,
+            packageSlug,
+            badge: pkgActive && hasKyc ? (l.user.currentPackage?.badge || null) : null,
+            isFeatured: l.isFeatured,
+            isPremium: l.isPremium,
+            user: {
+                id: l.user.id,
+                fullName: l.user.fullName,
+                sellerProfile: l.user.sellerProfile || null,
+            },
+        };
+    });
+}
 
 // Auto-expire: อัปเดตสถานะประกาศที่หมดอายุเป็น EXPIRED อัตโนมัติ
 async function expireListings() {
@@ -116,62 +164,94 @@ setInterval(autoBumpListings, 60 * 1000);
 // ===== Public GET routes (no auth required) =====
 const publicListingRoutes = new Elysia({ prefix: "/listings" })
 
-    // ดึงประกาศแนะนำ (Featured / Premium / Paid Package users)
+    // ── Homepage listing tiers ─────────────────────────────────────────
+    //
+    //   /featured     — CAR only, Dealer package
+    //   /recommended  — CAR only, Pro + Standard packages
+    //   /new          — CAR only, all ACTIVE ordered by createdAt desc
+    //   /motorcycles  — MOTORCYCLE only, all ACTIVE ordered by createdAt desc
+    //
+    // Cars and motorcycles are kept in separate sections — motorcycles never
+    // appear in the car-focused Featured/Recommended/New tiers, matching the
+    // business decision that motorcycles are a secondary category.
+
+    // ประกาศแนะนำ — Dealer only (CAR)
     .get("/featured", async () => {
         const now = new Date();
         const listings = await prisma.vehicleListing.findMany({
             where: {
                 status: 'ACTIVE',
-                OR: [
-                    { isFeatured: true },
-                    { isPremium: true },
-                    // ประกาศจาก user แพ็กเกจ Pro (searchPriority=top) หรือ Premium (searchPriority=priority)
-                    {
-                        user: {
-                            OR: [
-                                { packageExpiresAt: null, currentPackage: { searchPriority: { in: ['top', 'priority'] } } },
-                                { packageExpiresAt: { gt: now }, currentPackage: { searchPriority: { in: ['top', 'priority'] } } }
-                            ]
-                        }
-                    }
-                ]
-            },
-            take: 8,
-            orderBy: [
-                { isFeatured: 'desc' },
-                { bumpedAt: { sort: 'desc', nulls: 'last' } },
-                { createdAt: 'desc' }
-            ],
-            include: {
-                images: { where: { isPrimary: true }, take: 1 },
+                vehicleType: 'CAR',
                 user: {
-                    select: {
-                        id: true,
-                        fullName: true,
-                        packageExpiresAt: true,
-                        currentPackage: {
-                            select: { badge: true, searchPriority: true }
-                        },
-                        sellerProfile: {
-                            select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true }
-                        }
-                    }
-                }
-            }
+                    OR: [
+                        { packageExpiresAt: null, currentPackage: { searchPriority: 'priority' } },
+                        { packageExpiresAt: { gt: now }, currentPackage: { searchPriority: 'priority' } },
+                    ],
+                },
+            },
+            take: 12,
+            orderBy: [
+                { bumpedAt: { sort: 'desc', nulls: 'last' } },
+                { createdAt: 'desc' },
+            ],
+            include: featuredInclude,
         });
 
-        const enriched = listings.map(l => {
-            const pkgActive = l.user.currentPackage ? (l.user.packageExpiresAt ? new Date(l.user.packageExpiresAt) > now : true) : false;
-            return {
-                ...l,
-                badge: pkgActive ? (l.user.currentPackage?.badge || null) : null,
-                isFeatured: l.isFeatured,
-                isPremium: l.isPremium,
-                user: { id: l.user.id, fullName: l.user.fullName, sellerProfile: (l.user as any).sellerProfile || null }
-            };
+        return { listings: enrichFeatured(listings, now) };
+    })
+
+    // ดีลเด่นวันนี้ — Pro only (CAR). Standard tier listings appear in /new
+    // alongside Basic so the "featured" label stays tight to the Pro promise.
+    .get("/recommended", async () => {
+        const now = new Date();
+        const listings = await prisma.vehicleListing.findMany({
+            where: {
+                status: 'ACTIVE',
+                vehicleType: 'CAR',
+                user: {
+                    OR: [
+                        { packageExpiresAt: null, currentPackage: { searchPriority: 'top' } },
+                        { packageExpiresAt: { gt: now }, currentPackage: { searchPriority: 'top' } },
+                    ],
+                },
+            },
+            take: 12,
+            orderBy: [
+                { bumpedAt: { sort: 'desc', nulls: 'last' } },
+                { createdAt: 'desc' },
+            ],
+            include: featuredInclude,
         });
 
-        return { listings: enriched };
+        return { listings: enrichFeatured(listings, now) };
+    })
+
+    // รถมาใหม่วันนี้ — CAR only, latest first
+    .get("/new", async () => {
+        const now = new Date();
+        const listings = await prisma.vehicleListing.findMany({
+            where: { status: 'ACTIVE', vehicleType: 'CAR' },
+            take: 12,
+            orderBy: [{ createdAt: 'desc' }],
+            include: featuredInclude,
+        });
+
+        return { listings: enrichFeatured(listings, now) };
+    })
+
+    // มอเตอร์ไซค์ — MOTORCYCLE only, latest first.
+    // Frontend component hides the section entirely when result count < 4
+    // (business rule: motorcycles are de-emphasised vs cars on the homepage).
+    .get("/motorcycles", async () => {
+        const now = new Date();
+        const listings = await prisma.vehicleListing.findMany({
+            where: { status: 'ACTIVE', vehicleType: 'MOTORCYCLE' },
+            take: 12,
+            orderBy: [{ createdAt: 'desc' }],
+            include: featuredInclude,
+        });
+
+        return { listings: enrichFeatured(listings, now) };
     })
 
     // สถิติสาธารณะสำหรับ landing page
@@ -357,7 +437,7 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
                             fullName: true,
                             packageExpiresAt: true,
                             currentPackage: {
-                                select: { badge: true, searchPriority: true }
+                                select: { slug: true, badge: true, searchPriority: true }
                             },
                             sellerProfile: {
                                 select: { shopName: true, shopLogo: true, showroomType: true, isVerified: true, verificationLevel: true }
@@ -416,13 +496,18 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
         const adjustedSkip = skip - fetchSkip;
         const pageListings = interleaved.slice(adjustedSkip, adjustedSkip + parseInt(limit));
 
-        // Enrich with badge (check package expiry)
+        // Enrich with packageSlug (for border) + KYC-gated badge — same contract
+        // as enrichFeatured() so ListingCard behaves consistently on every page.
         const listings = pageListings.map(l => {
             const pkgActive = l.user.currentPackage ? (l.user.packageExpiresAt ? new Date(l.user.packageExpiresAt) > now : true) : false;
+            const sp = (l.user as { sellerProfile?: { isVerified?: boolean; verificationLevel?: string | null } | null }).sellerProfile;
+            const hasKyc = !!(sp?.isVerified && sp.verificationLevel && sp.verificationLevel !== 'NONE');
+            const packageSlug = pkgActive ? (l.user.currentPackage?.slug || 'basic') : 'basic';
             return {
                 ...l,
-                badge: pkgActive ? (l.user.currentPackage?.badge || null) : null,
-                user: { id: l.user.id, fullName: l.user.fullName, sellerProfile: (l.user as any).sellerProfile || null }
+                packageSlug,
+                badge: pkgActive && hasKyc ? (l.user.currentPackage?.badge || null) : null,
+                user: { id: l.user.id, fullName: l.user.fullName, sellerProfile: sp || null }
             };
         });
 
@@ -968,6 +1053,17 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                     }
                 }
             });
+
+            // Auto-enrich master data with any new model / sub-model the seller typed
+            // so future sellers can autocomplete them instead of retyping. Non-blocking:
+            // if this fails we don't want to break the listing create flow.
+            ensureModelAndSubModel({
+                vehicleType: sanitizedData.vehicleType as 'CAR' | 'MOTORCYCLE',
+                brand: sanitizedData.brand as string,
+                model: sanitizedData.model as string,
+                subModel: sanitizedData.subModel as string | undefined,
+                bodyType: sanitizedData.bodyType as string | undefined,
+            }).catch(err => console.error('ensureModelAndSubModel failed (create):', err));
 
             return {
                 message: "สร้างประกาศสำเร็จ",
@@ -1691,6 +1787,18 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                     }
                 }
             });
+
+            // Auto-enrich master data with any new model / sub-model the seller typed
+            // (user may have edited model/subModel). Non-blocking.
+            if (sanitizedUpdate.brand && sanitizedUpdate.model) {
+                ensureModelAndSubModel({
+                    vehicleType: sanitizedUpdate.vehicleType as 'CAR' | 'MOTORCYCLE',
+                    brand: sanitizedUpdate.brand as string,
+                    model: sanitizedUpdate.model as string,
+                    subModel: sanitizedUpdate.subModel as string | undefined,
+                    bodyType: sanitizedUpdate.bodyType as string | undefined,
+                }).catch(err => console.error('ensureModelAndSubModel failed (update):', err));
+            }
 
             return {
                 message: "อัพเดทประกาศสำเร็จ",

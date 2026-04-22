@@ -594,10 +594,10 @@ export default function AdminPackagesPage() {
                                                 </Button>
                                                 {sp.status === 'PENDING' && (
                                                     <>
-                                                        <Button variant="default" size="sm" onClick={() => setSlotApproveId(sp.id)} className="h-8 bg-emerald-600 hover:bg-emerald-700">
+                                                        <Button size="sm" onClick={() => setSlotApproveId(sp.id)} className="h-8 font-medium bg-emerald-600 hover:bg-emerald-700 text-white">
                                                             <Check size={14} className="mr-1" /> อนุมัติ
                                                         </Button>
-                                                        <Button variant="outline" size="sm" onClick={() => setSlotRejectId(sp.id)} className="h-8 text-rose-600 border-rose-200 hover:bg-rose-50">
+                                                        <Button variant="destructive" size="sm" onClick={() => setSlotRejectId(sp.id)} className="h-8 font-medium">
                                                             <X size={14} className="mr-1" /> ปฏิเสธ
                                                         </Button>
                                                     </>

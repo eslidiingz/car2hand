@@ -78,9 +78,12 @@ We use **Tailwind CSS 4** for styling.
 - Pass data down to Client Components as props.
 
 ### Modal & Dialog Pattern
-Follow the pattern in `LoginModal.tsx` or `DeleteConfirmModal.tsx`:
-- Use Radix UI Dialog or similar for accessibility.
-- Manage open state via internal state or URL search params for shareable states.
+
+**Destructive confirmations** (delete, cancel, remove, logout): use the shared `frontend/src/components/ConfirmDialog.tsx` — do NOT roll a new inline modal. See `CLAUDE.md → Frontend confirmation dialogs — single source of truth` for usage.
+
+**Other modals** (login, register, multi-step flows, purchase sheets): follow the pattern in `LoginModal.tsx` — `fixed inset-0` + backdrop + `rounded-3xl` container + z-[100]. Manage open state via internal state or URL search params.
+
+**Admin app** uses Radix Dialog (`admin/src/components/ui/dialog.tsx`) + the reusable `DeleteConfirmModal.tsx`. Don't cross-import between admin and frontend.
 
 ---
 
