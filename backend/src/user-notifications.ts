@@ -7,6 +7,7 @@ import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { jwtPlugin, isTokenBlacklisted, JWTPayload } from "./jwt";
 import { getPublicKey, isConfigured, sendToUser } from "./web-push-service";
+import { pushUnreadCount } from "./admin-sse";
 
 export const userNotificationRoutes = new Elysia({ prefix: '/notifications' })
     .use(jwtPlugin())
@@ -63,6 +64,8 @@ export const userNotificationRoutes = new Elysia({ prefix: '/notifications' })
             where: { id: params.id, userId: payload.userId },
             data: { isRead: true }
         });
+        // Push updated unread count to all of the user's open tabs
+        pushUnreadCount(payload.userId).catch(() => { /* best effort */ });
         return { message: 'ok' };
     })
 
@@ -78,6 +81,7 @@ export const userNotificationRoutes = new Elysia({ prefix: '/notifications' })
             where: { userId: payload.userId, isRead: false },
             data: { isRead: true }
         });
+        pushUnreadCount(payload.userId).catch(() => { /* best effort */ });
         return { message: 'ok' };
     })
 

@@ -409,10 +409,6 @@ function CreateListingPage() {
                 errors.color = true;
                 missingFields.push('สี');
             }
-            if (!formData.fuelType) {
-                errors.fuelType = true;
-                missingFields.push('เชื้อเพลิง');
-            }
             if (!formData.year || formData.year === 0) {
                 errors.year = true;
                 missingFields.push('ปีที่ผลิต');
@@ -434,11 +430,10 @@ function CreateListingPage() {
                 const firstErrorRef = errors.brand ? brandRef
                     : errors.model ? modelRef
                         : errors.color ? colorRef
-                            : errors.fuelType ? fuelTypeRef
-                                : errors.year ? yearRef
-                                    : errors.mileage ? mileageRef
-                                        : errors.bodyType ? bodyTypeRef
-                                            : null;
+                            : errors.year ? yearRef
+                                : errors.mileage ? mileageRef
+                                    : errors.bodyType ? bodyTypeRef
+                                        : null;
 
                 if (firstErrorRef?.current) {
                     firstErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -446,7 +441,6 @@ function CreateListingPage() {
                 return;
             }
             setCurrentStep(2);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         } else if (currentStep === 2) {
             // Validate step 2 - images + registration book
             if (formData.images.length === 0) {
@@ -465,16 +459,24 @@ function CreateListingPage() {
                 return;
             }
             setCurrentStep(3);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
 
     const goToPrevStep = () => {
         if (currentStep > 1) {
             setCurrentStep(currentStep - 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
+
+    // Scroll to top whenever step changes (reliable across mobile browsers)
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        });
+    }, [currentStep]);
 
     // Handle form submission
     const handleSubmit = async () => {
@@ -854,29 +856,23 @@ function CreateListingPage() {
                                         </div>
 
                                         <div ref={fuelTypeRef}>
-                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.fuelType ? 'text-red-600' : 'text-gray-700'}`}>เชื้อเพลิง <span className="text-red-500">*</span></label>
-                                            <div className={fieldErrors.fuelType ? 'ring-2 ring-red-500 rounded-xl' : ''}>
-                                                <SearchableSelect
-                                                    options={[
-                                                        { id: 'PETROL', label: 'Petrol (เบนซิน)' },
-                                                        { id: 'DIESEL', label: 'Diesel (ดีเซล)' },
-                                                        { id: 'HYBRID', label: 'Hybrid (ไฮบริด)' },
-                                                        { id: 'PLUGIN_HYBRID', label: 'Plug-in Hybrid (ปลั๊กอินไฮบริด)' },
-                                                        { id: 'EV', label: 'EV (ไฟฟ้า)' },
-                                                        { id: 'LPG', label: 'LPG' },
-                                                        { id: 'NGV', label: 'NGV' }
-                                                    ]}
-                                                    value={formData.fuelType}
-                                                    onChange={(value) => {
-                                                        setFieldErrors(prev => ({ ...prev, fuelType: false }));
-                                                        updateFormData({ fuelType: value as any });
-                                                    }}
-                                                    placeholder="เลือกประเภทเชื้อเพลิง"
-                                                    searchPlaceholder="ค้นหาเชื้อเพลิง..."
-                                                    emptyMessage="ไม่พบประเภทเชื้อเพลิง"
-                                                />
-                                            </div>
-                                            {fieldErrors.fuelType && <p className="text-red-500 text-xs mt-1">กรุณาเลือกประเภทเชื้อเพลิง</p>}
+                                            <label className="block text-sm font-medium mb-1.5 text-gray-700">เชื้อเพลิง</label>
+                                            <SearchableSelect
+                                                options={[
+                                                    { id: 'PETROL', label: 'Petrol (เบนซิน)' },
+                                                    { id: 'DIESEL', label: 'Diesel (ดีเซล)' },
+                                                    { id: 'HYBRID', label: 'Hybrid (ไฮบริด)' },
+                                                    { id: 'PLUGIN_HYBRID', label: 'Plug-in Hybrid (ปลั๊กอินไฮบริด)' },
+                                                    { id: 'EV', label: 'EV (ไฟฟ้า)' },
+                                                    { id: 'LPG', label: 'LPG' },
+                                                    { id: 'NGV', label: 'NGV' }
+                                                ]}
+                                                value={formData.fuelType}
+                                                onChange={(value) => updateFormData({ fuelType: value as any })}
+                                                placeholder="เลือกประเภทเชื้อเพลิง"
+                                                searchPlaceholder="ค้นหาเชื้อเพลิง..."
+                                                emptyMessage="ไม่พบประเภทเชื้อเพลิง"
+                                            />
                                         </div>
 
                                         <div ref={yearRef}>
@@ -1349,9 +1345,13 @@ function CreateListingPage() {
                                         </div>
                                     </div>
 
+                                    <h3 className="text-lg font-bold text-primary mb-1 flex items-center gap-2">
+                                        <MapPin size={22} className="text-accent" /> สถานที่นัดดูรถ
+                                    </h3>
+                                    <p className="text-xs text-gray-500 mb-4">ผู้ซื้อที่สนใจจะใช้ข้อมูลนี้ในการนัดหมายเข้าชมรถ</p>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                                         <div ref={provinceRef}>
-                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัด <span className="text-red-500">*</span></label>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัดที่นัดดูรถ <span className="text-red-500">*</span></label>
                                             <div className={fieldErrors.province ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                                 <SearchableSelect
                                                     options={PROVINCES.map(p => ({ id: p, label: p }))}
@@ -1370,7 +1370,7 @@ function CreateListingPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เขต/อำเภอ</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เขต/อำเภอที่นัดดูรถ</label>
                                             <input
                                                 type="text"
                                                 placeholder="เช่น จตุจักร, เมือง"

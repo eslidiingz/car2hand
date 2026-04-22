@@ -514,7 +514,7 @@ export type VehicleListingGroupByOutputType = {
   subModel: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType: $Enums.FuelType | null
   transmission: $Enums.Transmission | null
   engineSize: number | null
   seats: number | null
@@ -593,7 +593,7 @@ export type VehicleListingWhereInput = {
   subModel?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   year?: Prisma.IntFilter<"VehicleListing"> | number
   color?: Prisma.StringFilter<"VehicleListing"> | string
-  fuelType?: Prisma.EnumFuelTypeFilter<"VehicleListing"> | $Enums.FuelType
+  fuelType?: Prisma.EnumFuelTypeNullableFilter<"VehicleListing"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
@@ -655,7 +655,7 @@ export type VehicleListingOrderByWithRelationInput = {
   subModel?: Prisma.SortOrderInput | Prisma.SortOrder
   year?: Prisma.SortOrder
   color?: Prisma.SortOrder
-  fuelType?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrderInput | Prisma.SortOrder
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
   seats?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -720,7 +720,7 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   subModel?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   year?: Prisma.IntFilter<"VehicleListing"> | number
   color?: Prisma.StringFilter<"VehicleListing"> | string
-  fuelType?: Prisma.EnumFuelTypeFilter<"VehicleListing"> | $Enums.FuelType
+  fuelType?: Prisma.EnumFuelTypeNullableFilter<"VehicleListing"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
@@ -782,7 +782,7 @@ export type VehicleListingOrderByWithAggregationInput = {
   subModel?: Prisma.SortOrderInput | Prisma.SortOrder
   year?: Prisma.SortOrder
   color?: Prisma.SortOrder
-  fuelType?: Prisma.SortOrder
+  fuelType?: Prisma.SortOrderInput | Prisma.SortOrder
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
   seats?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -846,7 +846,7 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   subModel?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   year?: Prisma.IntWithAggregatesFilter<"VehicleListing"> | number
   color?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
-  fuelType?: Prisma.EnumFuelTypeWithAggregatesFilter<"VehicleListing"> | $Enums.FuelType
+  fuelType?: Prisma.EnumFuelTypeNullableWithAggregatesFilter<"VehicleListing"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableWithAggregatesFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
@@ -902,7 +902,7 @@ export type VehicleListingCreateInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -963,7 +963,7 @@ export type VehicleListingUncheckedCreateInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -1024,7 +1024,7 @@ export type VehicleListingUpdateInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1085,7 +1085,7 @@ export type VehicleListingUncheckedUpdateInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1146,7 +1146,7 @@ export type VehicleListingCreateManyInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -1202,7 +1202,7 @@ export type VehicleListingUpdateManyMutationInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1257,7 +1257,7 @@ export type VehicleListingUncheckedUpdateManyInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -1580,10 +1580,6 @@ export type DecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type EnumFuelTypeFieldUpdateOperationsInput = {
-  set?: $Enums.FuelType
-}
-
 export type EnumBodyTypeFieldUpdateOperationsInput = {
   set?: $Enums.BodyType
 }
@@ -1677,7 +1673,7 @@ export type VehicleListingCreateWithoutUserInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -1737,7 +1733,7 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -1826,7 +1822,7 @@ export type VehicleListingScalarWhereInput = {
   subModel?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   year?: Prisma.IntFilter<"VehicleListing"> | number
   color?: Prisma.StringFilter<"VehicleListing"> | string
-  fuelType?: Prisma.EnumFuelTypeFilter<"VehicleListing"> | $Enums.FuelType
+  fuelType?: Prisma.EnumFuelTypeNullableFilter<"VehicleListing"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
@@ -1882,7 +1878,7 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -1942,7 +1938,7 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2018,7 +2014,7 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2078,7 +2074,7 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2138,7 +2134,7 @@ export type VehicleListingCreateWithoutImagesInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2198,7 +2194,7 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2274,7 +2270,7 @@ export type VehicleListingUpdateWithoutImagesInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2334,7 +2330,7 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2394,7 +2390,7 @@ export type VehicleListingCreateWithoutRenewalsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2454,7 +2450,7 @@ export type VehicleListingUncheckedCreateWithoutRenewalsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2530,7 +2526,7 @@ export type VehicleListingUpdateWithoutRenewalsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2590,7 +2586,7 @@ export type VehicleListingUncheckedUpdateWithoutRenewalsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2650,7 +2646,7 @@ export type VehicleListingCreateWithoutBumpLogsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2710,7 +2706,7 @@ export type VehicleListingUncheckedCreateWithoutBumpLogsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2786,7 +2782,7 @@ export type VehicleListingUpdateWithoutBumpLogsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2846,7 +2842,7 @@ export type VehicleListingUncheckedUpdateWithoutBumpLogsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -2906,7 +2902,7 @@ export type VehicleListingCreateWithoutForumPostsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -2966,7 +2962,7 @@ export type VehicleListingUncheckedCreateWithoutForumPostsInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -3042,7 +3038,7 @@ export type VehicleListingUpdateWithoutForumPostsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3102,7 +3098,7 @@ export type VehicleListingUncheckedUpdateWithoutForumPostsInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3162,7 +3158,7 @@ export type VehicleListingCreateManyUserInput = {
   subModel?: string | null
   year: number
   color: string
-  fuelType: $Enums.FuelType
+  fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
@@ -3217,7 +3213,7 @@ export type VehicleListingUpdateWithoutUserInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3277,7 +3273,7 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3337,7 +3333,7 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   subModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.IntFieldUpdateOperationsInput | number
   color?: Prisma.StringFieldUpdateOperationsInput | string
-  fuelType?: Prisma.EnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType
+  fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -3719,7 +3715,7 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     subModel: string | null
     year: number
     color: string
-    fuelType: $Enums.FuelType
+    fuelType: $Enums.FuelType | null
     transmission: $Enums.Transmission | null
     engineSize: number | null
     seats: number | null

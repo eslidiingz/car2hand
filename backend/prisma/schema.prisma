@@ -334,7 +334,7 @@ model VehicleListing {
   color    String // สี เช่น ขาว, ดำ, เงิน
 
   // ข้อมูลเครื่องยนต์และการขับขี่
-  fuelType     FuelType // ประเภทเชื้อเพลิง
+  fuelType     FuelType? // ประเภทเชื้อเพลิง (optional)
   transmission Transmission? // ระบบเกียร์ (optional สำหรับมอเตอร์ไซค์บางรุ่น)
   engineSize   Int? // ขนาดเครื่อง (cc) เช่น 150, 300, 1800, 2000
   seats        Int? // จำนวนที่นั่ง

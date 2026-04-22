@@ -30,8 +30,9 @@ async function getListing(id: string): Promise<ListingResponse> {
 
         if (response.status === 404) return { listing: null };
         if (!response.ok) {
-            console.error(`Listing fetch error: HTTP ${response.status} for id=${id}`);
-            return { listing: null, serverError: true };
+            // Throw so Next.js data-cache does NOT store this error response.
+            // Caught below → serverError: true (same UX), but next request retries the backend.
+            throw new Error(`HTTP ${response.status}`);
         }
 
         const data = await response.json();

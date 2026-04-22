@@ -383,13 +383,6 @@ export type DecimalFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDecimalFilter<$PrismaModel> | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type EnumFuelTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.FuelType | Prisma.EnumFuelTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumFuelTypeFilter<$PrismaModel> | $Enums.FuelType
-}
-
 export type EnumBodyTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.BodyType | Prisma.EnumBodyTypeFieldRefInput<$PrismaModel>
   in?: $Enums.BodyType[] | Prisma.ListEnumBodyTypeFieldRefInput<$PrismaModel>
@@ -446,16 +439,6 @@ export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
-}
-
-export type EnumFuelTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.FuelType | Prisma.EnumFuelTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumFuelTypeWithAggregatesFilter<$PrismaModel> | $Enums.FuelType
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumFuelTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumFuelTypeFilter<$PrismaModel>
 }
 
 export type EnumBodyTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -1104,13 +1087,6 @@ export type NestedDecimalFilter<$PrismaModel = never> = {
   not?: Prisma.NestedDecimalFilter<$PrismaModel> | runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
-export type NestedEnumFuelTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.FuelType | Prisma.EnumFuelTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumFuelTypeFilter<$PrismaModel> | $Enums.FuelType
-}
-
 export type NestedEnumBodyTypeFilter<$PrismaModel = never> = {
   equals?: $Enums.BodyType | Prisma.EnumBodyTypeFieldRefInput<$PrismaModel>
   in?: $Enums.BodyType[] | Prisma.ListEnumBodyTypeFieldRefInput<$PrismaModel>
@@ -1167,16 +1143,6 @@ export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedDecimalFilter<$PrismaModel>
   _min?: Prisma.NestedDecimalFilter<$PrismaModel>
   _max?: Prisma.NestedDecimalFilter<$PrismaModel>
-}
-
-export type NestedEnumFuelTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.FuelType | Prisma.EnumFuelTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  notIn?: $Enums.FuelType[] | Prisma.ListEnumFuelTypeFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumFuelTypeWithAggregatesFilter<$PrismaModel> | $Enums.FuelType
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumFuelTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumFuelTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumBodyTypeWithAggregatesFilter<$PrismaModel = never> = {
