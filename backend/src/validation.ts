@@ -152,7 +152,7 @@ export const vehicleListingSchema = z.object({
 
     fuelType: z.enum(['PETROL', 'DIESEL', 'HYBRID', 'PLUGIN_HYBRID', 'EV', 'LPG', 'NGV'], {
         message: 'ประเภทเชื้อเพลิงไม่ถูกต้อง'
-    }),
+    }).optional().nullable(),
 
     transmission: z.enum(['AUTOMATIC', 'MANUAL', 'CVT', 'DCT', 'SEMI_AUTO'], {
         message: 'ประเภทเกียร์ไม่ถูกต้อง'

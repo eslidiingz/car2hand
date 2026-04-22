@@ -136,30 +136,31 @@ export default function NotificationBell() {
     const markAsRead = async (id: string) => {
         const token = getToken();
         if (!token) return;
+        // Optimistic — update badge instantly, don't wait for the request
+        setNotifications(prev =>
+            prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
         try {
             await fetch(`${API_URL}/notifications/${id}/read`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setNotifications(prev =>
-                prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
-            );
-            setUnreadCount(prev => Math.max(0, prev - 1));
         } catch {
-            // silently fail
+            // silently fail — server SSE will reconcile if it differs
         }
     };
 
     const markAllAsRead = async () => {
         const token = getToken();
         if (!token) return;
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        setUnreadCount(0);
         try {
             await fetch(`${API_URL}/notifications/read-all`, {
                 method: 'PUT',
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-            setUnreadCount(0);
         } catch {
             // silently fail
         }

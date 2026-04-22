@@ -1094,7 +1094,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             subModel: t.Optional(t.String()),
             year: t.Number(),
             color: t.String(),
-            fuelType: t.Union([
+            fuelType: t.Optional(t.Union([
                 t.Literal("PETROL"),
                 t.Literal("DIESEL"),
                 t.Literal("HYBRID"),
@@ -1102,7 +1102,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("EV"),
                 t.Literal("LPG"),
                 t.Literal("NGV")
-            ]),
+            ])),
             transmission: t.Optional(t.Union([
                 t.Literal("AUTOMATIC"),
                 t.Literal("MANUAL"),
@@ -1829,7 +1829,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             subModel: t.Optional(t.String()),
             year: t.Number(),
             color: t.String(),
-            fuelType: t.Union([
+            fuelType: t.Optional(t.Union([
                 t.Literal("PETROL"),
                 t.Literal("DIESEL"),
                 t.Literal("HYBRID"),
@@ -1837,7 +1837,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                 t.Literal("EV"),
                 t.Literal("LPG"),
                 t.Literal("NGV")
-            ]),
+            ])),
             transmission: t.Optional(t.Union([
                 t.Literal("AUTOMATIC"),
                 t.Literal("MANUAL"),
