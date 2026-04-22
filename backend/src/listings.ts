@@ -559,17 +559,26 @@ const publicListingRoutes = new Elysia({ prefix: "/listings" })
             return { message: "ไม่พบประกาศนี้" };
         }
 
+        const isOwner = viewerId && viewerId === listing.userId;
+
         // เช็คว่าประกาศหมดอายุหรือไม่
         const isExpired = listing.status === 'EXPIRED'
             || (listing.expiredAt && new Date(listing.expiredAt) < new Date());
 
-        // ถ้าหมดอายุและไม่ใช่เจ้าของ → return expired flag (ไม่แสดงข้อมูลรถ)
-        if (isExpired && (!viewerId || viewerId !== listing.userId)) {
-            return { listing: null, expired: true, message: "ประกาศนี้หมดอายุแล้ว" };
+        if (!isOwner) {
+            // ถ้าหมดอายุ → return expired flag (ไม่แสดงข้อมูลรถ)
+            if (isExpired) {
+                return { listing: null, expired: true, message: "ประกาศนี้หมดอายุแล้ว" };
+            }
+            // ซ่อน draft/pending/paused/suspended/inactive/sold จาก public
+            if (listing.status !== 'ACTIVE') {
+                set.status = 404;
+                return { message: "ไม่พบประกาศนี้" };
+            }
         }
 
         // เพิ่ม view count เฉพาะเมื่อคนดูไม่ใช่เจ้าของประกาศ และยังไม่หมดอายุ
-        if (!isExpired && (!viewerId || viewerId !== listing.userId)) {
+        if (!isExpired && !isOwner) {
             await prisma.vehicleListing.update({
                 where: { id },
                 data: { viewCount: { increment: 1 } }

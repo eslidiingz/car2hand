@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import ListingDetailClient, { VehicleListing } from './ListingDetailClient';
-import { ArrowLeft, AlertCircle, Timer } from 'lucide-react';
+import { ArrowLeft, AlertCircle, Timer, ServerCrash } from 'lucide-react';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import {
@@ -18,6 +18,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 interface ListingResponse {
     listing: VehicleListing | null;
     expired?: boolean;
+    serverError?: boolean;
     message?: string;
 }
 
@@ -27,13 +28,17 @@ async function getListing(id: string): Promise<ListingResponse> {
             next: { revalidate: 60 }
         });
 
-        if (!response.ok) return { listing: null };
+        if (response.status === 404) return { listing: null };
+        if (!response.ok) {
+            console.error(`Listing fetch error: HTTP ${response.status} for id=${id}`);
+            return { listing: null, serverError: true };
+        }
 
         const data = await response.json();
         return { listing: data.listing, expired: data.expired };
     } catch (error) {
-        console.error('Error fetching listing:', error);
-        return { listing: null };
+        console.error(`Listing fetch failed for id=${id}:`, error);
+        return { listing: null, serverError: true };
     }
 }
 
@@ -117,7 +122,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function CarDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const { listing, expired } = await getListing(id);
+    const { listing, expired, serverError } = await getListing(id);
 
     // ประกาศหมดอายุ — ไม่แสดงข้อมูลรถ
     if (expired) {
@@ -128,6 +133,24 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
                         <Timer size={64} className="text-orange-400 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-gray-700 mb-2">ประกาศนี้หมดอายุแล้ว</h2>
                         <p className="text-gray-500 mb-6">ประกาศนี้ไม่สามารถแสดงผลได้ในขณะนี้ เนื่องจากหมดอายุแล้ว</p>
+                        <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
+                            <ArrowLeft /> กลับไปหน้ารายการ
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // server error (5xx / network)
+    if (serverError) {
+        return (
+            <div className="bg-surface min-h-screen pt-8 pb-12">
+                <div className="max-w-4xl mx-auto px-4">
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                        <ServerCrash size={64} className="text-gray-400 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold text-gray-700 mb-2">เกิดข้อผิดพลาด</h2>
+                        <p className="text-gray-500 mb-6">ไม่สามารถโหลดข้อมูลประกาศได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</p>
                         <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
                             <ArrowLeft /> กลับไปหน้ารายการ
                         </Link>
