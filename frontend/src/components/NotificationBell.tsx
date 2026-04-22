@@ -30,7 +30,12 @@ function timeAgo(dateStr: string): string {
     return date.toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
 }
 
-export default function NotificationBell() {
+interface NotificationBellProps {
+    /** Called right before the dropdown opens — lets parent close other menus */
+    onOpen?: () => void;
+}
+
+export default function NotificationBell({ onOpen }: NotificationBellProps = {}) {
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -127,10 +132,11 @@ export default function NotificationBell() {
 
     const handleToggle = () => {
         const next = !isOpen;
-        setIsOpen(next);
         if (next) {
+            onOpen?.();
             fetchNotifications();
         }
+        setIsOpen(next);
     };
 
     const markAsRead = async (id: string) => {
@@ -196,7 +202,7 @@ export default function NotificationBell() {
 
             {/* Dropdown */}
             {isOpen && (
-                <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+                <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-[70] overflow-hidden">
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                         <h3 className="font-bold text-gray-800 text-sm">การแจ้งเตือน</h3>
