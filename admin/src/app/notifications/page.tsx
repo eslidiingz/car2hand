@@ -57,7 +57,7 @@ import {
 // --- Types ---
 
 interface NotificationTemplate {
-    _id: string;
+    id: string;
     name: string;
     label: string;
     type: string;
@@ -67,12 +67,12 @@ interface NotificationTemplate {
 }
 
 interface LogEntry {
-    _id: string;
+    id: string;
     createdAt: string;
-    templateName: string;
-    recipientCount: number;
-    successCount: number;
-    failureCount: number;
+    recipientType: string;  // INDIVIDUAL | ALL_USERS | BY_PACKAGE | EXPIRED_LISTINGS
+    totalSent: number;
+    totalFailed: number;
+    template?: { label?: string };
 }
 
 const TEMPLATE_TYPES: Record<string, string> = {
