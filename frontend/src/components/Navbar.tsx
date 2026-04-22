@@ -259,7 +259,12 @@ export default function Navbar() {
                             {user ? (
                                 /* Logged In State */
                                 <>
-                                <NotificationBell />
+                                <NotificationBell
+                                    onOpen={() => {
+                                        setShowAccountMenu(false);
+                                        setShowMobileMenu(false);
+                                    }}
+                                />
                                 <div className="relative">
                                     <button
                                         onClick={() => {

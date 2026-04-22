@@ -453,11 +453,6 @@ function CreateListingPage() {
                 }
                 return;
             }
-            if (!formData.registrationBookFile) {
-                setFieldErrors({ registrationBook: true });
-                setError('กรุณาอัพโหลดสำเนาเล่มทะเบียนรถ');
-                return;
-            }
             setCurrentStep(3);
         }
     };
@@ -508,11 +503,6 @@ function CreateListingPage() {
         if (!formData.contactPhone) {
             errors.contactPhone = true;
             missingFields.push('เบอร์โทรติดต่อ');
-        }
-
-        if (!formData.registrationBookFile) {
-            errors.registrationBook = true;
-            missingFields.push('สำเนาเล่มทะเบียนรถ');
         }
 
         if (Object.keys(errors).length > 0) {
@@ -1226,10 +1216,10 @@ function CreateListingPage() {
                                     <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
                                         <h3 className="font-bold text-gray-800 mb-1 flex items-center gap-2">
                                             📄 สำเนาเล่มทะเบียนรถ (หน้าที่มีชื่อเจ้าของ)
-                                            <span className="text-red-500">*</span>
+                                            <span className="text-xs font-normal text-gray-400">(ไม่บังคับ)</span>
                                         </h3>
                                         <p className="text-sm text-gray-500 mb-4">
-                                            จำเป็นต้องอัพโหลดเพื่อยืนยันความเป็นเจ้าของรถ
+                                            อัพโหลดเพิ่มเติมเพื่อช่วยยืนยันความเป็นเจ้าของรถและเพิ่มความน่าเชื่อถือให้ประกาศ
                                         </p>
                                         {formData.registrationBookPreview ? (
                                             <div className="relative inline-block">
@@ -1351,7 +1341,7 @@ function CreateListingPage() {
                                     <p className="text-xs text-gray-500 mb-4">ผู้ซื้อที่สนใจจะใช้ข้อมูลนี้ในการนัดหมายเข้าชมรถ</p>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                                         <div ref={provinceRef}>
-                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัดที่นัดดูรถ <span className="text-red-500">*</span></label>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัด<span className="text-red-500">*</span></label>
                                             <div className={fieldErrors.province ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                                 <SearchableSelect
                                                     options={PROVINCES.map(p => ({ id: p, label: p }))}
@@ -1370,7 +1360,7 @@ function CreateListingPage() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เขต/อำเภอที่นัดดูรถ</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">เขต/อำเภอ</label>
                                             <input
                                                 type="text"
                                                 placeholder="เช่น จตุจักร, เมือง"
