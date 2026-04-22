@@ -148,9 +148,12 @@ export function useWebPush(): UseWebPushResult {
       // Reuse existing subscription if possible (avoids churn on the push endpoint)
       let sub = await reg.pushManager.getSubscription();
       if (!sub) {
+        // Cast through BufferSource — TS strict mode rejects `Uint8Array<ArrayBufferLike>`
+        // vs the PushSubscriptionOptions.applicationServerKey signature which expects
+        // `Uint8Array<ArrayBuffer>`. Runtime behavior is identical.
         sub = await reg.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource,
         });
       }
 

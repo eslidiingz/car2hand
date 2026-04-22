@@ -45,6 +45,7 @@ interface PackageData {
     maxPhotosPerListing: number;
     listingDurationDays: number;
     autoBumpPerDay: number;
+    manualBumpPerDay: number;
     badge: string | null;
     searchPriority: string;
     features: string[];

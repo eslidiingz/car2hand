@@ -1,13 +1,32 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
+// Next.js requires useSearchParams() to be wrapped in a Suspense boundary so
+// the page can still be statically prerendered (we render a loading fallback
+// while the client-side hook resolves the URL query params).
 export default function FacebookLoginCallbackPage() {
+    return (
+        <Suspense fallback={<CallbackLoading />}>
+            <FacebookLoginCallbackContent />
+        </Suspense>
+    );
+}
+
+function CallbackLoading() {
+    return (
+        <div className="min-h-[60vh] flex items-center justify-center">
+            <Loader2 className="animate-spin text-primary" size={32} />
+        </div>
+    );
+}
+
+function FacebookLoginCallbackContent() {
     const searchParams = useSearchParams();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [errorMessage, setErrorMessage] = useState('');

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { Suspense, useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -190,6 +190,15 @@ function PostCard({ post }: { post: Post }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function CommunityPage() {
+    // useSearchParams requires a Suspense boundary for static prerender support
+    return (
+        <Suspense fallback={null}>
+            <CommunityPageContent />
+        </Suspense>
+    );
+}
+
+function CommunityPageContent() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [posts, setPosts] = useState<Post[]>([]);
     const [gurus, setGurus] = useState<GuruEntry[]>([]);
