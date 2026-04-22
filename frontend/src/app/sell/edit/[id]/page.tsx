@@ -1549,8 +1549,11 @@ export default function EditListingPage() {
 
                                 {/* Registration Book Image */}
                                 <div className="p-4 bg-gray-50 rounded-xl">
-                                    <p className="font-medium text-gray-800 mb-1">📄 สำเนาเล่มทะเบียนรถ</p>
-                                    <p className="text-xs text-gray-500 mb-3">หน้าที่มีชื่อเจ้าของรถ — ใช้ยืนยันความเป็นเจ้าของ</p>
+                                    <p className="font-medium text-gray-800 mb-1 flex items-center gap-2">
+                                        📄 สำเนาเล่มทะเบียนรถ
+                                        <span className="text-xs font-normal text-gray-400">(ไม่บังคับ)</span>
+                                    </p>
+                                    <p className="text-xs text-gray-500 mb-3">หน้าที่มีชื่อเจ้าของรถ — อัพโหลดเพื่อช่วยยืนยันความเป็นเจ้าของ</p>
                                     {regBookPreview ? (
                                         <div className="relative inline-block">
                                             <img
