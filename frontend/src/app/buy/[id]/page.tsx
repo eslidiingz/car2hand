@@ -124,24 +124,6 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
     const { id } = await params;
     const { listing, expired, serverError } = await getListing(id);
 
-    // ประกาศหมดอายุ — ไม่แสดงข้อมูลรถ
-    if (expired) {
-        return (
-            <div className="bg-surface min-h-screen pt-8 pb-12">
-                <div className="max-w-4xl mx-auto px-4">
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-                        <Timer size={64} className="text-orange-400 mx-auto mb-4" />
-                        <h2 className="text-2xl font-bold text-gray-700 mb-2">ประกาศนี้หมดอายุแล้ว</h2>
-                        <p className="text-gray-500 mb-6">ประกาศนี้ไม่สามารถแสดงผลได้ในขณะนี้ เนื่องจากหมดอายุแล้ว</p>
-                        <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
-                            <ArrowLeft /> กลับไปหน้ารายการ
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     // server error (5xx / network)
     if (serverError) {
         return (
@@ -151,6 +133,24 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
                         <ServerCrash size={64} className="text-gray-400 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold text-gray-700 mb-2">เกิดข้อผิดพลาด</h2>
                         <p className="text-gray-500 mb-6">ไม่สามารถโหลดข้อมูลประกาศได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง</p>
+                        <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
+                            <ArrowLeft /> กลับไปหน้ารายการ
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ประกาศหมดอายุ — ไม่แสดงข้อมูลรถ
+    if (expired) {
+        return (
+            <div className="bg-surface min-h-screen pt-8 pb-12">
+                <div className="max-w-4xl mx-auto px-4">
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                        <Timer size={64} className="text-orange-400 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold text-gray-700 mb-2">ประกาศนี้หมดอายุแล้ว</h2>
+                        <p className="text-gray-500 mb-6">ประกาศนี้ไม่สามารถแสดงผลได้ในขณะนี้ เนื่องจากหมดอายุแล้ว</p>
                         <Link href="/buy" className="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition inline-flex items-center gap-2">
                             <ArrowLeft /> กลับไปหน้ารายการ
                         </Link>
