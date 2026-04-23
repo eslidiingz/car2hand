@@ -112,6 +112,16 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
     const thumbnailRef = useRef<HTMLDivElement>(null);
     const thumbnailFullscreenRef = useRef<HTMLDivElement>(null);
 
+    // KYC gate for the commercial badge ("Hot Deal" / "Premium Choice"),
+    // matching the rule used in ListingCard. Sellers without verified KYC
+    // get the package border but not the badge.
+    const sellerProfile = (listing as any).user?.sellerProfile;
+    const sellerHasKyc = !!(
+        sellerProfile?.isVerified
+        && sellerProfile.verificationLevel
+        && sellerProfile.verificationLevel !== 'NONE'
+    );
+
     // Forum related posts
     const [relatedPosts, setRelatedPosts] = useState<{ id: string; title: string; commentCount: number; score: number; createdAt: string }[]>([]);
     useEffect(() => {
@@ -571,8 +581,9 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                         )}
                                         {/* Trust badge — KYC-earned verification */}
                                         <TrustBadge level={(listing as any).user?.sellerProfile?.verificationLevel} size="sm" />
-                                        {/* Commercial badge — from paid package (marketing only) */}
-                                        {listing.badge && (
+                                        {/* Commercial badge — from paid package (marketing only).
+                                            Hidden until the seller has completed KYC, matching ListingCard. */}
+                                        {listing.badge && sellerHasKyc && (
                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white ${
                                                 listing.badge === 'Premium Choice' ? 'bg-gradient-to-r from-yellow-500 to-amber-600' :
                                                 listing.badge === 'Hot Deal' ? 'bg-orange-500' :
