@@ -8,6 +8,7 @@ import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, organizationSchema, websiteSchema } from "@/lib/seo";
+import { Analytics } from "@vercel/analytics/next";
 
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   weight: ["300", "400", "500", "600", "700"],
@@ -115,6 +116,7 @@ export default function RootLayout({
             <Footer />
           </WishlistProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
