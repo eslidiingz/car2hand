@@ -14,7 +14,7 @@
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://car2hand.app').replace(/\/$/, '');
 export const SITE_NAME = 'Car2Hand';
-export const SITE_DESCRIPTION = 'Car2Hand — แพลตฟอร์มซื้อขายรถมือสองในประเทศไทย พร้อมระบบประเมินราคาด้วย AI และตรวจเช็คสภาพรถโดยช่างผู้เชี่ยวชาญ';
+export const SITE_DESCRIPTION = 'Car2Hand — แพลตฟอร์มซื้อขายรถมือสองในประเทศไทย ที่จะช่วยให้การซื้อขายรถมือสองเป็นเรื่องง่าย สะดวก ปลอดภัย และยุติธรรมสำหรับทุกคน';
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 /**
