@@ -26,7 +26,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | รถมือสองคุณภาพที่คุณมั่นใจ`,
+    default: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอยภัย ยุติธรรม`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -36,9 +36,11 @@ export const metadata: Metadata = {
     "ขายรถมือสอง",
     "ซื้อรถมือสอง",
     "รถมือสองราคาถูก",
-    "used cars Thailand",
-    "Car2Hand",
+    "รถมือสองสภาพนางฟ้า",
     "ตลาดรถมือสอง",
+    "Used cars for sale Thailand",
+    "Car2Hand",
+    "Used cars marketplace Thailand"
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
@@ -59,13 +61,13 @@ export const metadata: Metadata = {
     locale: "th_TH",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} | รถมือสองคุณภาพที่คุณมั่นใจ`,
+    title: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอยภัย ยุติธรรม`,
     description: SITE_DESCRIPTION,
     images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | รถมือสองคุณภาพที่คุณมั่นใจ`,
+    title: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอยภัย ยุติธรรม`,
     description: SITE_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },

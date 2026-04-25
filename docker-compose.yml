@@ -33,8 +33,30 @@ services:
     networks:
       - car2hand-network
 
+  postgres:
+    image: postgres:15-alpine
+    container_name: car2hand-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-car2hand}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-car2hand123}
+      POSTGRES_DB: ${POSTGRES_DB:-car2hand}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-car2hand} -d $${POSTGRES_DB:-car2hand}" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - car2hand-network
+
 volumes:
   minio_data:
+    driver: local
+  postgres_data:
     driver: local
 
 networks:

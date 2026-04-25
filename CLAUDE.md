@@ -34,30 +34,38 @@ bunx prisma db seed      # seed data (seed.ts, seed-admin, seed-categories, seed
 
 Package manager: **pnpm** for frontend/admin, **bun** for backend. Do not mix.
 
-### Database migration — drift warning 🚨
+### Database migration — drift resolved ✅ (2026-04-25)
 
-As of 2026-04-22 the local schema has drift: **`SellerProfile` model exists in `schema.prisma` but has no corresponding migration file** (it was added via `prisma db push` at some point instead of `migrate dev`). This means:
+Previously the schema had **14 tables and 3 enums missing migration files** (created via `prisma db push` instead of `migrate dev`: `seller_profiles`, `kyc_submissions`, all `forum_*`, `push_subscriptions`, `contact_messages`, `admin_audit_logs`, `abuse_reports`, `user_reputations`, plus `ShowroomType` / `VoteType` / `ForumPostStatus` enums). This was resolved by adding two catch-up migrations:
 
-- `bunx prisma migrate deploy` on a **fresh** target DB (e.g. a new Supabase project) **will FAIL** on the last migration `20260421120000_simplify_kyc_to_2_types` with `relation "seller_profiles" does not exist`.
-- Local dev DB still works because `db push` synced it ad-hoc.
-- The Supabase `car2hand` project was bootstrapped via `prisma db push --accept-data-loss` (not migrate deploy) — so it has the full 42-table schema but **no `_prisma_migrations` history**. Running `migrate deploy` there now will also fail (try to re-apply all migrations that already exist).
+- `20260420000000_drift_baseline_catchup` — creates `ShowroomType` (3-tier), `seller_profiles`, `kyc_submissions` so that the next migration `20260421120000_simplify_kyc_to_2_types` (which `ALTER`s these objects) can run on a fresh DB.
+- `20260423000000_drift_remaining_catchup` — creates everything else missing: forum tables, OAuth columns on `users` (googleUserId / facebookUserId / passwordResetToken / etc.), and the rest.
 
-**When you need to fix this**, do one of the following — don't just "try migrate deploy and see":
+`bunx prisma migrate deploy` now applies cleanly on an empty DB and the result matches `schema.prisma` exactly (verified end-to-end on a shadow Postgres).
 
-1. **Create a catch-up migration** for `SellerProfile` + any other drifted models:
-   - `bunx prisma migrate dev --create-only --name add_seller_profile_baseline`
-   - Inspect the generated SQL, keep only the missing `CREATE TABLE seller_profiles` / related enums
-   - Commit it **before** `20260421120000_simplify_kyc_to_2_types`
-2. **Then** reconcile deployed environments with `prisma migrate resolve --applied <name>` for each migration already in their DB.
+#### For environments that already have data (Supabase, existing dev DBs)
 
-For a **brand-new environment** (new Supabase project, fresh CI test DB), the current quick path is:
+Their tables already exist (they were created via the original `db push`). Mark the catch-up migrations as already applied **before** running `migrate deploy`:
+
 ```bash
-bunx prisma db push --accept-data-loss     # sync schema without migration history
-bunx prisma generate
-bun run prisma/seed.ts                      # + seed-master-data, seed-categories, seed-forum-categories, seed-admin
+DATABASE_URL="$DIRECT_URL" bunx prisma migrate resolve --applied 20260420000000_drift_baseline_catchup
+DATABASE_URL="$DIRECT_URL" bunx prisma migrate resolve --applied 20260423000000_drift_remaining_catchup
+DATABASE_URL="$DIRECT_URL" bunx prisma migrate deploy
 ```
 
-**Never commit** new migrations without first resolving the drift above — otherwise you'll stack a broken chain on top of a broken chain.
+The Supabase `car2hand` project was bootstrapped via `prisma db push --accept-data-loss` and has **no `_prisma_migrations` history at all** — for that one, also run `prisma migrate resolve --applied <name>` for every prior migration before `deploy` will work.
+
+#### For a brand-new environment
+
+```bash
+bunx prisma migrate deploy                  # ✅ now works end-to-end on empty DB
+bunx prisma generate
+bun run prisma/seed.ts                       # + seed-master-data, seed-categories, seed-forum-categories, seed-admin
+```
+
+#### Local shadow DB
+
+A second Postgres on port 5433 (Docker container `car2hand-postgres`, creds `car2hand:car2hand123`) acts as the shadow DB for `migrate dev` / `migrate diff --from-migrations`. To use it, temporarily add `shadowDatabaseUrl: env("SHADOW_DATABASE_URL")` to the datasource block in `prisma.config.ts` and set `SHADOW_DATABASE_URL=postgresql://car2hand:car2hand123@localhost:5433/<empty_db_name>`. Revert the config edit when done.
 
 ### Supabase deployment
 
