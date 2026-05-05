@@ -515,19 +515,14 @@ body {
   --tw-shadow-color: rgba(15, 52, 96, 0.4);
 }
 
-
 .quick-category-icon {
   filter: brightness(0) saturate(100%) invert(31%) sepia(7%) saturate(2563%) hue-rotate(176deg) brightness(87%) contrast(78%);
 }
 
-.quick-category-icon:hover {
+.quick-category-icon-container:hover .quick-category-icon {
   filter: brightness(0) saturate(100%) invert(14%) sepia(78%) saturate(1385%) hue-rotate(190deg) brightness(96%) contrast(94%);
 }
 
-.dark .quick-category-icon {
-  filter: brightness(0) saturate(100%) invert(31%) sepia(7%) saturate(2563%) hue-rotate(176deg) brightness(87%) contrast(78%);
-}
-
-.dark .quick-category-icon:hover {
+.dark .quick-category-icon-container:hover .quick-category-icon {
   filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(1089%) hue-rotate(128deg) brightness(112%) contrast(73%);
 }

@@ -89,7 +89,7 @@ export default function QuickCategories() {
                         <button
                             key={cat.id}
                             onClick={() => handleCategoryClick(cat)}
-                            className="flex flex-col items-center justify-center min-w-[100px] transition group cursor-pointer snap-start"
+                            className="quick-category-icon-container flex flex-col items-center justify-center min-w-[100px] transition group cursor-pointer snap-start"
                         >
                             <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center mb-3 group-hover:bg-primary/5 group-hover:text-primary transition group-active:scale-95">
                                 <img className='quick-category-icon' width={cat.width} height={cat.height} src={cat.icon} alt={cat.label} />
