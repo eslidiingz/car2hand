@@ -502,13 +502,13 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                             </div>
 
                             {/* Ask Community button */}
-                            <Link
+                            {/* <Link
                                 href={`/community/create?listingId=${listing.id}&brand=${encodeURIComponent(listing.brand)}&model=${encodeURIComponent(listing.model)}&year=${listing.year}`}
                                 className="w-full mt-2 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition border-2 border-blue-200 text-primary hover:bg-blue-50"
                             >
                                 <MessagesSquare size={18} />
                                 ขอความเห็นชุมชน
-                            </Link>
+                            </Link> */}
 
                             {/* Stats */}
                             <div className="mt-6 pt-6 border-t border-gray-100 flex justify-between text-sm text-gray-500">
