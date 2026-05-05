@@ -240,8 +240,8 @@ export default function Navbar() {
                             <Link href="/sell" className={getLinkClass('/sell')}>ลงขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={getLinkClass('/services')}>บริการ</Link> */}
-                            <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
-                            <Link href="/community" className={getLinkClass('/community')}>ชุมชน</Link>
+                            {/* <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
+                            <Link href="/community" className={getLinkClass('/community')}>ชุมชน</Link> */}
                         </div>
 
                         {/* Right Actions */}
@@ -417,8 +417,8 @@ export default function Navbar() {
                             <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ลงขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/services') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>บริการ</Link> */}
-                            <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>
-                            <Link href="/community" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/community') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ชุมชน</Link>
+                            {/* <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>
+                            <Link href="/community" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/community') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ชุมชน</Link> */}
 
                             {!user && (
                                 <button
