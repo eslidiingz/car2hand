@@ -24,8 +24,8 @@ export default function Footer() {
                         <ul className="space-y-2">
                             <li><Link href="/buy" className="text-gray-400 hover:text-white">ซื้อรถยนต์</Link></li>
                             <li><Link href="/sell" className="text-gray-400 hover:text-white">ขายรถยนต์</Link></li>
-                            <li><Link href="/articles" className="text-gray-400 hover:text-white">บทความ</Link></li>
-                            <li><Link href="/community" className="text-gray-400 hover:text-white">ชุมชน</Link></li>
+                            {/* <li><Link href="/articles" className="text-gray-400 hover:text-white">บทความ</Link></li>
+                            <li><Link href="/community" className="text-gray-400 hover:text-white">ชุมชน</Link></li> */}
                         </ul>
                     </div>
                     <div>
