@@ -50,21 +50,21 @@ function PPVIcon({ size = 32, className = '' }: { size?: number; className?: str
 interface Category {
     id: string;
     label: string;
-    icon: LucideIcon | (({ size, className }: { size?: number; className?: string }) => React.ReactNode);
+    icon: string;
     bodyType?: string;
     fuelType?: string;
     maxPrice?: number;
 }
 
-const categories: Category[] = [
-    { id: 'sedan', label: 'Sedan', icon: CarFront, bodyType: 'SEDAN' },
-    { id: 'suv', label: 'SUV', icon: SUVIcon, bodyType: 'SUV' },
-    { id: 'ev', label: 'EV / Hybrid', icon: Zap, fuelType: 'EV' },
-    { id: 'ppv', label: 'PPV', icon: PPVIcon, bodyType: 'PPV' },
-    { id: 'hatchback', label: 'Hatchback', icon: HatchbackIcon, bodyType: 'HATCHBACK' },
-    { id: 'pickup', label: 'Pickup', icon: Truck, bodyType: 'PICKUP' },
-    { id: 'luxury', label: 'Luxury', icon: Crown, bodyType: 'LUXURY' },
-    { id: 'budget', label: 'งบประหยัด', icon: Wallet, maxPrice: 500000 },
+const categories = [
+    { id: 'sedan', label: 'Sedan', icon: '/icons/cars/sedan.svg', bodyType: 'SEDAN', width: 64, height: 64 },
+    { id: 'suv', label: 'SUV', icon: '/icons/cars/suv.svg', bodyType: 'SUV', width: 64, height: 64 },
+    { id: 'ev', label: 'EV / Hybrid', icon: '/icons/cars/ev.svg', fuelType: 'EV', width: 48, height: 48 },
+    { id: 'ppv', label: 'PPV', icon: '/icons/cars/ppv.svg', bodyType: 'PPV', width: 64, height: 64 },
+    { id: 'hatchback', label: 'Hatchback', icon: '/icons/cars/hatchback.svg', bodyType: 'HATCHBACK', width: 64, height: 64 },
+    { id: 'pickup', label: 'Pickup', icon: '/icons/cars/pickup.svg', bodyType: 'PICKUP', width: 64, height: 64 },
+    { id: 'luxury', label: 'Luxury', icon: '/icons/cars/luxury.svg', bodyType: 'LUXURY', width: 64, height: 64 },
+    { id: 'budget', label: 'งบประหยัด', icon: '/icons/cars/budget.svg', maxPrice: 500000, width: 38, height: 38 },
 ];
 
 export default function QuickCategories() {
@@ -85,7 +85,6 @@ export default function QuickCategories() {
         <div className="w-full max-w-4xl mx-auto mt-[-40px] relative z-20 px-4">
             <div className="bg-white rounded-3xl shadow-xl p-8 flex justify-between items-center gap-2 overflow-x-auto no-scrollbar snap-x scroll-smooth">
                 {categories.map((cat) => {
-                    const IconComponent = cat.icon;
                     return (
                         <button
                             key={cat.id}
@@ -93,7 +92,7 @@ export default function QuickCategories() {
                             className="flex flex-col items-center justify-center min-w-[100px] transition group cursor-pointer snap-start"
                         >
                             <div className="w-20 h-20 rounded-3xl bg-slate-50 flex items-center justify-center mb-3 group-hover:bg-primary/5 group-hover:text-primary transition group-active:scale-95">
-                                <IconComponent size={32} className="text-slate-600 group-hover:text-primary transition" />
+                                <img className='quick-category-icon' width={cat.width} height={cat.height} src={cat.icon} alt={cat.label} />
                             </div>
                             <span className="text-slate-700 text-sm font-bold whitespace-nowrap group-hover:text-primary transition">
                                 {cat.label}
