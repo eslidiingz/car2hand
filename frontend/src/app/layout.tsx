@@ -11,6 +11,9 @@ import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, organizationSc
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || '';
+
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["thai", "latin"],
@@ -102,9 +105,6 @@ export const metadata: Metadata = {
   },
 };
 
-const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID as string;
-const googleTagManagerId = process.env.NEXT_PUBLIC_GTM_ID as string;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -123,8 +123,8 @@ export default function RootLayout({
           </WishlistProvider>
         </ThemeProvider>
         <Analytics />
-        <GoogleAnalytics gaId={googleAnalyticsId} />
-        <GoogleTagManager gtmId={googleTagManagerId} />
+        <GoogleAnalytics gaId={GA_ID} />
+        <GoogleTagManager gtmId={GTM_ID} />
       </body>
     </html>
   );
