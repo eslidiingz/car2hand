@@ -30,7 +30,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอยภัย ยุติธรรม`,
+    default: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอดภัย ยุติธรรม`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -65,13 +65,13 @@ export const metadata: Metadata = {
     locale: "th_TH",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอยภัย ยุติธรรม`,
+    title: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอดภัย ยุติธรรม`,
     description: SITE_DESCRIPTION,
     images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอยภัย ยุติธรรม`,
+    title: `${SITE_NAME} | แพลตฟอร์มซื้อขายรถมือสองที่โปร่งใส ปลอดภัย ยุติธรรม`,
     description: SITE_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },
