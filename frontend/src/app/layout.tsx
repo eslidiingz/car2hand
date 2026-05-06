@@ -124,7 +124,6 @@ export default function RootLayout({
         </ThemeProvider>
         <Analytics />
         <GoogleAnalytics gaId={GA_ID} />
-        <GoogleTagManager gtmId={GTM_ID} />
       </body>
     </html>
   );
