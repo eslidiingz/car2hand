@@ -10,13 +10,11 @@ import {
   ArrowLeft,
   Calculator,
   Eye,
-  ChevronDown,
   Newspaper,
   ArrowUpNarrowWide,
 } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-
 // --- Types ---
 
 interface Article {
