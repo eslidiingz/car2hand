@@ -15,6 +15,7 @@ import {
     Eye,
     BadgeCheck,
     Building2,
+    Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
@@ -30,13 +31,46 @@ interface UserItem {
     phoneNumber: string;
     isActive: boolean;
     createdAt: string;
-    currentPackage: { name: string; slug: string } | null;
+    currentPackage: { name: string; slug: string; maxListings: number } | null;
+    bonusListingSlots: number;
+    effectiveMaxListings: number; // -1 = unlimited
+    lineUserId: string | null;
+    googleUserId: string | null;
+    facebookUserId: string | null;
     sellerProfile: {
         isVerified: boolean;
         verificationLevel: KycLevel;
         verifiedAt: string | null;
     } | null;
     _count: { listings: number };
+}
+
+// Social login badges — แสดงเฉพาะ provider ที่ผู้ใช้ผูกบัญชีไว้
+function SocialBadges({ user }: { user: UserItem }) {
+    const providers: { key: string; label: string; className: string }[] = [];
+    if (user.lineUserId) {
+        providers.push({ key: 'line', label: 'LINE', className: 'bg-[#06C755]/10 text-[#06C755] border-[#06C755]/30' });
+    }
+    if (user.googleUserId) {
+        providers.push({ key: 'google', label: 'Google', className: 'bg-[#EA4335]/10 text-[#EA4335] border-[#EA4335]/30' });
+    }
+    if (user.facebookUserId) {
+        providers.push({ key: 'facebook', label: 'Facebook', className: 'bg-[#1877F2]/10 text-[#1877F2] border-[#1877F2]/30' });
+    }
+    if (providers.length === 0) return null;
+    return (
+        <span className="inline-flex flex-wrap items-center gap-1 mt-1">
+            {providers.map((p) => (
+                <span
+                    key={p.key}
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${p.className}`}
+                    title={`เข้าสู่ระบบด้วย ${p.label}`}
+                >
+                    {p.label}
+                </span>
+            ))}
+        </span>
+    );
 }
 
 const KYC_BADGE: Record<string, { label: string; className: string; Icon: React.ElementType }> = {
@@ -137,6 +171,7 @@ export default function UserManagementPage() {
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground">แพ็กเกจ</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">ยืนยันตัวตน</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">ประกาศ</th>
+                                <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">Bonus Slots</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-center">สถานะ</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground">วันที่สมัคร</th>
                                 <th className="px-6 py-3 text-xs font-medium text-muted-foreground text-right">จัดการ</th>
@@ -146,7 +181,7 @@ export default function UserManagementPage() {
                             {isLoading ? (
                                 Array.from({ length: 5 }).map((_, i) => (
                                     <tr key={i}>
-                                        <td colSpan={8} className="px-6 py-4">
+                                        <td colSpan={9} className="px-6 py-4">
                                             <div className="animate-pulse flex items-center gap-3">
                                                 <div className="h-9 w-9 bg-accent rounded-lg" />
                                                 <div className="flex-1 space-y-2">
@@ -159,7 +194,7 @@ export default function UserManagementPage() {
                                 ))
                             ) : users.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-12 text-center text-muted-foreground text-sm">
+                                    <td colSpan={9} className="px-6 py-12 text-center text-muted-foreground text-sm">
                                         ไม่พบผู้ใช้งาน
                                     </td>
                                 </tr>
@@ -174,6 +209,7 @@ export default function UserManagementPage() {
                                                 <div>
                                                     <p className="text-sm font-medium text-foreground group-hover/link:text-primary group-hover/link:underline transition-colors">{user.fullName}</p>
                                                     <span className="text-xs text-muted-foreground flex items-center gap-1"><Mail size={11} /> {user.email}</span>
+                                                    <SocialBadges user={user} />
                                                 </div>
                                             </Link>
                                         </td>
@@ -211,10 +247,25 @@ export default function UserManagementPage() {
                                             })()}
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className="inline-flex items-center gap-1 text-sm text-muted-foreground font-medium">
+                                            <span className="inline-flex items-center gap-1 text-sm text-muted-foreground font-medium" title="ประกาศที่ใช้ slot / โควตาสูงสุดของแพ็กเกจ">
                                                 <Car size={14} className="text-muted-foreground" />
                                                 {user._count.listings}
+                                                <span className="text-muted-foreground/60">/</span>
+                                                {user.effectiveMaxListings === -1 ? '∞' : user.effectiveMaxListings}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-center">
+                                            {user.bonusListingSlots > 0 ? (
+                                                <span
+                                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+                                                    title="Slot โบนัสที่ admin เคยให้ผู้ใช้นี้ (รวมเข้าโควตาแล้ว)"
+                                                >
+                                                    <Plus size={12} />
+                                                    {user.bonusListingSlots}
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs text-muted-foreground/60">—</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             {user.isActive ? (

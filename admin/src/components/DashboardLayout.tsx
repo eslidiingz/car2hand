@@ -35,11 +35,9 @@ export default function DashboardLayout({
             <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
                 <Navbar />
 
-                {/* Main Content Area */}
+                {/* Main Content Area — full width, ใช้พื้นที่จอเต็มสำหรับตารางข้อมูลเยอะ ๆ */}
                 <main className="flex-1 relative overflow-y-auto focus:outline-none custom-scrollbar p-6">
-                    <div className="max-w-7xl mx-auto">
-                        {children}
-                    </div>
+                    {children}
                 </main>
             </div>
         </div>
