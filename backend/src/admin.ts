@@ -1220,7 +1220,11 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                         phoneNumber: true,
                         isActive: true,
                         createdAt: true,
-                        currentPackage: { select: { name: true, slug: true } },
+                        bonusListingSlots: true,
+                        lineUserId: true,
+                        googleUserId: true,
+                        facebookUserId: true,
+                        currentPackage: { select: { name: true, slug: true, maxListings: true } },
                         sellerProfile: {
                             select: {
                                 isVerified: true,
@@ -1228,14 +1232,28 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                                 verifiedAt: true,
                             }
                         },
-                        _count: { select: { listings: true } },
+                        _count: {
+                            select: {
+                                // นับเฉพาะประกาศที่ใช้ slot quota (ตรงกับเงื่อนไขใน listings.ts:990-995)
+                                listings: { where: { status: { in: ['ACTIVE', 'DRAFT', 'PENDING'] } } }
+                            }
+                        },
                     }
                 }),
                 prisma.user.count({ where })
             ]);
 
+            // เพิ่ม effectiveMaxListings ให้ frontend ใช้แสดง "current/max" (-1 = unlimited)
+            const usersWithQuota = users.map((u) => ({
+                ...u,
+                effectiveMaxListings: getEffectiveMaxListings(
+                    u.currentPackage?.maxListings,
+                    u.bonusListingSlots ?? 0
+                ),
+            }));
+
             return {
-                users,
+                users: usersWithQuota,
                 pagination: {
                     total,
                     page: parseInt(page),

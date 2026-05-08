@@ -606,7 +606,6 @@ export default function EditListingPage() {
         if (!formData.model) errors.model = true;
         if (!formData.bodyType) errors.bodyType = true;
         if (!formData.color) errors.color = true;
-        if (!formData.fuelType) errors.fuelType = true;
         if (!formData.year) errors.year = true;
         if (!formData.mileage) errors.mileage = true;
         if (!formData.price) errors.price = true;
@@ -628,14 +627,13 @@ export default function EditListingPage() {
                 : errors.model ? modelRef
                     : errors.bodyType ? bodyTypeRef
                         : errors.color ? colorRef
-                            : errors.fuelType ? fuelTypeRef
-                                : errors.year ? yearRef
-                                    : errors.mileage ? mileageRef
-                                        : errors.price ? priceRef
-                                            : errors.province ? provinceRef
-                                                : errors.contactName ? contactNameRef
-                                                    : errors.contactPhone ? contactPhoneRef
-                                                        : null;
+                            : errors.year ? yearRef
+                                : errors.mileage ? mileageRef
+                                    : errors.price ? priceRef
+                                        : errors.province ? provinceRef
+                                            : errors.contactName ? contactNameRef
+                                                : errors.contactPhone ? contactPhoneRef
+                                                    : null;
 
             if (firstErrorRef?.current) {
                 firstErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -746,6 +744,7 @@ export default function EditListingPage() {
                 body: JSON.stringify({
                     userId,
                     ...formData,
+                    fuelType: formData.fuelType || undefined,
                     title: formData.title || `${formData.brand} ${formData.model} ${formData.year}`
                 }),
             });
@@ -1229,8 +1228,8 @@ export default function EditListingPage() {
                                 </div>
 
                                 <div ref={fuelTypeRef}>
-                                    <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.fuelType ? 'text-red-600' : 'text-gray-700'}`}>เชื้อเพลิง <span className="text-red-500">*</span></label>
-                                    <div className={fieldErrors.fuelType ? 'ring-2 ring-red-500 rounded-xl' : ''}>
+                                    <label className="block text-sm font-medium mb-1.5 text-gray-700">เชื้อเพลิง</label>
+                                    <div>
                                         <SearchableSelect
                                             options={[
                                                 { id: 'PETROL', label: 'Petrol (เบนซิน)' },
@@ -1243,7 +1242,6 @@ export default function EditListingPage() {
                                             ]}
                                             value={formData.fuelType}
                                             onChange={(value) => {
-                                                setFieldErrors(prev => ({ ...prev, fuelType: false }));
                                                 updateFormData({ fuelType: value as any });
                                             }}
                                             placeholder="เลือกประเภทเชื้อเพลิง"
@@ -1251,7 +1249,6 @@ export default function EditListingPage() {
                                             emptyMessage="ไม่พบประเภทเชื้อเพลิง"
                                         />
                                     </div>
-                                    {fieldErrors.fuelType && <p className="text-red-500 text-xs mt-1">กรุณาเลือกประเภทเชื้อเพลิง</p>}
                                 </div>
 
                                 <div>

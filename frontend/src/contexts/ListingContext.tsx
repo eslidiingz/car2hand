@@ -194,7 +194,7 @@ export async function createListing(userId: string, data: ListingFormData): Prom
             subModel: data.subModel,
             year: data.year,
             color: data.color,
-            fuelType: data.fuelType,
+            fuelType: data.fuelType || undefined,
             transmission: data.transmission,
             engineSize: data.engineSize,
             seats: data.seats,

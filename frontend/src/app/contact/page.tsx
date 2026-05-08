@@ -368,7 +368,7 @@ export default function ContactPage() {
                             <h3 className="font-bold text-gray-800 mb-4">ติดตามเรา</h3>
                             <div className="space-y-2">
                                 <a
-                                    href="#"
+                                    href="https://line.me/R/ti/p/@car2hand.th"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition"
@@ -378,11 +378,11 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-gray-800">LINE Official</p>
-                                        <p className="text-xs text-gray-500">@car2hand</p>
+                                        <p className="text-xs text-gray-500">@car2hand.th</p>
                                     </div>
                                 </a>
                                 <a
-                                    href="#"
+                                    href="https://www.facebook.com/car2handthailand"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition"
@@ -392,7 +392,7 @@ export default function ContactPage() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-bold text-gray-800">Facebook</p>
-                                        <p className="text-xs text-gray-500">facebook.com/car2hand</p>
+                                        <p className="text-xs text-gray-500">facebook.com/car2hand.thailand</p>
                                     </div>
                                 </a>
                             </div>

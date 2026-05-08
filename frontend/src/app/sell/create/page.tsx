@@ -527,7 +527,10 @@ function CreateListingPage() {
 
         try {
             // Step 1: Create listing
-            const title = formData.title || `${formData.brand} ${formData.model} ${formData.year}`;
+            const placeholderTitle = [formData.year, formData.brand, formData.model, formData.subModel]
+                .filter(Boolean)
+                .join(' ');
+            const title = formData.title || placeholderTitle;
             const listingResponse = await createListing(user.id, { ...formData, title });
             const newListingId = listingResponse.listing.id;
             setListingId(newListingId);
@@ -1292,12 +1295,12 @@ function CreateListingPage() {
                                         <label className="block text-sm font-medium text-gray-700 mb-1.5">หัวข้อประกาศ</label>
                                         <input
                                             type="text"
-                                            placeholder={`${formData.brand} ${formData.model} ${formData.year} สภาพดี`}
+                                            placeholder={[formData.year, formData.brand, formData.model, formData.subModel].filter(Boolean).join(' ')}
                                             className="form-input"
                                             value={formData.title}
                                             onChange={(e) => updateFormData({ title: e.target.value })}
                                         />
-                                        <p className="text-xs text-gray-400 mt-1">หากไม่กรอก ระบบจะใช้ "{formData.brand} {formData.model} {formData.year}"</p>
+                                        <p className="text-xs text-gray-400 mt-1">หากไม่กรอก ระบบจะใช้ "{[formData.year, formData.brand, formData.model, formData.subModel].filter(Boolean).join(' ')}"</p>
                                     </div>
 
                                     <div className="mb-6">
