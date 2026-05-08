@@ -110,7 +110,7 @@ export default function ProfileListingCard({
                     <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
                             <h3 className="font-bold text-gray-800 dark:text-foreground text-sm md:text-lg leading-tight line-clamp-2 uppercase">
-                                {listing.year} {listing.brand} {listing.model}
+                                {listing.title || `${listing.year} ${listing.brand} ${listing.model}`}
                             </h3>
                             <div className="relative">
                                 <button

@@ -6,3 +6,7 @@ build
 
 # Claude Code runtime state (not project config)
 .claude/scheduled_tasks.lock
+
+# Database dumps — never commit (contain PII / production data)
+backend/backups/
+*.sql.bak
