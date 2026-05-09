@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import sanitizeHtml from 'sanitize-html';
 import {
     Facebook,
     Clock,
@@ -145,10 +144,78 @@ export default function ArticleClient({ article, relatedArticles }: ArticleClien
                             <p className="text-lg text-gray-500 italic border-l-4 border-primary/30 pl-4 mb-8">{article.excerpt}</p>
                         )}
 
-                        {/* Article Content with Markdown */}
-                        <article className="prose prose-lg max-w-none">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
-                        </article>
+                        {/* Article Content — HTML produced by the admin TipTap Simple Editor.
+                            Sanitized with sanitize-html (server-safe, no jsdom dep) to defuse
+                            any XSS that might slip past the trusted-author assumption. */}
+                        <article
+                            className="
+                                prose prose-lg max-w-none
+
+                                [&_p]:mb-6 [&_p]:leading-relaxed [&_p]:text-gray-700
+
+                                [&_a]:text-primary [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-primary/30 [&_a]:transition-colors hover:[&_a]:text-accent hover:[&_a]:decoration-accent
+
+                                [&_sup]:text-xs [&_sup]:align-super [&_sup]:ml-0.5 [&_sup]:font-medium
+                                [&_sub]:text-xs [&_sub]:align-sub [&_sub]:ml-0.5 [&_sub]:font-medium
+
+                                [&_mark]:bg-yellow-200/70 [&_mark]:text-gray-900 [&_mark]:px-1 [&_mark]:py-0.5 [&_mark]:rounded
+
+                                [&_h1]:mt-12 [&_h1]:mb-5 [&_h1]:text-4xl [&_h1]:font-extrabold [&_h1]:text-gray-900 [&_h1]:tracking-tight
+                                [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:tracking-tight
+                                [&_h3]:mt-8  [&_h3]:mb-3 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900
+                                [&_h4]:mt-6  [&_h4]:mb-2 [&_h4]:text-xl  [&_h4]:font-semibold [&_h4]:text-gray-900
+
+                                [&_ul]:mb-6 [&_ul]:pl-6 [&_ul]:list-disc [&_ul]:space-y-1
+                                [&_ol]:mb-6 [&_ol]:pl-6 [&_ol]:list-decimal [&_ol]:space-y-1
+                                [&_li]:mb-1 [&_li]:leading-relaxed [&_li]:text-gray-700
+                                [&_li>p]:mb-1
+                                [&_li>ul]:mt-2 [&_li>ul]:mb-2 [&_li>ol]:mt-2 [&_li>ol]:mb-2
+
+                                [&_blockquote]:my-6 [&_blockquote]:pl-5 [&_blockquote]:py-2 [&_blockquote]:border-l-4 [&_blockquote]:border-primary/40 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_blockquote]:bg-gray-50 [&_blockquote]:rounded-r-lg
+
+                                [&_img]:my-6 [&_img]:rounded-xl [&_img]:max-w-full [&_img]:h-auto [&_img]:mx-auto [&_img]:shadow-sm
+
+                                [&_strong]:font-bold [&_strong]:text-gray-900
+                                [&_em]:italic
+                                [&_code]:bg-gray-100 [&_code]:text-primary [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
+                                [&_pre]:my-6 [&_pre]:bg-gray-900 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:text-sm
+                                [&_pre_code]:bg-transparent [&_pre_code]:text-inherit [&_pre_code]:p-0
+
+                                [&_hr]:my-10 [&_hr]:border-t [&_hr]:border-gray-200
+
+                                [&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm
+                                [&_th]:bg-gray-50 [&_th]:font-bold [&_th]:text-left [&_th]:px-4 [&_th]:py-2 [&_th]:border [&_th]:border-gray-200
+                                [&_td]:px-4 [&_td]:py-2 [&_td]:border [&_td]:border-gray-200
+
+                                [&_figure]:my-6
+                                [&_figcaption]:mt-2 [&_figcaption]:text-center [&_figcaption]:text-sm [&_figcaption]:text-gray-500
+                            "
+                            dangerouslySetInnerHTML={{
+                                __html: sanitizeHtml(article.content || '', {
+                                    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+                                        'img', 'figure', 'figcaption', 'h1', 'h2',
+                                        'mark', 'sub', 'sup', 'u', 's',
+                                    ]),
+                                    allowedAttributes: {
+                                        ...sanitizeHtml.defaults.allowedAttributes,
+                                        '*': ['class', 'style', 'data-*'],
+                                        a: ['href', 'name', 'target', 'rel'],
+                                        img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+                                    },
+                                    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+                                    transformTags: {
+                                        a: (tagName, attribs) => ({
+                                            tagName: 'a',
+                                            attribs: {
+                                                ...attribs,
+                                                target: '_blank',
+                                                rel: 'noopener noreferrer',
+                                            },
+                                        }),
+                                    },
+                                }),
+                            }}
+                        />
 
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mt-10 pt-6 border-t border-gray-100">

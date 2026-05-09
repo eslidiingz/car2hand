@@ -1,3 +1,6 @@
+@import '../styles/_variables.scss';
+@import '../styles/_keyframe-animations.scss';
+
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
@@ -153,32 +156,4 @@
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
-}
-
-/* Markdown editor (@uiw/react-md-editor) — match project design tokens */
-.markdown-editor-wrapper .w-md-editor {
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background-color: var(--card);
-  box-shadow: none;
-}
-.markdown-editor-wrapper .w-md-editor-toolbar {
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--muted);
-}
-.markdown-editor-wrapper .w-md-editor-toolbar ul > li > button {
-  color: var(--foreground);
-}
-.markdown-editor-wrapper .w-md-editor-toolbar ul > li > button:hover {
-  color: var(--primary);
-  background-color: var(--accent);
-}
-.markdown-editor-wrapper .w-md-editor-text-pre,
-.markdown-editor-wrapper .w-md-editor-text-input,
-.markdown-editor-wrapper .w-md-editor-text {
-  font-family: var(--font-ibm-plex-sans-thai), ui-sans-serif, system-ui, sans-serif !important;
-  font-size: 14px !important;
-  line-height: 1.7 !important;
 }

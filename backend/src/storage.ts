@@ -279,5 +279,48 @@ export async function deleteOldFile(oldUrl: string | null | undefined): Promise<
     }
 }
 
+/**
+ * ดึง URL ของรูปภาพทั้งหมดออกจากเนื้อหาบทความ
+ * รองรับทั้ง Markdown ![alt](url) และ HTML <img src="url"> (TipTap อาจผสมทั้งสองรูปแบบ)
+ */
+function extractImageUrls(content: string | null | undefined): Set<string> {
+    const urls = new Set<string>();
+    if (!content) return urls;
+
+    // Markdown: ![alt](url "optional title")
+    const mdRegex = /!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+    for (const m of content.matchAll(mdRegex)) {
+        if (m[1]) urls.add(m[1]);
+    }
+
+    // HTML: <img src="url" ...> หรือ <img src='url' ...>
+    const htmlRegex = /<img[^>]*\ssrc=["']([^"']+)["'][^>]*>/gi;
+    for (const m of content.matchAll(htmlRegex)) {
+        if (m[1]) urls.add(m[1]);
+    }
+
+    return urls;
+}
+
+/**
+ * เปรียบเทียบเนื้อหาเก่ากับใหม่ แล้วลบรูปที่ถูกถอดออก (inline images ที่อยู่ในเก่าแต่ไม่อยู่ในใหม่)
+ * เรียกหลังจาก save DB สำเร็จแล้วเท่านั้น เพื่อให้ rollback ได้ถ้า save fail
+ */
+export async function deleteRemovedArticleImages(
+    oldContent: string | null | undefined,
+    newContent: string | null | undefined
+): Promise<number> {
+    const oldUrls = extractImageUrls(oldContent);
+    const newUrls = extractImageUrls(newContent);
+
+    let deleted = 0;
+    for (const url of oldUrls) {
+        if (newUrls.has(url)) continue;
+        const ok = await deleteOldFile(url);
+        if (ok) deleted++;
+    }
+    return deleted;
+}
+
 export type { StorageProvider };
 export { getActiveProvider, getProviderByType };
