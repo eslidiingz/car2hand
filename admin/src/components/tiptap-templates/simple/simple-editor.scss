@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+/* ⚠️  Customised for embedded use — original Tiptap template assumed the editor
+   owned the entire viewport (`100vw` x `100vh`, body font/background, global
+   scrollbar overrides). All of those rules are now scoped to
+   `.simple-editor-wrapper` so the editor plugs into the admin's existing
+   layout instead of taking over the page. */
+
+.simple-editor-wrapper {
+  --tt-toolbar-height: 44px;
+  --tt-theme-text: var(--tt-gray-light-900);
+
+  /* Container is bounded by its parent rather than the viewport. */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: var(--card);
+  color: var(--tt-theme-text);
+  font-family: "DM Sans", "Inter", sans-serif;
+
+  /* Scoped scrollbar styling (was applied via the global `*` selector before). */
+  *,
+  *::before,
+  *::after {
+    scrollbar-width: thin;
+    scrollbar-color: var(--tt-scrollbar-color) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 0.25rem;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--tt-scrollbar-color);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .dark & {
+    --tt-theme-text: var(--tt-gray-dark-900);
+  }
+}
+
+.simple-editor-content {
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 480px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.simple-editor-content .tiptap.ProseMirror {
+  font-family: "DM Sans", "Inter", sans-serif;
+}
+
+.simple-editor-content .tiptap.ProseMirror.simple-editor {
+  flex: 1;
+  padding: 1.5rem 1.75rem 3rem;
+  outline: none;
+}
+
+@media screen and (max-width: 768px) {
+  .simple-editor-content .tiptap.ProseMirror.simple-editor {
+    padding: 1rem 1.25rem 2rem;
+  }
+}
