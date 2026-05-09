@@ -329,6 +329,11 @@ export default function SellPage() {
                         ))}
                     </div>
                 </div>
+                <div className="flex justify-center py-6">
+                    <Link href="/sell/create" onClick={handleSellClick} className="bg-accent text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-orange-600 transition shadow-lg shadow-orange-900/20 transform hover:-translate-y-1 inline-block">
+                        เริ่มลงขายเลย (ฟรี!)
+                    </Link>
+                </div>
             </section>
 
             {/* Steps Section */}

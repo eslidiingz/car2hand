@@ -237,7 +237,7 @@ export default function Navbar() {
                         {/* Desktop Menu */}
                         <div className="hidden lg:flex space-x-6 h-full">
                             <Link href="/buy" className={getLinkClass('/buy')}>ซื้อรถ</Link>
-                            <Link href="/sell" className={getLinkClass('/sell')}>ลงขายกับเรา</Link>
+                            <Link href="/sell" className={getLinkClass('/sell')}>ทำไมต้องลงขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={getLinkClass('/services')}>บริการ</Link> */}
                             {/* <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
@@ -364,7 +364,7 @@ export default function Navbar() {
                                     onClick={() => setIsLoginModalOpen(true)}
                                     className="hidden sm:block bg-primary text-white text-sm px-5 py-2.5 rounded-full hover:bg-opacity-90 transition shadow-md font-bold"
                                 >
-                                    ลงขายฟรี
+                                    ลงขายรถฟรี
                                 </button>
                             )}
 
@@ -414,7 +414,7 @@ export default function Navbar() {
 
                             <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 pt-2">เมนูหลัก</p>
                             <Link href="/buy" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/buy') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ซื้อรถ</Link>
-                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ลงขายกับเรา</Link>
+                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ทำไมต้องลงขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/services') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>บริการ</Link> */}
                             {/* <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>
@@ -426,7 +426,7 @@ export default function Navbar() {
                                     className="w-full flex items-center justify-center gap-2 p-4 mt-6 bg-accent text-white rounded-2xl font-bold shadow-lg shadow-orange-100"
                                 >
                                     <User size={20} />
-                                    เข้าสู่ระบบ / ลงทะเบียน
+                                    เข้าสู่ระบบ / ลงขายรถ
                                 </button>
                             )}
 
