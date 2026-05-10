@@ -245,7 +245,7 @@ export default function EditListingPage() {
     const [deletedImageIds, setDeletedImageIds] = useState<string[]>([]);
     const [draggedImageId, setDraggedImageId] = useState<string | null>(null);
     const [dragOverImageId, setDragOverImageId] = useState<string | null>(null);
-    const [maxPhotos, setMaxPhotos] = useState(15);
+    const [maxPhotos, setMaxPhotos] = useState(16);
     const [isBasicPackage, setIsBasicPackage] = useState(true);
 
     // Registration book state
@@ -397,7 +397,7 @@ export default function EditListingPage() {
         })
             .then(r => r.json())
             .then(data => {
-                setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 15);
+                setMaxPhotos(data.currentPackage?.maxPhotosPerListing ?? 16);
                 setIsBasicPackage(!data.currentPackage || data.currentPackage.slug === 'basic');
             })
             .catch(() => {});

@@ -155,7 +155,7 @@ function CreateListingPage() {
     const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
     const [bodyStyleOptions, setBodyStyleOptions] = useState<{ value: string; label: string }[]>([]);
     const [motorcycleBodyOptions, setMotorcycleBodyOptions] = useState<{ value: string; label: string }[]>([]);
-    const [maxPhotos, setMaxPhotos] = useState(15);
+    const [maxPhotos, setMaxPhotos] = useState(16);
     const [isBasicPackage, setIsBasicPackage] = useState(true);
     const [limitReached, setLimitReached] = useState(false);
 
@@ -201,7 +201,7 @@ function CreateListingPage() {
             fetch(`${API_URL}/listings/user/${userData.id}`).then(r => r.json()),
         ]).then(([pkgData, listingsData]) => {
             const pkg = pkgData.currentPackage;
-            setMaxPhotos(pkg?.maxPhotosPerListing ?? 15);
+            setMaxPhotos(pkg?.maxPhotosPerListing ?? 16);
             setIsBasicPackage(!pkg || pkg.slug === 'basic');
 
             // Check listing limit — ใช้ effective max (package + bonus slot) จาก usage
