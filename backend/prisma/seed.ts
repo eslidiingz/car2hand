@@ -12,7 +12,7 @@ async function main() {
             targetAudience: 'ขายคันเดียว (C2C)',
             price: 0,
             maxListings: 3,
-            maxPhotosPerListing: 15,
+            maxPhotosPerListing: 16,
             listingDurationDays: 45,
             autoBumpPerDay: 0,
             manualBumpPerDay: 1,
@@ -20,7 +20,7 @@ async function main() {
             searchPriority: 'normal',
             features: [
                 'ลงประกาศได้สูงสุด 3 รายการ',
-                'รูปภาพสูงสุด 15 รูป',
+                'รูปภาพสูงสุด 16 รูป',
                 'ระยะเวลาประกาศ 45 วัน',
                 'ดันโพสต์ด้วยตัวเอง 1 ครั้ง/คัน/วัน',
             ],
