@@ -8,7 +8,7 @@
 
 import { Elysia, t } from "elysia";
 import prisma from "./db";
-import { jwtPlugin, generateAccessToken, blacklistToken, authGuard } from "./jwt";
+import { jwtPlugin, generateAccessToken, blacklistToken, authGuard, blockImpersonation } from "./jwt";
 import { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, validateInput } from "./validation";
 import { sanitizeObject, authRateLimiter, rateLimiter, checkRateLimit } from "./security";
 import { sendEmail, renderPasswordResetEmail, renderDeleteAccountEmail } from "./email";
@@ -502,6 +502,13 @@ const usersProtectedRoutes = new Elysia({ prefix: "/users" })
         const userId = auth.userId;
         const { fullName, phoneNumber, email } = body as any;
 
+        // Admin impersonation must not be able to change email — that would let an
+        // admin lock the user out of their own account via password reset.
+        if (email && auth.impersonatedBy) {
+            const blocked = blockImpersonation(auth, set);
+            if (blocked) return blocked;
+        }
+
         try {
             // If updating email, check uniqueness (skip placeholder emails)
             if (email) {
@@ -619,6 +626,8 @@ const usersProtectedRoutes = new Elysia({ prefix: "/users" })
     .put("/me/password", async ({ auth, body, set }) => {
 
         if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const blocked = blockImpersonation(auth, set);
+        if (blocked) return blocked;
         const userId = auth.userId;
         const { currentPassword, newPassword } = body as any;
         if (!currentPassword || !newPassword) {
@@ -667,6 +676,8 @@ const usersProtectedRoutes = new Elysia({ prefix: "/users" })
             set.status = 401;
             return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" };
         }
+        const blocked = blockImpersonation(auth, set);
+        if (blocked) return blocked;
         const userId = auth.userId;
 
         const user = await prisma.user.findUnique({
@@ -737,6 +748,8 @@ const usersProtectedRoutes = new Elysia({ prefix: "/users" })
             set.status = 401;
             return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" };
         }
+        const blocked = blockImpersonation(auth, set);
+        if (blocked) return blocked;
         const userId = auth.userId;
 
         const { code } = (body ?? {}) as { code?: string };

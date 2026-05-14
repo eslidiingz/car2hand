@@ -372,7 +372,7 @@ export default function SellPage() {
             </section>
 
             {/* Package Pricing Section */}
-            {packages.length > 0 && (
+            {/* {packages.length > 0 && (
                 <section className="bg-gray-50 py-20">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="text-center mb-12">
@@ -397,7 +397,6 @@ export default function SellPage() {
                                             </div>
                                         )}
 
-                                        {/* Header */}
                                         <div className={`${style.bg} p-6 text-center`}>
                                             <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl ${style.bg} ${style.iconColor} mb-3`}>
                                                 {style.icon}
@@ -406,7 +405,6 @@ export default function SellPage() {
                                             <p className="text-xs text-gray-500">{pkg.nameTh}</p>
                                         </div>
 
-                                        {/* Price */}
                                         <div className="px-6 py-4 text-center border-b border-gray-100">
                                             {price === 0 ? (
                                                 <span className="text-3xl font-bold text-gray-800">ฟรี</span>
@@ -418,7 +416,6 @@ export default function SellPage() {
                                             )}
                                         </div>
 
-                                        {/* Features */}
                                         <div className="px-6 py-4 flex-1 space-y-3 text-sm">
                                             <div className="flex items-center gap-2">
                                                 <Check className="text-green-500 flex-shrink-0" size={16} />
@@ -452,7 +449,6 @@ export default function SellPage() {
                                             </div>
                                         </div>
 
-                                        {/* CTA */}
                                         <div className="px-6 pb-6">
                                             <button
                                                 onClick={() => handlePackageClick(pkg.slug)}
@@ -473,7 +469,7 @@ export default function SellPage() {
                         </div>
                     </div>
                 </section>
-            )}
+            )} */}
 
             {/* Testimonials */}
             <section className="max-w-7xl mx-auto px-4 py-20">

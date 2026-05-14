@@ -5,7 +5,7 @@
 
 import { Elysia, t } from "elysia";
 import prisma from "./db";
-import { jwtPlugin, generateAccessToken, authGuard } from "./jwt";
+import { jwtPlugin, generateAccessToken, generateImpersonationToken, authGuard } from "./jwt";
 import { adminLoginSchema, validateInput } from "./validation";
 import { authRateLimiter } from "./security";
 import { getUserPackage, getListingExpiryDate } from "./config/packages";
@@ -1494,6 +1494,63 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
                 console.error('Delete user error:', error);
                 set.status = 500;
                 return { error: 'Server Error', message: 'ไม่สามารถลบบัญชีผู้ใช้ได้' };
+            }
+        })
+
+        // Issue a short-lived JWT that lets the admin act as the target user on the
+        // public frontend (debug / data-cleanup). Logged to AdminAuditLog.
+        // Dangerous actions (password / email change, delete, payments) are blocked
+        // server-side via blockImpersonation() on those routes.
+        .post("/:id/impersonate", async ({ params: { id }, adminId, jwt, request, set }) => {
+            try {
+                const target = await prisma.user.findUnique({
+                    where: { id },
+                    select: { id: true, email: true, fullName: true, isActive: true },
+                });
+                if (!target) {
+                    set.status = 404;
+                    return { error: 'Not Found', message: 'ไม่พบผู้ใช้งาน' };
+                }
+                if (!target.isActive) {
+                    set.status = 400;
+                    return { error: 'Inactive', message: 'ผู้ใช้นี้ถูกปิดการใช้งาน ไม่สามารถ impersonate ได้' };
+                }
+
+                // adminId is guaranteed non-null by the group's onBeforeHandle, but be defensive.
+                if (!adminId) {
+                    set.status = 401;
+                    return { error: 'Unauthorized', message: 'กรุณาเข้าสู่ระบบ Admin' };
+                }
+
+                const token = await generateImpersonationToken(jwt.sign, target.id, target.email, adminId);
+
+                const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+                    || request.headers.get('x-real-ip')
+                    || null;
+
+                await logAdminAction({
+                    adminId,
+                    action: 'USER_IMPERSONATE',
+                    targetType: 'USER',
+                    targetId: target.id,
+                    note: `Admin เริ่ม session impersonate ผู้ใช้ ${target.fullName} (${target.email})`,
+                    ipAddress: ip,
+                });
+
+                return {
+                    message: 'สร้าง session impersonate สำเร็จ',
+                    token,
+                    expiresIn: '1h',
+                    user: {
+                        id: target.id,
+                        email: target.email,
+                        fullName: target.fullName,
+                    },
+                };
+            } catch (error) {
+                console.error('Impersonate error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถสร้าง session impersonate ได้' };
             }
         })
     )
