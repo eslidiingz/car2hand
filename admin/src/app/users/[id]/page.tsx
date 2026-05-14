@@ -30,11 +30,15 @@ import {
     Save,
     X as XIcon,
     Trash2,
+    LogIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DeleteConfirmModal from "@/components/DeleteConfirmModal";
+
+const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
 
 interface RecentListing {
     id: string;
@@ -165,6 +169,10 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
+    // Impersonate state — admin "login as user"
+    const [impersonateOpen, setImpersonateOpen] = useState(false);
+    const [impersonating, setImpersonating] = useState(false);
+
     const fetchUser = useCallback(async () => {
         setLoading(true);
         try {
@@ -246,6 +254,24 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
         }
     };
 
+    const handleImpersonate = async () => {
+        if (!user) return;
+        setImpersonating(true);
+        try {
+            const res = await apiFetch(`/admin/users/${user.id}/impersonate`, { method: "POST" });
+            const url = `${FRONTEND_URL}/admin-impersonate?token=${encodeURIComponent(res.token)}`;
+            // window.open() with `noopener` always returns null even on success, so
+            // can't reliably detect popup blocking here — just close optimistically.
+            window.open(url, "_blank", "noopener,noreferrer");
+            toast.success("เปิด session impersonate ใน tab ใหม่แล้ว");
+            setImpersonateOpen(false);
+        } catch (err: any) {
+            toast.error(err.message || "ไม่สามารถสร้าง session impersonate ได้");
+        } finally {
+            setImpersonating(false);
+        }
+    };
+
     if (loading) {
         return (
             <DashboardLayout>
@@ -302,6 +328,16 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                                 >
                                     {toggling ? <Loader2 size={14} className="animate-spin" /> : user.isActive ? <UserX size={14} /> : <UserCheck size={14} />}
                                     {user.isActive ? "ปิดการใช้งาน" : "เปิดการใช้งาน"}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setImpersonateOpen(true)}
+                                    disabled={!user.isActive}
+                                    title={!user.isActive ? "ไม่สามารถ impersonate ผู้ใช้ที่ถูกปิดการใช้งาน" : undefined}
+                                    className="text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200 disabled:opacity-50"
+                                >
+                                    <LogIn size={14} /> เข้าใช้งานเป็นผู้ใช้นี้
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -592,6 +628,52 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                 description={`คุณแน่ใจหรือไม่ที่จะลบบัญชี "${user.fullName}"? ข้อมูลส่วนตัวจะถูกลบและบัญชีจะถูกปิดการใช้งาน`}
                 isLoading={deleting}
             />
+
+            <Dialog open={impersonateOpen} onOpenChange={(open) => !impersonating && !open && setImpersonateOpen(false)}>
+                <DialogContent className="sm:max-w-md rounded-xl p-0 overflow-hidden border-slate-200 shadow-lg">
+                    <div className="p-6">
+                        <div className="mb-5">
+                            <div className="h-11 w-11 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600">
+                                <ShieldAlert size={22} />
+                            </div>
+                        </div>
+
+                        <DialogHeader className="text-left space-y-1.5">
+                            <DialogTitle className="text-lg font-semibold text-slate-800">เข้าใช้งานเป็นผู้ใช้นี้?</DialogTitle>
+                            <DialogDescription className="text-slate-500 text-sm leading-relaxed">
+                                คุณจะเปิด tab ใหม่และเข้าสู่ระบบในนามของ <strong>{user.fullName}</strong> session นี้มีอายุ <strong>1 ชั่วโมง</strong> และจะถูกบันทึกใน audit log
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <ul className="mt-4 space-y-1 text-xs text-slate-500 list-disc list-inside">
+                            <li>ไม่สามารถเปลี่ยนรหัสผ่าน / อีเมลของผู้ใช้</li>
+                            <li>ไม่สามารถลบบัญชีหรือซื้อแพ็กเกจ/slot แทนผู้ใช้</li>
+                        </ul>
+
+                        <div className="mt-6 flex items-center gap-3">
+                            <Button
+                                variant="secondary"
+                                disabled={impersonating}
+                                onClick={() => setImpersonateOpen(false)}
+                                className="flex-1 h-10 font-medium rounded-lg"
+                            >
+                                ยกเลิก
+                            </Button>
+                            <Button
+                                disabled={impersonating}
+                                onClick={handleImpersonate}
+                                className="flex-1 h-10 font-medium rounded-lg flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white"
+                            >
+                                {impersonating ? (
+                                    <><Loader2 className="animate-spin" size={16} /> กำลังเปิด...</>
+                                ) : (
+                                    <><LogIn size={16} /> เปิด session</>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </DashboardLayout>
     );
 }
