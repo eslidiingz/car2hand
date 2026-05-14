@@ -14,6 +14,7 @@ if (!JWT_SECRET) {
 }
 const JWT_EXPIRES_IN = '7d'; // Token expires in 7 days
 const JWT_REFRESH_EXPIRES_IN = '30d'; // Refresh token expires in 30 days
+const JWT_IMPERSONATION_EXPIRES_IN = '1h'; // Admin "login as user" tokens — short-lived
 
 // Token blacklist (use Redis for production)
 const tokenBlacklist = new Set<string>();
@@ -21,6 +22,8 @@ const tokenBlacklist = new Set<string>();
 export interface JWTPayload {
     userId: string;
     email: string;
+    type?: 'access' | 'refresh' | 'impersonation';
+    impersonatedBy?: string;
     iat: number;
     exp: number;
 }
@@ -69,6 +72,26 @@ export const generateRefreshToken = async (
 };
 
 /**
+ * Generate an impersonation token — used when an admin "logs in as" a user.
+ * Carries `impersonatedBy: <adminId>` so user routes can detect & block dangerous actions.
+ * Short TTL (1h) limits blast radius if leaked.
+ */
+export const generateImpersonationToken = async (
+    jwtSign: (payload: Record<string, unknown>) => Promise<string>,
+    userId: string,
+    email: string,
+    adminId: string
+): Promise<string> => {
+    return await jwtSign({
+        userId,
+        email,
+        type: 'impersonation',
+        impersonatedBy: adminId,
+        exp: JWT_IMPERSONATION_EXPIRES_IN
+    });
+};
+
+/**
  * Verify token is not blacklisted
  */
 export const isTokenBlacklisted = (token: string): boolean => {
@@ -97,12 +120,20 @@ export const blacklistToken = (token: string): void => {
  * Auth Guard Middleware
  * Protects routes that require authentication
  */
+export interface AuthContext {
+    userId: string;
+    email: string;
+    token: string;
+    /** Set when token was issued via the admin "login as user" flow. */
+    impersonatedBy?: string;
+}
+
 // Helper to extract and verify JWT from request
 async function verifyAuthToken(
     jwtVerify: (token: string) => Promise<JWTPayload | false>,
     request: Request,
     cookie: any
-): Promise<{ userId: string; email: string; token: string } | null> {
+): Promise<AuthContext | null> {
     let token: string | null = null;
 
     const authHeader = request.headers.get('Authorization');
@@ -117,10 +148,36 @@ async function verifyAuthToken(
     try {
         const payload = await jwtVerify(token) as JWTPayload | false;
         if (!payload) return null;
-        return { userId: payload.userId, email: payload.email, token };
+        return {
+            userId: payload.userId,
+            email: payload.email,
+            token,
+            ...(payload.impersonatedBy ? { impersonatedBy: payload.impersonatedBy } : {})
+        };
     } catch {
         return null;
     }
+}
+
+/**
+ * Block a route from running when the caller is acting via an impersonation token.
+ * Returns true (and writes a 403 response) if the action should be blocked.
+ *
+ * Use on operations an admin should NEVER perform on behalf of a user — password change,
+ * email change, account deletion, money movements (package upgrade, slot purchase), etc.
+ */
+export function blockImpersonation(
+    auth: AuthContext | null,
+    set: { status?: number | string }
+): { error: string; message: string } | null {
+    if (auth?.impersonatedBy) {
+        set.status = 403;
+        return {
+            error: 'Forbidden',
+            message: 'การกระทำนี้ไม่สามารถทำได้ขณะที่ admin กำลังเข้าใช้งานในนามของผู้ใช้',
+        };
+    }
+    return null;
 }
 
 export { verifyAuthToken };
@@ -174,7 +231,8 @@ export const optionalAuth = new Elysia({ name: 'optional-auth' })
                 auth: {
                     userId: payload.userId,
                     email: payload.email,
-                    token
+                    token,
+                    ...(payload.impersonatedBy ? { impersonatedBy: payload.impersonatedBy } : {})
                 }
             };
         } catch {

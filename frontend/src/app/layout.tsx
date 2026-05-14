@@ -3,8 +3,10 @@ import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ImpersonationBanner from "@/components/ImpersonationBanner";
 import JsonLd from "@/components/JsonLd";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import MobileSellCTA from "@/components/MobileSellCTA";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, organizationSchema, websiteSchema } from "@/lib/seo";
@@ -12,7 +14,10 @@ import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || '';
+
+// ปิด Google Analytics ใน dev/preview เพื่อกัน traffic ปลอมขึ้น GA
+// production จะใช้งานปกติเมื่อมี GA_ID set ไว้
+const ANALYTICS_ENABLED = process.env.NODE_ENV === 'production' && !!GA_ID;
 
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
   weight: ["300", "400", "500", "600", "700"],
@@ -117,13 +122,20 @@ export default function RootLayout({
         <ServiceWorkerRegister />
         <ThemeProvider>
           <WishlistProvider>
+            <ImpersonationBanner />
             <Navbar />
             <main className="flex-grow pt-16">{children}</main>
             <Footer />
+            <MobileSellCTA />
           </WishlistProvider>
         </ThemeProvider>
-        <Analytics />
-        <GoogleAnalytics gaId={GA_ID} />
+        
+        {ANALYTICS_ENABLED &&
+          <>
+            <Analytics />
+            <GoogleAnalytics gaId={GA_ID} />
+          </>
+        }
       </body>
     </html>
   );

@@ -113,6 +113,14 @@ export default function Navbar() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
+    // Allow other components (e.g. <MobileSellCTA />) to open the LoginModal
+    // by dispatching `window.dispatchEvent(new CustomEvent('open-login-modal'))`.
+    useEffect(() => {
+        const handleOpenLoginModal = () => setIsLoginModalOpen(true);
+        window.addEventListener('open-login-modal', handleOpenLoginModal);
+        return () => window.removeEventListener('open-login-modal', handleOpenLoginModal);
+    }, []);
+
     const openRegisterModal = () => {
         setIsLoginModalOpen(false);
         setIsRegisterModalOpen(true);
@@ -237,7 +245,7 @@ export default function Navbar() {
                         {/* Desktop Menu */}
                         <div className="hidden lg:flex space-x-6 h-full">
                             <Link href="/buy" className={getLinkClass('/buy')}>ซื้อรถ</Link>
-                            <Link href="/sell" className={getLinkClass('/sell')}>ทำไมต้องลงขายกับเรา</Link>
+                            <Link href="/sell" className={getLinkClass('/sell')}>ทำไมต้องขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={getLinkClass('/services')}>บริการ</Link> */}
                             {/* <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
@@ -414,7 +422,7 @@ export default function Navbar() {
 
                             <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 pt-2">เมนูหลัก</p>
                             <Link href="/buy" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/buy') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ซื้อรถ</Link>
-                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ทำไมต้องลงขายกับเรา</Link>
+                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ทำไมต้องขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/services') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>บริการ</Link> */}
                             {/* <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>

@@ -7,7 +7,7 @@ import { Elysia, t } from "elysia";
 import prisma from "./db";
 import { uploadFile, processImage, generateFilename, isValidImageType, isValidFileSize } from "./storage";
 import { getAndBroadcastPendingCounts } from "./admin-sse";
-import { authGuard } from "./jwt";
+import { authGuard, blockImpersonation } from "./jwt";
 
 export const PRICE_PER_SLOT = 99;
 export const MIN_QUANTITY = 1;
@@ -49,6 +49,8 @@ const slotRoutes = new Elysia({ prefix: "/slots" })
     // ส่งคำขอซื้อ slot เพิ่ม (พร้อมแนบสลิป)
     .post("/purchase", async ({ body, auth, set }) => {
         if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const blocked = blockImpersonation(auth, set);
+        if (blocked) return blocked;
         const userId = auth.userId;
         const { quantity, slipImage } = body;
 
