@@ -8,7 +8,7 @@ import prisma from "./db";
 import { getUserPackage } from "./config/packages";
 import { uploadFile, processImage, generateFilename, isValidImageType, isValidFileSize } from "./storage";
 import { getAndBroadcastPendingCounts } from "./admin-sse";
-import { authGuard } from "./jwt";
+import { authGuard, blockImpersonation } from "./jwt";
 
 // =============================================
 // Public Routes - ไม่ต้อง login
@@ -122,6 +122,8 @@ const protectedPackageRoutes = new Elysia({ prefix: "/packages" })
     // ส่งคำขออัพเกรดแพ็กเกจ (พร้อมแนบสลิป)
     .post("/upgrade", async ({ body, auth, set }) => {
         if (!auth || !auth.userId) { set.status = 401; return { error: "Unauthorized", message: "กรุณาเข้าสู่ระบบ" }; }
+        const blocked = blockImpersonation(auth, set);
+        if (blocked) return blocked;
         const userId = auth.userId;
         const { packageId, slipImage } = body;
 
