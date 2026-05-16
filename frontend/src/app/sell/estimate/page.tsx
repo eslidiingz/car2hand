@@ -286,7 +286,10 @@ function EstimatePricePage() {
         }
     };
 
-    const formatPrice = (n: number) => n.toLocaleString('th-TH');
+    // Null-safe: API อาจคืน null/undefined สำหรับราคา (เคสไม่มี comparable หรือ listing เก่า
+    // ก่อน schema เปลี่ยน) ห้ามล้ม UI ทั้งหน้าเพราะตัวเลขหายไป
+    const formatPrice = (n: number | null | undefined) =>
+        typeof n === 'number' && Number.isFinite(n) ? n.toLocaleString('th-TH') : '-';
 
     const getConditionPrice = () => {
         if (!result?.priceByCondition?.[selectedCondition]) {

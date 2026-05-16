@@ -35,7 +35,7 @@ import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
 import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
-import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED } from '@/lib/featureFlags';
 
 // Thai provinces list
 const PROVINCES = [
@@ -205,7 +205,7 @@ function CreateListingPage() {
             setIsBasicPackage(!pkg || pkg.slug === 'basic');
 
             // Check listing limit — ใช้ effective max (package + bonus slot) จาก usage
-            const packageMax = pkg?.maxListings ?? 3;
+            const packageMax = pkg?.maxListings ?? -1;
             const bonusSlots = pkgData.usage?.bonusListingSlots ?? 0;
             const effectiveMax = pkgData.usage?.maxListings ?? (packageMax === -1 ? -1 : packageMax + bonusSlots);
             const activeCount = pkgData.usage?.activeListings ?? (listingsData.listings || []).filter(
@@ -214,7 +214,9 @@ function CreateListingPage() {
             if (effectiveMax !== -1 && activeCount >= effectiveMax) {
                 setLimitReached(true);
                 const bonusText = bonusSlots > 0 ? ` (แพ็กเกจ ${packageMax} + slot ${bonusSlots})` : '';
-                setUpgradeMessage(`แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${effectiveMax} รายการ${bonusText} กรุณาอัพเกรดแพ็กเกจหรือซื้อ slot เพิ่มเพื่อลงประกาศเพิ่มเติม`);
+                setUpgradeMessage(PACKAGES_ENABLED
+                    ? `แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${effectiveMax} รายการ${bonusText} กรุณาอัพเกรดแพ็กเกจหรือซื้อ slot เพิ่มเพื่อลงประกาศเพิ่มเติม`
+                    : `คุณลงประกาศครบ ${effectiveMax} รายการแล้ว กรุณาลบหรือปิดประกาศเดิมก่อนจึงจะลงประกาศใหม่ได้`);
                 setShowUpgradeModal(true);
             }
         }).catch(() => {});
@@ -1550,41 +1552,51 @@ function CreateListingPage() {
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
                         <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                            {upgradeMessage || 'คุณใช้สิทธิลงประกาศครบตามแพ็กเกจปัจจุบันแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม'}
+                            {upgradeMessage || (PACKAGES_ENABLED
+                                ? 'คุณใช้สิทธิลงประกาศครบตามแพ็กเกจปัจจุบันแล้ว อัพเกรดแพ็กเกจเพื่อลงประกาศเพิ่มเติม'
+                                : 'คุณลงประกาศครบตามสิทธิ์แล้ว กรุณาลบหรือปิดประกาศเดิมก่อนจึงจะลงประกาศใหม่ได้')}
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <button
-                                onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
-                                className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
-                            >
-                                <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
-                            </button>
-                            <button
-                                onClick={() => router.push('/profile/packages')}
-                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
-                            >
-                                ดูแพ็กเกจ
-                            </button>
+                            {PACKAGES_ENABLED && (
+                                <>
+                                    <button
+                                        onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
+                                        className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+                                    >
+                                        <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
+                                    </button>
+                                    <button
+                                        onClick={() => router.push('/profile/packages')}
+                                        className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                                    >
+                                        ดูแพ็กเกจ
+                                    </button>
+                                </>
+                            )}
                             <button
                                 onClick={() => limitReached ? router.push('/profile/dashboard') : setShowUpgradeModal(false)}
-                                className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
+                                className={PACKAGES_ENABLED
+                                    ? "w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
+                                    : "w-full py-3.5 px-4 bg-primary text-white rounded-xl font-bold hover:bg-opacity-90 transition"}
                             >
-                                {limitReached ? 'กลับหน้าหลัก' : 'ปิด'}
+                                {limitReached ? 'กลับหน้าหลัก' : (PACKAGES_ENABLED ? 'ปิด' : 'รับทราบ')}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            <SlotPurchaseModal
-                open={showSlotModal}
-                onClose={() => setShowSlotModal(false)}
-                onSuccess={() => {
-                    setLimitReached(false);
-                    setShowUpgradeModal(false);
-                }}
-            />
+            {PACKAGES_ENABLED && (
+                <SlotPurchaseModal
+                    open={showSlotModal}
+                    onClose={() => setShowSlotModal(false)}
+                    onSuccess={() => {
+                        setLimitReached(false);
+                        setShowUpgradeModal(false);
+                    }}
+                />
+            )}
         </div>
     );
 }

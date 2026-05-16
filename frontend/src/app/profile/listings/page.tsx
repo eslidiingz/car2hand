@@ -27,6 +27,7 @@ import ProfileListingCard, { VehicleListing, STATUS_CONFIG } from '@/components/
 import Toast from '@/components/Toast';
 import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { PACKAGES_ENABLED } from '@/lib/featureFlags';
 
 interface ApiResponse {
     listings: VehicleListing[];
@@ -412,8 +413,8 @@ export default function MyListingsPage() {
                 </button>
             </div>
 
-            {/* Package Usage Quota Banner */}
-            {packageInfo && (
+            {/* Package Usage Quota Banner — ซ่อนทั้งหมดเมื่อ packages ปิด (phase นี้) */}
+            {PACKAGES_ENABLED && packageInfo && (
                 <div className={`rounded-2xl border p-4 sm:p-5 ${
                     isAtLimit
                         ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-500/10 dark:to-orange-500/10 border-red-200'
@@ -577,28 +578,36 @@ export default function MyListingsPage() {
 
                         <h3 className="text-xl font-bold text-gray-800 mb-2">สิทธิการลงประกาศเต็มแล้ว</h3>
                         <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                            คุณใช้สิทธิลงประกาศครบ {packageInfo?.usage.maxListings} รายการตามแพ็กเกจปัจจุบันแล้ว เลือกซื้อ slot เพิ่ม (฿99/slot) หรืออัพเกรดแพ็กเกจ
+                            {PACKAGES_ENABLED
+                                ? <>คุณใช้สิทธิลงประกาศครบ {packageInfo?.usage.maxListings} รายการตามแพ็กเกจปัจจุบันแล้ว เลือกซื้อ slot เพิ่ม (฿99/slot) หรืออัพเกรดแพ็กเกจ</>
+                                : <>คุณลงประกาศครบ {packageInfo?.usage.maxListings ?? 3} รายการแล้ว กรุณาลบหรือปิดประกาศเดิมก่อนจึงจะลงประกาศใหม่ได้</>}
                         </p>
 
                         <div className="flex flex-col gap-3">
-                            <button
-                                onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
-                                className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
-                            >
-                                <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
-                            </button>
-                            <Link
-                                href="/profile/packages"
-                                className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
-                            >
-                                ดูแพ็กเกจ
-                                <ArrowRight size={16} />
-                            </Link>
+                            {PACKAGES_ENABLED && (
+                                <>
+                                    <button
+                                        onClick={() => { setShowUpgradeModal(false); setShowSlotModal(true); }}
+                                        className="w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg shadow-orange-200 flex items-center justify-center gap-2"
+                                    >
+                                        <ShoppingBag size={18} /> ซื้อ slot เพิ่ม ฿99/slot
+                                    </button>
+                                    <Link
+                                        href="/profile/packages"
+                                        className="w-full py-3 px-4 border border-gray-200 rounded-xl font-bold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2"
+                                    >
+                                        ดูแพ็กเกจ
+                                        <ArrowRight size={16} />
+                                    </Link>
+                                </>
+                            )}
                             <button
                                 onClick={() => setShowUpgradeModal(false)}
-                                className="w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
+                                className={PACKAGES_ENABLED
+                                    ? "w-full py-2 text-sm text-gray-400 hover:text-gray-600 transition"
+                                    : "w-full py-3.5 px-4 bg-primary text-white rounded-xl font-bold hover:bg-opacity-90 transition"}
                             >
-                                ปิด
+                                {PACKAGES_ENABLED ? 'ปิด' : 'รับทราบ'}
                             </button>
                         </div>
                     </div>
@@ -800,14 +809,16 @@ export default function MyListingsPage() {
 
             {toastMsg && <Toast message={toastMsg.message} type={toastMsg.type} />}
 
-            <SlotPurchaseModal
-                open={showSlotModal}
-                onClose={() => setShowSlotModal(false)}
-                onSuccess={() => {
-                    showToast('ส่งคำขอซื้อ slot สำเร็จ รอ admin ตรวจสอบ', 'success');
-                    if (user) fetchPackageInfo(user.id);
-                }}
-            />
+            {PACKAGES_ENABLED && (
+                <SlotPurchaseModal
+                    open={showSlotModal}
+                    onClose={() => setShowSlotModal(false)}
+                    onSuccess={() => {
+                        showToast('ส่งคำขอซื้อ slot สำเร็จ รอ admin ตรวจสอบ', 'success');
+                        if (user) fetchPackageInfo(user.id);
+                    }}
+                />
+            )}
         </div>
     );
 }

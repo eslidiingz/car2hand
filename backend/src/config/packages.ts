@@ -22,8 +22,10 @@ export interface PackageData {
 }
 
 // Default limits สำหรับ user ที่ไม่มี package (= Basic free tier)
+// maxListings: -1 = ไม่จำกัด (โปรโมชัน phase นี้ — จะกลับเป็น 3 ใน phase ถัดไป
+// พร้อมเปิดระบบแพ็กเกจ; seed.ts คงไว้ที่ 3 เป็น default สำหรับ DB ใหม่)
 const DEFAULT_LIMITS = {
-    maxListings: 3,
+    maxListings: -1,
     maxPhotosPerListing: 16,
     listingDurationDays: 45,
     manualBumpPerDay: 1,
