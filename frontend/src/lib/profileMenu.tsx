@@ -8,6 +8,7 @@ import {
     Settings,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { PACKAGES_ENABLED } from './featureFlags';
 
 /**
  * ⚠️  SINGLE SOURCE OF TRUTH for the authenticated profile menu
@@ -34,7 +35,10 @@ export const profileMenuItems: ProfileMenuItem[] = [
     { name: 'จัดการรถที่ลงขาย', href: '/profile/listings', icon: <Car size={20} /> },
     { name: 'โรงรถของฉัน', href: '/profile/garage', icon: <Warehouse size={20} /> },
     { name: 'รายการที่บันทึกไว้', href: '/profile/wishlist', icon: <Heart size={20} /> },
-    { name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} /> },
+    // แพ็กเกจ — ซ่อนไว้ก่อน เปิดใน phase ถัดไป (ดู PACKAGES_ENABLED)
+    ...(PACKAGES_ENABLED
+        ? [{ name: 'แพ็กเกจของฉัน', href: '/profile/packages', icon: <Package size={20} /> }]
+        : []),
     { name: 'การแจ้งเตือน', href: '/profile/notifications', icon: <Bell size={20} /> },
     { name: 'ตั้งค่าบัญชี', href: '/profile/settings', icon: <Settings size={20} /> },
 ];

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { PACKAGES_ENABLED } from '@/lib/featureFlags';
 import {
     Crown,
     Star,
@@ -99,6 +101,15 @@ function getColor(slug: string) {
 }
 
 export default function PackagesPage() {
+    const router = useRouter();
+
+    // ฟีเจอร์แพ็กเกจถูกซ่อนใน phase นี้ — เด้งกลับ dashboard
+    // (effect อยู่รวมกับ hooks อื่น ๆ เพื่อไม่ผิด Rules of Hooks; การ gate
+    //  การ render ทำที่ JSX return ด้านล่าง)
+    useEffect(() => {
+        if (!PACKAGES_ENABLED) router.replace('/profile/dashboard');
+    }, [router]);
+
     const [packages, setPackages] = useState<PackageData[]>([]);
     const [currentPkg, setCurrentPkg] = useState<CurrentPackage | null>(null);
     const [usage, setUsage] = useState({ activeListings: 0, maxListings: 3, packageMaxListings: 3, bonusListingSlots: 0 });
@@ -318,6 +329,9 @@ export default function PackagesPage() {
         { label: 'ป้ายพิเศษ (Badge)', key: 'badge', format: (v: string | null) => v || 'ไม่มี' },
         { label: 'อันดับการค้นหา', key: 'searchPriority', format: (v: string) => ({ normal: 'ปกติ', higher: 'ดีกว่าทั่วไป', top: 'ลำดับต้นๆ', priority: 'บนสุด (Priority)' }[v] || v) },
     ];
+
+    // Gate render — flag ปิดอยู่ → คืน null ระหว่างที่ effect ด้านบน redirect
+    if (!PACKAGES_ENABLED) return null;
 
     return (
         <div className="space-y-6">
