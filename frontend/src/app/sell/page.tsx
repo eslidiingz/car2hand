@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
+import { PACKAGES_ENABLED } from '@/lib/featureFlags';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -371,8 +372,8 @@ export default function SellPage() {
                 </div>
             </section>
 
-            {/* Package Pricing Section */}
-            {/* {packages.length > 0 && (
+            {/* Package Pricing Section — ซ่อนใน phase นี้ (ดู PACKAGES_ENABLED) */}
+            {PACKAGES_ENABLED && packages.length > 0 && (
                 <section className="bg-gray-50 py-20">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="text-center mb-12">
@@ -469,7 +470,7 @@ export default function SellPage() {
                         </div>
                     </div>
                 </section>
-            )} */}
+            )}
 
             {/* Testimonials */}
             <section className="max-w-7xl mx-auto px-4 py-20">
