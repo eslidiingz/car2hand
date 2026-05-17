@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 import NotificationBell from './NotificationBell';
-import { User, ChevronDown, LogOut, Scale, Menu, X } from 'lucide-react'; // icons shared across navbar UI
+import { User, ChevronDown, LogOut, Scale, Menu, X, Plus, Search, Car, Store } from 'lucide-react'; // icons shared across navbar UI
 import { useWishlist } from '@/contexts/WishlistContext';
 import { profileMenuItems } from '@/lib/profileMenu';
 import ThemeToggle from './ThemeToggle';
@@ -22,10 +22,14 @@ interface UserData {
 
 export default function Navbar() {
     const pathname = usePathname();
+    const router = useRouter();
     const [user, setUser] = useState<UserData | null>(null);
     const [showAccountMenu, setShowAccountMenu] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [showSearchBar, setShowSearchBar] = useState(false);
+    const [searchClosing, setSearchClosing] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState('');
 
     // Check for logged in user
     useEffect(() => {
@@ -99,7 +103,16 @@ export default function Navbar() {
         if (path === '/') {
             return pathname === '/';
         }
-        return pathname?.startsWith(path);
+        // "ซื้อรถ" (/buy) must NOT highlight on the more-specific /buy/compare
+        // route — otherwise it duplicates "รายการเปรียบเทียบ" as active.
+        // Listing detail pages (/buy/[id]) should still keep ซื้อรถ active.
+        if (path === '/buy') {
+            return (
+                pathname === '/buy' ||
+                (pathname?.startsWith('/buy/') === true && !pathname.startsWith('/buy/compare'))
+            );
+        }
+        return pathname?.startsWith(path) ?? false;
     };
 
     const getLinkClass = (path: string) => {
@@ -137,6 +150,24 @@ export default function Navbar() {
         window.addEventListener('open-login-modal', handler);
         return () => window.removeEventListener('open-login-modal', handler);
     });
+
+    // Animated close — play the slide-up keyframe, then unmount
+    const closeSearch = () => {
+        setSearchClosing(true);
+        setTimeout(() => {
+            setShowSearchBar(false);
+            setSearchClosing(false);
+        }, 240); // must match .animate-search-up duration
+    };
+
+    // Navbar quick search — mirrors the homepage Hero keyword search (?q=)
+    const submitSearch = () => {
+        const q = searchKeyword.trim();
+        router.push(q ? `/buy?q=${encodeURIComponent(q)}` : '/buy');
+        setShowSearchBar(false);
+        setSearchClosing(false);
+        setSearchKeyword('');
+    };
 
     const handleLogout = () => {
         setShowAccountMenu(false);
@@ -245,7 +276,7 @@ export default function Navbar() {
                         {/* Desktop Menu */}
                         <div className="hidden lg:flex space-x-6 h-full">
                             <Link href="/buy" className={getLinkClass('/buy')}>ซื้อรถ</Link>
-                            <Link href="/sell" className={getLinkClass('/sell')}>ทำไมต้องขายกับเรา</Link>
+                            <Link href="/sellLandingPage" className={getLinkClass('/sellLandingPage')}>ทำไมต้องขายกับเรา</Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={getLinkClass('/services')}>บริการ</Link> */}
                             {/* <Link href="/articles" className={getLinkClass('/articles')}>ความรู้เรื่องรถ</Link>
@@ -265,8 +296,9 @@ export default function Navbar() {
                             </div>
 
                             {user ? (
-                                /* Logged In State */
-                                <>
+                                /* Logged In State — desktop only. On mobile/tablet
+                                   everything lives under the "เมนู" drawer below. */
+                                <div className="hidden lg:flex items-center gap-2">
                                 <NotificationBell
                                     onOpen={() => {
                                         setShowAccountMenu(false);
@@ -332,97 +364,154 @@ export default function Navbar() {
                                         </>
                                     )}
 
-                                    {/* Account Menu - Mobile Drawer */}
-                                    {showAccountMenu && (
-                                        <div className="md:hidden fixed inset-x-0 top-16 bg-card text-card-foreground z-[60] border-t border-border shadow-2xl overflow-y-auto h-[calc(100vh-64px)]">
-                                            <div className="p-4 space-y-2">
-                                                <div className="px-4 py-4 mb-4 bg-muted rounded-2xl">
-                                                    <p className="font-bold text-gray-800 dark:text-gray-100 text-lg">{user.fullName}</p>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
-                                                </div>
-                                                {/* Menu items from single source: src/lib/profileMenu.tsx */}
-                                                {profileMenuItems.map((item) => (
-                                                    <Link
-                                                        key={item.href}
-                                                        href={item.href}
-                                                        className="flex items-center gap-4 p-4 text-gray-700 dark:text-gray-200 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
-                                                        onClick={() => setShowAccountMenu(false)}
-                                                    >
-                                                        <div className="w-10 h-10 bg-blue-50 dark:bg-primary/20 text-primary rounded-full flex items-center justify-center">
-                                                            {item.icon}
-                                                        </div>
-                                                        <span>{item.name}</span>
-                                                    </Link>
-                                                ))}
-                                                <div className="pt-4 border-t border-border">
-                                                    <button onClick={handleLogout} className="flex items-center gap-4 p-4 text-red-500 font-bold w-full text-left rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all">
-                                                        <div className="w-10 h-10 bg-red-50 dark:bg-red-500/15 text-red-500 rounded-full flex items-center justify-center">
-                                                            <LogOut size={20} />
-                                                        </div>
-                                                        <span>ออกจากระบบ</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+                                    {/* (Mobile account drawer removed — consolidated
+                                        into the "เมนู" drawer below) */}
                                 </div>
-                                </>
+                                </div>
                             ) : (
+                                /* Desktop guest CTA — mobile/tablet use the dedicated
+                                   "ลงขาย" button below (lg:hidden) instead */
                                 <button
                                     onClick={() => setIsLoginModalOpen(true)}
-                                    className="hidden sm:block bg-primary text-white text-sm px-5 py-2.5 rounded-full hover:bg-opacity-90 transition shadow-md font-bold"
+                                    className="hidden lg:block bg-primary text-white text-sm px-5 py-2.5 rounded-full hover:bg-opacity-90 transition shadow-md font-bold"
                                 >
                                     ลงขายรถฟรี
                                 </button>
                             )}
 
-                            {/* Mobile Hamburger Menu Toggle */}
-                            <button
-                                onClick={() => {
-                                    setShowMobileMenu(!showMobileMenu);
-                                    setShowAccountMenu(false); // Close account menu if open
-                                }}
-                                className="p-2 -mr-2 text-gray-600 dark:text-gray-300 hover:text-primary transition lg:hidden"
-                            >
-                                {showMobileMenu ? <X size={26} /> : <Menu size={26} />}
-                            </button>
+                            {/* Mobile/tablet nav — icon + label trio (< lg).
+                                ค้นหา (เลือกซื้อ) / ลงขาย / เมนู */}
+                            <div className="lg:hidden flex items-center -mr-1">
+                                {/* ค้นหา — toggles a full-width search dropdown */}
+                                <button
+                                    onClick={() => {
+                                        if (showSearchBar) {
+                                            closeSearch();
+                                        } else {
+                                            setShowSearchBar(true);
+                                            setSearchClosing(false);
+                                            setShowMobileMenu(false);
+                                            setShowAccountMenu(false);
+                                        }
+                                    }}
+                                    className={`flex flex-col items-center justify-center min-w-[44px] px-1 py-1 transition ${showSearchBar && !searchClosing ? 'text-primary' : 'text-gray-600 dark:text-gray-300 hover:text-primary'}`}
+                                >
+                                    {showSearchBar && !searchClosing ? <X size={22} /> : <Search size={22} />}
+                                    <span className="text-[10px] font-medium mt-0.5 leading-none">ค้นหา</span>
+                                </button>
+
+                                {/* ลงขาย — guest → login modal; logged-in → ลงประกาศเลย */}
+                                <button
+                                    onClick={() => {
+                                        if (user) {
+                                            router.push('/sell/create');
+                                        } else {
+                                            setIsLoginModalOpen(true);
+                                        }
+                                    }}
+                                    className="flex flex-col items-center justify-center min-w-[44px] px-1 py-1 text-gray-600 dark:text-gray-300 hover:text-primary transition"
+                                >
+                                    <Plus size={22} />
+                                    <span className="text-[10px] font-medium mt-0.5 leading-none">ลงขาย</span>
+                                </button>
+
+                                {/* เมนู — toggles the mobile drawer */}
+                                <button
+                                    onClick={() => {
+                                        setShowMobileMenu(!showMobileMenu);
+                                        setShowAccountMenu(false); // Close account menu if open
+                                        setShowSearchBar(false);   // Close search dropdown if open
+                                        setSearchClosing(false);
+                                    }}
+                                    className="flex flex-col items-center justify-center min-w-[44px] px-1 py-1 text-gray-600 dark:text-gray-300 hover:text-primary transition"
+                                >
+                                    {showMobileMenu ? <X size={22} /> : <Menu size={22} />}
+                                    <span className="text-[10px] font-medium mt-0.5 leading-none">เมนู</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Mobile Search Dropdown — drops down from the navbar, works like
+                    the homepage Hero keyword search (?q=) */}
+                {showSearchBar && (
+                    <>
+                        <div
+                            className={`lg:hidden fixed inset-0 top-16 z-[55] bg-black/30 transition-opacity duration-200 ${searchClosing ? 'opacity-0' : 'opacity-100'}`}
+                            onClick={closeSearch}
+                        />
+                        <div className={`lg:hidden fixed inset-x-0 top-16 bg-card text-card-foreground z-[60] border-t border-border shadow-2xl ${searchClosing ? 'animate-search-up' : 'animate-search-down'}`}>
+                            <div className="p-4">
+                                <div className="flex items-center gap-2 pl-4 pr-1.5 py-1.5 rounded-xl border border-gray-200 dark:border-border bg-white dark:bg-card">
+                                    <Search size={18} className="text-gray-400 flex-shrink-0" />
+                                    <input
+                                        type="text"
+                                        autoFocus
+                                        placeholder="เช่น civic, toyota..."
+                                        value={searchKeyword}
+                                        onChange={(e) => setSearchKeyword(e.target.value)}
+                                        onKeyDown={(e) => { if (e.key === 'Enter') submitSearch(); }}
+                                        className="w-full outline-none text-slate-700 dark:text-gray-100 bg-transparent text-base placeholder:text-slate-300"
+                                    />
+                                    <button
+                                        onClick={submitSearch}
+                                        className="flex-shrink-0 px-5 h-9 rounded-xl bg-primary text-white text-sm font-bold flex items-center justify-center hover:bg-opacity-90 transition"
+                                    >
+                                        ค้นหา
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {/* Mobile Menu Drawer */}
                 {showMobileMenu && (
                     <div className="lg:hidden fixed inset-x-0 top-16 bg-card text-card-foreground z-[60] border-t border-border shadow-2xl overflow-y-auto h-[calc(100vh-64px)]">
                         <div className="p-4 pb-20 space-y-2">
-                            {/* Comparison Tool in Mobile Menu */}
-                            <Link
-                                href="/buy/compare"
-                                className="flex items-center justify-between p-4 bg-blue-50/50 dark:bg-blue-500/10 rounded-2xl text-primary font-bold mb-4 border border-blue-100"
-                                onClick={() => setShowMobileMenu(false)}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="relative">
-                                        <Scale
-                                            size={24}
-                                            {...(compareCount > 0 ? { fill: 'currentColor' } : {})}
-                                            className="text-primary"
-                                        />
-                                        {compareCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                                                {compareCount}
-                                            </span>
+                            {/* Logged-in user — pinned to the very top */}
+                            {user && (
+                                <div className="px-4 py-4 mb-2 bg-muted rounded-2xl flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-sm overflow-hidden flex-shrink-0">
+                                        {user.profileImage ? (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img src={user.profileImage} alt={user.fullName} className="w-full h-full object-cover" />
+                                        ) : (
+                                            getInitials(user.fullName)
                                         )}
                                     </div>
-                                    <span>รายการเปรียบเทียบ</span>
+                                    <div className="min-w-0">
+                                        <p className="font-bold text-gray-800 dark:text-gray-100 truncate">{user.fullName}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                                    </div>
                                 </div>
-                                <div className="bg-primary text-white py-1.5 px-4 rounded-xl text-xs font-bold">
-                                    ดูรายการ
-                                </div>
-                            </Link>
+                            )}
 
                             <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 pt-2">เมนูหลัก</p>
-                            <Link href="/buy" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/buy') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ซื้อรถ</Link>
-                            <Link href="/sell" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/sell') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ทำไมต้องขายกับเรา</Link>
+                            <Link href="/buy" className={`flex items-center gap-4 p-4 rounded-xl font-bold transition-all ${isActive('/buy') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>
+                                <div className="w-10 h-10 bg-blue-50 dark:bg-primary/20 text-primary rounded-full flex items-center justify-center flex-shrink-0">
+                                    <Car size={20} />
+                                </div>
+                                <span>ซื้อรถ</span>
+                            </Link>
+                            <Link href="/buy/compare" className={`flex items-center gap-4 p-4 rounded-xl font-bold transition-all ${isActive('/buy/compare') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>
+                                <div className="w-10 h-10 bg-blue-50 dark:bg-primary/20 text-primary rounded-full flex items-center justify-center flex-shrink-0">
+                                    <Scale size={20} />
+                                </div>
+                                <span className="flex-1">รายการเปรียบเทียบ</span>
+                                {compareCount > 0 && (
+                                    <span className="w-5 h-5 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                                        {compareCount}
+                                    </span>
+                                )}
+                            </Link>
+                            <Link href="/sellLandingPage" className={`flex items-center gap-4 p-4 rounded-xl font-bold transition-all ${isActive('/sellLandingPage') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>
+                                <div className="w-10 h-10 bg-blue-50 dark:bg-primary/20 text-primary rounded-full flex items-center justify-center flex-shrink-0">
+                                    <Store size={20} />
+                                </div>
+                                <span>ทำไมต้องขายกับเรา</span>
+                            </Link>
                             {/* TODO: Phase 2 — บริการ */}
                             {/* <Link href="/services" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/services') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>บริการ</Link> */}
                             {/* <Link href="/articles" className={`flex items-center p-4 rounded-xl font-bold transition-all ${isActive('/articles') ? 'bg-primary text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'}`} onClick={() => setShowMobileMenu(false)}>ความรู้เรื่องรถ</Link>
@@ -436,6 +525,37 @@ export default function Navbar() {
                                     <User size={20} />
                                     เข้าสู่ระบบ / ลงขายรถ
                                 </button>
+                            )}
+
+                            {/* Logged-in account section — consolidated here so the
+                                mobile navbar stays uncluttered (was a separate drawer) */}
+                            {user && (
+                                <>
+                                    <p className="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 pt-2">บัญชีของฉัน</p>
+                                    {/* Menu items from single source: src/lib/profileMenu.tsx */}
+                                    {profileMenuItems.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            className="flex items-center gap-4 p-4 text-gray-700 dark:text-gray-200 font-bold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                                            onClick={() => setShowMobileMenu(false)}
+                                        >
+                                            <div className="w-10 h-10 bg-blue-50 dark:bg-primary/20 text-primary rounded-full flex items-center justify-center">
+                                                {item.icon}
+                                            </div>
+                                            <span>{item.name}</span>
+                                        </Link>
+                                    ))}
+                                    <button
+                                        onClick={() => { setShowMobileMenu(false); handleLogout(); }}
+                                        className="flex items-center gap-4 p-4 text-red-500 font-bold w-full text-left rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
+                                    >
+                                        <div className="w-10 h-10 bg-red-50 dark:bg-red-500/15 text-red-500 rounded-full flex items-center justify-center">
+                                            <LogOut size={20} />
+                                        </div>
+                                        <span>ออกจากระบบ</span>
+                                    </button>
+                                </>
                             )}
 
                             <div className="pt-4 mt-4 border-t border-border flex items-center justify-between px-4">

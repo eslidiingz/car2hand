@@ -12,7 +12,8 @@ import { Plus } from "lucide-react";
  * - มือถือเท่านั้น (`md:hidden`)
  * - แสดงเฉพาะ user ที่ยังไม่ได้เข้าสู่ระบบ (มี user ใน storage → ไม่แสดง)
  * - หลังเข้าเว็บ / เปลี่ยนหน้า: ซ่อน 5 วินาทีก่อน แล้วค่อย slide-up จากใต้จอ
- * - ซ่อนถาวรในหน้า flow ขาย / auth (เพื่อไม่ให้รบกวน intent ของหน้า)
+ * - แสดงเฉพาะหน้าแรก (`/`) และ sell landing page (`/sellLandingPage`)
+ *   เท่านั้น — หน้าอื่นทั้งหมดไม่แสดง (allowlist)
  *
  * Reactivity
  * ──────────
@@ -27,11 +28,10 @@ import { Plus } from "lucide-react";
 
 const SHOW_DELAY_MS = 5_000;
 
-const HIDDEN_PATH_PATTERNS: RegExp[] = [
-  /^\/sell(\/|$)/,
-  /^\/login(\/|$)/,
-  /^\/register(\/|$)/,
-  /^\/auth(\/|$)/,
+// Allowlist — แสดงปุ่มเฉพาะ 2 หน้านี้เท่านั้น
+const VISIBLE_PATH_PATTERNS: RegExp[] = [
+  /^\/$/,                     // หน้าแรก
+  /^\/sellLandingPage(\/|$)/, // sell landing page
 ];
 
 function readAuthFromStorage(): boolean {
@@ -49,7 +49,7 @@ export default function MobileSellCTA() {
   const [isAuthed, setIsAuthed] = useState(false);
 
   const shouldRender =
-    !isAuthed && !HIDDEN_PATH_PATTERNS.some((re) => re.test(pathname || ""));
+    !isAuthed && VISIBLE_PATH_PATTERNS.some((re) => re.test(pathname || ""));
 
   // Sync auth state from storage + react to login/logout/cross-tab changes
   useEffect(() => {

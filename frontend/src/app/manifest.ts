@@ -48,7 +48,7 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         name: 'ลงประกาศขายรถ',
         short_name: 'ลงขาย',
-        url: '/sell',
+        url: '/sellLandingPage',
       },
       {
         name: 'ชุมชน',

@@ -322,7 +322,7 @@ export default function AboutPage() {
                             เริ่มหารถ
                         </Link>
                         <Link
-                            href="/sell"
+                            href="/sellLandingPage"
                             className="inline-flex items-center gap-2 bg-accent text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition shadow-lg shadow-orange-200"
                         >
                             <Sparkles size={18} />

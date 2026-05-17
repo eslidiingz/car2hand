@@ -291,7 +291,7 @@ export default function HelpPage() {
             <section className="container mx-auto max-w-4xl px-4 -mt-8 mb-10 relative z-10">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <Link
-                        href="/sell"
+                        href="/sellLandingPage"
                         className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition border border-gray-100 text-center"
                     >
                         <Sparkles className="text-accent mx-auto mb-2" size={22} />
