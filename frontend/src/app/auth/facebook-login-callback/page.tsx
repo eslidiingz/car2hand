@@ -4,6 +4,7 @@ import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { consumeReturnTo } from '@/lib/listingDraft';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
@@ -75,9 +76,10 @@ function FacebookLoginCallbackContent() {
 
                 setTimeout(() => {
                     if (data.isNewUser) {
+                        // Keep returnTo in storage — complete-profile honors it.
                         window.location.href = '/auth/complete-profile';
                     } else {
-                        window.location.href = '/profile/dashboard';
+                        window.location.href = consumeReturnTo() || '/profile/dashboard';
                     }
                 }, 1500);
             } catch (err) {

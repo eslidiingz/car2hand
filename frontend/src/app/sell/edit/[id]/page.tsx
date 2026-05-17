@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect from '@/components/SearchableSelect';
-import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED } from '@/lib/featureFlags';
 
 // Types
 interface VehicleImage {
@@ -1486,7 +1486,9 @@ export default function EditListingPage() {
                                 )}
                             </div>
 
-                            {/* Vehicle Extras Section */}
+                            {/* Vehicle Extras Section — hidden via LISTING_EXTRA_SECTIONS_ENABLED
+                                (also covers the nested "สำเนาเล่มทะเบียนรถ" here) */}
+                            {LISTING_EXTRA_SECTIONS_ENABLED && (<>
                             <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
                                 <Lightbulb size={24} className="text-accent" /> ข้อมูลเพิ่มเติม
                             </h3>
@@ -1669,6 +1671,7 @@ export default function EditListingPage() {
                                     </div>
                                 )}
                             </div>
+                            </>)}
 
 
 

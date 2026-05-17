@@ -657,13 +657,10 @@ function EstimatePricePage() {
                             <div className="max-w-4xl mx-auto flex gap-4">
                                 <button
                                     onClick={() => {
-                                        const createUrl = `/sell/create?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}&year=${selectedYear}&price=${result!.estimatedPrice!.median}${mileage ? `&mileage=${mileage}` : ''}`;
-                                        if (isLoggedIn) {
-                                            router.push(createUrl);
-                                        } else {
-                                            setPendingRedirect(createUrl);
-                                            setShowLoginModal(true);
-                                        }
+                                        // Guests go straight into the form too —
+                                        // login is required only at publish.
+                                        const createUrl = `/sell?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}&year=${selectedYear}&price=${result!.estimatedPrice!.median}${mileage ? `&mileage=${mileage}` : ''}`;
+                                        router.push(createUrl);
                                     }}
                                     className="flex-[2] bg-accent text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-orange-600 transition flex items-center justify-center gap-2 text-lg"
                                 >

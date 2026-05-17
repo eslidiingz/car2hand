@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Tree-shake large icon barrels — only the icons actually used get bundled,
+  // instead of pulling the whole lucide-react / phosphor index into the JS.
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@phosphor-icons/react'],
+  },
   images: {
     remotePatterns: [
       {
