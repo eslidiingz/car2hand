@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 
 /**
@@ -45,6 +45,7 @@ function readAuthFromStorage(): boolean {
 
 export default function MobileSellCTA() {
   const pathname = usePathname();
+  const router = useRouter();
   const [visible, setVisible] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
 
@@ -81,8 +82,9 @@ export default function MobileSellCTA() {
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Always guest at this point (component returns null when authed)
-    window.dispatchEvent(new CustomEvent("open-login-modal"));
+    // Straight into the form — login is required only at the publish step,
+    // and the draft persists across it (even a full-page OAuth redirect).
+    router.push("/sell");
   };
 
   return (

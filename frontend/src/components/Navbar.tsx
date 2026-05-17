@@ -87,6 +87,12 @@ export default function Navbar() {
         };
 
         window.addEventListener('storage', handleStorageChange);
+        // Same-tab login/logout (e.g. the /sell guest-resume flow logs in via
+        // a LoginModal we don't own). `storage` only fires cross-tab, so we
+        // also listen to the userLogin/userLogout events the modals dispatch
+        // — storage is written before dispatch, so re-reading it is correct.
+        window.addEventListener('userLogin', handleStorageChange);
+        window.addEventListener('userLogout', handleStorageChange);
         // Custom event for in-app updates (avatar change, profile edit, etc.)
         const handleProfileUpdate = (e: Event) => {
             const detail = (e as CustomEvent).detail || {};
@@ -95,6 +101,8 @@ export default function Navbar() {
         window.addEventListener('userProfileUpdate', handleProfileUpdate);
         return () => {
             window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('userLogin', handleStorageChange);
+            window.removeEventListener('userLogout', handleStorageChange);
             window.removeEventListener('userProfileUpdate', handleProfileUpdate);
         };
     }, []);
@@ -369,10 +377,10 @@ export default function Navbar() {
                                 </div>
                                 </div>
                             ) : (
-                                /* Desktop guest CTA — mobile/tablet use the dedicated
-                                   "ลงขาย" button below (lg:hidden) instead */
+                                /* Desktop guest CTA — straight into the form;
+                                   login is only required at the publish step */
                                 <button
-                                    onClick={() => setIsLoginModalOpen(true)}
+                                    onClick={() => router.push('/sell')}
                                     className="hidden lg:block bg-primary text-white text-sm px-5 py-2.5 rounded-full hover:bg-opacity-90 transition shadow-md font-bold"
                                 >
                                     ลงขายรถฟรี
@@ -400,15 +408,10 @@ export default function Navbar() {
                                     <span className="text-[10px] font-medium mt-0.5 leading-none">ค้นหา</span>
                                 </button>
 
-                                {/* ลงขาย — guest → login modal; logged-in → ลงประกาศเลย */}
+                                {/* ลงขาย — straight into the form for everyone;
+                                    login is required only at the publish step */}
                                 <button
-                                    onClick={() => {
-                                        if (user) {
-                                            router.push('/sell/create');
-                                        } else {
-                                            setIsLoginModalOpen(true);
-                                        }
-                                    }}
+                                    onClick={() => router.push('/sell')}
                                     className="flex flex-col items-center justify-center min-w-[44px] px-1 py-1 text-gray-600 dark:text-gray-300 hover:text-primary transition"
                                 >
                                     <Plus size={22} />

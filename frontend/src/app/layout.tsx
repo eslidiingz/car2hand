@@ -19,12 +19,24 @@ const GA_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 // production จะใช้งานปกติเมื่อมี GA_ID set ไว้
 const ANALYTICS_ENABLED = process.env.NODE_ENV === 'production' && !!GA_ID;
 
+// 4 weights (dropped 300 — only 1 decorative usage, falls back to 400).
+// Thai glyph sets are heavy; each weight removed = meaningful payload cut on 4G.
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   subsets: ["thai", "latin"],
   variable: "--font-ibm-plex-sans-thai",
   display: "swap",
 });
+
+// API lives on a different origin — warm up DNS/TLS early so the homepage's
+// data fetches don't pay the full handshake on slow 4G.
+const API_ORIGIN = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").origin;
+  } catch {
+    return "";
+  }
+})();
 
 export const viewport: Viewport = {
   themeColor: "#0F3460",
@@ -117,6 +129,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className={`${ibmPlexSansThai.variable}`} suppressHydrationWarning>
+      <head>
+        {API_ORIGIN && (
+          <>
+            <link rel="preconnect" href={API_ORIGIN} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={API_ORIGIN} />
+          </>
+        )}
+      </head>
       <body className="font-sans antialiased bg-background text-foreground flex flex-col min-h-screen">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />
         <ServiceWorkerRegister />

@@ -84,6 +84,9 @@ export default function ProfileListingCard({
     getPrimaryImage
 }: ProfileListingCardProps) {
     const status = STATUS_CONFIG[listing.status] || STATUS_CONFIG['DRAFT'];
+    // "รอตรวจสอบ" — the listing isn't public yet and can't be boosted,
+    // so hide "ดูประกาศ" and "ดันโพส" until it's approved.
+    const isPending = listing.status === 'PENDING';
     const daysLeft = getDaysLeft(listing.expiredAt);
     const isBoosted = listing.viewCount > 1000;
 
@@ -165,15 +168,17 @@ export default function ProfileListingCard({
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Link
-                                                        href={`/buy/${listing.id}`}
-                                                        target="_blank"
-                                                        onClick={() => onToggleMenu(null)}
-                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
-                                                    >
-                                                        <ExternalLink />
-                                                        ดูประกาศ
-                                                    </Link>
+                                                    {!isPending && (
+                                                        <Link
+                                                            href={`/buy/${listing.id}`}
+                                                            target="_blank"
+                                                            onClick={() => onToggleMenu(null)}
+                                                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 flex items-center gap-2 transition font-medium"
+                                                        >
+                                                            <ExternalLink />
+                                                            ดูประกาศ
+                                                        </Link>
+                                                    )}
                                                     <Link
                                                         href={`/sell/edit/${listing.id}`}
                                                         onClick={() => onToggleMenu(null)}
@@ -182,16 +187,18 @@ export default function ProfileListingCard({
                                                         <Pencil />
                                                         แก้ไขประกาศ
                                                     </Link>
-                                                    <button
-                                                        onClick={() => {
-                                                            onBump?.(listing.id);
-                                                            onToggleMenu(null);
-                                                        }}
-                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 flex items-center gap-2 transition font-medium text-blue-600"
-                                                    >
-                                                        <Zap />
-                                                        ดันโพส
-                                                    </button>
+                                                    {!isPending && (
+                                                        <button
+                                                            onClick={() => {
+                                                                onBump?.(listing.id);
+                                                                onToggleMenu(null);
+                                                            }}
+                                                            className="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 flex items-center gap-2 transition font-medium text-blue-600"
+                                                        >
+                                                            <Zap />
+                                                            ดันโพส
+                                                        </button>
+                                                    )}
                                                     {onSetSlot && (
                                                         <button
                                                             onClick={() => {

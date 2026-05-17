@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
                 disallow: [
                     '/api/',
                     '/auth/',
-                    '/sell/create',
+                    '/sell$',
                     '/sell/edit/',
                     '/settings/',
                     '/profile/',

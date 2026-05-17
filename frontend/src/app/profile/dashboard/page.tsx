@@ -276,7 +276,7 @@ export default function DashboardPage() {
                         if (maxListings !== -1 && usedSlots >= maxListings) {
                             setShowUpgradeModal(true);
                         } else {
-                            router.push('/sell/create');
+                            router.push('/sell');
                         }
                     }}
                     className="flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl transition shadow-sm group text-left"

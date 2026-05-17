@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
+import {
+    saveTextDraft,
+    loadTextDraft,
+    saveImageDraft,
+    loadImageDraft,
+    clearListingDraft,
+} from '@/lib/listingDraft';
 
 // Types
 export interface ListingFormData {
@@ -116,10 +123,20 @@ const defaultFormData: ListingFormData = {
 const ListingContext = createContext<ListingContextType | undefined>(undefined);
 
 export function ListingProvider({ children }: { children: ReactNode }) {
-    const [formData, setFormData] = useState<ListingFormData>(defaultFormData);
+    // Lazy-init text fields from a persisted draft so a guest who logged in
+    // (incl. via full-page OAuth redirect) gets their form back instantly.
+    const [formData, setFormData] = useState<ListingFormData>(() => {
+        const draft = loadTextDraft();
+        return draft ? { ...defaultFormData, ...draft } : defaultFormData;
+    });
     const [currentStep, setCurrentStep] = useState(1);
     const [listingId, setListingId] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Until image rehydration finishes, don't let the image auto-save effect
+    // overwrite the stored draft with the empty initial state.
+    const hydratedRef = useRef(false);
+    const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const updateFormData = (data: Partial<ListingFormData>) => {
         setFormData(prev => ({ ...prev, ...data }));
@@ -129,7 +146,60 @@ export function ListingProvider({ children }: { children: ReactNode }) {
         setFormData(defaultFormData);
         setCurrentStep(1);
         setListingId(null);
+        void clearListingDraft();
     };
+
+    // Rehydrate photos / doc files from IndexedDB once on mount.
+    useEffect(() => {
+        let createdPreviews: string[] = [];
+        (async () => {
+            try {
+                const img = await loadImageDraft();
+                if (img && img.images.length > 0) {
+                    const previews = img.images.map((f) => URL.createObjectURL(f));
+                    const update: Partial<ListingFormData> = {
+                        images: img.images,
+                        imagesPreviews: previews,
+                    };
+                    if (img.serviceHistoryFile) {
+                        update.serviceHistoryFile = img.serviceHistoryFile;
+                        update.serviceHistoryPreview = URL.createObjectURL(img.serviceHistoryFile);
+                    }
+                    if (img.registrationBookFile) {
+                        update.registrationBookFile = img.registrationBookFile;
+                        update.registrationBookPreview = URL.createObjectURL(img.registrationBookFile);
+                    }
+                    createdPreviews = previews;
+                    setFormData((prev) => ({ ...prev, ...update }));
+                }
+            } finally {
+                hydratedRef.current = true;
+            }
+        })();
+        return () => {
+            createdPreviews.forEach((u) => URL.revokeObjectURL(u));
+        };
+    }, []);
+
+    // Debounced auto-save of text fields to sessionStorage.
+    useEffect(() => {
+        if (saveTimer.current) clearTimeout(saveTimer.current);
+        saveTimer.current = setTimeout(() => saveTextDraft(formData), 400);
+        return () => {
+            if (saveTimer.current) clearTimeout(saveTimer.current);
+        };
+    }, [formData]);
+
+    // Persist photos / doc files to IndexedDB (only after rehydration so we
+    // never clobber a stored draft with the empty initial state).
+    useEffect(() => {
+        if (!hydratedRef.current) return;
+        void saveImageDraft({
+            images: formData.images,
+            serviceHistoryFile: formData.serviceHistoryFile,
+            registrationBookFile: formData.registrationBookFile,
+        });
+    }, [formData.images, formData.serviceHistoryFile, formData.registrationBookFile]);
 
     return (
         <ListingContext.Provider value={{

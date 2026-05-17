@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, ChevronDown } from 'lucide-react';
 import SearchableSelect, { SelectOption } from './SearchableSelect';
-import QuickCategories from './QuickCategories';
 
 interface Brand {
     id: string;
@@ -14,41 +13,25 @@ interface Brand {
     isPopular?: boolean;
 }
 
-export default function Hero() {
+// `brands` is fetched server-side (see lib/homeData.ts) and passed in — no
+// client fetch, so the search box is fully populated on first paint.
+export default function Hero({ brands }: { brands: Brand[] }) {
     const router = useRouter();
     const [keyword, setKeyword] = useState('');
     const [brand, setBrand] = useState('');
     const [budget, setBudget] = useState('all');
-    const [brands, setBrands] = useState<Brand[]>([]);
-    const [brandOptions, setBrandOptions] = useState<SelectOption[]>([]);
 
-    useEffect(() => {
-        const fetchBrands = async () => {
-            try {
-                const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-                const response = await fetch(`${API_URL}/master-data/brands?vehicleType=CAR`);
-                if (response.ok) {
-                    const data = await response.json();
-                    const fetched: Brand[] = data.brands || [];
-                    setBrands(fetched);
-
-                    // Map to SearchableSelect options with logos
-                    const options: SelectOption[] = fetched.map((b) => ({
-                        id: b.name,
-                        label: b.name,
-                        subLabel: b.nameTh || undefined,
-                        image: b.logo || `/brands/cars/${b.name}-300x300.png`,
-                        isPopular: b.isPopular || false,
-                    }));
-                    setBrandOptions(options);
-                }
-            } catch (error) {
-                console.error('Error fetching brands:', error);
-            }
-        };
-
-        fetchBrands();
-    }, []);
+    const brandOptions: SelectOption[] = useMemo(
+        () =>
+            brands.map((b) => ({
+                id: b.name,
+                label: b.name,
+                subLabel: b.nameTh || undefined,
+                image: b.logo || `/brands/cars/${b.name}-300x300.png`,
+                isPopular: b.isPopular || false,
+            })),
+        [brands]
+    );
 
     const handleSearch = () => {
         const params = new URLSearchParams();

@@ -1,41 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Loader2, ChevronRight, ChevronDown, Clock } from 'lucide-react';
+import { ChevronRight, ChevronDown, Clock } from 'lucide-react';
 import ListingCard, { VehicleListing } from './ListingCard';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 /**
  * รถมาใหม่วันนี้ — all ACTIVE listings ordered by createdAt desc (no package filter).
- * Backend: GET /api/listings/new — returns up to 12 items.
+ * Backend: GET /api/listings/new — returns up to 12 items (sliced server-side).
  * Shows 8 initially, "ดูเพิ่มเติม" expands to 12, then "ดูรถทั้งหมด" → /buy.
+ *
+ * `listings` is fetched server-side and streamed in via <Suspense>; this
+ * component only owns the client-side "show more" toggle.
  */
-export default function CarList() {
-    const [allListings, setAllListings] = useState<VehicleListing[]>([]);
+export default function CarList({ listings }: { listings: VehicleListing[] }) {
     const [displayCount, setDisplayCount] = useState(8);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchListings = async () => {
-            try {
-                const res = await fetch(`${API_URL}/listings/new`);
-                const data = await res.json();
-                setAllListings((data.listings || []).slice(0, 12));
-            } catch (error) {
-                console.error('Error fetching new listings:', error);
-                setAllListings([]);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchListings();
-    }, []);
-
-    const visibleListings = allListings.slice(0, displayCount);
-    const hasMore = allListings.length > displayCount;
+    const visibleListings = listings.slice(0, displayCount);
+    const hasMore = listings.length > displayCount;
 
     return (
         <section className="max-w-7xl mx-auto px-4 pt-12 pb-16">
@@ -52,14 +34,7 @@ export default function CarList() {
                 </Link>
             </div>
 
-            {loading ? (
-                <div className="flex items-center justify-center py-20">
-                    <div className="text-center">
-                        <Loader2 size={48} className="animate-spin text-primary mx-auto mb-4" />
-                        <p className="text-gray-500">กำลังโหลด...</p>
-                    </div>
-                </div>
-            ) : visibleListings.length === 0 ? (
+            {visibleListings.length === 0 ? (
                 <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12 text-center">
                     <p className="text-gray-500">ยังไม่มีรถลงขายในขณะนี้</p>
                     <Link href="/sellLandingPage" className="mt-4 inline-block bg-accent text-white px-6 py-3 rounded-xl font-bold hover:bg-orange-600 transition">

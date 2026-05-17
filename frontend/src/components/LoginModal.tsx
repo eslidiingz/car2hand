@@ -14,12 +14,21 @@ import {
     AlertCircle
 } from 'lucide-react';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import { setReturnTo } from '@/lib/listingDraft';
+
+const SELL_RESUME_PATH = '/sell?resume=publish';
 
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSwitchToRegister: () => void;
     redirectTo?: string;
+    /**
+     * When opened from the sell flow: on email login DON'T navigate away
+     * (the /sell page resumes via the `userLogin` event); on social
+     * login persist a return path so the OAuth callback comes back here.
+     */
+    sellResume?: boolean;
 }
 
 interface LoginFormData {
@@ -27,7 +36,7 @@ interface LoginFormData {
     password: string;
 }
 
-export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redirectTo }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redirectTo, sellResume }: LoginModalProps) {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -115,7 +124,11 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
             window.dispatchEvent(new CustomEvent('userLogin', { detail: userWithToken }));
 
             onClose();
-            router.push(redirectTo || '/profile/dashboard');
+            // Sell flow: stay on /sell — the page resumes the publish
+            // via the `userLogin` event (navigating away would lose the form).
+            if (!sellResume) {
+                router.push(redirectTo || '/profile/dashboard');
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
         } finally {
@@ -136,6 +149,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                 throw new Error(data.message || 'ไม่สามารถเชื่อมต่อ Google ได้');
             }
 
+            if (sellResume) setReturnTo(SELL_RESUME_PATH);
             window.location.href = data.url;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'ไม่สามารถเชื่อมต่อ Google ได้');
@@ -156,6 +170,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                 throw new Error(data.message || 'ไม่สามารถเชื่อมต่อ Facebook ได้');
             }
 
+            if (sellResume) setReturnTo(SELL_RESUME_PATH);
             window.location.href = data.url;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'ไม่สามารถเชื่อมต่อ Facebook ได้');
@@ -176,6 +191,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister, redire
                 throw new Error(data.message || 'ไม่สามารถเชื่อมต่อ LINE ได้');
             }
 
+            if (sellResume) setReturnTo(SELL_RESUME_PATH);
             window.location.href = data.url;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'ไม่สามารถเชื่อมต่อ LINE ได้');

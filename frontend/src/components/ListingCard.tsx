@@ -199,6 +199,8 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         <img
                             src={listing.images[0].url}
                             alt={listing.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover"
                         />
                     ) : (
@@ -306,7 +308,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         <div className="flex items-center gap-1.5">
                             <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
                                 {listing.user.sellerProfile?.shopLogo ? (
-                                    <img src={listing.user.sellerProfile.shopLogo} alt="" className="w-full h-full object-cover" />
+                                    <img src={listing.user.sellerProfile.shopLogo} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                                 ) : (
                                     <span className="text-[11px] font-bold text-primary">{(listing.user.sellerProfile?.shopName || listing.user.fullName).charAt(0)}</span>
                                 )}

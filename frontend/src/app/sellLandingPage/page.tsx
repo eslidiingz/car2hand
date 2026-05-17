@@ -83,7 +83,7 @@ export default function SellPage() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [stats, setStats] = useState({ activeListings: 0, soldListings: 0, totalSellers: 0 });
     const [packages, setPackages] = useState<PackageData[]>([]);
-    const [pendingRedirect, setPendingRedirect] = useState<string>('/sell/create');
+    const [pendingRedirect, setPendingRedirect] = useState<string>('/sell');
 
     // Brand/Model selection for estimate
     const [brands, setBrands] = useState<Brand[]>([]);
@@ -129,16 +129,12 @@ export default function SellPage() {
         ? `/sell/estimate?brandId=${selectedBrandId}&brand=${encodeURIComponent(selectedBrandName)}&modelId=${selectedModelId}&model=${encodeURIComponent(selectedModelName)}`
         : '/sell/estimate';
 
-    const handleSellClick = (e: React.MouseEvent) => {
-        if (!isLoggedIn) {
-            e.preventDefault();
-            setPendingRedirect('/sell/create');
-            setShowLoginModal(true);
-        }
-    };
+    // Guests go straight into /sell now — login is only required at
+    // the publish step (the draft persists across login, even OAuth).
+    const handleSellClick = () => { /* allow default <Link> navigation */ };
 
     const handlePackageClick = (slug: string) => {
-        const redirect = slug === 'basic' ? '/sell/create' : '/profile/packages';
+        const redirect = slug === 'basic' ? '/sell' : '/profile/packages';
         if (isLoggedIn) {
             window.location.href = redirect;
         } else {
@@ -331,7 +327,7 @@ export default function SellPage() {
                     </div>
                 </div>
                 <div className="flex justify-center py-6">
-                    <Link href="/sell/create" onClick={handleSellClick} className="bg-accent text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-orange-600 transition shadow-lg shadow-orange-900/20 transform hover:-translate-y-1 inline-block">
+                    <Link href="/sell" onClick={handleSellClick} className="bg-accent text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-orange-600 transition shadow-lg shadow-orange-900/20 transform hover:-translate-y-1 inline-block">
                         เริ่มลงขายเลย (ฟรี!)
                     </Link>
                 </div>
@@ -581,7 +577,7 @@ export default function SellPage() {
                     <div className="relative z-10">
                         <h2 className="text-3xl md:text-5xl font-bold mb-6">พร้อมเปลี่ยนรถเป็นเงินก้อนหรือยัง?</h2>
                         <p className="text-blue-200 text-lg mb-8 max-w-2xl mx-auto">ลงขายวันนี้ รับสิทธิ์ดันประกาศฟรี 24 ชม. ให้คนเห็นเป็นพันคน</p>
-                        <Link href="/sell/create" onClick={handleSellClick} className="bg-accent text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-orange-600 transition shadow-lg shadow-orange-900/20 transform hover:-translate-y-1 inline-block">
+                        <Link href="/sell" onClick={handleSellClick} className="bg-accent text-white px-10 py-4 rounded-xl font-bold text-xl hover:bg-orange-600 transition shadow-lg shadow-orange-900/20 transform hover:-translate-y-1 inline-block">
                             เริ่มลงขายเลย (ฟรี!)
                         </Link>
                     </div>
