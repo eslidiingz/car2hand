@@ -378,7 +378,7 @@ export default function MyListingsPage() {
         if (isAtLimit) {
             setShowUpgradeModal(true);
         } else {
-            router.push('/sell/create');
+            router.push('/sell');
         }
     };
 

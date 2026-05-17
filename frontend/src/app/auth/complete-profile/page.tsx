@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Phone, Mail, Loader2, AlertCircle, UserCheck } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
+import { consumeReturnTo } from '@/lib/listingDraft';
 
 export default function CompleteProfilePage() {
     const router = useRouter();
@@ -30,7 +31,7 @@ export default function CompleteProfilePage() {
                 const hasRealPhone = user.phoneNumber && user.phoneNumber.length > 0;
 
                 if (hasRealEmail && hasRealPhone) {
-                    router.replace('/profile/dashboard');
+                    router.replace(consumeReturnTo() || '/profile/dashboard');
                     return;
                 }
 
@@ -100,7 +101,7 @@ export default function CompleteProfilePage() {
                 localStorage.setItem('user', JSON.stringify(userData));
             }
 
-            router.push('/profile/dashboard');
+            router.push(consumeReturnTo() || '/profile/dashboard');
         } catch (err) {
             const message = err instanceof Error ? err.message : 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่';
 

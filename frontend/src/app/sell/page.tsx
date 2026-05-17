@@ -34,8 +34,18 @@ import PreviewCard from '@/components/PreviewCard';
 import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
-import { useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
-import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED } from '@/lib/featureFlags';
+import { ListingProvider, useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
+import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED } from '@/lib/featureFlags';
+import LoginModal from '@/components/LoginModal';
+import RegisterModal from '@/components/RegisterModal';
+import {
+    saveTextDraft,
+    saveImageDraft,
+    setResumeFlag,
+    getResumeFlag,
+    clearResumeFlag,
+    clearListingDraft,
+} from '@/lib/listingDraft';
 
 // Thai provinces list
 const PROVINCES = [
@@ -110,11 +120,16 @@ function getAuthToken(): string | null {
     try { return JSON.parse(stored).token || null; } catch { return null; }
 }
 
+// ListingProvider lives here (not a /sell/layout) so it scopes ONLY to the
+// create form — /sell/estimate and /sell/edit/[id] must not inherit the
+// draft auto-save / rehydrate side-effects.
 export default function CreateListingPageWrapper() {
     return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
-            <CreateListingPage />
-        </Suspense>
+        <ListingProvider>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+                <CreateListingPage />
+            </Suspense>
+        </ListingProvider>
     );
 }
 
@@ -128,6 +143,15 @@ function CreateListingPage() {
     const [showSlotModal, setShowSlotModal] = useState(false);
     const [upgradeMessage, setUpgradeMessage] = useState('');
     const [user, setUser] = useState<{ id: string; fullName?: string } | null>(null);
+
+    // Latest formData without making auth effects re-subscribe.
+    const formDataRef = useRef(formData);
+    formDataRef.current = formData;
+
+    // Guest-friendly publish flow: login modal + post-login confirm overlay
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showResumeConfirm, setShowResumeConfirm] = useState(false);
 
     // Refs for scroll-to-error
     const brandRef = useRef<HTMLDivElement>(null);
@@ -173,54 +197,80 @@ function CreateListingPage() {
         }
     }, [error]);
 
-    // Check if user is logged in
+    // Load logged-in user (if any). Guests are allowed to fill the ENTIRE
+    // form — login is only required at the publish step. Re-runs on the
+    // `userLogin` event so an in-page (email) login resumes seamlessly.
     useEffect(() => {
-        const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-        if (!storedUser) {
-            router.push('/');
-            return;
-        }
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-
-        // Pre-fill contact info from user data
-        if (!formData.contactName && userData.fullName) {
-            updateFormData({ contactName: userData.fullName });
-        }
-        if (!formData.contactPhone && userData.phoneNumber) {
-            updateFormData({ contactPhone: userData.phoneNumber });
-        }
-
-        // Fetch package info & check listing limit
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-        const token = getAuthToken();
-        Promise.all([
-            fetch(`${API_URL}/packages/my`, {
-                headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
-            }).then(r => r.json()),
-            fetch(`${API_URL}/listings/user/${userData.id}`).then(r => r.json()),
-        ]).then(([pkgData, listingsData]) => {
-            const pkg = pkgData.currentPackage;
-            setMaxPhotos(pkg?.maxPhotosPerListing ?? 16);
-            setIsBasicPackage(!pkg || pkg.slug === 'basic');
-
-            // Check listing limit — ใช้ effective max (package + bonus slot) จาก usage
-            const packageMax = pkg?.maxListings ?? -1;
-            const bonusSlots = pkgData.usage?.bonusListingSlots ?? 0;
-            const effectiveMax = pkgData.usage?.maxListings ?? (packageMax === -1 ? -1 : packageMax + bonusSlots);
-            const activeCount = pkgData.usage?.activeListings ?? (listingsData.listings || []).filter(
-                (l: any) => ['ACTIVE', 'DRAFT', 'PENDING'].includes(l.status)
-            ).length;
-            if (effectiveMax !== -1 && activeCount >= effectiveMax) {
-                setLimitReached(true);
-                const bonusText = bonusSlots > 0 ? ` (แพ็กเกจ ${packageMax} + slot ${bonusSlots})` : '';
-                setUpgradeMessage(PACKAGES_ENABLED
-                    ? `แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${effectiveMax} รายการ${bonusText} กรุณาอัพเกรดแพ็กเกจหรือซื้อ slot เพิ่มเพื่อลงประกาศเพิ่มเติม`
-                    : `คุณลงประกาศครบ ${effectiveMax} รายการแล้ว กรุณาลบหรือปิดประกาศเดิมก่อนจึงจะลงประกาศใหม่ได้`);
-                setShowUpgradeModal(true);
+        const loadUser = () => {
+            const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+            if (!storedUser) {
+                setUser(null);
+                return;
             }
-        }).catch(() => {});
-    }, [router]);
+            let userData: { id: string; fullName?: string; phoneNumber?: string };
+            try {
+                userData = JSON.parse(storedUser);
+            } catch {
+                setUser(null);
+                return;
+            }
+            setUser(userData);
+
+            // Pre-fill contact from account — never overwrite guest input
+            // (read latest formData via ref to avoid stale-closure bugs).
+            const fillUpdates: Partial<ListingFormData> = {};
+            if (!formDataRef.current.contactName && userData.fullName) {
+                fillUpdates.contactName = userData.fullName;
+            }
+            if (!formDataRef.current.contactPhone && userData.phoneNumber) {
+                fillUpdates.contactPhone = userData.phoneNumber;
+            }
+            if (Object.keys(fillUpdates).length > 0) updateFormData(fillUpdates);
+
+            // Fetch package info & check listing limit (logged-in only)
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+            const token = getAuthToken();
+            Promise.all([
+                fetch(`${API_URL}/packages/my`, {
+                    headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+                }).then(r => r.json()),
+                fetch(`${API_URL}/listings/user/${userData.id}`).then(r => r.json()),
+            ]).then(([pkgData, listingsData]) => {
+                const pkg = pkgData.currentPackage;
+                setMaxPhotos(pkg?.maxPhotosPerListing ?? 16);
+                setIsBasicPackage(!pkg || pkg.slug === 'basic');
+
+                // Check listing limit — ใช้ effective max (package + bonus slot) จาก usage
+                const packageMax = pkg?.maxListings ?? -1;
+                const bonusSlots = pkgData.usage?.bonusListingSlots ?? 0;
+                const effectiveMax = pkgData.usage?.maxListings ?? (packageMax === -1 ? -1 : packageMax + bonusSlots);
+                const activeCount = pkgData.usage?.activeListings ?? (listingsData.listings || []).filter(
+                    (l: any) => ['ACTIVE', 'DRAFT', 'PENDING'].includes(l.status)
+                ).length;
+                if (effectiveMax !== -1 && activeCount >= effectiveMax) {
+                    setLimitReached(true);
+                    const bonusText = bonusSlots > 0 ? ` (แพ็กเกจ ${packageMax} + slot ${bonusSlots})` : '';
+                    setUpgradeMessage(PACKAGES_ENABLED
+                        ? `แพ็กเกจ ${pkg?.name || 'Basic'} ลงประกาศได้สูงสุด ${effectiveMax} รายการ${bonusText} กรุณาอัพเกรดแพ็กเกจหรือซื้อ slot เพิ่มเพื่อลงประกาศเพิ่มเติม`
+                        : `คุณลงประกาศครบ ${effectiveMax} รายการแล้ว กรุณาลบหรือปิดประกาศเดิมก่อนจึงจะลงประกาศใหม่ได้`);
+                    setShowUpgradeModal(true);
+                }
+            }).catch(() => {});
+        };
+
+        loadUser();
+        window.addEventListener('userLogin', loadUser);
+        return () => window.removeEventListener('userLogin', loadUser);
+    }, []);
+
+    // After login (email in-page OR returning from a full-page OAuth
+    // redirect) auto-open the one-click publish confirmation — but only if
+    // the guest had actually pressed "ลงประกาศ" (resume flag / ?resume).
+    useEffect(() => {
+        if (!user || isSubmitting || limitReached) return;
+        const wantsResume = searchParams.get('resume') === 'publish' || getResumeFlag();
+        if (wantsResume) setShowResumeConfirm(true);
+    }, [user, searchParams, isSubmitting, limitReached]);
 
     // Pre-fill from estimate page query params
     useEffect(() => {
@@ -479,11 +529,6 @@ function CreateListingPage() {
     const handleSubmit = async () => {
         setFieldErrors({});
 
-        if (!user) {
-            setError('กรุณาเข้าสู่ระบบ');
-            return;
-        }
-
         const errors: Record<string, boolean> = {};
         const missingFields: string[] = [];
 
@@ -524,6 +569,22 @@ function CreateListingPage() {
             return;
         }
 
+        // Guest reached publish with a valid form → require login here.
+        // Force-flush the draft (context auto-save is debounced) so it
+        // survives a full-page OAuth redirect, then open the login modal.
+        if (!user) {
+            saveTextDraft(formData);
+            await saveImageDraft({
+                images: formData.images,
+                serviceHistoryFile: formData.serviceHistoryFile,
+                registrationBookFile: formData.registrationBookFile,
+            });
+            setResumeFlag();
+            setShowResumeConfirm(false);
+            setShowLoginModal(true);
+            return;
+        }
+
         setIsSubmitting(true);
         setError(null);
 
@@ -555,7 +616,10 @@ function CreateListingPage() {
             // Step 3: Publish
             await publishListing(user.id, newListingId, formData.price);
 
-            // Success - redirect to listing page
+            // Success — clear the persisted draft so it can't resurrect
+            clearResumeFlag();
+            setShowResumeConfirm(false);
+            await clearListingDraft();
             router.push(`/profile/listings`);
         } catch (err) {
             if (err instanceof UpgradeRequiredError) {
@@ -964,7 +1028,8 @@ function CreateListingPage() {
                                         </div>
                                     </div>
 
-                                    {/* Vehicle Extras */}
+                                    {/* Vehicle Extras — hidden via LISTING_EXTRA_SECTIONS_ENABLED to shorten the flow */}
+                                    {LISTING_EXTRA_SECTIONS_ENABLED && (<>
                                     <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
                                         <Lightbulb size={24} className="text-accent" /> ข้อมูลเพิ่มเติม
                                     </h3>
@@ -1148,6 +1213,7 @@ function CreateListingPage() {
                                             )}
                                         </div>
                                     </div>
+                                    </>)}
                                 </>
                             )}
 
@@ -1217,7 +1283,8 @@ function CreateListingPage() {
                                         </ul>
                                     </div>
 
-                                    {/* Registration Book Image Upload */}
+                                    {/* Registration Book — hidden via LISTING_EXTRA_SECTIONS_ENABLED */}
+                                    {LISTING_EXTRA_SECTIONS_ENABLED && (
                                     <div className="p-5 bg-gray-50 rounded-xl border border-gray-200">
                                         <h3 className="font-bold text-gray-800 mb-1 flex items-center gap-2">
                                             📄 สำเนาเล่มทะเบียนรถ (หน้าที่มีชื่อเจ้าของ)
@@ -1283,6 +1350,7 @@ function CreateListingPage() {
                                             </label>
                                         )}
                                     </div>
+                                    )}
                                 </>
                             )}
 
@@ -1596,6 +1664,106 @@ function CreateListingPage() {
                         setShowUpgradeModal(false);
                     }}
                 />
+            )}
+
+            {/* Login / Register — sellResume keeps the form alive after auth */}
+            <LoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                onSwitchToRegister={() => { setShowLoginModal(false); setShowRegisterModal(true); }}
+                sellResume
+            />
+            <RegisterModal
+                isOpen={showRegisterModal}
+                onClose={() => setShowRegisterModal(false)}
+                onSwitchToLogin={() => { setShowRegisterModal(false); setShowLoginModal(true); }}
+                sellResume
+            />
+
+            {/* Post-login: one-click publish confirmation */}
+            {showResumeConfirm && user && !limitReached && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-auto relative z-10 overflow-hidden">
+                        <div className="bg-gradient-to-r from-primary to-blue-600 text-white px-6 py-5 text-center">
+                            <CheckCircle size={40} className="mx-auto mb-2" />
+                            <h3 className="text-lg font-bold">เข้าสู่ระบบสำเร็จ</h3>
+                            <p className="text-blue-100 text-sm mt-0.5">ตรวจสอบข้อมูลก่อนลงประกาศ</p>
+                        </div>
+
+                        <div className="p-6">
+                            <div className="bg-surface rounded-2xl p-4 space-y-2.5 text-sm">
+                                <div className="flex justify-between gap-3">
+                                    <span className="text-gray-500 flex-shrink-0">รถ</span>
+                                    <span className="font-bold text-gray-800 text-right line-clamp-2">
+                                        {formData.title ||
+                                            [formData.year, formData.brand, formData.model, formData.subModel]
+                                                .filter(Boolean).join(' ') || '-'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between gap-3">
+                                    <span className="text-gray-500">ราคา</span>
+                                    <span className="font-bold text-accent">
+                                        {formData.price > 0 ? `฿${formData.price.toLocaleString('th-TH')}` : '-'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between gap-3">
+                                    <span className="text-gray-500">จังหวัด</span>
+                                    <span className="font-medium text-gray-800">{formData.province || '-'}</span>
+                                </div>
+                                <div className="flex justify-between gap-3">
+                                    <span className="text-gray-500">รูปภาพ</span>
+                                    <span className="font-medium text-gray-800">{formData.images.length} รูป</span>
+                                </div>
+                            </div>
+
+                            {formData.images.length === 0 ? (
+                                <>
+                                    <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-xl p-3 mt-4 flex items-start gap-2">
+                                        <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+                                        ไม่พบรูปภาพที่บันทึกไว้ (เบราว์เซอร์อาจจำกัดพื้นที่) กรุณาเพิ่มรูปภาพอีกครั้งก่อนลงประกาศ
+                                    </p>
+                                    <button
+                                        onClick={() => {
+                                            clearResumeFlag();
+                                            setShowResumeConfirm(false);
+                                            router.replace('/sell');
+                                            setCurrentStep(2);
+                                        }}
+                                        className="w-full h-12 mt-4 bg-accent text-white rounded-2xl font-bold hover:bg-orange-600 transition flex items-center justify-center gap-2"
+                                    >
+                                        <ImageIcon size={18} /> เพิ่มรูปภาพ
+                                    </button>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={() => { clearResumeFlag(); handleSubmit(); }}
+                                    disabled={isSubmitting}
+                                    className="w-full h-12 mt-5 bg-accent text-white rounded-2xl font-bold shadow-lg shadow-orange-100 hover:bg-orange-600 transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {isSubmitting ? (
+                                        <><Loader2 size={20} className="animate-spin" /> กำลังลงประกาศ...</>
+                                    ) : (
+                                        <><CheckCircle size={20} /> ยืนยันลงประกาศ</>
+                                    )}
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => {
+                                    clearResumeFlag();
+                                    setShowResumeConfirm(false);
+                                    router.replace('/sell');
+                                    setCurrentStep(3);
+                                }}
+                                disabled={isSubmitting}
+                                className="w-full h-11 mt-3 text-gray-500 font-medium hover:text-gray-700 transition disabled:opacity-50"
+                            >
+                                แก้ไขข้อมูลก่อน
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
