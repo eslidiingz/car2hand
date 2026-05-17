@@ -125,9 +125,11 @@ export default function ComparePage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Link href="/buy" className="text-xs font-bold text-primary bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
-                            <Plus size={14} /> เพิ่ม
-                        </Link>
+                        {compareItems.length < maxCompareItems && (
+                            <Link href="/buy" className="text-xs font-bold text-primary bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
+                                <Plus size={14} /> เพิ่ม
+                            </Link>
+                        )}
                         {compareItems.length > 0 && (
                             <button onClick={() => setShowClearConfirm(true)} className="text-xs text-red-500 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition">
                                 <Trash2 size={16} />
