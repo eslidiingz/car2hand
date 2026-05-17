@@ -576,6 +576,26 @@ body {
   will-change: opacity, transform;
 }
 
+/* Navbar search dropdown — slide down from the top on open, slide back up
+   and fade on close. Two keyframes so the exit can be animated (a single
+   mount-only keyframe can't animate unmount). */
+@keyframes search-slide-down {
+  0% { opacity: 0; transform: translateY(-100%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes search-slide-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-100%); }
+}
+.animate-search-down {
+  animation: search-slide-down 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  will-change: opacity, transform;
+}
+.animate-search-up {
+  animation: search-slide-up 240ms cubic-bezier(0.4, 0, 1, 1) both;
+  will-change: opacity, transform;
+}
+
 /* Admin "login as user" mode — bumps the fixed navbar + main padding to clear
    the impersonation banner. Toggled by ImpersonationBanner via document.body. */
 body.is-impersonating nav.fixed.top-0 {

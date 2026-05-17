@@ -71,7 +71,18 @@ const getAuthToken = (): string | null => {
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
     const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
     const [compareList, setCompareList] = useState<WishlistItem[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    // Lazy-init synchronously from storage so logged-in users never get a first
+    // render with isLoggedIn=false (which would cap maxCompareItems at the guest
+    // limit of 3 until the mount effect runs). The userLogin/userLogout events +
+    // storage poll below keep it in sync for SPA login without reload.
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return false;
+        try {
+            return !!(localStorage.getItem('user') || sessionStorage.getItem('user'));
+        } catch {
+            return false;
+        }
+    });
     const [isLoading, setIsLoading] = useState(true);
 
     // Load compare list from localStorage on mount
@@ -304,17 +315,27 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             return { success: false, message: 'รายการนี้อยู่ในรายการเปรียบเทียบแล้ว' };
         }
 
+        // Source of truth for the limit: read auth straight from storage at click
+        // time (same as the Navbar). React state (isLoggedIn) can lag behind a
+        // login that happened in another tab / via impersonation / before the
+        // sync effect ran — a live read is always correct.
+        let loggedIn = isLoggedIn;
+        try {
+            loggedIn = !!(localStorage.getItem('user') || sessionStorage.getItem('user'));
+        } catch { /* keep state fallback */ }
+        const effectiveMax = loggedIn ? 5 : 3;
+
         // Check limit
-        if (compareList.length >= maxCompareItems) {
-            if (!isLoggedIn) {
+        if (compareList.length >= effectiveMax) {
+            if (!loggedIn) {
                 return {
                     success: false,
-                    message: `เปรียบเทียบได้สูงสุด ${maxCompareItems} รายการ เข้าสู่ระบบเพื่อเปรียบเทียบได้ 5 รายการ`
+                    message: `เปรียบเทียบได้สูงสุด ${effectiveMax} รายการ เข้าสู่ระบบเพื่อเปรียบเทียบได้ 5 รายการ`
                 };
             }
             return {
                 success: false,
-                message: `เปรียบเทียบได้สูงสุด ${maxCompareItems} รายการ`
+                message: `เปรียบเทียบได้สูงสุด ${effectiveMax} รายการ`
             };
         }
 
@@ -324,8 +345,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         };
 
         setCompareList(prev => [...prev, newItem]);
+        // Keep React state honest if it had drifted from storage
+        if (loggedIn !== isLoggedIn) setIsLoggedIn(loggedIn);
         return { success: true, message: 'เพิ่มในรายการเปรียบเทียบแล้ว' };
-    }, [isInCompare, compareList.length, maxCompareItems, isLoggedIn]);
+    }, [isInCompare, compareList.length, isLoggedIn]);
 
     const removeFromCompare = useCallback((id: string) => {
         setCompareList(prev => prev.filter(item => item.id !== id));
