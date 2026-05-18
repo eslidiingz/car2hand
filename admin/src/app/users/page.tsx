@@ -16,11 +16,33 @@ import {
     BadgeCheck,
     Building2,
     Plus,
+    UserPlus,
+    Loader2,
+    RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { useDebounce } from "@/hooks/useDebounce";
+
+const FRONTEND_URL = process.env.NEXT_PUBLIC_FRONTEND_URL || "http://localhost:3000";
+
+/** Random 10-char temp password (admin can copy/share, user resets later). */
+function genPassword() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+    return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
 
 type KycLevel = "NONE" | "INDIVIDUAL" | "CORPORATE" | string;
 
@@ -101,6 +123,15 @@ export default function UserManagementPage() {
     const [totalPages, setTotalPages] = useState(1);
     const [total, setTotal] = useState(0);
 
+    // Register-user dialog
+    const [registerOpen, setRegisterOpen] = useState(false);
+    const [creating, setCreating] = useState(false);
+    const [form, setForm] = useState({ fullName: "", phoneNumber: "", email: "", password: "" });
+    // Per-row "ลงประกาศแทน" loading
+    const [sellAsId, setSellAsId] = useState<string | null>(null);
+
+    const resetForm = () => setForm({ fullName: "", phoneNumber: "", email: "", password: "" });
+
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
         try {
@@ -120,6 +151,56 @@ export default function UserManagementPage() {
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
+
+    const handleCreateUser = async () => {
+        const fullName = form.fullName.trim();
+        const phoneNumber = form.phoneNumber.trim();
+        const email = form.email.trim();
+        const password = form.password;
+        if (!fullName || !phoneNumber || !password) {
+            toast.error("กรุณากรอกชื่อ เบอร์โทร และรหัสผ่าน");
+            return;
+        }
+        if (password.length < 8) {
+            toast.error("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
+            return;
+        }
+        setCreating(true);
+        try {
+            await apiFetch(`/admin/users`, {
+                method: "POST",
+                body: JSON.stringify({ fullName, phoneNumber, password, email: email || undefined }),
+            });
+            toast.success("สร้างผู้ใช้สำเร็จ");
+            setRegisterOpen(false);
+            resetForm();
+            setPage(1);
+            fetchUsers();
+        } catch (err: any) {
+            toast.error(err.message || "ไม่สามารถสร้างผู้ใช้ได้");
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    // Impersonate the user and deep-link straight to the public sell form.
+    const handleSellAs = async (userId: string, isActive: boolean) => {
+        if (!isActive) {
+            toast.error("ผู้ใช้นี้ถูกปิดการใช้งาน");
+            return;
+        }
+        setSellAsId(userId);
+        try {
+            const res = await apiFetch(`/admin/users/${userId}/impersonate`, { method: "POST" });
+            const url = `${FRONTEND_URL}/admin-impersonate?token=${encodeURIComponent(res.token)}&next=${encodeURIComponent("/sell")}`;
+            window.open(url, "_blank", "noopener,noreferrer");
+            toast.success("เปิดหน้าลงประกาศแทนผู้ใช้ใน tab ใหม่แล้ว");
+        } catch (err: any) {
+            toast.error(err.message || "ไม่สามารถเปิดหน้าลงประกาศแทนได้");
+        } finally {
+            setSellAsId(null);
+        }
+    };
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString('th-TH', {
@@ -141,8 +222,17 @@ export default function UserManagementPage() {
                     </h1>
                     <p className="text-muted-foreground mt-1 text-sm">ตรวจสอบและบริหารจัดการข้อมูลผู้ใช้งานทั้งหมดในระบบ</p>
                 </div>
-                <div className="text-sm text-muted-foreground font-medium">
-                    ผู้ใช้งานทั้งหมด {total.toLocaleString('th-TH')} คน
+                <div className="flex items-center gap-4">
+                    <span className="text-sm text-muted-foreground font-medium">
+                        ผู้ใช้งานทั้งหมด {total.toLocaleString('th-TH')} คน
+                    </span>
+                    <Button
+                        size="sm"
+                        onClick={() => { resetForm(); setRegisterOpen(true); }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                    >
+                        <UserPlus size={16} /> เพิ่มผู้ใช้
+                    </Button>
                 </div>
             </div>
 
@@ -278,15 +368,29 @@ export default function UserManagementPage() {
                                             {formatDate(user.createdAt)}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link href={`/users/${user.id}`}>
+                                            <div className="flex items-center justify-end gap-1">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="text-primary hover:text-primary hover:bg-blue-50 text-xs"
+                                                    onClick={() => handleSellAs(user.id, user.isActive)}
+                                                    disabled={!user.isActive || sellAsId === user.id}
+                                                    title={!user.isActive ? "ผู้ใช้นี้ถูกปิดการใช้งาน" : "ลงประกาศในนามผู้ใช้นี้"}
+                                                    className="text-primary hover:text-primary hover:bg-blue-50 text-xs disabled:opacity-50"
                                                 >
-                                                    <Eye size={14} /> ดูรายละเอียด
+                                                    {sellAsId === user.id
+                                                        ? <Loader2 size={14} className="animate-spin" />
+                                                        : <Car size={14} />} ลงประกาศแทน
                                                 </Button>
-                                            </Link>
+                                                <Link href={`/users/${user.id}`}>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-primary hover:text-primary hover:bg-blue-50 text-xs"
+                                                    >
+                                                        <Eye size={14} /> ดูรายละเอียด
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -327,6 +431,92 @@ export default function UserManagementPage() {
                     </div>
                 )}
             </div>
+
+            {/* Register-user dialog */}
+            <Dialog open={registerOpen} onOpenChange={(o) => !creating && setRegisterOpen(o)}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <UserPlus size={18} className="text-emerald-600" /> เพิ่มผู้ใช้ใหม่
+                        </DialogTitle>
+                        <DialogDescription>
+                            สร้างบัญชีผู้ใช้โดยตรง — อีเมลไม่บังคับ (ผู้ใช้ตั้งภายหลังได้)
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-2">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="ru-name">ชื่อ-นามสกุล *</Label>
+                            <Input
+                                id="ru-name"
+                                value={form.fullName}
+                                onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
+                                placeholder="เช่น สมชาย ใจดี"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="ru-phone">เบอร์โทรศัพท์ *</Label>
+                            <Input
+                                id="ru-phone"
+                                value={form.phoneNumber}
+                                onChange={(e) => setForm((f) => ({ ...f, phoneNumber: e.target.value.replace(/\D/g, "").slice(0, 10) }))}
+                                placeholder="08XXXXXXXX"
+                                inputMode="numeric"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="ru-email">อีเมล <span className="text-muted-foreground font-normal">(ไม่บังคับ)</span></Label>
+                            <Input
+                                id="ru-email"
+                                type="email"
+                                value={form.email}
+                                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                                placeholder="เว้นว่างได้"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="ru-pass">รหัสผ่าน * <span className="text-muted-foreground font-normal">(อย่างน้อย 8 ตัว)</span></Label>
+                            <div className="flex gap-2">
+                                <Input
+                                    id="ru-pass"
+                                    value={form.password}
+                                    onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                                    placeholder="ตั้งรหัสผ่าน"
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setForm((f) => ({ ...f, password: genPassword() }))}
+                                    title="สุ่มรหัสผ่าน"
+                                >
+                                    <RefreshCw size={14} /> สุ่ม
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setRegisterOpen(false)}
+                            disabled={creating}
+                        >
+                            ยกเลิก
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={handleCreateUser}
+                            disabled={creating}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                        >
+                            {creating ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
+                            สร้างผู้ใช้
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </DashboardLayout>
     );
 }

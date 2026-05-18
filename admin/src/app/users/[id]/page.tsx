@@ -254,19 +254,26 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
         }
     };
 
-    const handleImpersonate = async () => {
+    // `next` deep-links the impersonated session somewhere specific
+    // (e.g. "/sell" → ลงประกาศแทนผู้ใช้). Omitted → goes to the dashboard.
+    const handleImpersonate = async (next?: string) => {
         if (!user) return;
         setImpersonating(true);
         try {
             const res = await apiFetch(`/admin/users/${user.id}/impersonate`, { method: "POST" });
-            const url = `${FRONTEND_URL}/admin-impersonate?token=${encodeURIComponent(res.token)}`;
+            const qs = `token=${encodeURIComponent(res.token)}${next ? `&next=${encodeURIComponent(next)}` : ""}`;
+            const url = `${FRONTEND_URL}/admin-impersonate?${qs}`;
             // window.open() with `noopener` always returns null even on success, so
             // can't reliably detect popup blocking here — just close optimistically.
             window.open(url, "_blank", "noopener,noreferrer");
-            toast.success("เปิด session impersonate ใน tab ใหม่แล้ว");
+            toast.success(
+                next === "/sell"
+                    ? "เปิดหน้าลงประกาศแทนผู้ใช้ใน tab ใหม่แล้ว"
+                    : "เปิด session impersonate ใน tab ใหม่แล้ว"
+            );
             setImpersonateOpen(false);
         } catch (err: any) {
-            toast.error(err.message || "ไม่สามารถสร้าง session impersonate ได้");
+            toast.error(err.message || "ไม่สามารถสร้าง session ได้");
         } finally {
             setImpersonating(false);
         }
@@ -338,6 +345,16 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                                     className="text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-200 disabled:opacity-50"
                                 >
                                     <LogIn size={14} /> เข้าใช้งานเป็นผู้ใช้นี้
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleImpersonate("/sell")}
+                                    disabled={!user.isActive || impersonating}
+                                    title={!user.isActive ? "ผู้ใช้นี้ถูกปิดการใช้งาน" : "เปิดหน้าลงประกาศในนามผู้ใช้นี้"}
+                                    className="text-primary hover:text-primary hover:bg-blue-50 border-blue-200 disabled:opacity-50"
+                                >
+                                    {impersonating ? <Loader2 size={14} className="animate-spin" /> : <Car size={14} />} ลงประกาศแทนผู้ใช้
                                 </Button>
                                 <Button
                                     variant="outline"
@@ -661,7 +678,7 @@ export default function UserDetailPage({ params }: { params: Promise<{ id: strin
                             </Button>
                             <Button
                                 disabled={impersonating}
-                                onClick={handleImpersonate}
+                                onClick={() => handleImpersonate()}
                                 className="flex-1 h-10 font-medium rounded-lg flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white"
                             >
                                 {impersonating ? (

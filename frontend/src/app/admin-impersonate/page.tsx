@@ -68,7 +68,17 @@ function ImpersonateLanding() {
 
                 window.dispatchEvent(new CustomEvent("userLogin", { detail: userWithToken }));
 
-                router.replace("/profile/dashboard");
+                // Optional `?next=` deep-link (e.g. admin "ลงประกาศแทน" → /sell).
+                // Only allow safe internal paths — never an absolute/external URL.
+                const nextParam = searchParams.get("next");
+                const next =
+                    nextParam &&
+                    nextParam.startsWith("/") &&
+                    !nextParam.startsWith("//")
+                        ? nextParam
+                        : "/profile/dashboard";
+
+                router.replace(next);
             } catch (err) {
                 setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
             }

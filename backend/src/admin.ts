@@ -1263,6 +1263,83 @@ export const adminRoutes = new Elysia({ prefix: "/admin" })
             };
         })
 
+        // Admin creates a user account directly (email optional → placeholder,
+        // same convention as OAuth users; admin sets the initial password).
+        .post("/", async ({ body, adminId, request, set }) => {
+            try {
+                const fullName = (body.fullName || '').trim();
+                const phone = (body.phoneNumber || '').trim();
+                const password = body.password || '';
+                const emailInput = (body.email || '').trim().toLowerCase();
+
+                if (!fullName || !phone || !password) {
+                    set.status = 400;
+                    return { error: 'Validation', message: 'กรุณากรอกชื่อ เบอร์โทร และรหัสผ่าน' };
+                }
+                if (password.length < 8) {
+                    set.status = 400;
+                    return { error: 'Validation', message: 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร' };
+                }
+
+                const existingPhone = await prisma.user.findFirst({ where: { phoneNumber: phone } });
+                if (existingPhone) {
+                    set.status = 400;
+                    return { error: 'Duplicate', message: 'เบอร์โทรศัพท์นี้ถูกใช้งานแล้ว' };
+                }
+
+                let email = emailInput;
+                if (email) {
+                    const existingEmail = await prisma.user.findUnique({ where: { email } });
+                    if (existingEmail) {
+                        set.status = 400;
+                        return { error: 'Duplicate', message: 'อีเมลนี้ถูกใช้งานแล้ว' };
+                    }
+                } else {
+                    // Placeholder keeps the unique constraint happy; user can set a
+                    // real email later in settings (same as OAuth-created accounts).
+                    email = `admin_${phone}@car2hand.placeholder`;
+                }
+
+                const hashedPassword = await Bun.password.hash(password, {
+                    algorithm: 'argon2id',
+                    memoryCost: 65536,
+                    timeCost: 3,
+                });
+
+                const user = await prisma.user.create({
+                    data: { fullName, email, phoneNumber: phone, password: hashedPassword },
+                    select: {
+                        id: true, fullName: true, email: true,
+                        phoneNumber: true, isActive: true, createdAt: true,
+                    },
+                });
+
+                const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+                    || request.headers.get('x-real-ip') || null;
+                await logAdminAction({
+                    adminId: adminId as string,
+                    action: 'USER_CREATE',
+                    targetType: 'USER',
+                    targetId: user.id,
+                    note: `Admin สร้างผู้ใช้ ${user.fullName} (${user.phoneNumber})`,
+                    ipAddress: ip,
+                });
+
+                return { message: 'สร้างผู้ใช้สำเร็จ', user };
+            } catch (error) {
+                console.error('Admin create user error:', error);
+                set.status = 500;
+                return { error: 'Server Error', message: 'ไม่สามารถสร้างผู้ใช้ได้' };
+            }
+        }, {
+            body: t.Object({
+                fullName: t.String(),
+                phoneNumber: t.String(),
+                password: t.String(),
+                email: t.Optional(t.String()),
+            }),
+        })
+
         .get("/:id", async ({ params: { id }, set }) => {
             try {
                 const user = await prisma.user.findUnique({
