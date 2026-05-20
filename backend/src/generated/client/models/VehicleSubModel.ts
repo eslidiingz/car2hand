@@ -28,6 +28,7 @@ export type AggregateVehicleSubModel = {
 
 export type VehicleSubModelAvgAggregateOutputType = {
   engineSize: number | null
+  seats: number | null
   yearStart: number | null
   yearEnd: number | null
   order: number | null
@@ -35,6 +36,7 @@ export type VehicleSubModelAvgAggregateOutputType = {
 
 export type VehicleSubModelSumAggregateOutputType = {
   engineSize: number | null
+  seats: number | null
   yearStart: number | null
   yearEnd: number | null
   order: number | null
@@ -46,6 +48,7 @@ export type VehicleSubModelMinAggregateOutputType = {
   engineSize: number | null
   fuelType: $Enums.FuelType | null
   transmission: $Enums.Transmission | null
+  seats: number | null
   yearStart: number | null
   yearEnd: number | null
   isActive: boolean | null
@@ -61,6 +64,7 @@ export type VehicleSubModelMaxAggregateOutputType = {
   engineSize: number | null
   fuelType: $Enums.FuelType | null
   transmission: $Enums.Transmission | null
+  seats: number | null
   yearStart: number | null
   yearEnd: number | null
   isActive: boolean | null
@@ -76,6 +80,7 @@ export type VehicleSubModelCountAggregateOutputType = {
   engineSize: number
   fuelType: number
   transmission: number
+  seats: number
   yearStart: number
   yearEnd: number
   isActive: number
@@ -89,6 +94,7 @@ export type VehicleSubModelCountAggregateOutputType = {
 
 export type VehicleSubModelAvgAggregateInputType = {
   engineSize?: true
+  seats?: true
   yearStart?: true
   yearEnd?: true
   order?: true
@@ -96,6 +102,7 @@ export type VehicleSubModelAvgAggregateInputType = {
 
 export type VehicleSubModelSumAggregateInputType = {
   engineSize?: true
+  seats?: true
   yearStart?: true
   yearEnd?: true
   order?: true
@@ -107,6 +114,7 @@ export type VehicleSubModelMinAggregateInputType = {
   engineSize?: true
   fuelType?: true
   transmission?: true
+  seats?: true
   yearStart?: true
   yearEnd?: true
   isActive?: true
@@ -122,6 +130,7 @@ export type VehicleSubModelMaxAggregateInputType = {
   engineSize?: true
   fuelType?: true
   transmission?: true
+  seats?: true
   yearStart?: true
   yearEnd?: true
   isActive?: true
@@ -137,6 +146,7 @@ export type VehicleSubModelCountAggregateInputType = {
   engineSize?: true
   fuelType?: true
   transmission?: true
+  seats?: true
   yearStart?: true
   yearEnd?: true
   isActive?: true
@@ -239,6 +249,7 @@ export type VehicleSubModelGroupByOutputType = {
   engineSize: number | null
   fuelType: $Enums.FuelType | null
   transmission: $Enums.Transmission | null
+  seats: number | null
   yearStart: number | null
   yearEnd: number | null
   isActive: boolean
@@ -277,6 +288,7 @@ export type VehicleSubModelWhereInput = {
   engineSize?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   fuelType?: Prisma.EnumFuelTypeNullableFilter<"VehicleSubModel"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleSubModel"> | $Enums.Transmission | null
+  seats?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   yearStart?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   yearEnd?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   isActive?: Prisma.BoolFilter<"VehicleSubModel"> | boolean
@@ -293,6 +305,7 @@ export type VehicleSubModelOrderByWithRelationInput = {
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
   fuelType?: Prisma.SortOrderInput | Prisma.SortOrder
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
+  seats?: Prisma.SortOrderInput | Prisma.SortOrder
   yearStart?: Prisma.SortOrderInput | Prisma.SortOrder
   yearEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -313,6 +326,7 @@ export type VehicleSubModelWhereUniqueInput = Prisma.AtLeast<{
   engineSize?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   fuelType?: Prisma.EnumFuelTypeNullableFilter<"VehicleSubModel"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleSubModel"> | $Enums.Transmission | null
+  seats?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   yearStart?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   yearEnd?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   isActive?: Prisma.BoolFilter<"VehicleSubModel"> | boolean
@@ -329,6 +343,7 @@ export type VehicleSubModelOrderByWithAggregationInput = {
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
   fuelType?: Prisma.SortOrderInput | Prisma.SortOrder
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
+  seats?: Prisma.SortOrderInput | Prisma.SortOrder
   yearStart?: Prisma.SortOrderInput | Prisma.SortOrder
   yearEnd?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -352,6 +367,7 @@ export type VehicleSubModelScalarWhereWithAggregatesInput = {
   engineSize?: Prisma.IntNullableWithAggregatesFilter<"VehicleSubModel"> | number | null
   fuelType?: Prisma.EnumFuelTypeNullableWithAggregatesFilter<"VehicleSubModel"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableWithAggregatesFilter<"VehicleSubModel"> | $Enums.Transmission | null
+  seats?: Prisma.IntNullableWithAggregatesFilter<"VehicleSubModel"> | number | null
   yearStart?: Prisma.IntNullableWithAggregatesFilter<"VehicleSubModel"> | number | null
   yearEnd?: Prisma.IntNullableWithAggregatesFilter<"VehicleSubModel"> | number | null
   isActive?: Prisma.BoolWithAggregatesFilter<"VehicleSubModel"> | boolean
@@ -367,6 +383,7 @@ export type VehicleSubModelCreateInput = {
   engineSize?: number | null
   fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
+  seats?: number | null
   yearStart?: number | null
   yearEnd?: number | null
   isActive?: boolean
@@ -382,6 +399,7 @@ export type VehicleSubModelUncheckedCreateInput = {
   engineSize?: number | null
   fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
+  seats?: number | null
   yearStart?: number | null
   yearEnd?: number | null
   isActive?: boolean
@@ -397,6 +415,7 @@ export type VehicleSubModelUpdateInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -412,6 +431,7 @@ export type VehicleSubModelUncheckedUpdateInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -427,6 +447,7 @@ export type VehicleSubModelCreateManyInput = {
   engineSize?: number | null
   fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
+  seats?: number | null
   yearStart?: number | null
   yearEnd?: number | null
   isActive?: boolean
@@ -442,6 +463,7 @@ export type VehicleSubModelUpdateManyMutationInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -456,6 +478,7 @@ export type VehicleSubModelUncheckedUpdateManyInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -486,6 +509,7 @@ export type VehicleSubModelCountOrderByAggregateInput = {
   engineSize?: Prisma.SortOrder
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   yearStart?: Prisma.SortOrder
   yearEnd?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -497,6 +521,7 @@ export type VehicleSubModelCountOrderByAggregateInput = {
 
 export type VehicleSubModelAvgOrderByAggregateInput = {
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   yearStart?: Prisma.SortOrder
   yearEnd?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -508,6 +533,7 @@ export type VehicleSubModelMaxOrderByAggregateInput = {
   engineSize?: Prisma.SortOrder
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   yearStart?: Prisma.SortOrder
   yearEnd?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -523,6 +549,7 @@ export type VehicleSubModelMinOrderByAggregateInput = {
   engineSize?: Prisma.SortOrder
   fuelType?: Prisma.SortOrder
   transmission?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   yearStart?: Prisma.SortOrder
   yearEnd?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -534,6 +561,7 @@ export type VehicleSubModelMinOrderByAggregateInput = {
 
 export type VehicleSubModelSumOrderByAggregateInput = {
   engineSize?: Prisma.SortOrder
+  seats?: Prisma.SortOrder
   yearStart?: Prisma.SortOrder
   yearEnd?: Prisma.SortOrder
   order?: Prisma.SortOrder
@@ -595,6 +623,7 @@ export type VehicleSubModelCreateWithoutModelInput = {
   engineSize?: number | null
   fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
+  seats?: number | null
   yearStart?: number | null
   yearEnd?: number | null
   isActive?: boolean
@@ -609,6 +638,7 @@ export type VehicleSubModelUncheckedCreateWithoutModelInput = {
   engineSize?: number | null
   fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
+  seats?: number | null
   yearStart?: number | null
   yearEnd?: number | null
   isActive?: boolean
@@ -652,6 +682,7 @@ export type VehicleSubModelScalarWhereInput = {
   engineSize?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   fuelType?: Prisma.EnumFuelTypeNullableFilter<"VehicleSubModel"> | $Enums.FuelType | null
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleSubModel"> | $Enums.Transmission | null
+  seats?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   yearStart?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   yearEnd?: Prisma.IntNullableFilter<"VehicleSubModel"> | number | null
   isActive?: Prisma.BoolFilter<"VehicleSubModel"> | boolean
@@ -667,6 +698,7 @@ export type VehicleSubModelCreateManyModelInput = {
   engineSize?: number | null
   fuelType?: $Enums.FuelType | null
   transmission?: $Enums.Transmission | null
+  seats?: number | null
   yearStart?: number | null
   yearEnd?: number | null
   isActive?: boolean
@@ -681,6 +713,7 @@ export type VehicleSubModelUpdateWithoutModelInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -695,6 +728,7 @@ export type VehicleSubModelUncheckedUpdateWithoutModelInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -709,6 +743,7 @@ export type VehicleSubModelUncheckedUpdateManyWithoutModelInput = {
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   fuelType?: Prisma.NullableEnumFuelTypeFieldUpdateOperationsInput | $Enums.FuelType | null
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
+  seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearStart?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   yearEnd?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -725,6 +760,7 @@ export type VehicleSubModelSelect<ExtArgs extends runtime.Types.Extensions.Inter
   engineSize?: boolean
   fuelType?: boolean
   transmission?: boolean
+  seats?: boolean
   yearStart?: boolean
   yearEnd?: boolean
   isActive?: boolean
@@ -741,6 +777,7 @@ export type VehicleSubModelSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   engineSize?: boolean
   fuelType?: boolean
   transmission?: boolean
+  seats?: boolean
   yearStart?: boolean
   yearEnd?: boolean
   isActive?: boolean
@@ -757,6 +794,7 @@ export type VehicleSubModelSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   engineSize?: boolean
   fuelType?: boolean
   transmission?: boolean
+  seats?: boolean
   yearStart?: boolean
   yearEnd?: boolean
   isActive?: boolean
@@ -773,6 +811,7 @@ export type VehicleSubModelSelectScalar = {
   engineSize?: boolean
   fuelType?: boolean
   transmission?: boolean
+  seats?: boolean
   yearStart?: boolean
   yearEnd?: boolean
   isActive?: boolean
@@ -782,7 +821,7 @@ export type VehicleSubModelSelectScalar = {
   modelId?: boolean
 }
 
-export type VehicleSubModelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "engineSize" | "fuelType" | "transmission" | "yearStart" | "yearEnd" | "isActive" | "order" | "createdAt" | "updatedAt" | "modelId", ExtArgs["result"]["vehicleSubModel"]>
+export type VehicleSubModelOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "engineSize" | "fuelType" | "transmission" | "seats" | "yearStart" | "yearEnd" | "isActive" | "order" | "createdAt" | "updatedAt" | "modelId", ExtArgs["result"]["vehicleSubModel"]>
 export type VehicleSubModelInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   model?: boolean | Prisma.VehicleModelDefaultArgs<ExtArgs>
 }
@@ -804,6 +843,7 @@ export type $VehicleSubModelPayload<ExtArgs extends runtime.Types.Extensions.Int
     engineSize: number | null
     fuelType: $Enums.FuelType | null
     transmission: $Enums.Transmission | null
+    seats: number | null
     yearStart: number | null
     yearEnd: number | null
     isActive: boolean
@@ -1240,6 +1280,7 @@ export interface VehicleSubModelFieldRefs {
   readonly engineSize: Prisma.FieldRef<"VehicleSubModel", 'Int'>
   readonly fuelType: Prisma.FieldRef<"VehicleSubModel", 'FuelType'>
   readonly transmission: Prisma.FieldRef<"VehicleSubModel", 'Transmission'>
+  readonly seats: Prisma.FieldRef<"VehicleSubModel", 'Int'>
   readonly yearStart: Prisma.FieldRef<"VehicleSubModel", 'Int'>
   readonly yearEnd: Prisma.FieldRef<"VehicleSubModel", 'Int'>
   readonly isActive: Prisma.FieldRef<"VehicleSubModel", 'Boolean'>

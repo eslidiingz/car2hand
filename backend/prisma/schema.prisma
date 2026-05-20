@@ -296,6 +296,7 @@ model VehicleSubModel {
   engineSize   Int? // ขนาดเครื่อง (cc)
   fuelType     FuelType? // ประเภทเชื้อเพลิง
   transmission Transmission? // ระบบเกียร์
+  seats        Int? // จำนวนที่นั่ง
   yearStart    Int? // ปีเริ่มผลิต
   yearEnd      Int? // ปีสิ้นสุด
   isActive     Boolean       @default(true)
