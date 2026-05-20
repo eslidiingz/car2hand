@@ -3766,6 +3766,7 @@ export const VehicleSubModelScalarFieldEnum = {
   engineSize: 'engineSize',
   fuelType: 'fuelType',
   transmission: 'transmission',
+  seats: 'seats',
   yearStart: 'yearStart',
   yearEnd: 'yearEnd',
   isActive: 'isActive',

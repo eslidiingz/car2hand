@@ -1072,6 +1072,10 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                 model: sanitizedData.model as string,
                 subModel: sanitizedData.subModel as string | undefined,
                 bodyType: sanitizedData.bodyType as string | undefined,
+                engineSize: sanitizedData.engineSize as number | undefined,
+                fuelType: sanitizedData.fuelType as string | undefined,
+                transmission: sanitizedData.transmission as string | undefined,
+                seats: sanitizedData.seats as number | undefined,
             }).catch(err => console.error('ensureModelAndSubModel failed (create):', err));
 
             return {
@@ -1806,6 +1810,10 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
                     model: sanitizedUpdate.model as string,
                     subModel: sanitizedUpdate.subModel as string | undefined,
                     bodyType: sanitizedUpdate.bodyType as string | undefined,
+                    engineSize: sanitizedUpdate.engineSize as number | undefined,
+                    fuelType: sanitizedUpdate.fuelType as string | undefined,
+                    transmission: sanitizedUpdate.transmission as string | undefined,
+                    seats: sanitizedUpdate.seats as number | undefined,
                 }).catch(err => console.error('ensureModelAndSubModel failed (update):', err));
             }
 

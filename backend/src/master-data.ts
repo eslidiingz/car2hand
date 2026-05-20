@@ -373,16 +373,33 @@ export async function ensureModelAndSubModel({
     model,
     subModel,
     bodyType,
+    engineSize,
+    fuelType,
+    transmission,
+    seats,
 }: {
     vehicleType: 'CAR' | 'MOTORCYCLE';
     brand: string;
     model: string;
     subModel?: string | null;
     bodyType?: string | null;
+    // Specs from the listing — persisted onto the sub-model so future
+    // sellers get them pre-filled. Backfilled non-destructively (only
+    // when the existing sub-model field is still null).
+    engineSize?: number | null;
+    fuelType?: string | null;
+    transmission?: string | null;
+    seats?: number | null;
 }): Promise<{ modelCreated: boolean; subModelCreated: boolean }> {
     if (!brand?.trim() || !model?.trim()) {
         return { modelCreated: false, subModelCreated: false };
     }
+
+    // Normalise spec values (ignore empties / non-positive numbers)
+    const specEngine = typeof engineSize === 'number' && engineSize > 0 ? engineSize : null;
+    const specSeats = typeof seats === 'number' && seats > 0 ? seats : null;
+    const specFuel = fuelType && String(fuelType).trim() ? String(fuelType).trim() : null;
+    const specTrans = transmission && String(transmission).trim() ? String(transmission).trim() : null;
 
     const brandRecord = await prisma.brand.findFirst({
         where: { name: brand.trim(), vehicleType },
@@ -420,19 +437,40 @@ export async function ensureModelAndSubModel({
         modelCreated = true;
     }
 
-    // Upsert VehicleSubModel (optional)
+    // Upsert VehicleSubModel (optional) + persist/backfill specs
     let subModelCreated = false;
     const subModelName = subModel?.trim();
     if (subModelName) {
         const existingSub = await prisma.vehicleSubModel.findUnique({
             where: { modelId_name: { modelId, name: subModelName } },
-            select: { id: true },
+            select: { id: true, engineSize: true, fuelType: true, transmission: true, seats: true },
         });
         if (!existingSub) {
             await prisma.vehicleSubModel.create({
-                data: { modelId, name: subModelName },
+                data: {
+                    modelId,
+                    name: subModelName,
+                    ...(specEngine !== null ? { engineSize: specEngine } : {}),
+                    ...(specFuel ? { fuelType: specFuel as never } : {}),
+                    ...(specTrans ? { transmission: specTrans as never } : {}),
+                    ...(specSeats !== null ? { seats: specSeats } : {}),
+                },
             });
             subModelCreated = true;
+        } else {
+            // Backfill only fields that are still null — never overwrite
+            // values an admin (or an earlier listing) already curated.
+            const upd: Record<string, unknown> = {};
+            if (existingSub.engineSize == null && specEngine !== null) upd.engineSize = specEngine;
+            if (existingSub.fuelType == null && specFuel) upd.fuelType = specFuel;
+            if (existingSub.transmission == null && specTrans) upd.transmission = specTrans;
+            if (existingSub.seats == null && specSeats !== null) upd.seats = specSeats;
+            if (Object.keys(upd).length > 0) {
+                await prisma.vehicleSubModel.update({
+                    where: { id: existingSub.id },
+                    data: upd as never,
+                });
+            }
         }
     }
 
