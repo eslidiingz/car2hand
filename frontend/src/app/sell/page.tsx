@@ -1075,6 +1075,24 @@ function CreateListingPage() {
                                             {fieldErrors.color && <p className="text-red-500 text-xs mt-1">กรุณาเลือกสี</p>}
                                         </div>
 
+                                        <div ref={yearRef}>
+                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.year ? 'text-red-600' : 'text-gray-700'}`}>ปีที่ผลิต <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                maxLength={4}
+                                                placeholder="เช่น 2020"
+                                                className={`form-input ${fieldErrors.year ? 'border-red-500 ring-2 ring-red-500' : ''}`}
+                                                value={formData.year || ''}
+                                                onChange={(e) => {
+                                                    setFieldErrors(prev => ({ ...prev, year: false }));
+                                                    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+                                                    updateFormData({ year: parseInt(value) || 0 });
+                                                }}
+                                            />
+                                            {fieldErrors.year && <p className="text-red-500 text-xs mt-1">กรุณากรอกปีที่ผลิต</p>}
+                                        </div>
+
                                         <div ref={fuelTypeRef}>
                                             <label className="block text-sm font-medium mb-1.5 text-gray-700">เชื้อเพลิง</label>
                                             <SearchableSelect
@@ -1093,24 +1111,6 @@ function CreateListingPage() {
                                                 searchPlaceholder="ค้นหาเชื้อเพลิง..."
                                                 emptyMessage="ไม่พบประเภทเชื้อเพลิง"
                                             />
-                                        </div>
-
-                                        <div ref={yearRef}>
-                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.year ? 'text-red-600' : 'text-gray-700'}`}>ปีที่ผลิต <span className="text-red-500">*</span></label>
-                                            <input
-                                                type="text"
-                                                inputMode="numeric"
-                                                maxLength={4}
-                                                placeholder="เช่น 2020"
-                                                className={`form-input ${fieldErrors.year ? 'border-red-500 ring-2 ring-red-500' : ''}`}
-                                                value={formData.year || ''}
-                                                onChange={(e) => {
-                                                    setFieldErrors(prev => ({ ...prev, year: false }));
-                                                    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
-                                                    updateFormData({ year: parseInt(value) || 0 });
-                                                }}
-                                            />
-                                            {fieldErrors.year && <p className="text-red-500 text-xs mt-1">กรุณากรอกปีที่ผลิต</p>}
                                         </div>
                                     </div>
 
