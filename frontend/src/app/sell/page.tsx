@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -12,6 +12,8 @@ import {
     Bot,
     Wand2,
     ArrowRight,
+    ChevronLeft,
+    ChevronRight,
     Lightbulb,
     CheckCircle,
     ImageIcon,
@@ -120,6 +122,28 @@ function getAuthToken(): string | null {
     try { return JSON.parse(stored).token || null; } catch { return null; }
 }
 
+/**
+ * Re-materialize a File so its bytes live in JS memory instead of being a
+ * snapshot reference to a file on disk.
+ *
+ * Why this matters: on iOS Safari, a File from <input type="file"> (or
+ * restored from IndexedDB) is a *snapshot reference* — not the bytes. The
+ * OS can invalidate that snapshot any time (memory pressure, app-switch,
+ * BFCache restore, or just elapsed time), after which `file.arrayBuffer()`
+ * throws `DOMException: NotFoundError: The object can not be found here.`
+ * surfacing as a confusing English error at publish time.
+ *
+ * Eager-copying the bytes at selection time produces a memory-backed Blob
+ * that can't be evicted, eliminating the root cause.
+ */
+async function materializeFile(file: File): Promise<File> {
+    const buf = await file.arrayBuffer();
+    return new File([buf], file.name, {
+        type: file.type,
+        lastModified: file.lastModified,
+    });
+}
+
 // ListingProvider lives here (not a /sell/layout) so it scopes ONLY to the
 // create form — /sell/estimate and /sell/edit/[id] must not inherit the
 // draft auto-save / rehydrate side-effects.
@@ -130,6 +154,129 @@ export default function CreateListingPageWrapper() {
                 <CreateListingPage />
             </Suspense>
         </ListingProvider>
+    );
+}
+
+/**
+ * Full-screen image viewer for the step-2 photo grid.
+ *  - Swipe horizontally to navigate (touch threshold 50px) — hard cut, no animation
+ *  - Buttons + arrow keys for navigation, X / backdrop tap / Escape to close
+ *  - Locks body scroll while open; respects iOS safe-area at the top
+ *  - Pure presentational; index state lives in the parent.
+ */
+function ImageLightbox({
+    images,
+    index,
+    onClose,
+    onIndexChange,
+}: {
+    images: string[];
+    index: number;
+    onClose: () => void;
+    onIndexChange: (i: number) => void;
+}) {
+    const touchStartX = useRef<number | null>(null);
+    const touchEndX = useRef<number | null>(null);
+
+    const goPrev = useCallback(() => {
+        onIndexChange(index === 0 ? images.length - 1 : index - 1);
+    }, [index, images.length, onIndexChange]);
+
+    const goNext = useCallback(() => {
+        onIndexChange(index === images.length - 1 ? 0 : index + 1);
+    }, [index, images.length, onIndexChange]);
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+            else if (e.key === 'ArrowLeft') goPrev();
+            else if (e.key === 'ArrowRight') goNext();
+        };
+        window.addEventListener('keydown', handler);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            window.removeEventListener('keydown', handler);
+            document.body.style.overflow = prevOverflow;
+        };
+    }, [onClose, goPrev, goNext]);
+
+    const hasMany = images.length > 1;
+
+    return (
+        <div className="fixed inset-0 z-[110] bg-black/95 flex items-center justify-center">
+            {/* Tap on the backdrop (anything that isn't the image / buttons) closes */}
+            <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
+
+            {/* Counter */}
+            <div
+                className="absolute left-1/2 -translate-x-1/2 text-white/85 text-sm font-medium z-10 pointer-events-none"
+                style={{ top: 'calc(1rem + env(safe-area-inset-top))' }}
+            >
+                {index + 1} / {images.length}
+            </div>
+
+            {/* Close */}
+            <button
+                type="button"
+                onClick={onClose}
+                aria-label="ปิด"
+                className="absolute right-3 w-11 h-11 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur transition z-10 active:scale-95"
+                style={{ top: 'calc(0.75rem + env(safe-area-inset-top))' }}
+            >
+                <X size={22} />
+            </button>
+
+            {/* Prev (only when multiple images) */}
+            {hasMany && (
+                <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                    aria-label="รูปก่อนหน้า"
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur transition z-10 active:scale-95"
+                >
+                    <ChevronLeft size={26} />
+                </button>
+            )}
+
+            {/* Image */}
+            <img
+                src={images[index]}
+                alt={`รูปที่ ${index + 1}`}
+                draggable={false}
+                onClick={(e) => e.stopPropagation()}
+                onTouchStart={(e) => {
+                    touchStartX.current = e.changedTouches[0].clientX;
+                    touchEndX.current = e.changedTouches[0].clientX;
+                }}
+                onTouchMove={(e) => {
+                    touchEndX.current = e.changedTouches[0].clientX;
+                }}
+                onTouchEnd={() => {
+                    if (touchStartX.current === null || touchEndX.current === null) return;
+                    const delta = touchEndX.current - touchStartX.current;
+                    if (Math.abs(delta) > 50 && hasMany) {
+                        if (delta > 0) goPrev();
+                        else goNext();
+                    }
+                    touchStartX.current = null;
+                    touchEndX.current = null;
+                }}
+                className="relative max-w-[92vw] max-h-[80vh] object-contain select-none touch-pan-y"
+            />
+
+            {/* Next */}
+            {hasMany && (
+                <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); goNext(); }}
+                    aria-label="รูปถัดไป"
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur transition z-10 active:scale-95"
+                >
+                    <ChevronRight size={26} />
+                </button>
+            )}
+        </div>
     );
 }
 
@@ -152,6 +299,8 @@ function CreateListingPage() {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showResumeConfirm, setShowResumeConfirm] = useState(false);
+    // Step-2 image lightbox (null = closed)
+    const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
     // Refs for scroll-to-error
     const brandRef = useRef<HTMLDivElement>(null);
@@ -390,8 +539,9 @@ function CreateListingPage() {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 31 }, (_, i) => currentYear - i);
 
-    // Handle image upload (from input or drop)
-    const handleImageFiles = (files: File[]) => {
+    // Handle image upload (from input or drop). Async because we eager-copy
+    // each File into an in-memory Blob right now — see materializeFile().
+    const handleImageFiles = async (files: File[]) => {
         const currentTotal = formData.images.length;
         const remainingSlots = maxPhotos - currentTotal;
 
@@ -408,10 +558,21 @@ function CreateListingPage() {
             setError(null);
         }
 
-        const newPreviews = fileArray.map(file => URL.createObjectURL(file));
+        // Eager-copy to memory NOW so iOS Safari can't invalidate the
+        // snapshot before publish. arrayBuffer() at this moment (right after
+        // user picked the file) is the safest time to do it.
+        let materialized: File[];
+        try {
+            materialized = await Promise.all(fileArray.map(materializeFile));
+        } catch {
+            setError('ไม่สามารถอ่านไฟล์รูปได้ กรุณาเลือกใหม่อีกครั้ง');
+            return;
+        }
+
+        const newPreviews = materialized.map(file => URL.createObjectURL(file));
 
         updateFormData({
-            images: [...formData.images, ...fileArray],
+            images: [...formData.images, ...materialized],
             imagesPreviews: [...formData.imagesPreviews, ...newPreviews]
         });
     };
@@ -1239,19 +1400,28 @@ function CreateListingPage() {
                                         onDrop={(e) => { e.preventDefault(); setDragOverPhotos(false); handleImageFiles(Array.from(e.dataTransfer.files)); }}
                                     >
                                         {formData.imagesPreviews.map((preview, index) => (
-                                            <div key={index} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-gray-200 group">
-                                                <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-full object-cover" />
+                                            <div key={index} className="relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-gray-200">
+                                                <img
+                                                    src={preview}
+                                                    alt={`Preview ${index + 1}`}
+                                                    onClick={() => setLightboxIndex(index)}
+                                                    className="w-full h-full object-cover cursor-pointer"
+                                                />
                                                 {index === 0 && (
-                                                    <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded">
+                                                    <span className="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded pointer-events-none">
                                                         รูปหลัก
                                                     </span>
                                                 )}
+                                                {/* Always visible (no hover-gating) so mobile users can
+                                                    actually tap it; sized 32px with a 4px corner offset for
+                                                    a comfortable tap target without crowding the image. */}
                                                 <button
                                                     type="button"
                                                     onClick={() => removeImage(index)}
-                                                    className="absolute top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+                                                    aria-label={`ลบรูปที่ ${index + 1}`}
+                                                    className="absolute top-1.5 right-1.5 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-md active:scale-95 transition"
                                                 >
-                                                    <X size={14} />
+                                                    <X size={14} strokeWidth={2.5} />
                                                 </button>
                                             </div>
                                         ))}
@@ -1764,6 +1934,16 @@ function CreateListingPage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Full-screen image viewer (step-2 grid tap) */}
+            {lightboxIndex !== null && formData.imagesPreviews[lightboxIndex] && (
+                <ImageLightbox
+                    images={formData.imagesPreviews}
+                    index={lightboxIndex}
+                    onClose={() => setLightboxIndex(null)}
+                    onIndexChange={setLightboxIndex}
+                />
             )}
         </div>
     );
