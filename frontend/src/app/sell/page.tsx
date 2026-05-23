@@ -626,7 +626,8 @@ function CreateListingPage() {
                 errors.year = true;
                 missingFields.push('ปีที่ผลิต');
             }
-            if (!formData.mileage) {
+            // null = "ไม่ระบุ" (valid); error only if a number is expected but missing
+            if (formData.mileage !== null && !formData.mileage) {
                 errors.mileage = true;
                 missingFields.push('เลขไมล์');
             }
@@ -698,10 +699,7 @@ function CreateListingPage() {
             missingFields.push('ราคา');
         }
 
-        if (!formData.province) {
-            errors.province = true;
-            missingFields.push('จังหวัด');
-        }
+        // จังหวัด — optional (ไม่เลือกก็ได้)
 
         if (!formData.contactName) {
             errors.contactName = true;
@@ -1135,12 +1133,27 @@ function CreateListingPage() {
                                     </div>
 
                                     <div className="mb-8" ref={mileageRef}>
-                                        <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) <span className="text-red-500">*</span></label>
+                                        <div className="flex items-center justify-between mb-1.5">
+                                            <label className={`block text-sm font-medium ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) <span className="text-red-500">*</span></label>
+                                            <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-600 select-none">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.mileage === null}
+                                                    onChange={(e) => {
+                                                        setFieldErrors(prev => ({ ...prev, mileage: false }));
+                                                        updateFormData({ mileage: e.target.checked ? null : 0 });
+                                                    }}
+                                                    className="w-4 h-4 rounded accent-primary"
+                                                />
+                                                ไม่ระบุ
+                                            </label>
+                                        </div>
                                         <div className="relative">
                                             <input
                                                 type="text"
                                                 inputMode="numeric"
-                                                value={formData.mileage ? formData.mileage.toLocaleString('en-US') : ''}
+                                                disabled={formData.mileage === null}
+                                                value={formData.mileage === null ? '' : (formData.mileage ? formData.mileage.toLocaleString('en-US') : '')}
                                                 onChange={(e) => {
                                                     setFieldErrors(prev => ({ ...prev, mileage: false }));
                                                     const value = e.target.value.replace(/,/g, '');
@@ -1148,14 +1161,14 @@ function CreateListingPage() {
                                                         updateFormData({ mileage: parseInt(value) || 0 });
                                                     }
                                                 }}
-                                                placeholder="เช่น 45,000"
-                                                className={`form-input-icon font-medium ${fieldErrors.mileage ? 'border-red-500 ring-2 ring-red-500' : ''}`}
+                                                placeholder={formData.mileage === null ? 'ไม่ระบุ' : 'เช่น 45,000'}
+                                                className={`form-input-icon font-medium ${fieldErrors.mileage ? 'border-red-500 ring-2 ring-red-500' : ''} ${formData.mileage === null ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
                                             />
                                             <div className={`absolute left-3 top-1/2 -translate-y-1/2 ${fieldErrors.mileage ? 'text-red-500' : 'text-gray-400'}`}>
                                                 <Gauge size={20} />
                                             </div>
                                         </div>
-                                        {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์</p>}
+                                        {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์ หรือเลือก &quot;ไม่ระบุ&quot;</p>}
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
@@ -1584,7 +1597,7 @@ function CreateListingPage() {
                                     <p className="text-xs text-gray-500 mb-4">ผู้ซื้อที่สนใจจะใช้ข้อมูลนี้ในการนัดหมายเข้าชมรถ</p>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                                         <div ref={provinceRef}>
-                                            <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.province ? 'text-red-600' : 'text-gray-700'}`}>จังหวัด<span className="text-red-500">*</span></label>
+                                            <label className="block text-sm font-medium mb-1.5 text-gray-700">จังหวัด <span className="text-gray-400 font-normal">(ไม่บังคับ)</span></label>
                                             <div className={fieldErrors.province ? 'ring-2 ring-red-500 rounded-xl' : ''}>
                                                 <SearchableSelect
                                                     options={PROVINCES.map(p => ({ id: p, label: p }))}

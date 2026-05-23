@@ -49,12 +49,12 @@ const getTransmissionLabel = (t?: string | null) => {
 const specRows = [
     { label: 'ราคา', icon: <span className="text-accent font-bold text-sm">฿</span>, getValue: (item: CompareItem) => `฿${formatPrice(item.price)}`, highlight: true },
     { label: 'ปี', icon: <Calendar size={16} className="text-primary" />, getValue: (item: CompareItem) => String(item.year || '-') },
-    { label: 'เลขไมล์', icon: <Gauge size={16} className="text-primary" />, getValue: (item: CompareItem) => item.mileage ? `${item.mileage.toLocaleString()} กม.` : '-' },
+    { label: 'เลขไมล์', icon: <Gauge size={16} className="text-primary" />, getValue: (item: CompareItem) => item.mileage != null ? `${item.mileage.toLocaleString()} กม.` : 'ไม่ระบุ' },
     { label: 'เชื้อเพลิง', icon: <Fuel size={16} className="text-primary" />, getValue: (item: CompareItem) => getFuelTypeLabel(item.fuelType) },
     { label: 'เกียร์', icon: <Settings size={16} className="text-primary" />, getValue: (item: CompareItem) => getTransmissionLabel(item.transmission) },
     { label: 'เครื่องยนต์', icon: <Zap size={16} className="text-primary" />, getValue: (item: CompareItem) => item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-' },
     { label: 'ที่นั่ง', icon: <Users size={16} className="text-primary" />, getValue: (item: CompareItem) => item.seats ? `${item.seats} ที่นั่ง` : '-' },
-    { label: 'จังหวัด', icon: <MapPin size={16} className="text-primary" />, getValue: (item: CompareItem) => item.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : item.province || '-' },
+    { label: 'จังหวัด', icon: <MapPin size={16} className="text-primary" />, getValue: (item: CompareItem) => item.province ? (item.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : item.province) : 'ไม่ระบุ' },
 ];
 
 export default function ComparePage() {

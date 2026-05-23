@@ -94,7 +94,7 @@ interface FormData {
     color: string;
     fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV';
     transmission: 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO';
-    mileage: number;
+    mileage: number | null; // null = "ไม่ระบุ"
     engineSize: number;
     seats: number;
     bodyType: string;
@@ -453,7 +453,7 @@ export default function EditListingPage() {
                     color: listingData.color,
                     fuelType: listingData.fuelType as FormData['fuelType'],
                     transmission: (listingData.transmission as FormData['transmission']) || 'AUTOMATIC',
-                    mileage: listingData.mileage || 0,
+                    mileage: listingData.mileage ?? null,
                     engineSize: listingData.engineSize || 0,
                     seats: (listingData as any).seats || 0,
                     bodyType: listingData.bodyType || 'SEDAN',
@@ -607,9 +607,9 @@ export default function EditListingPage() {
         if (!formData.bodyType) errors.bodyType = true;
         if (!formData.color) errors.color = true;
         if (!formData.year) errors.year = true;
-        if (!formData.mileage) errors.mileage = true;
+        if (formData.mileage !== null && !formData.mileage) errors.mileage = true;
         if (!formData.price) errors.price = true;
-        if (!formData.province) errors.province = true;
+        // จังหวัด — optional (ไม่เลือกก็ได้)
         if (!formData.contactName) errors.contactName = true;
         if (!formData.contactPhone) errors.contactPhone = true;
 
@@ -1293,12 +1293,27 @@ export default function EditListingPage() {
 
                             {/* Mileage */}
                             <div className="mb-8" ref={mileageRef}>
-                                <label className={`block text-sm font-medium mb-1.5 ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) <span className="text-red-500">*</span></label>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    <label className={`block text-sm font-medium ${fieldErrors.mileage ? 'text-red-600' : 'text-gray-700'}`}>เลขไมล์ (กม.) <span className="text-red-500">*</span></label>
+                                    <label className="flex items-center gap-1.5 cursor-pointer text-sm text-gray-600 select-none">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.mileage === null}
+                                            onChange={(e) => {
+                                                setFieldErrors(prev => ({ ...prev, mileage: false }));
+                                                updateFormData({ mileage: e.target.checked ? null : 0 });
+                                            }}
+                                            className="w-4 h-4 rounded accent-primary"
+                                        />
+                                        ไม่ระบุ
+                                    </label>
+                                </div>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         inputMode="numeric"
-                                        value={formData.mileage ? formData.mileage.toLocaleString('en-US') : ''}
+                                        disabled={formData.mileage === null}
+                                        value={formData.mileage === null ? '' : (formData.mileage ? formData.mileage.toLocaleString('en-US') : '')}
                                         onChange={(e) => {
                                             setFieldErrors(prev => ({ ...prev, mileage: false }));
                                             const value = e.target.value.replace(/,/g, '');
@@ -1306,8 +1321,8 @@ export default function EditListingPage() {
                                                 updateFormData({ mileage: parseInt(value) || 0 });
                                             }
                                         }}
-                                        placeholder="เช่น 45,000"
-                                        className={`form-input-icon font-medium ${fieldErrors.mileage ? 'border-red-500 ring-2 ring-red-500' : ''}`}
+                                        placeholder={formData.mileage === null ? 'ไม่ระบุ' : 'เช่น 45,000'}
+                                        className={`form-input-icon font-medium ${fieldErrors.mileage ? 'border-red-500 ring-2 ring-red-500' : ''} ${formData.mileage === null ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : ''}`}
                                     />
                                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                         <Gauge size={20} />
@@ -1403,7 +1418,7 @@ export default function EditListingPage() {
                             {/* Location */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">จังหวัด <span className="text-red-500">*</span></label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">จังหวัด <span className="text-gray-400 font-normal">(ไม่บังคับ)</span></label>
                                     <SearchableSelect
                                         options={PROVINCES.map(p => ({ id: p, label: p }))}
                                         value={formData.province}

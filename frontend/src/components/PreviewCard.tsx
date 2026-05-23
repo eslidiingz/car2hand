@@ -18,7 +18,7 @@ interface PreviewCardProps {
     price?: number | string;
     vehicleType?: 'CAR' | 'MOTORCYCLE';
     year?: number;
-    mileage?: number | string;
+    mileage?: number | string | null; // null = "ไม่ระบุ"
     fuelType?: string;
     province?: string;
     imageUrl?: string;
@@ -62,7 +62,9 @@ export default function PreviewCard({
     sellerLogo,
     viewCount = 0,
 }: PreviewCardProps) {
-    const mileageNum = typeof mileage === 'string' ? parseFloat(mileage) || 0 : mileage;
+    const mileageNum = mileage == null
+        ? null
+        : (typeof mileage === 'string' ? parseFloat(mileage) || 0 : mileage);
 
     return (
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
@@ -101,7 +103,7 @@ export default function PreviewCard({
                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                     <span className="text-white text-[10px] font-medium bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1 w-fit">
                         <MapPin size={10} />
-                        {province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : province}
+                        {province ? (province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : province) : 'ไม่ระบุ'}
                     </span>
                 </div>
             </div>
@@ -120,7 +122,7 @@ export default function PreviewCard({
                     </span>
                     <span className="flex items-center gap-1.5">
                         <Gauge size={14} className="text-gray-400" />
-                        <span className="font-medium">{mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-'}</span>
+                        <span className="font-medium">{mileage === null ? 'ไม่ระบุ' : (mileageNum ? `${(mileageNum / 1000).toFixed(0)}k กม.` : '-')}</span>
                     </span>
                     <span className="flex items-center gap-1.5">
                         <Fuel size={14} className="text-gray-400" />

@@ -271,7 +271,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                     <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                         <span className="text-white text-[10px] font-medium bg-black/40 px-2 py-1 rounded backdrop-blur-md flex items-center gap-1 w-fit">
                             <MapPin size={10} />
-                            {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
+                            {listing.province ? (listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province) : 'ไม่ระบุ'}
                         </span>
                     </div>
                 </div>
@@ -290,7 +290,7 @@ export default function ListingCard({ listing, showRemoveButton = false, onRemov
                         </span>
                         <span className="flex items-center gap-1.5">
                             <Gauge size={14} className="text-gray-400" />
-                            <span className="font-medium">{listing.mileage ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : '-'}</span>
+                            <span className="font-medium">{listing.mileage != null ? `${(listing.mileage / 1000).toFixed(0)}k กม.` : 'ไม่ระบุ'}</span>
                         </span>
                         <span className="flex items-center gap-1.5">
                             <Fuel size={14} className="text-gray-400" />
