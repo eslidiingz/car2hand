@@ -1116,7 +1116,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             ])),
             engineSize: t.Optional(t.Number()),
             seats: t.Optional(t.Number()),
-            mileage: t.Number(),
+            mileage: t.Optional(t.Union([t.Number(), t.Null()])),
             bodyType: t.Union([
                 // รถยนต์
                 t.Literal("SEDAN"),
@@ -1156,7 +1156,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             hasAccident: t.Optional(t.Boolean()),
             hasModified: t.Optional(t.Boolean()),
             hasWarranty: t.Optional(t.Boolean()),
-            province: t.String(),
+            province: t.Optional(t.String()),
             district: t.Optional(t.String()),
             contactName: t.Optional(t.String()),
             contactPhone: t.Optional(t.String()),
@@ -1855,7 +1855,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             ])),
             engineSize: t.Optional(t.Number()),
             seats: t.Optional(t.Number()),
-            mileage: t.Optional(t.Number()),
+            mileage: t.Optional(t.Union([t.Number(), t.Null()])),
             bodyType: t.Optional(t.Union([
                 t.Literal("SEDAN"),
                 t.Literal("HATCHBACK"),
@@ -1893,7 +1893,7 @@ const protectedListingRoutes = new Elysia({ prefix: "/listings" })
             hasAccident: t.Optional(t.Boolean()),
             hasModified: t.Optional(t.Boolean()),
             hasWarranty: t.Optional(t.Boolean()),
-            province: t.String(),
+            province: t.Optional(t.String()),
             district: t.Optional(t.String()),
             contactName: t.Optional(t.String()),
             contactPhone: t.Optional(t.String()),
