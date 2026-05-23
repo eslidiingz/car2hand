@@ -379,7 +379,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 {/* Province Badge */}
                                 <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-lg backdrop-blur-sm flex items-center gap-1.5">
                                     <MapPin size={14} />
-                                    {listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province}
+                                    {listing.province ? (listing.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : listing.province) : 'ไม่ระบุ'}
                                 </div>
                             </div>
 
@@ -420,7 +420,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
                                     <Gauge size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">เลขไมล์</p>
-                                    <p className="font-bold text-gray-800">{listing.mileage ? `${formatPrice(listing.mileage)} กม.` : '-'}</p>
+                                    <p className="font-bold text-gray-800">{listing.mileage != null ? `${formatPrice(listing.mileage)} กม.` : 'ไม่ระบุ'}</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
                                     <Fuel size={24} className="text-primary mx-auto mb-2" />
@@ -597,7 +597,7 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     </div>
                                     <p className="text-sm text-gray-500 flex items-center gap-1">
                                         <MapPin size={12} />
-                                        {(listing as any).user?.sellerProfile?.shopProvince || listing.province}
+                                        {(listing as any).user?.sellerProfile?.shopProvince || listing.province || 'ไม่ระบุ'}
                                     </p>
                                 </div>
                             </div>

@@ -339,7 +339,7 @@ model VehicleListing {
   transmission Transmission? // ระบบเกียร์ (optional สำหรับมอเตอร์ไซค์บางรุ่น)
   engineSize   Int? // ขนาดเครื่อง (cc) เช่น 150, 300, 1800, 2000
   seats        Int? // จำนวนที่นั่ง
-  mileage      Int // เลขไมล์ (กม.)
+  mileage      Int? // เลขไมล์ (กม.) — null = ผู้ขายเลือก "ไม่ระบุ"
 
   // ประเภทตัวถัง
   bodyType BodyType // ประเภทตัวถัง (รถยนต์หรือมอเตอร์ไซค์)
@@ -355,7 +355,7 @@ model VehicleListing {
   hasWarranty Boolean   @default(false) // มีประกัน/warranty เหลือ
 
   // ที่ตั้ง
-  province String // จังหวัด
+  province String? // จังหวัด — optional (ผู้ขายไม่เลือกก็ได้)
   district String? // อำเภอ/เขต
 
   // ข้อมูลติดต่อผู้ขาย
