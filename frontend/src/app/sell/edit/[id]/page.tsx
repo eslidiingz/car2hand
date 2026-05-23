@@ -1734,7 +1734,7 @@ export default function EditListingPage() {
 
                             {/* Preview Card */}
                             <PreviewCard
-                                title={formData.title || (formData.brand && formData.model ? `${formData.brand} ${formData.model}` : undefined)}
+                                title={formData.title || ([formData.year, formData.brand, formData.model, formData.subModel].filter(Boolean).join(' ') || undefined)}
                                 price={formData.price}
                                 vehicleType={formData.vehicleType}
                                 year={formData.year || new Date().getFullYear()}
