@@ -193,8 +193,9 @@ export const vehicleListingSchema = z.object({
     hasWarranty: z.boolean().default(false),
 
     province: z.string()
-        .min(1, 'กรุณาระบุจังหวัด')
-        .max(100),
+        .max(100)
+        .optional()
+        .nullable(),
 
     district: z.string()
         .max(100)

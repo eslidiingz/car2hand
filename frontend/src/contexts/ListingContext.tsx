@@ -18,7 +18,7 @@ export interface ListingFormData {
     model: string;
     subModel?: string;
     transmission?: 'AUTOMATIC' | 'MANUAL' | 'CVT' | 'DCT' | 'SEMI_AUTO';
-    mileage: number;
+    mileage: number | null; // null = ผู้ขายเลือก "ไม่ระบุ"
     color: string;
     fuelType: 'PETROL' | 'DIESEL' | 'HYBRID' | 'PLUGIN_HYBRID' | 'EV' | 'LPG' | 'NGV';
     bodyType: string;

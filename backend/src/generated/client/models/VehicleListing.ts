@@ -518,7 +518,7 @@ export type VehicleListingGroupByOutputType = {
   transmission: $Enums.Transmission | null
   engineSize: number | null
   seats: number | null
-  mileage: number
+  mileage: number | null
   bodyType: $Enums.BodyType
   plateProvince: string | null
   registrationType: $Enums.RegistrationType
@@ -526,7 +526,7 @@ export type VehicleListingGroupByOutputType = {
   hasAccident: boolean
   hasModified: boolean
   hasWarranty: boolean
-  province: string
+  province: string | null
   district: string | null
   contactName: string | null
   contactPhone: string | null
@@ -597,7 +597,7 @@ export type VehicleListingWhereInput = {
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
-  mileage?: Prisma.IntFilter<"VehicleListing"> | number
+  mileage?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   bodyType?: Prisma.EnumBodyTypeFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   registrationType?: Prisma.EnumRegistrationTypeFilter<"VehicleListing"> | $Enums.RegistrationType
@@ -605,7 +605,7 @@ export type VehicleListingWhereInput = {
   hasAccident?: Prisma.BoolFilter<"VehicleListing"> | boolean
   hasModified?: Prisma.BoolFilter<"VehicleListing"> | boolean
   hasWarranty?: Prisma.BoolFilter<"VehicleListing"> | boolean
-  province?: Prisma.StringFilter<"VehicleListing"> | string
+  province?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   district?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   contactName?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   contactPhone?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -659,7 +659,7 @@ export type VehicleListingOrderByWithRelationInput = {
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
   seats?: Prisma.SortOrderInput | Prisma.SortOrder
-  mileage?: Prisma.SortOrder
+  mileage?: Prisma.SortOrderInput | Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrderInput | Prisma.SortOrder
   registrationType?: Prisma.SortOrder
@@ -667,7 +667,7 @@ export type VehicleListingOrderByWithRelationInput = {
   hasAccident?: Prisma.SortOrder
   hasModified?: Prisma.SortOrder
   hasWarranty?: Prisma.SortOrder
-  province?: Prisma.SortOrder
+  province?: Prisma.SortOrderInput | Prisma.SortOrder
   district?: Prisma.SortOrderInput | Prisma.SortOrder
   contactName?: Prisma.SortOrderInput | Prisma.SortOrder
   contactPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -724,7 +724,7 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
-  mileage?: Prisma.IntFilter<"VehicleListing"> | number
+  mileage?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   bodyType?: Prisma.EnumBodyTypeFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   registrationType?: Prisma.EnumRegistrationTypeFilter<"VehicleListing"> | $Enums.RegistrationType
@@ -732,7 +732,7 @@ export type VehicleListingWhereUniqueInput = Prisma.AtLeast<{
   hasAccident?: Prisma.BoolFilter<"VehicleListing"> | boolean
   hasModified?: Prisma.BoolFilter<"VehicleListing"> | boolean
   hasWarranty?: Prisma.BoolFilter<"VehicleListing"> | boolean
-  province?: Prisma.StringFilter<"VehicleListing"> | string
+  province?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   district?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   contactName?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   contactPhone?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -786,7 +786,7 @@ export type VehicleListingOrderByWithAggregationInput = {
   transmission?: Prisma.SortOrderInput | Prisma.SortOrder
   engineSize?: Prisma.SortOrderInput | Prisma.SortOrder
   seats?: Prisma.SortOrderInput | Prisma.SortOrder
-  mileage?: Prisma.SortOrder
+  mileage?: Prisma.SortOrderInput | Prisma.SortOrder
   bodyType?: Prisma.SortOrder
   plateProvince?: Prisma.SortOrderInput | Prisma.SortOrder
   registrationType?: Prisma.SortOrder
@@ -794,7 +794,7 @@ export type VehicleListingOrderByWithAggregationInput = {
   hasAccident?: Prisma.SortOrder
   hasModified?: Prisma.SortOrder
   hasWarranty?: Prisma.SortOrder
-  province?: Prisma.SortOrder
+  province?: Prisma.SortOrderInput | Prisma.SortOrder
   district?: Prisma.SortOrderInput | Prisma.SortOrder
   contactName?: Prisma.SortOrderInput | Prisma.SortOrder
   contactPhone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -850,7 +850,7 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   transmission?: Prisma.EnumTransmissionNullableWithAggregatesFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
-  mileage?: Prisma.IntWithAggregatesFilter<"VehicleListing"> | number
+  mileage?: Prisma.IntNullableWithAggregatesFilter<"VehicleListing"> | number | null
   bodyType?: Prisma.EnumBodyTypeWithAggregatesFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   registrationType?: Prisma.EnumRegistrationTypeWithAggregatesFilter<"VehicleListing"> | $Enums.RegistrationType
@@ -858,7 +858,7 @@ export type VehicleListingScalarWhereWithAggregatesInput = {
   hasAccident?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   hasModified?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
   hasWarranty?: Prisma.BoolWithAggregatesFilter<"VehicleListing"> | boolean
-  province?: Prisma.StringWithAggregatesFilter<"VehicleListing"> | string
+  province?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   district?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   contactName?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
   contactPhone?: Prisma.StringNullableWithAggregatesFilter<"VehicleListing"> | string | null
@@ -906,7 +906,7 @@ export type VehicleListingCreateInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -914,7 +914,7 @@ export type VehicleListingCreateInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -967,7 +967,7 @@ export type VehicleListingUncheckedCreateInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -975,7 +975,7 @@ export type VehicleListingUncheckedCreateInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -1028,7 +1028,7 @@ export type VehicleListingUpdateInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -1036,7 +1036,7 @@ export type VehicleListingUpdateInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1089,7 +1089,7 @@ export type VehicleListingUncheckedUpdateInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -1097,7 +1097,7 @@ export type VehicleListingUncheckedUpdateInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1150,7 +1150,7 @@ export type VehicleListingCreateManyInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -1158,7 +1158,7 @@ export type VehicleListingCreateManyInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -1206,7 +1206,7 @@ export type VehicleListingUpdateManyMutationInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -1214,7 +1214,7 @@ export type VehicleListingUpdateManyMutationInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1261,7 +1261,7 @@ export type VehicleListingUncheckedUpdateManyInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -1269,7 +1269,7 @@ export type VehicleListingUncheckedUpdateManyInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1677,7 +1677,7 @@ export type VehicleListingCreateWithoutUserInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -1685,7 +1685,7 @@ export type VehicleListingCreateWithoutUserInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -1737,7 +1737,7 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -1745,7 +1745,7 @@ export type VehicleListingUncheckedCreateWithoutUserInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -1826,7 +1826,7 @@ export type VehicleListingScalarWhereInput = {
   transmission?: Prisma.EnumTransmissionNullableFilter<"VehicleListing"> | $Enums.Transmission | null
   engineSize?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   seats?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
-  mileage?: Prisma.IntFilter<"VehicleListing"> | number
+  mileage?: Prisma.IntNullableFilter<"VehicleListing"> | number | null
   bodyType?: Prisma.EnumBodyTypeFilter<"VehicleListing"> | $Enums.BodyType
   plateProvince?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   registrationType?: Prisma.EnumRegistrationTypeFilter<"VehicleListing"> | $Enums.RegistrationType
@@ -1834,7 +1834,7 @@ export type VehicleListingScalarWhereInput = {
   hasAccident?: Prisma.BoolFilter<"VehicleListing"> | boolean
   hasModified?: Prisma.BoolFilter<"VehicleListing"> | boolean
   hasWarranty?: Prisma.BoolFilter<"VehicleListing"> | boolean
-  province?: Prisma.StringFilter<"VehicleListing"> | string
+  province?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   district?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   contactName?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
   contactPhone?: Prisma.StringNullableFilter<"VehicleListing"> | string | null
@@ -1882,7 +1882,7 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -1890,7 +1890,7 @@ export type VehicleListingCreateWithoutWishlistsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -1942,7 +1942,7 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -1950,7 +1950,7 @@ export type VehicleListingUncheckedCreateWithoutWishlistsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2018,7 +2018,7 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2026,7 +2026,7 @@ export type VehicleListingUpdateWithoutWishlistsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2078,7 +2078,7 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2086,7 +2086,7 @@ export type VehicleListingUncheckedUpdateWithoutWishlistsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2138,7 +2138,7 @@ export type VehicleListingCreateWithoutImagesInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2146,7 +2146,7 @@ export type VehicleListingCreateWithoutImagesInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2198,7 +2198,7 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2206,7 +2206,7 @@ export type VehicleListingUncheckedCreateWithoutImagesInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2274,7 +2274,7 @@ export type VehicleListingUpdateWithoutImagesInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2282,7 +2282,7 @@ export type VehicleListingUpdateWithoutImagesInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2334,7 +2334,7 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2342,7 +2342,7 @@ export type VehicleListingUncheckedUpdateWithoutImagesInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2394,7 +2394,7 @@ export type VehicleListingCreateWithoutRenewalsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2402,7 +2402,7 @@ export type VehicleListingCreateWithoutRenewalsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2454,7 +2454,7 @@ export type VehicleListingUncheckedCreateWithoutRenewalsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2462,7 +2462,7 @@ export type VehicleListingUncheckedCreateWithoutRenewalsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2530,7 +2530,7 @@ export type VehicleListingUpdateWithoutRenewalsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2538,7 +2538,7 @@ export type VehicleListingUpdateWithoutRenewalsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2590,7 +2590,7 @@ export type VehicleListingUncheckedUpdateWithoutRenewalsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2598,7 +2598,7 @@ export type VehicleListingUncheckedUpdateWithoutRenewalsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2650,7 +2650,7 @@ export type VehicleListingCreateWithoutBumpLogsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2658,7 +2658,7 @@ export type VehicleListingCreateWithoutBumpLogsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2710,7 +2710,7 @@ export type VehicleListingUncheckedCreateWithoutBumpLogsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2718,7 +2718,7 @@ export type VehicleListingUncheckedCreateWithoutBumpLogsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2786,7 +2786,7 @@ export type VehicleListingUpdateWithoutBumpLogsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2794,7 +2794,7 @@ export type VehicleListingUpdateWithoutBumpLogsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2846,7 +2846,7 @@ export type VehicleListingUncheckedUpdateWithoutBumpLogsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -2854,7 +2854,7 @@ export type VehicleListingUncheckedUpdateWithoutBumpLogsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2906,7 +2906,7 @@ export type VehicleListingCreateWithoutForumPostsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2914,7 +2914,7 @@ export type VehicleListingCreateWithoutForumPostsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -2966,7 +2966,7 @@ export type VehicleListingUncheckedCreateWithoutForumPostsInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -2974,7 +2974,7 @@ export type VehicleListingUncheckedCreateWithoutForumPostsInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -3042,7 +3042,7 @@ export type VehicleListingUpdateWithoutForumPostsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -3050,7 +3050,7 @@ export type VehicleListingUpdateWithoutForumPostsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3102,7 +3102,7 @@ export type VehicleListingUncheckedUpdateWithoutForumPostsInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -3110,7 +3110,7 @@ export type VehicleListingUncheckedUpdateWithoutForumPostsInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3162,7 +3162,7 @@ export type VehicleListingCreateManyUserInput = {
   transmission?: $Enums.Transmission | null
   engineSize?: number | null
   seats?: number | null
-  mileage: number
+  mileage?: number | null
   bodyType: $Enums.BodyType
   plateProvince?: string | null
   registrationType?: $Enums.RegistrationType
@@ -3170,7 +3170,7 @@ export type VehicleListingCreateManyUserInput = {
   hasAccident?: boolean
   hasModified?: boolean
   hasWarranty?: boolean
-  province: string
+  province?: string | null
   district?: string | null
   contactName?: string | null
   contactPhone?: string | null
@@ -3217,7 +3217,7 @@ export type VehicleListingUpdateWithoutUserInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -3225,7 +3225,7 @@ export type VehicleListingUpdateWithoutUserInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3277,7 +3277,7 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -3285,7 +3285,7 @@ export type VehicleListingUncheckedUpdateWithoutUserInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3337,7 +3337,7 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   transmission?: Prisma.NullableEnumTransmissionFieldUpdateOperationsInput | $Enums.Transmission | null
   engineSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   seats?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  mileage?: Prisma.IntFieldUpdateOperationsInput | number
+  mileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   bodyType?: Prisma.EnumBodyTypeFieldUpdateOperationsInput | $Enums.BodyType
   plateProvince?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   registrationType?: Prisma.EnumRegistrationTypeFieldUpdateOperationsInput | $Enums.RegistrationType
@@ -3345,7 +3345,7 @@ export type VehicleListingUncheckedUpdateManyWithoutUserInput = {
   hasAccident?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasModified?: Prisma.BoolFieldUpdateOperationsInput | boolean
   hasWarranty?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  province?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   district?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3719,7 +3719,7 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     transmission: $Enums.Transmission | null
     engineSize: number | null
     seats: number | null
-    mileage: number
+    mileage: number | null
     bodyType: $Enums.BodyType
     plateProvince: string | null
     registrationType: $Enums.RegistrationType
@@ -3727,7 +3727,7 @@ export type $VehicleListingPayload<ExtArgs extends runtime.Types.Extensions.Inte
     hasAccident: boolean
     hasModified: boolean
     hasWarranty: boolean
-    province: string
+    province: string | null
     district: string | null
     contactName: string | null
     contactPhone: string | null
