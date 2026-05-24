@@ -254,6 +254,7 @@ export const masterDataRoutes = new Elysia({ prefix: '/master-data' })
             { value: 'SEDAN', label: 'รถเก๋ง', icon: 'sedan' },
             { value: 'HATCHBACK', label: 'แฮทช์แบ็ก', icon: 'hatchback' },
             { value: 'SUV', label: 'SUV', icon: 'suv' },
+            { value: 'PPV', label: 'PPV', icon: 'ppv' },
             { value: 'CROSSOVER', label: 'ครอสโอเวอร์', icon: 'crossover' },
             { value: 'MPV', label: 'MPV/รถครอบครัว', icon: 'mpv' },
             { value: 'PICKUP', label: 'รถกระบะ', icon: 'pickup' },

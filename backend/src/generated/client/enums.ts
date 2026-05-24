@@ -61,6 +61,7 @@ export const BodyType = {
   SEDAN: 'SEDAN',
   HATCHBACK: 'HATCHBACK',
   SUV: 'SUV',
+  PPV: 'PPV',
   CROSSOVER: 'CROSSOVER',
   MPV: 'MPV',
   PICKUP: 'PICKUP',
