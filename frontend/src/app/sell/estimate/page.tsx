@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
 import SearchableSelect, { type SelectOption } from '@/components/SearchableSelect';
-import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 import {
     ArrowLeft,
     Sparkles,
@@ -393,7 +393,7 @@ function EstimatePricePage() {
                                     options={subModels.map(sm => ({
                                         id: sm.name,
                                         label: sm.name,
-                                        subLabel: sm.engineSize ? `${sm.engineSize} cc` : undefined,
+                                        subLabel: (ENGINE_SIZE_ENABLED && sm.engineSize) ? `${sm.engineSize} cc` : undefined,
                                     }))}
                                     value={selectedSubModel}
                                     onChange={(val) => setSelectedSubModel(val)}

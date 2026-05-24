@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useWishlist, WishlistItem } from '@/contexts/WishlistContext';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 
 interface CompareItem extends WishlistItem {
     mileage?: number | null;
@@ -52,7 +53,9 @@ const specRows = [
     { label: 'เลขไมล์', icon: <Gauge size={16} className="text-primary" />, getValue: (item: CompareItem) => item.mileage != null ? `${item.mileage.toLocaleString()} กม.` : 'ไม่ระบุ' },
     { label: 'เชื้อเพลิง', icon: <Fuel size={16} className="text-primary" />, getValue: (item: CompareItem) => getFuelTypeLabel(item.fuelType) },
     { label: 'เกียร์', icon: <Settings size={16} className="text-primary" />, getValue: (item: CompareItem) => getTransmissionLabel(item.transmission) },
-    { label: 'เครื่องยนต์', icon: <Zap size={16} className="text-primary" />, getValue: (item: CompareItem) => item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-' },
+    ...(ENGINE_SIZE_ENABLED
+        ? [{ label: 'เครื่องยนต์', icon: <Zap size={16} className="text-primary" />, getValue: (item: CompareItem) => item.engineSize ? `${item.engineSize.toLocaleString()} CC` : '-' }]
+        : []),
     { label: 'ที่นั่ง', icon: <Users size={16} className="text-primary" />, getValue: (item: CompareItem) => item.seats ? `${item.seats} ที่นั่ง` : '-' },
     { label: 'จังหวัด', icon: <MapPin size={16} className="text-primary" />, getValue: (item: CompareItem) => item.province ? (item.province === 'กรุงเทพมหานคร' ? 'กรุงเทพฯ' : item.province) : 'ไม่ระบุ' },
 ];

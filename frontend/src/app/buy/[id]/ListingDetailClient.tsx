@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 import {
     ArrowLeft,
     Heart,
@@ -437,11 +438,13 @@ export default function ListingDetailClient({ listing: initialListing }: Listing
                                     <p className="text-xs text-gray-500">สี</p>
                                     <p className="font-bold text-gray-800">{listing.color}</p>
                                 </div>
-                                <div className="bg-gray-50 rounded-xl p-4 text-center">
-                                    <Zap size={24} className="text-primary mx-auto mb-2" />
-                                    <p className="text-xs text-gray-500">ขนาดเครื่องยนต์</p>
-                                    <p className="font-bold text-gray-800">{listing.engineSize ? `${formatPrice(listing.engineSize)} CC` : '-'}</p>
-                                </div>
+                                {ENGINE_SIZE_ENABLED && (
+                                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                        <Zap size={24} className="text-primary mx-auto mb-2" />
+                                        <p className="text-xs text-gray-500">ขนาดเครื่องยนต์</p>
+                                        <p className="font-bold text-gray-800">{listing.engineSize ? `${formatPrice(listing.engineSize)} CC` : '-'}</p>
+                                    </div>
+                                )}
                                 <div className="bg-gray-50 rounded-xl p-4 text-center">
                                     <Users size={24} className="text-primary mx-auto mb-2" />
                                     <p className="text-xs text-gray-500">จำนวนที่นั่ง</p>

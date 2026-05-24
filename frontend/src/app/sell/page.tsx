@@ -37,7 +37,7 @@ import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
 import { ListingProvider, useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
-import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED, ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
 import {
@@ -1012,7 +1012,7 @@ function CreateListingPage() {
                                                 options={subModels.map(s => ({
                                                     id: s.id,
                                                     label: s.name,
-                                                    subLabel: s.engineSize ? `${s.engineSize}cc` : undefined
+                                                    subLabel: (ENGINE_SIZE_ENABLED && s.engineSize) ? `${s.engineSize}cc` : undefined
                                                 }))}
                                                 value={subModels.find(s => s.name === formData.subModel)?.id || formData.subModel || ''}
                                                 onChange={(id, option) => {
@@ -1171,21 +1171,23 @@ function CreateListingPage() {
                                         {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์ หรือเลือก &quot;ไม่ระบุ&quot;</p>}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC)</label>
-                                            <input
-                                                type="text"
-                                                inputMode="numeric"
-                                                placeholder="เช่น 1500"
-                                                className="form-input font-medium"
-                                                value={formData.engineSize || ''}
-                                                onChange={(e) => {
-                                                    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-                                                    updateFormData({ engineSize: parseInt(value) || undefined });
-                                                }}
-                                            />
-                                        </div>
+                                    <div className={`grid grid-cols-1 ${ENGINE_SIZE_ENABLED ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-5 mb-8`}>
+                                        {ENGINE_SIZE_ENABLED && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC)</label>
+                                                <input
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    placeholder="เช่น 1500"
+                                                    className="form-input font-medium"
+                                                    value={formData.engineSize || ''}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                        updateFormData({ engineSize: parseInt(value) || undefined });
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">จำนวนที่นั่ง</label>
                                             <input
