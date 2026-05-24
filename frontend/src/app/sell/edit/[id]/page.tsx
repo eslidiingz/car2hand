@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect from '@/components/SearchableSelect';
-import { MOTORCYCLE_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED, ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 
 // Types
 interface VehicleImage {
@@ -1330,21 +1330,23 @@ export default function EditListingPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC) (ไม่บังคับ)</label>
-                                    <input
-                                        type="text"
-                                        inputMode="numeric"
-                                        placeholder="เช่น 1500"
-                                        className="form-input font-medium"
-                                        value={formData.engineSize || ''}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-                                            updateFormData({ engineSize: parseInt(value) || 0 });
-                                        }}
-                                    />
-                                </div>
+                            <div className={`grid grid-cols-1 ${ENGINE_SIZE_ENABLED ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-5 mb-8`}>
+                                {ENGINE_SIZE_ENABLED && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC) (ไม่บังคับ)</label>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            placeholder="เช่น 1500"
+                                            className="form-input font-medium"
+                                            value={formData.engineSize || ''}
+                                            onChange={(e) => {
+                                                const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                updateFormData({ engineSize: parseInt(value) || 0 });
+                                            }}
+                                        />
+                                    </div>
+                                )}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1.5">จำนวนที่นั่ง (ไม่บังคับ)</label>
                                     <input

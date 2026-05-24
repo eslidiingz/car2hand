@@ -1,3 +1,5 @@
+import { ENGINE_SIZE_ENABLED } from './featureFlags';
+
 /**
  * SEO / GEO (Generative Engine Optimization) helpers
  *
@@ -173,7 +175,7 @@ export function vehicleListingSchema(listing: VehicleSchemaInput, pathname: stri
   if (listing.transmission) vehicle.vehicleTransmission = TRANSMISSION_MAP[listing.transmission] || listing.transmission;
   if (listing.bodyType) vehicle.bodyType = listing.bodyType;
   if (listing.seats) vehicle.seatingCapacity = listing.seats;
-  if (listing.engineSize) {
+  if (ENGINE_SIZE_ENABLED && listing.engineSize) {
     vehicle.vehicleEngine = {
       '@type': 'EngineSpecification',
       engineDisplacement: {

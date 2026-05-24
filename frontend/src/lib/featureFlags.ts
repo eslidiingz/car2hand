@@ -46,3 +46,22 @@ export const PACKAGES_ENABLED = false;
  * Flip to `true` to bring the richer (longer) form back.
  */
 export const LISTING_EXTRA_SECTIONS_ENABLED = false;
+
+/**
+ * ENGINE_SIZE_ENABLED — gate for the "ขนาดเครื่องยนต์ (cc)" field anywhere on
+ * the public website:
+ *   - sell create + edit forms (input + auto-fill sub-label hint)
+ *   - sell estimate sub-model dropdown sub-label ("xxxx cc")
+ *   - /buy filter (min/max engine-size range)
+ *   - listing detail spec tile
+ *   - compare table row
+ *   - JSON-LD vehicle structured-data property
+ *
+ * Hidden to keep the form shorter and the spec surfaces less cluttered for
+ * mainstream buyers who don't shop by cc. Backend column + Prisma field +
+ * sub-model master-data spec stay intact — only the UI hides, and existing
+ * cc values keep being stored (just not shown).
+ *
+ * Flip to `true` to bring engine-size visibility back across the website.
+ */
+export const ENGINE_SIZE_ENABLED = false;

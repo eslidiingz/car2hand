@@ -18,7 +18,7 @@ import {
 import ListingCard, { VehicleListing } from '@/components/ListingCard';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
-import { MOTORCYCLE_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 import { useDebounce } from '@/lib/useDebounce';
 
 interface PaginationInfo {
@@ -589,25 +589,27 @@ function BuyContent() {
                                             </div>
                                         </div>
 
-                                        <div>
-                                            <label className="text-sm font-semibold mb-2 block text-gray-700">ขนาดเครื่องยนต์ (CC)</label>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="number"
-                                                    placeholder="เริ่มต้น"
-                                                    value={minEngineSize}
-                                                    onChange={(e) => setMinEngineSize(e.target.value)}
-                                                    className="form-input w-1/2 font-medium"
-                                                />
-                                                <input
-                                                    type="number"
-                                                    placeholder="สูงสุด"
-                                                    value={maxEngineSize}
-                                                    onChange={(e) => setMaxEngineSize(e.target.value)}
-                                                    className="form-input w-1/2 font-medium"
-                                                />
+                                        {ENGINE_SIZE_ENABLED && (
+                                            <div>
+                                                <label className="text-sm font-semibold mb-2 block text-gray-700">ขนาดเครื่องยนต์ (CC)</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="number"
+                                                        placeholder="เริ่มต้น"
+                                                        value={minEngineSize}
+                                                        onChange={(e) => setMinEngineSize(e.target.value)}
+                                                        className="form-input w-1/2 font-medium"
+                                                    />
+                                                    <input
+                                                        type="number"
+                                                        placeholder="สูงสุด"
+                                                        value={maxEngineSize}
+                                                        onChange={(e) => setMaxEngineSize(e.target.value)}
+                                                        className="form-input w-1/2 font-medium"
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </>
                                 )}
                             </div> {/* End Advanced Filters Content */}
