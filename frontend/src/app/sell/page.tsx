@@ -1202,6 +1202,31 @@ function CreateListingPage() {
                                         </div>
                                     </div>
 
+                                    {/* Gas Type — always visible (extracted from the hidden Vehicle Extras
+                                        section so sellers can flag LPG/NGV without unhiding the whole block). */}
+                                    <div className="mb-6">
+                                        <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {[
+                                                { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
+                                                { value: 'LPG', label: 'LPG', emoji: '🟢' },
+                                                { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
+                                            ].map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    type="button"
+                                                    onClick={() => updateFormData({ gasType: opt.value as typeof formData.gasType })}
+                                                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
+                                                        ? 'bg-primary text-white'
+                                                        : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
+                                                        }`}
+                                                >
+                                                    {opt.emoji} {opt.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
                                     {/* Vehicle Extras — hidden via LISTING_EXTRA_SECTIONS_ENABLED to shorten the flow */}
                                     {LISTING_EXTRA_SECTIONS_ENABLED && (<>
                                     <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
@@ -1252,30 +1277,6 @@ function CreateListingPage() {
                                                         type="button"
                                                         onClick={() => updateFormData({ registrationBookStatus: opt.value as typeof formData.registrationBookStatus })}
                                                         className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.registrationBookStatus === opt.value
-                                                            ? 'bg-primary text-white'
-                                                            : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
-                                                            }`}
-                                                    >
-                                                        {opt.emoji} {opt.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Gas Type */}
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {[
-                                                    { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
-                                                    { value: 'LPG', label: 'LPG', emoji: '🟢' },
-                                                    { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
-                                                ].map(opt => (
-                                                    <button
-                                                        key={opt.value}
-                                                        type="button"
-                                                        onClick={() => updateFormData({ gasType: opt.value as typeof formData.gasType })}
-                                                        className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
                                                             ? 'bg-primary text-white'
                                                             : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
                                                             }`}

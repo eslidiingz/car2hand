@@ -170,7 +170,7 @@ export const vehicleListingSchema = z.object({
         .optional()
         .nullable(),
 
-    bodyType: z.enum(['SEDAN', 'HATCHBACK', 'SUV', 'MPV', 'PICKUP', 'COUPE', 'CONVERTIBLE', 'VAN', 'WAGON', 'SPORT', 'NAKED', 'CRUISER', 'TOURING', 'SCOOTER', 'CUB', 'TRAIL'], {
+    bodyType: z.enum(['SEDAN', 'HATCHBACK', 'SUV', 'PPV', 'CROSSOVER', 'MPV', 'PICKUP', 'COUPE', 'CONVERTIBLE', 'VAN', 'WAGON', 'STANDARD', 'SPORT', 'NAKED', 'CRUISER', 'TOURING', 'SCOOTER', 'CUB', 'ADVENTURE', 'DIRT', 'CAFE_RACER', 'UNDERBONE'], {
         message: 'ประเภทตัวถังไม่ถูกต้อง'
     }).optional().nullable(),
 

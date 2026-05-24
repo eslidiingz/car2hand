@@ -869,11 +869,35 @@ function EditDialog({ target, onClose, onSaved, saving, setSaving, vehicleType, 
                                 </div>
                                 <div>
                                     <Label className="text-xs">เชื้อเพลิง</Label>
-                                    <Input value={(form.fuelType as string) || ""} onChange={(e) => setField("fuelType", e.target.value)} placeholder="PETROL, DIESEL..." />
+                                    <select
+                                        value={(form.fuelType as string) || ""}
+                                        onChange={(e) => setField("fuelType", e.target.value)}
+                                        className="h-9 w-full px-3 rounded-md border border-border bg-background text-sm"
+                                    >
+                                        <option value="">— ไม่ระบุ —</option>
+                                        <option value="PETROL">เบนซิน (PETROL)</option>
+                                        <option value="DIESEL">ดีเซล (DIESEL)</option>
+                                        <option value="HYBRID">ไฮบริด (HYBRID)</option>
+                                        <option value="PLUGIN_HYBRID">ปลั๊กอินไฮบริด (PLUGIN_HYBRID)</option>
+                                        <option value="EV">ไฟฟ้า (EV)</option>
+                                        <option value="LPG">LPG</option>
+                                        <option value="NGV">NGV</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <Label className="text-xs">เกียร์</Label>
-                                    <Input value={(form.transmission as string) || ""} onChange={(e) => setField("transmission", e.target.value)} placeholder="AUTOMATIC, MANUAL..." />
+                                    <select
+                                        value={(form.transmission as string) || ""}
+                                        onChange={(e) => setField("transmission", e.target.value)}
+                                        className="h-9 w-full px-3 rounded-md border border-border bg-background text-sm"
+                                    >
+                                        <option value="">— ไม่ระบุ —</option>
+                                        <option value="AUTOMATIC">อัตโนมัติ (AUTOMATIC)</option>
+                                        <option value="MANUAL">ธรรมดา (MANUAL)</option>
+                                        <option value="CVT">CVT</option>
+                                        <option value="DCT">DCT</option>
+                                        <option value="SEMI_AUTO">กึ่งอัตโนมัติ (SEMI_AUTO)</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
