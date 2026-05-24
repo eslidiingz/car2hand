@@ -470,6 +470,7 @@ enum BodyType {
   SEDAN // รถเก๋ง
   HATCHBACK // แฮทช์แบ็ก
   SUV // SUV
+  PPV // PPV (รถอเนกประสงค์ chassis กระบะ เช่น Fortuner, Pajero Sport)
   CROSSOVER // ครอสโอเวอร์
   MPV // MPV/รถครอบครัว
   PICKUP // กระบะ

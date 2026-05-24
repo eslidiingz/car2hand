@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import PreviewCard from '@/components/PreviewCard';
 import SearchableSelect from '@/components/SearchableSelect';
-import { MOTORCYCLE_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED, ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 
 // Types
 interface VehicleImage {
@@ -1330,21 +1330,23 @@ export default function EditListingPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC) (ไม่บังคับ)</label>
-                                    <input
-                                        type="text"
-                                        inputMode="numeric"
-                                        placeholder="เช่น 1500"
-                                        className="form-input font-medium"
-                                        value={formData.engineSize || ''}
-                                        onChange={(e) => {
-                                            const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-                                            updateFormData({ engineSize: parseInt(value) || 0 });
-                                        }}
-                                    />
-                                </div>
+                            <div className={`grid grid-cols-1 ${ENGINE_SIZE_ENABLED ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-5 mb-8`}>
+                                {ENGINE_SIZE_ENABLED && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC) (ไม่บังคับ)</label>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            placeholder="เช่น 1500"
+                                            className="form-input font-medium"
+                                            value={formData.engineSize || ''}
+                                            onChange={(e) => {
+                                                const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                updateFormData({ engineSize: parseInt(value) || 0 });
+                                            }}
+                                        />
+                                    </div>
+                                )}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1.5">จำนวนที่นั่ง (ไม่บังคับ)</label>
                                     <input
@@ -1501,6 +1503,31 @@ export default function EditListingPage() {
                                 )}
                             </div>
 
+                            {/* Gas Type — always visible (extracted from the hidden Vehicle Extras
+                                section so sellers can flag LPG/NGV without unhiding the whole block). */}
+                            <div className="mb-6">
+                                <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {[
+                                        { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
+                                        { value: 'LPG', label: 'LPG', emoji: '🟢' },
+                                        { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            onClick={() => updateFormData({ gasType: opt.value as FormData['gasType'] })}
+                                            className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
+                                                ? 'bg-primary text-white'
+                                                : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
+                                                }`}
+                                        >
+                                            {opt.emoji} {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             {/* Vehicle Extras Section — hidden via LISTING_EXTRA_SECTIONS_ENABLED
                                 (also covers the nested "สำเนาเล่มทะเบียนรถ" here) */}
                             {LISTING_EXTRA_SECTIONS_ENABLED && (<>
@@ -1611,30 +1638,6 @@ export default function EditListingPage() {
                                             }} />
                                         </label>
                                     )}
-                                </div>
-
-                                {/* Gas Type */}
-                                <div className="p-4 bg-gray-50 rounded-xl">
-                                    <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {[
-                                            { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
-                                            { value: 'LPG', label: 'LPG', emoji: '🟢' },
-                                            { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
-                                        ].map(opt => (
-                                            <button
-                                                key={opt.value}
-                                                type="button"
-                                                onClick={() => updateFormData({ gasType: opt.value as FormData['gasType'] })}
-                                                className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
-                                                    ? 'bg-primary text-white'
-                                                    : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
-                                                    }`}
-                                            >
-                                                {opt.emoji} {opt.label}
-                                            </button>
-                                        ))}
-                                    </div>
                                 </div>
 
                                 {/* Insurance */}

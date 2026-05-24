@@ -37,7 +37,7 @@ import SlotPurchaseModal from '@/components/SlotPurchaseModal';
 import SearchableSelect, { SelectOption } from '@/components/SearchableSelect';
 import BrandSelectionModal from '@/components/BrandSelectionModal';
 import { ListingProvider, useListingForm, createListing, uploadListingImages, uploadServiceHistoryImage, uploadRegistrationBookImage, publishListing, UpgradeRequiredError, type ListingFormData } from '@/contexts/ListingContext';
-import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED } from '@/lib/featureFlags';
+import { MOTORCYCLE_ENABLED, PACKAGES_ENABLED, LISTING_EXTRA_SECTIONS_ENABLED, ENGINE_SIZE_ENABLED } from '@/lib/featureFlags';
 import LoginModal from '@/components/LoginModal';
 import RegisterModal from '@/components/RegisterModal';
 import {
@@ -1012,7 +1012,7 @@ function CreateListingPage() {
                                                 options={subModels.map(s => ({
                                                     id: s.id,
                                                     label: s.name,
-                                                    subLabel: s.engineSize ? `${s.engineSize}cc` : undefined
+                                                    subLabel: (ENGINE_SIZE_ENABLED && s.engineSize) ? `${s.engineSize}cc` : undefined
                                                 }))}
                                                 value={subModels.find(s => s.name === formData.subModel)?.id || formData.subModel || ''}
                                                 onChange={(id, option) => {
@@ -1171,21 +1171,23 @@ function CreateListingPage() {
                                         {fieldErrors.mileage && <p className="text-red-500 text-xs mt-1">กรุณากรอกเลขไมล์ หรือเลือก &quot;ไม่ระบุ&quot;</p>}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC)</label>
-                                            <input
-                                                type="text"
-                                                inputMode="numeric"
-                                                placeholder="เช่น 1500"
-                                                className="form-input font-medium"
-                                                value={formData.engineSize || ''}
-                                                onChange={(e) => {
-                                                    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-                                                    updateFormData({ engineSize: parseInt(value) || undefined });
-                                                }}
-                                            />
-                                        </div>
+                                    <div className={`grid grid-cols-1 ${ENGINE_SIZE_ENABLED ? 'md:grid-cols-2' : 'md:grid-cols-1'} gap-5 mb-8`}>
+                                        {ENGINE_SIZE_ENABLED && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1.5">ขนาดเครื่องยนต์ (CC)</label>
+                                                <input
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    placeholder="เช่น 1500"
+                                                    className="form-input font-medium"
+                                                    value={formData.engineSize || ''}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                                        updateFormData({ engineSize: parseInt(value) || undefined });
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1.5">จำนวนที่นั่ง</label>
                                             <input
@@ -1199,6 +1201,31 @@ function CreateListingPage() {
                                                     updateFormData({ seats: parseInt(value) || undefined });
                                                 }}
                                             />
+                                        </div>
+                                    </div>
+
+                                    {/* Gas Type — always visible (extracted from the hidden Vehicle Extras
+                                        section so sellers can flag LPG/NGV without unhiding the whole block). */}
+                                    <div className="mb-6">
+                                        <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {[
+                                                { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
+                                                { value: 'LPG', label: 'LPG', emoji: '🟢' },
+                                                { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
+                                            ].map(opt => (
+                                                <button
+                                                    key={opt.value}
+                                                    type="button"
+                                                    onClick={() => updateFormData({ gasType: opt.value as typeof formData.gasType })}
+                                                    className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
+                                                        ? 'bg-primary text-white'
+                                                        : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
+                                                        }`}
+                                                >
+                                                    {opt.emoji} {opt.label}
+                                                </button>
+                                            ))}
                                         </div>
                                     </div>
 
@@ -1252,30 +1279,6 @@ function CreateListingPage() {
                                                         type="button"
                                                         onClick={() => updateFormData({ registrationBookStatus: opt.value as typeof formData.registrationBookStatus })}
                                                         className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.registrationBookStatus === opt.value
-                                                            ? 'bg-primary text-white'
-                                                            : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
-                                                            }`}
-                                                    >
-                                                        {opt.emoji} {opt.label}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Gas Type */}
-                                        <div className="p-4 bg-gray-50 rounded-xl">
-                                            <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {[
-                                                    { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
-                                                    { value: 'LPG', label: 'LPG', emoji: '🟢' },
-                                                    { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
-                                                ].map(opt => (
-                                                    <button
-                                                        key={opt.value}
-                                                        type="button"
-                                                        onClick={() => updateFormData({ gasType: opt.value as typeof formData.gasType })}
-                                                        className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
                                                             ? 'bg-primary text-white'
                                                             : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
                                                             }`}
