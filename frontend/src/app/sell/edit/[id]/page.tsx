@@ -534,6 +534,14 @@ export default function EditListingPage() {
         }
     }, [brandsList, formData.brand]);
 
+    // EV cars have no gas tank — auto-reset gasType to NONE so a value
+    // doesn't linger from a previous fuel pick (the UI is hidden too).
+    useEffect(() => {
+        if (formData.fuelType === 'EV' && formData.gasType !== 'NONE') {
+            updateFormData({ gasType: 'NONE' });
+        }
+    }, [formData.fuelType, formData.gasType]);
+
     // Fetch models when brand changes
     useEffect(() => {
         if (!selectedBrandId) {
@@ -1503,30 +1511,31 @@ export default function EditListingPage() {
                                 )}
                             </div>
 
-                            {/* Gas Type — always visible (extracted from the hidden Vehicle Extras
-                                section so sellers can flag LPG/NGV without unhiding the whole block). */}
-                            <div className="mb-6">
-                                <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {[
-                                        { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
-                                        { value: 'LPG', label: 'LPG', emoji: '🟢' },
-                                        { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
-                                    ].map(opt => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            onClick={() => updateFormData({ gasType: opt.value as FormData['gasType'] })}
-                                            className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
-                                                ? 'bg-primary text-white'
-                                                : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
-                                                }`}
-                                        >
-                                            {opt.emoji} {opt.label}
-                                        </button>
-                                    ))}
+                            {/* Gas Type — hidden when fuelType is EV (electric cars can't run LPG/NGV) */}
+                            {formData.fuelType !== 'EV' && (
+                                <div className="mb-6">
+                                    <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {[
+                                            { value: 'NONE', label: 'ไม่ติดแก๊ส', emoji: '⛽' },
+                                            { value: 'LPG', label: 'LPG', emoji: '🟢' },
+                                            { value: 'NGV', label: 'NGV/CNG', emoji: '🔵' }
+                                        ].map(opt => (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                onClick={() => updateFormData({ gasType: opt.value as FormData['gasType'] })}
+                                                className={`px-4 py-2 rounded-full text-sm font-medium transition ${formData.gasType === opt.value
+                                                    ? 'bg-primary text-white'
+                                                    : 'bg-white border border-gray-200 text-gray-600 hover:border-primary'
+                                                    }`}
+                                            >
+                                                {opt.emoji} {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Vehicle Extras Section — hidden via LISTING_EXTRA_SECTIONS_ENABLED
                                 (also covers the nested "สำเนาเล่มทะเบียนรถ" here) */}
