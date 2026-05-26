@@ -482,6 +482,14 @@ function CreateListingPage() {
         setSubModels([]);
     }, [formData.vehicleType]);
 
+    // EV cars have no gas tank — auto-reset gasType to NONE so a value
+    // doesn't linger from a previous fuel pick (the UI is hidden too).
+    useEffect(() => {
+        if (formData.fuelType === 'EV' && formData.gasType !== 'NONE') {
+            updateFormData({ gasType: 'NONE' });
+        }
+    }, [formData.fuelType, formData.gasType]);
+
     // Fetch models when brand changes
     useEffect(() => {
         if (!selectedBrandId) {
@@ -1204,8 +1212,9 @@ function CreateListingPage() {
                                         </div>
                                     </div>
 
-                                    {/* Gas Type — always visible (extracted from the hidden Vehicle Extras
-                                        section so sellers can flag LPG/NGV without unhiding the whole block). */}
+                                    {/* Gas Type — hidden when fuelType is EV (electric cars can't run LPG/NGV).
+                                        Extracted from the hidden Vehicle Extras section so non-EV sellers can flag LPG/NGV. */}
+                                    {formData.fuelType !== 'EV' && (
                                     <div className="mb-6">
                                         <p className="font-medium text-gray-800 mb-3">ติดแก๊ส</p>
                                         <div className="flex flex-wrap gap-2">
@@ -1228,6 +1237,7 @@ function CreateListingPage() {
                                             ))}
                                         </div>
                                     </div>
+                                    )}
 
                                     {/* Vehicle Extras — hidden via LISTING_EXTRA_SECTIONS_ENABLED to shorten the flow */}
                                     {LISTING_EXTRA_SECTIONS_ENABLED && (<>
